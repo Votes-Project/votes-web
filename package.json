@@ -6,14 +6,18 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "graph:build": "graphclient build --fileType js",
+    "graphiql": "graphclient serve-dev",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
   "dependencies": {
+    "graphql": "^16.6.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
+    "@graphprotocol/client-cli": "^3.0.0",
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.11",
     "@typescript-eslint/eslint-plugin": "^5.57.1",
