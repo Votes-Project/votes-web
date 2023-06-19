@@ -1,0 +1,8 @@
+sources:
+  - name: votes-goerli
+    handler:
+      graphql:
+        endpoint: https://api.studio.thegraph.com/query/9032/votes-goerli/version/latest
+# documents:
+#   - "./src/**/*.graphql"
+#   - "./src/**/*.{ts,tsx,js,jsx}"
