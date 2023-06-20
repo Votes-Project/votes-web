@@ -1,6 +1,6 @@
 import { useState } from "react";
-import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
+import { make as Header } from "./Header.bs.js";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -11,19 +11,7 @@ function App() {
   return (
     <>
       <div className="wrapper flex flex-col h-screen w-screen">
-        <header className="bg-orange-300 flex w-full justify-between px-2 py-5">
-          <div>
-            <a href="https://vitejs.dev" target="_blank">
-              <img src={viteLogo} className="logo" alt="Vite logo" />
-            </a>
-          </div>
-          <div className="px-3 bg-zinc-400">1000</div>
-          <div>
-            <a href="https://react.dev" target="_blank">
-              <img src={reactLogo} className="logo react" alt="React logo" />
-            </a>
-          </div>
-        </header>
+        <Header />
         <div className="bg-orange-300 w-full h-80 relative">
           <div className="w-full h-full flex flex-col justify-end  items-center">
             <img className="w-[50%] " src={viteLogo}></img>

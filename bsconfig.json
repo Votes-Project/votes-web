@@ -1,0 +1,22 @@
+{
+  "name": "votes-web",
+  "uncurried": true,
+  "jsx": {
+    "version": 4,
+    "mode": "automatic"
+  },
+  "sources": {
+    "dir": "src",
+    "subdirs": true
+  },
+  "package-specs": [
+    {
+      "module": "es6",
+      "in-source": true
+    }
+  ],
+  "suffix": ".bs.js",
+  "ppx-flags": [],
+  "namespace": true,
+  "bs-dependencies": ["@rescript/react", "@glennsl/rescript-fetch"]
+}

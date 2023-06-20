@@ -24,3 +24,5 @@ dist-ssr
 *.sw?
 node_modules
 .graphclient
+lib
+*.bs.js
