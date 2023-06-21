@@ -1,0 +1,4 @@
+# /*
+# # But not src files
+# !src/**/*.{js,ts,tsx,mjs,cjs,json,res}
+*.bs.js
