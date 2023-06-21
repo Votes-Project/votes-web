@@ -3,8 +3,7 @@ import viteLogo from "/vite.svg";
 import { make as Header } from "./Header.bs.js";
 
 function App() {
-  const [count, setCount] = useState(0);
-  const [currentBid, setCurrentBid] = useState("0");
+  const [currentBid] = useState("0");
   const now = new Date();
   const todaysDate = now.toDateString();
 
@@ -12,80 +11,80 @@ function App() {
     <>
       <div className="wrapper flex flex-col">
         <Header />
-        <div className="bg-primary flex flex-col lg:flex-row">
-          <div className="self-end w-[80%] mx-[10%] mt-8 md:w-[70%] lg:w-full md:mx-[15%]">
-            <div className="relative pt-[100%] w-full h-0">
+        <div className="flex flex-col bg-primary lg:flex-row">
+          <div className="mx-[10%] mt-8 w-[80%] self-end md:mx-[15%] md:w-[70%] lg:w-full">
+            <div className="relative h-0 w-full pt-[100%]">
               <img
-                className="top-0 left-0 absolute w-full h-auto align-middle "
+                className="absolute left-0 top-0 h-auto w-full align-middle "
                 src={viteLogo}
               ></img>
             </div>
             <div>{/* <chart></chart> */}</div>
           </div>
-          <main className="lg:pr-20 pb-0 min-h-[558px] bg-background lg:bg-primary !self-end pt-[5%] px-[5%] w-full ">
-            <div className="p-4 !self-start">
+          <main className="min-h-[558px] w-full !self-end bg-background px-[5%] pb-0 pt-[5%] lg:bg-primary lg:pr-20 ">
+            <div className="!self-start p-4">
               <div className="flex items-center pt-5">
                 <div className="flex gap-2">
-                  <button className="bg-primary rounded-full flex justify-center items-center h-8 w-8 ">
+                  <button className="flex h-8 w-8 items-center justify-center rounded-full bg-primary ">
                     ⬅️
                   </button>
-                  <button className="bg-primary rounded-full flex justify-center items-center h-8 w-8 ">
+                  <button className="flex h-8 w-8 items-center justify-center rounded-full bg-primary ">
                     ➡️
                   </button>
                   <p> {todaysDate}</p>{" "}
                 </div>
               </div>
               <div>{/* view toggle */}</div>
-              <h1 className="py-9 font-['Fugaz One'] font-bold text-6xl lg:text-7xl">
+              <h1 className="font-['Fugaz One'] py-9 text-6xl font-bold lg:text-7xl">
                 VOTE 50
               </h1>
               <div className="flex flex-col ">
-                <div className="flex justify-between items-center">
+                <div className="flex items-center justify-between">
                   <p>Current Bid</p>
                   <p> {currentBid} Ξ</p>
                 </div>
-                <div className="flex justify-between items-center">
+                <div className="flex items-center justify-between">
                   <p>Time Left</p>
                   <p> 1h 20m 30s </p>
                 </div>
               </div>
               <div className="flex w-full items-center justify-around gap-2 py-10">
                 <input
-                  className="py-4 px-2 flex-1 rounded-2xl focus:outline-none focus:border-sky-500 focus:ring-1 placeholder:text-lg placeholder:font-bold"
+                  className="flex-1 rounded-2xl px-2 py-4 placeholder:text-lg placeholder:font-bold focus:border-sky-500 focus:outline-none focus:ring-1"
                   placeholder="Ξ 0.1 or more"
                   type="number"
                 ></input>
-                <button className="flex-2 px-3 py-2 text-white bg-orange-500 text-center rounded-lg">
+                <button className="flex-2 rounded-lg bg-orange-500 px-3 py-2 text-center text-white">
                   Place Bid
                 </button>
               </div>
               <div className="flex flex-col justify-between">
-                <div className="flex justify-between items-center">
+                <div className="flex items-center justify-between">
                   <p>vict0xr.eth</p>
                   <div className="flex gap-2">
                     <p> 0.4 Ξ</p>
                     <p>🔗</p>
                   </div>
                 </div>
-                <div className="w-full h-0 border border-black my-3"></div>
-                <div className="flex justify-between items-center">
+                <div className="my-3 h-0 w-full border border-black"></div>
+                <div className="flex items-center justify-between">
                   <p>chilleeman.eth</p>
                   <div className="flex gap-2">
                     <p> 0.2 Ξ</p>
                     <p>🔗</p>
                   </div>
                 </div>
-                <div className="w-full h-0 border border-black my-3"></div>
-                <div className="flex justify-between items-center">
+                <div className="my-3 h-0 w-full border border-black"></div>
+                <div className="flex items-center justify-between">
                   <p>adamstallard.eth</p>
                   <div className="flex gap-2">
                     <p> 0.1 Ξ</p>
                     <p>🔗</p>
                   </div>
                 </div>
-                <div className="w-full h-0 border border-black my-3"></div>
+                <div className="my-3 h-0 w-full border border-black"></div>
               </div>
-              <div className="text-center w-full py-2"> View All Bids</div>
+              <div className="w-full py-2 text-center"> View All Bids</div>
             </div>
           </main>
         </div>
