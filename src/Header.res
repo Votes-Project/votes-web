@@ -2,6 +2,11 @@
 
 @module external viteLogo: 'a = "/vite.svg"
 
+module ConnectButton = {
+  @react.component @module("@rainbow-me/rainbowkit")
+  external make: unit => React.element = "ConnectButton"
+}
+
 @react.component
 let make = () => {
   <header className="bg-primary flex w-full justify-between px-2 py-5">
@@ -18,8 +23,9 @@ let make = () => {
         <img src={reactLogo["default"]} className="logo react" alt="React logo" />
       </a>
     </div>
-    <dropdown>
-      <div> {"wow"->React.string} </div>
-    </dropdown>
+    <ConnectButton />
+    // <dropdown>
+    //   <div> {"wow"->React.string} </div>
+    // </dropdown>
   </header>
 }
