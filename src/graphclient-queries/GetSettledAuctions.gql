@@ -1,0 +1,7 @@
+query GetSettledAuctions {
+  auctionSettleds(first:5) {
+    id
+    tokenId
+    winner
+  }
+}

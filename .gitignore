@@ -28,3 +28,5 @@ lib
 *.bs.js
 *.mjs
 .yarn
+**/__generated__/**
+```
