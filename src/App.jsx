@@ -1,6 +1,6 @@
 import { useState } from "react";
 import viteLogo from "/vite.svg";
-import { make as Header } from "./Header.bs.js";
+import { make as Header } from "./Header.mjs";
 
 function App() {
   const [currentBid] = useState("0");
