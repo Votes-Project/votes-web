@@ -6,15 +6,18 @@
   "packageManager": "yarn@3.2.1",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "vite build",
     "graph:build": "graphclient build --fileType js",
     "graphiql": "graphclient serve-dev",
     "prettier:write": "prettier --write 'src/**/*.{js,ts,tsx,mjs,cjs,json}'",
-    "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0 && pnpm prettier:write ",
+    "lint": "eslint src --ext ts,tsx,js,jsx,mjs --report-unused-disable-directives --max-warnings 0 && pnpm prettier:write ",
     "preview": "vite preview",
-    "schema": "npx -y get-graphql-schema https://api.studio.thegraph.com/query/9032/votes-goerli/version/latest > schema.graphql",
+    "graph:schema": "npx -y get-graphql-schema https://api.studio.thegraph.com/query/9032/votes-goerli/version/latest > schemas/graphschema.graphql",
     "relay": "rescript-relay-compiler",
-    "relay:watch": "rescript-relay-compiler --watch"
+    "relay:watch": "rescript-relay-compiler --watch",
+    "res": "rescript build -with-deps",
+    "res:watch": "rescript build -with-deps -w",
+    "codegen": "yarn graph:build && yarn res && yarn relay"
   },
   "lint-staged": {
     "**/*": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0 && pnpm prettier:write"

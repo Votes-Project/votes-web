@@ -1,11 +1,23 @@
+import React, { useEffect } from "react"
 import { useState } from "react";
 import viteLogo from "/vite.svg";
 import { make as Header } from "./Header.mjs";
+import { GetSettledAuctionsDocument, execute } from './.graphclient/index.js'
 
 function App() {
   const [currentBid] = useState("0");
   const now = new Date();
   const todaysDate = now.toDateString();
+
+  const [data, setData] = React.useState()
+
+  useEffect(() => {
+    execute(GetSettledAuctionsDocument, {}).then((result) => {
+      setData(result?.data)
+    })
+  }, [setData])
+
+  console.log(data)
 
   return (
     <>
