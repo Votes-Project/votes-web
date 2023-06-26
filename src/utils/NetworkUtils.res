@@ -28,15 +28,13 @@ let preloadFromResponse = (part: Js.Json.t, ~preloadAsset: RelayRouter__Types.pr
   }
 }
 
-// The client and server fetch query are currently copied, but one could easily
-// set them up so that they use the same base, and just take whatever config
-// they need.
+//  Boilerplate for Client and Server fetch functions
 let makeFetchQuery = (~preloadAsset) =>
   RelaySSRUtils.makeClientFetchFunction((sink, operation, variables, _cacheConfig, _uploads) => {
     open RelayRouter.NetworkUtils
 
     fetch(
-      "https://api.studio.thegraph.com/query/9032/votes-goerli/version/latest",
+      "", //TODO add answers service
       {
         "method": "POST",
         "headers": Js.Dict.fromArray([("content-type", "application/json")]),
