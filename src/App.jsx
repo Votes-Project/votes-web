@@ -2,6 +2,7 @@ import React, { useEffect } from "react"
 import { useState } from "react";
 import viteLogo from "/vite.svg";
 import { make as Header } from "./Header.mjs";
+import { GetSettledAuctionsDocument, execute } from './.graphclient/index.js'
 
 function App() {
   const [currentBid] = useState("0");
