@@ -4,7 +4,7 @@ open RelayRouter__Internal__DeclarationsSupport
 external unsafe_toPrepareProps: 'any => prepareProps = "%identity"
 
 
-@val external import__Root: (@as(json`"@rescriptModule/Root_route_renderer"`) _, unit) => promise<RouteRenderer.t> = "import"
+@val external import__Test: (@as(json`"@rescriptModule/Test_route_renderer"`) _, unit) => promise<RouteRenderer.t> = "import"
 
 @val external import__FourOhFour: (@as(json`"@rescriptModule/FourOhFour_route_renderer"`) _, unit) => promise<RouteRenderer.t> = "import"
 
@@ -17,8 +17,8 @@ let make = (~prepareDisposeTimeout=5 * 60 * 1000): array<RelayRouter.Types.route
 
   [
       {
-    let routeName = "Root"
-    let loadRouteRenderer = () => import__Root->doLoadRouteRenderer(~routeName, ~loadedRouteRenderers)
+    let routeName = "Test"
+    let loadRouteRenderer = () => import__Test->doLoadRouteRenderer(~routeName, ~loadedRouteRenderers)
     let makePrepareProps = (. 
     ~environment: RescriptRelay.Environment.t,
     ~pathParams: Js.Dict.t<string>,
@@ -27,7 +27,7 @@ let make = (~prepareDisposeTimeout=5 * 60 * 1000): array<RelayRouter.Types.route
   ): prepareProps => {
     ignore(pathParams)
     ignore(queryParams)
-    let prepareProps: Route__Root_route.Internal.prepareProps =   {
+    let prepareProps: Route__Test_route.Internal.prepareProps =   {
       environment: environment,
   
       location: location,
@@ -38,7 +38,7 @@ let make = (~prepareDisposeTimeout=5 * 60 * 1000): array<RelayRouter.Types.route
     {
       path: "/",
       name: routeName,
-      chunk: "Root_route_renderer",
+      chunk: "Test_route_renderer",
       loadRouteRenderer,
       preloadCode: (
         ~environment: RescriptRelay.Environment.t,
@@ -76,7 +76,7 @@ let make = (~prepareDisposeTimeout=5 * 60 * 1000): array<RelayRouter.Types.route
     ignore(pathParams)
     ignore(queryParams)
   
-    "Root:"
+    "Test:"
   
   
   }
