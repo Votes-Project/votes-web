@@ -1,5 +1,3 @@
-// Router.res
-
 let preparedAssetsMap = Js.Dict.empty()
 
 // `cleanup` does not need to run on the client, but would clean up the router after you're done using it, like when doing SSR.

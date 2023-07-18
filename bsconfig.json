@@ -5,10 +5,20 @@
     "version": 4,
     "mode": "automatic"
   },
-  "sources": {
-    "dir": "src",
-    "subdirs": true
-  },
+  "sources": [
+    {
+      "dir": "src",
+      "subdirs": true
+    },
+    {
+      "dir": "api",
+      "subdirs": true
+    },
+    {
+      "dir": "schema",
+      "subdirs": true
+    }
+  ],
   "package-specs": [
     {
       "module": "es6",
@@ -17,12 +27,14 @@
   ],
   "suffix": ".mjs",
   "ppx-flags": [["rescript-relay/ppx", "-uncurried"]],
-  "namespace": true,
-  "bsc-flags": ["-open RescriptStdlib"],
+  "namespace": false,
+  "bsc-flags": ["-open RescriptCore"],
   "bs-dependencies": [
     "@rescript/react",
+    "@rescript/core",
+    "@glennsl/rescript-fetch",
     "rescript-relay",
     "rescript-relay-router",
-    "@gabnor/rescript-stdlib"
+    "resgraph"
   ]
 }

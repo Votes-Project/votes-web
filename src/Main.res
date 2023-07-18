@@ -62,8 +62,8 @@ ReactDOMExperimental.renderConcurrentRootAtElementWithId(
     <RelayRouter.Provider value={Router.routerContext}>
       <React.Suspense fallback={React.string("Loading...")}>
         <RescriptReactErrorBoundary fallback={_ => {<div> {React.string("Error!")} </div>}}>
-          <WagmiConfig config={%raw(`wagmiConfig`)}>
-            <RainbowKitProvider chains={%raw(`chains`)}>
+          <WagmiConfig config={%raw("wagmiConfig")}>
+            <RainbowKitProvider chains={%raw("chains")}>
               <RelayRouter.RouteRenderer
                 // This renders all the time, and when there's a pending navigation (pending via React concurrent mode), pending will be `true`
                 renderPending={pending => <PendingIndicatorBar pending />}
