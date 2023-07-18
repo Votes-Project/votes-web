@@ -1,23 +1,13 @@
 import React, { useEffect } from "react"
 import { useState } from "react";
 import viteLogo from "/vite.svg";
-import { make as Header } from "./Header.mjs";
-import { GetSettledAuctionsDocument, execute } from './.graphclient/index.js'
+import { make as Header } from "./Header";
+import { make as Test } from "./Test";
 
 function App() {
   const [currentBid] = useState("0");
   const now = new Date();
   const todaysDate = now.toDateString();
-
-  const [data, setData] = React.useState()
-
-  useEffect(() => {
-    execute(GetSettledAuctionsDocument, {}).then((result) => {
-      setData(result?.data)
-    })
-  }, [setData])
-
-  console.log(data)
 
   return (
     <>
@@ -33,6 +23,7 @@ function App() {
             </div>
             <div>{/* <chart></chart> */}</div>
           </div>
+
           <main className="min-h-[558px] w-full !self-end bg-background px-[5%] pb-0 pt-[5%] lg:bg-primary lg:pr-20 ">
             <div className="!self-start p-4">
               <div className="flex items-center pt-5">
@@ -119,24 +110,24 @@ function App() {
             </div>
           </div>
           <div>
-            <iframe
+            {/* <iframe
               src="https://www.youtube.com/embed/lOzCA7bZG_k"
               title="YouTube video player"
               frameBorder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               allowFullScreen
-            ></iframe>
+            ></iframe> */}
           </div>
         </section>
         <section>
           <div className="flex flex-col">
-            <iframe
+            {/* <iframe
               src="https://www.youtube.com/embed/oa79nN4gMPs"
               title="YouTube video player"
               frameBorder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               allowFullScreen
-            ></iframe>
+            ></iframe> */}
           </div>
 
           <div className="flex flex-col">

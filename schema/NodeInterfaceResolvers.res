@@ -1,0 +1,31 @@
+/** Fetches an object given its ID.*/
+@gql.field
+let node = async (_: Schema.query, ~id, ~ctx: ResGraphContext.context): option<
+  Interface_node.Resolver.t,
+> => {
+  switch id->ResGraph.idToString->String.split(":") {
+  | [typenameAsString, id] =>
+    switch typenameAsString->Interface_node.ImplementedBy.decode {
+    | None => None
+    | Some(AuctionSettled) =>
+      switch await ctx.dataLoaders.auctionSettled.byId->DataLoader.load(id) {
+      | None => panic("Did not find auction settled with that ID")
+      | Some(auctionSettled) => AuctionSettled(auctionSettled)->Some
+      }
+    }
+  | _ => None
+  }
+}
+
+/** Fetches objects given their IDs. */
+@gql.field
+let nodes = (query: Schema.query, ~ids, ~ctx: ResGraphContext.context) => {
+  ids->Array.map(id => node(query, ~id, ~ctx))
+}
+
+@gql.field
+let id = (node: NodeInterface.node, ~typename: Interface_node.ImplementedBy.t) => {
+  `${typename->Interface_node.ImplementedBy.toString}:${node.id}`
+  ->ResGraph.Utils.Base64.encode
+  ->ResGraph.id
+}
