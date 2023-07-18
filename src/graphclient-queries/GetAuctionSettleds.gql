@@ -1,0 +1,7 @@
+query GetAuctionSettleds($first: Int){
+  auctionSettleds(first: $first) {
+    id
+    winner
+    tokenId
+  }
+}

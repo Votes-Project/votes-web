@@ -1,0 +1,7 @@
+query GetAuctionSettled($id: ID!) {
+  auctionSettled(id: $id) {
+    id
+    winner
+    tokenId
+  }
+}

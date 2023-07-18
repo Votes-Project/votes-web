@@ -1,11 +1,9 @@
 import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
+import react from "@vitejs/plugin-react-refresh";
 import { rescriptRelayVitePlugin } from "rescript-relay-router/RescriptRelayVitePlugin.mjs";
-import { virtualIndex } from "rescript-relay-router/VirtualIndex.mjs";
 
 export default defineConfig({
   plugins: [
-    virtualIndex({ entryClient: "/src/EntryClient.mjs" }),
     react(),
     rescriptRelayVitePlugin({
       autoScaffoldRenderers: true,
@@ -19,6 +17,7 @@ export default defineConfig({
     ],
   },
   build: {
+    watch: false,
     sourcemap: true,
     polyfillDynamicImport: false,
     target: "esnext",
@@ -32,6 +31,12 @@ export default defineConfig({
       },
     },
   },
+  optimizeDeps: {
+    esbuildOptions: {
+      target: "esnext"
+    }
+  },
+
   // Prevent ReScript messages from being lost when we run all things at the same time.
   clearScreen: false,
 });
