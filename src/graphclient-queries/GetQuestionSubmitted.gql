@@ -1,0 +1,6 @@
+query GetQuestionSubmitted($id: ID!) {
+  questionSubmitted(id: $id) {
+    id
+    question
+  }
+}

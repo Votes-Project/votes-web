@@ -5,6 +5,7 @@ import * as Graphql from "graphql";
 import * as Caml_option from "rescript/lib/es6/caml_option.js";
 import * as NodeInterfaceResolvers from "../NodeInterfaceResolvers.mjs";
 import * as AuctionSettledResolvers from "../AuctionSettledResolvers.mjs";
+import * as QuestionSubmittedResolvers from "../QuestionSubmittedResolvers.mjs";
 
 var typeUnwrapper = (function typeUnwrapper(src) { if (src == null) return null; if (typeof src === 'object' && src.hasOwnProperty('_0')) return src['_0']; return src;});
 
@@ -32,8 +33,24 @@ var t_Query = {
   contents: null
 };
 
+var t_QuestionSubmitted = {
+  contents: null
+};
+
+var t_QuestionSubmittedConnection = {
+  contents: null
+};
+
+var t_QuestionSubmittedEdge = {
+  contents: null
+};
+
 function interface_Node_resolveType(v) {
-  return "AuctionSettled";
+  if (v.TAG === "AuctionSettled") {
+    return "AuctionSettled";
+  } else {
+    return "QuestionSubmitted";
+  }
 }
 
 i_Node.contents = new Graphql.GraphQLInterfaceType({
@@ -55,7 +72,7 @@ i_Node.contents = new Graphql.GraphQLInterfaceType({
 
 t_AuctionSettled.contents = new Graphql.GraphQLObjectType({
       name: "AuctionSettled",
-      description: "A single todo item.",
+      description: "GraphClient: A Settled Votes Auction",
       fields: (function () {
           return {
                   id: {
@@ -242,6 +259,138 @@ t_Query.contents = new Graphql.GraphQLObjectType({
                           return NodeInterfaceResolvers.nodes(src$1, args.ids, ctx);
                         }),
                     description: "Fetches objects given their IDs."
+                  },
+                  questionSubmitted: {
+                    type: t_QuestionSubmitted.contents,
+                    args: {
+                      id: {
+                        type: new Graphql.GraphQLNonNull(Graphql.GraphQLString)
+                      }
+                    },
+                    resolve: Caml_option.some(function (src, args, ctx) {
+                          var src$1 = typeUnwrapper(src);
+                          return QuestionSubmittedResolvers.$$Node.questionSubmitted(src$1, args.id, ctx);
+                        })
+                  },
+                  questionSubmitteds: {
+                    type: t_QuestionSubmittedConnection.contents,
+                    args: {
+                      after: {
+                        type: Graphql.GraphQLString
+                      },
+                      before: {
+                        type: Graphql.GraphQLString
+                      },
+                      first: {
+                        type: Graphql.GraphQLInt
+                      },
+                      last: {
+                        type: Graphql.GraphQLInt
+                      },
+                      skip: {
+                        type: Graphql.GraphQLInt
+                      }
+                    },
+                    resolve: Caml_option.some(function (src, args, ctx) {
+                          var src$1 = typeUnwrapper(src);
+                          return QuestionSubmittedResolvers.Connection.questionSubmitteds(src$1, Caml_option.nullable_to_opt(args.skip), Caml_option.nullable_to_opt(args.first), Caml_option.nullable_to_opt(args.after), Caml_option.nullable_to_opt(args.before), Caml_option.nullable_to_opt(args.last));
+                        })
+                  }
+                };
+        }),
+      interfaces: []
+    });
+
+t_QuestionSubmitted.contents = new Graphql.GraphQLObjectType({
+      name: "QuestionSubmitted",
+      fields: (function () {
+          return {
+                  answerNum: {
+                    type: Graphql.GraphQLInt,
+                    resolve: Caml_option.some(function (src, _args, _ctx) {
+                          return typeUnwrapper(src).answerNum;
+                        })
+                  },
+                  answers: {
+                    type: new Graphql.GraphQLList(new Graphql.GraphQLNonNull(Graphql.GraphQLString)),
+                    resolve: Caml_option.some(function (src, _args, _ctx) {
+                          return typeUnwrapper(src).answers;
+                        })
+                  },
+                  id: {
+                    type: new Graphql.GraphQLNonNull(Graphql.GraphQLString),
+                    resolve: Caml_option.some(function (src, _args, _ctx) {
+                          return typeUnwrapper(src).id;
+                        })
+                  },
+                  options: {
+                    type: new Graphql.GraphQLNonNull(new Graphql.GraphQLList(new Graphql.GraphQLNonNull(Graphql.GraphQLString))),
+                    resolve: Caml_option.some(function (src, _args, _ctx) {
+                          return typeUnwrapper(src).options;
+                        }),
+                    description: "Answer options for the question"
+                  },
+                  question: {
+                    type: new Graphql.GraphQLNonNull(Graphql.GraphQLString),
+                    resolve: Caml_option.some(function (src, _args, _ctx) {
+                          return typeUnwrapper(src).question;
+                        }),
+                    description: "Question asked"
+                  },
+                  tokenId: {
+                    type: new Graphql.GraphQLNonNull(Graphql.GraphQLString),
+                    resolve: Caml_option.some(function (src, _args, _ctx) {
+                          return typeUnwrapper(src).tokenId;
+                        }),
+                    description: "ID of the vote token attached to the question. If the community vote is\n  used this will be the zero address"
+                  }
+                };
+        }),
+      interfaces: [i_Node.contents]
+    });
+
+t_QuestionSubmittedConnection.contents = new Graphql.GraphQLObjectType({
+      name: "QuestionSubmittedConnection",
+      description: "A connection to a todo.",
+      fields: (function () {
+          return {
+                  edges: {
+                    type: new Graphql.GraphQLList(t_QuestionSubmittedEdge.contents),
+                    resolve: Caml_option.some(function (src, _args, _ctx) {
+                          return typeUnwrapper(src).edges;
+                        }),
+                    description: "A list of edges."
+                  },
+                  pageInfo: {
+                    type: new Graphql.GraphQLNonNull(t_PageInfo.contents),
+                    resolve: Caml_option.some(function (src, _args, _ctx) {
+                          return typeUnwrapper(src).pageInfo;
+                        }),
+                    description: "Information to aid in pagination."
+                  }
+                };
+        }),
+      interfaces: []
+    });
+
+t_QuestionSubmittedEdge.contents = new Graphql.GraphQLObjectType({
+      name: "QuestionSubmittedEdge",
+      description: "An edge to a submitted Question.",
+      fields: (function () {
+          return {
+                  cursor: {
+                    type: new Graphql.GraphQLNonNull(Graphql.GraphQLString),
+                    resolve: Caml_option.some(function (src, _args, _ctx) {
+                          return typeUnwrapper(src).cursor;
+                        }),
+                    description: "A cursor for use in pagination."
+                  },
+                  node: {
+                    type: t_QuestionSubmitted.contents,
+                    resolve: Caml_option.some(function (src, _args, _ctx) {
+                          return typeUnwrapper(src).node;
+                        }),
+                    description: "The item at the end of the edge."
                   }
                 };
         }),

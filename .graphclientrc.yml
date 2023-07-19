@@ -2,6 +2,6 @@ sources:
   - name: votes-goerli
     handler:
       graphql:
-        endpoint: https://api.studio.thegraph.com/query/9032/votes-goerli/version/latest
+        endpoint: https://api.studio.thegraph.com/query/9032/votes-goerli/v0.1.1
 documents:
   - "./src/graphclient-queries/**/*.{gql,graphql}"

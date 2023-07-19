@@ -3,22 +3,29 @@
 @@warning("-27-34-37")
 
 module Resolver = {
-  @gql.interfaceResolver("node") type t = AuctionSettled(AuctionSettled.auctionSettled)
+  @gql.interfaceResolver("node")
+  type t =
+    | AuctionSettled(AuctionSettled.auctionSettled)
+    | QuestionSubmitted(QuestionSubmitted.questionSubmitted)
 }
 
 module ImplementedBy = {
-  type t = AuctionSettled
+  type t = AuctionSettled | QuestionSubmitted
 
   let decode = (str: string) =>
     switch str {
     | "AuctionSettled" => Some(AuctionSettled)
+    | "QuestionSubmitted" => Some(QuestionSubmitted)
     | _ => None
     }
 
   external toString: t => string = "%identity"
 }
 
-type typeMap<'a> = {@as("AuctionSettled") auctionSettled: 'a}
+type typeMap<'a> = {
+  @as("AuctionSettled") auctionSettled: 'a,
+  @as("QuestionSubmitted") questionSubmitted: 'a,
+}
 
 module TypeMap: {
   type t<'value>
