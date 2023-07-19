@@ -2,6 +2,14 @@
 import viteLogo from "/vite.svg";
 `)
 
+module WagmiConfig = {
+  @react.component @module("wagmi")
+  external make: (~config: 'a, ~children: React.element) => React.element = "WagmiConfig"
+}
+module RainbowKitProvider = {
+  @react.component @module("@rainbow-me/rainbowkit")
+  external make: (~chains: 'a, ~children: React.element) => React.element = "RainbowKitProvider"
+}
 module Query = %relay(`
   query MainQuery{
     auctionSettleds {
