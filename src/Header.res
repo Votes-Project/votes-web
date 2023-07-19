@@ -10,8 +10,50 @@ module ConnectButton = {
 module ReactIcons = {
   module LuMenu = {
     @react.component @module("react-icons/lu")
-    external make: (~onClick: 'a => unit, ~size: string, ~color: string) => React.element = "LuMenu"
+    external make: (~size: string=?, ~color: string=?, ~onClick: unit => unit=?) => React.element =
+      "LuMenu"
   }
+
+  module LuCalendarCheck = {
+    @react.component @module("react-icons/lu")
+    external make: (~size: string=?, ~color: string=?, ~onClick: unit => unit=?) => React.element =
+      "LuCalendarCheck"
+  }
+  module LuCheckCircle = {
+    @react.component @module("react-icons/lu")
+    external make: (~size: string=?, ~color: string=?, ~onClick: unit => unit=?) => React.element =
+      "LuCheckCircle"
+  }
+  module LuHistory = {
+    @react.component @module("react-icons/lu")
+    external make: (~size: string=?, ~color: string=?, ~onClick: unit => unit=?) => React.element =
+      "LuHistory"
+  }
+}
+
+type headerItem = {
+  name: string,
+  link: string,
+  // icon: ReactIcons.t,
+}
+let headerList = {
+  [
+    {
+      name: "Daily Question",
+      link: Routes.Root.Route.makeLink(),
+      // icon: <LuCalendarCheck />
+    },
+    {
+      name: "Votes",
+      link: Routes.Votes.Route.makeLink(),
+      // icon: <LuCheckCircle />
+    },
+    {
+      name: "Questions",
+      link: Routes.Root.Route.makeLink(),
+      // icon: <LuHistory />
+    },
+  ]
 }
 
 @react.component
@@ -34,9 +76,11 @@ let make = () => {
         </div>
       </div>
       <div className="hidden lg:flex lg:visible">
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo["default"]} className="logo react" alt="React logo" />
-        </a>
+        {headerList
+        ->Array.map(({name, link}) => {
+          <RelayRouter.Link to_={link}> {name->React.string} </RelayRouter.Link>
+        })
+        ->React.array}
         <ConnectButton />
       </div>
       <div className={`lg:hidden ${isOpen ? "border-4 border-white rounded-lg" : ""} `}>
@@ -47,10 +91,11 @@ let make = () => {
       className={`${isOpen
           ? "flex flex-col gap-2  w-full justify-center items-center py-5 bg-secondary "
           : "hidden"} color-active`}>
-      <div className="border-primary border-2 p-2 rounded-xl"> {"AFTaf"->React.string} </div>
-      <div className="border-primary border-2 p-2 rounded-xl"> {"Afaft"->React.string} </div>
-      <div className="border-primary border-2 p-2 rounded-xl"> {"Afaft"->React.string} </div>
-      <div className="border-primary border-2 p-2 rounded-xl"> {"Afaft"->React.string} </div>
+      {headerList
+      ->Array.map(({name, link}) => {
+        <RelayRouter.Link to_={link}> {name->React.string} </RelayRouter.Link>
+      })
+      ->React.array}
       <ConnectButton />
     </div>
   </header>
