@@ -1,8 +1,11 @@
+module Votes = %relay.deferredComponent(Votes.make)
+
 let renderer = Routes.Votes.Route.makeRenderer(
-  ~prepare=props => {
+  ~prepareCode=_ => [Votes.preload()],
+  ~prepare=_ => {
     ()
   },
-  ~render=props => {
-    React.null
+  ~render=_ => {
+    <Votes />
   },
 )
