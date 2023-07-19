@@ -1,4 +1,4 @@
-/** A single todo item. */
+/** GraphClient: A Settled Votes Auction */
 @gql.type
 type auctionSettled = {
   ...NodeInterface.node,

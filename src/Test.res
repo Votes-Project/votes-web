@@ -8,6 +8,13 @@ module Query = %relay(`
           }
       }
     }
+    questionSubmitteds {
+      edges {
+        node {
+          id
+        }
+      }
+    }
   }
 `)
 

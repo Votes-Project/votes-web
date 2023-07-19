@@ -14,8 +14,18 @@ module Types = {
   and response_auctionSettleds = {
     edges: option<array<option<response_auctionSettleds_edges>>>,
   }
+  and response_questionSubmitteds_edges_node = {
+    @live id: string,
+  }
+  and response_questionSubmitteds_edges = {
+    node: option<response_questionSubmitteds_edges_node>,
+  }
+  and response_questionSubmitteds = {
+    edges: option<array<option<response_questionSubmitteds_edges>>>,
+  }
   type response = {
     auctionSettleds: option<response_auctionSettleds>,
+    questionSubmitteds: option<response_questionSubmitteds>,
   }
   @live
   type rawResponse = response
@@ -87,7 +97,14 @@ type operationType = RescriptRelay.queryNode<relayOperationNode>
 
 
 let node: operationType = %raw(json` (function(){
-var v0 = [
+var v0 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "id",
+  "storageKey": null
+},
+v1 = [
   {
     "alias": null,
     "args": null,
@@ -112,13 +129,7 @@ var v0 = [
             "name": "node",
             "plural": false,
             "selections": [
-              {
-                "alias": null,
-                "args": null,
-                "kind": "ScalarField",
-                "name": "id",
-                "storageKey": null
-              },
+              (v0/*: any*/),
               {
                 "alias": null,
                 "args": null,
@@ -126,6 +137,40 @@ var v0 = [
                 "name": "tokenId",
                 "storageKey": null
               }
+            ],
+            "storageKey": null
+          }
+        ],
+        "storageKey": null
+      }
+    ],
+    "storageKey": null
+  },
+  {
+    "alias": null,
+    "args": null,
+    "concreteType": "QuestionSubmittedConnection",
+    "kind": "LinkedField",
+    "name": "questionSubmitteds",
+    "plural": false,
+    "selections": [
+      {
+        "alias": null,
+        "args": null,
+        "concreteType": "QuestionSubmittedEdge",
+        "kind": "LinkedField",
+        "name": "edges",
+        "plural": true,
+        "selections": [
+          {
+            "alias": null,
+            "args": null,
+            "concreteType": "QuestionSubmitted",
+            "kind": "LinkedField",
+            "name": "node",
+            "plural": false,
+            "selections": [
+              (v0/*: any*/)
             ],
             "storageKey": null
           }
@@ -142,7 +187,7 @@ return {
     "kind": "Fragment",
     "metadata": null,
     "name": "TestQuery",
-    "selections": (v0/*: any*/),
+    "selections": (v1/*: any*/),
     "type": "Query",
     "abstractKey": null
   },
@@ -151,15 +196,15 @@ return {
     "argumentDefinitions": [],
     "kind": "Operation",
     "name": "TestQuery",
-    "selections": (v0/*: any*/)
+    "selections": (v1/*: any*/)
   },
   "params": {
-    "cacheID": "62653fa3ea614ca4e552197849504606",
+    "cacheID": "0e64ca49cf72130d790a245e4bc85936",
     "id": null,
     "metadata": {},
     "name": "TestQuery",
     "operationKind": "query",
-    "text": "query TestQuery {\n  auctionSettleds {\n    edges {\n      node {\n        id\n        tokenId\n      }\n    }\n  }\n}\n"
+    "text": "query TestQuery {\n  auctionSettleds {\n    edges {\n      node {\n        id\n        tokenId\n      }\n    }\n  }\n  questionSubmitteds {\n    edges {\n      node {\n        id\n      }\n    }\n  }\n}\n"
   }
 };
 })() `)

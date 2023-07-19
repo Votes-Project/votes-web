@@ -1,0 +1,6 @@
+query GetQuestionSubmitteds($first: Int){
+  questionSubmitteds(first: $first) {
+    id
+    question
+  }
+}

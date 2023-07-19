@@ -6,10 +6,14 @@ import * as Core__Option from "@rescript/core/src/Core__Option.mjs";
 var Resolver = {};
 
 function decode(str) {
-  if (str === "AuctionSettled") {
-    return "AuctionSettled";
+  switch (str) {
+    case "AuctionSettled" :
+        return "AuctionSettled";
+    case "QuestionSubmitted" :
+        return "QuestionSubmitted";
+    default:
+      return ;
   }
-  
 }
 
 var ImplementedBy = {

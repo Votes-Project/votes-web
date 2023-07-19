@@ -1,7 +1,7 @@
 type t = {byId: DataLoader.t<string, option<AuctionSettled.auctionSettled>>}
 
 type data = {auctionSettled: AuctionSettled.auctionSettled}
-@module("/../.graphclient/index.js") @val
+@module("../.graphclient/index.js") @val
 external document: GraphClient.document<GraphClient.result<data>> = "GetAuctionSettledDocument"
 
 let make = () => {
