@@ -1,7 +1,7 @@
 open AuctionSettled
 module Node = {
   type data = {auctionSettled: auctionSettled}
-  @module("../../.graphclient/index.js") @val
+  @module("../.graphclient/index.js") @val
   external document: GraphClient.document<GraphClient.result<data>> = "GetAuctionSettledDocument"
 
   @gql.field
@@ -17,7 +17,7 @@ module Node = {
 
 module Connection = {
   type data = {auctionSettleds: array<auctionSettled>}
-  @module("../../.graphclient/index.js") @val
+  @module("../.graphclient/index.js") @val
   external document: GraphClient.document<GraphClient.result<data>> = "GetAuctionSettledsDocument"
 
   @gql.field
