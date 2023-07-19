@@ -27,8 +27,15 @@ node_modules
 lib
 
 *.mjs
-.yarn/cache
-.yarn/unplugged
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
+
 **/__generated__/**
 !/schema/__generated__/*
 !/src/__generated__/*
