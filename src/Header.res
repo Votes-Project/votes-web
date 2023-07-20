@@ -4,55 +4,24 @@
 
 module ConnectButton = {
   @react.component @module("@rainbow-me/rainbowkit")
-  external make: unit => React.element = "ConnectButton"
-}
-
-module ReactIcons = {
-  module LuMenu = {
-    @react.component @module("react-icons/lu")
-    external make: (~size: string=?, ~color: string=?, ~onClick: unit => unit=?) => React.element =
-      "LuMenu"
-  }
-
-  module LuCalendarCheck = {
-    @react.component @module("react-icons/lu")
-    external make: (~size: string=?, ~color: string=?, ~onClick: unit => unit=?) => React.element =
-      "LuCalendarCheck"
-  }
-  module LuCheckCircle = {
-    @react.component @module("react-icons/lu")
-    external make: (~size: string=?, ~color: string=?, ~onClick: unit => unit=?) => React.element =
-      "LuCheckCircle"
-  }
-  module LuHistory = {
-    @react.component @module("react-icons/lu")
-    external make: (~size: string=?, ~color: string=?, ~onClick: unit => unit=?) => React.element =
-      "LuHistory"
-  }
+  external make: (~className: string=?) => React.element = "ConnectButton"
 }
 
 type headerItem = {
   name: string,
   link: string,
-  // icon: ReactIcons.t,
+  icon: ReactIcons.t,
 }
-let headerList = {
+let links = {
+  open ReactIcons
   [
-    {
-      name: "Daily Question",
-      link: Routes.Root.Route.makeLink(),
-      // icon: <LuCalendarCheck />
-    },
-    {
-      name: "Votes",
-      link: Routes.Votes.Route.makeLink(),
-      // icon: <LuCheckCircle />
-    },
-    {
-      name: "Questions",
-      link: Routes.Root.Route.makeLink(),
-      // icon: <LuHistory />
-    },
+    (
+      "Daily Question",
+      Routes.Main.DailyQuestion.Route.makeLink(~question=true),
+      <LuCalendarCheck size="1.5rem" />,
+    ),
+    ("Votes", Routes.Votes.Route.makeLink(), <LuCheckCircle size="1.5rem" />),
+    ("Questions", Routes.Main.Route.makeLink(), <LuHistory size="1.5rem" />),
   ]
 }
 
@@ -65,38 +34,55 @@ let make = () => {
   }
 
   <header>
-    <nav className="bg-primary flex w-full justify-between px-2 py-5">
-      <div className="flex gap-3 ">
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo["default"]} className="logo" alt="Vite logo" />
+    <nav className="bg-background-light flex w-full justify-between px-4 py-5">
+      <div className="flex gap-3 justify-center items-center ">
+        <a
+          href="https://vitejs.dev"
+          target="_blank"
+          className="relative z-2 px-2 py-0 transition-all">
+          <img src={viteLogo["default"]} className="w-16 h-16  lg:w-20 lg:h-20" alt="Vite logo" />
         </a>
         <div
-          className="px-3 bg-white rounded-lg flex justify-center items-center font font-semibold">
-          <p> {"🦉 1000"->React.string} </p>
+          className=" bg-active text-white hover:bg-white hover:text-active hover:cursor-pointer rounded-xl flex items-center font-semibold mr-4 px-3 h-10 justify-center gap-5 transition-all">
+          <p className="text-2xl"> {"🦉"->React.string} </p>
+          <p className="text-lg"> {"1000"->React.string} </p>
         </div>
       </div>
-      <div className="hidden lg:flex lg:visible">
-        {headerList
-        ->Array.map(({name, link}) => {
-          <RelayRouter.Link to_={link}> {name->React.string} </RelayRouter.Link>
+      <div className="hidden lg:flex lg:visible gap-4 justify-center items-center">
+        {links
+        ->Array.map(((name, link, icon)) => {
+          <RelayRouter.Link
+            to_={link}
+            className="border border-active  hover:bg-active hover:text-white rounded-xl flex items-center font-semibold mr-4 px-3 h-10 justify-center gap-2 transition-all">
+            {icon}
+            {name->React.string}
+          </RelayRouter.Link>
         })
         ->React.array}
         <ConnectButton />
       </div>
-      <div className={`lg:hidden ${isOpen ? "border-4 border-white rounded-lg" : ""} `}>
-        <ReactIcons.LuMenu color="white" size={"4rem"} onClick={_ => handleMenu()} />
+      <div
+        className={`lg:hidden ${isOpen
+            ? "border-2 border-active rounded-lg"
+            : ""}  flex justify-center items-center m-1`}>
+        <ReactIcons.LuMenu color="#FB8A61" size={"3rem"} onClick={_ => handleMenu()} />
       </div>
     </nav>
     <div
       className={`${isOpen
-          ? "flex flex-col gap-2  w-full justify-center items-center py-5 bg-secondary "
-          : "hidden"} color-active`}>
-      {headerList
-      ->Array.map(({name, link}) => {
-        <RelayRouter.Link to_={link}> {name->React.string} </RelayRouter.Link>
+          ? "flex flex-col gap-4 w-full justify-center items-center py-10 bg-active h-full "
+          : "h-0"} color-active transition-all `}>
+      {links
+      ->Array.map(((name, link, icon)) => {
+        <RelayRouter.Link
+          to_={link}
+          className="justify-center items-center w-[262px] flex px-2 py-3 border border-primary rounded-xl font-bold text-white text-xl gap-2 transition-all">
+          {icon}
+          {name->React.string}
+        </RelayRouter.Link>
       })
       ->React.array}
-      <ConnectButton />
+      <ConnectButton className={`${isOpen ? "" : "hidden"}`} />
     </div>
   </header>
 }
