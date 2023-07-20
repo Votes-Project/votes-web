@@ -1,78 +1,181 @@
-type history
-
-@val
-external history: history = "window.history"
-
-@set
-external setScrollRestoration: (history, [#manual | #auto]) => unit = "scrollRestoration"
-
-if !RelaySSRUtils.ssr {
-  history->setScrollRestoration(#manual)
-}
-
 %%raw(`
-import "./index.css";
-import "@rainbow-me/rainbowkit/styles.css";
-
-import { getDefaultWallets } from "@rainbow-me/rainbowkit";
-import { configureChains, createConfig } from "wagmi";
-import { optimism, goerli } from "wagmi/chains";
-import { alchemyProvider } from "wagmi/providers/alchemy";
-import { publicProvider } from "wagmi/providers/public";
-
-const { chains, publicClient } = configureChains(
-  [import.meta.env.NODE_ENV === "production" ? optimism : goerli],
-  [
-    alchemyProvider({ apiKey: import.meta.env.VITE_PRIVATE_ALCHEMY_ID }),
-
-    publicProvider(),
-  ]
-);
-
-
-
-const { connectors } = getDefaultWallets({
-  appName: "My RainbowKit App",
-  projectId: import.meta.env.VITE_WALLETCONNECT_PROJECT_ID,
-  chains,
-});
-
-const wagmiConfig = createConfig({
-  autoConnect: true,
-  connectors,
-  publicClient,
-});
-
+import viteLogo from "/vite.svg";
 `)
 
-module WagmiConfig = {
-  @react.component @module("wagmi")
-  external make: (~config: 'a, ~children: React.element) => React.element = "WagmiConfig"
-}
-module RainbowKitProvider = {
-  @react.component @module("@rainbow-me/rainbowkit")
-  external make: (~chains: 'a, ~children: React.element) => React.element = "RainbowKitProvider"
-}
-module App = {
-  @react.component @module("./App.jsx") external make: unit => React.element = "default"
-}
+module Query = %relay(`
+  query MainQuery{
+    auctionSettleds {
+      edges {
+        node {
+          id
+          tokenId
+          }
+      }
+    }
+    questionSubmitteds {
+      edges {
+        node {
+          id
+        }
+      }
+    }
+  }
+`)
 
-ReactDOMExperimental.renderConcurrentRootAtElementWithId(
-  <RescriptRelay.Context.Provider environment={RelayEnv.environment}>
-    <RelayRouter.Provider value={Router.routerContext}>
-      <React.Suspense fallback={React.string("Loading...")}>
-        <RescriptReactErrorBoundary fallback={_ => {<div> {React.string("Error!")} </div>}}>
-          <WagmiConfig config={%raw("wagmiConfig")}>
-            <RainbowKitProvider chains={%raw("chains")}>
-              <RelayRouter.RouteRenderer
-                // This renders all the time, and when there's a pending navigation (pending via React concurrent mode), pending will be `true`
-                renderPending={pending => <PendingIndicatorBar pending />}
+@react.component @relay.deferredComponent
+let make = (~queryRef) => {
+  let data = Query.usePreloaded(~queryRef)
+  let (currentBid, _) = React.useState(_ => "0")
+  let todaysDate = Date.make()->Date.toDateString
+
+  <>
+    <div className="wrapper flex flex-col">
+      <Header />
+      <div className="flex flex-col bg-primary lg:flex-row">
+        <div className="mx-[10%) mt-8 w-[80%] self-end md:mx-[15%] md:w-[70%] lg:w-full">
+          <div className="relative h-0 w-full pt-[100%]">
+            <img
+              className="absolute left-0 top-0 h-auto w-full align-middle " src={%raw("viteLogo")}
+            />
+          </div>
+          <div />
+        </div>
+        <main
+          className="min-h-[558px] w-full !self-end bg-background px-[5%] pb-0 pt-[5%] lg:bg-primary lg:pr-20 ">
+          <div className="!self-start p-4">
+            <div className="flex items-center pt-5">
+              <div className="flex gap-2">
+                <button
+                  className="flex h-8 w-8 items-center justify-center rounded-full bg-primary ">
+                  {"⬅️"->React.string}
+                </button>
+                <button
+                  className="flex h-8 w-8 items-center justify-center rounded-full bg-primary ">
+                  {"➡️"->React.string}
+                </button>
+                <p> {todaysDate->React.string} </p>
+              </div>
+            </div>
+            <div />
+            <h1 className="font-['Fugaz One'] py-9 text-6xl font-bold lg:text-7xl">
+              {"VOTE 50"->React.string}
+            </h1>
+            <div className="flex flex-col ">
+              <div className="flex items-center justify-between">
+                <p> {"Current Bid"->React.string} </p>
+                <p>
+                  {currentBid->React.string}
+                  {"Ξ"->React.string}
+                </p>
+              </div>
+              <div className="flex items-center justify-between">
+                <p> {"Time Left"->React.string} </p>
+                <p> {"1h 20m 30s"->React.string} </p>
+              </div>
+            </div>
+            <div className="flex w-full items-center justify-around gap-2 py-10">
+              <input
+                className="flex-1 rounded-2xl px-2 py-4 placeholder:text-lg placeholder:font-bold focus:border-sky-500 focus:outline-none focus:ring-1"
+                placeholder="Ξ 0.1 or more"
+                type_="number"
               />
-            </RainbowKitProvider>
-          </WagmiConfig>
-        </RescriptReactErrorBoundary>
-      </React.Suspense>
-    </RelayRouter.Provider>
-  </RescriptRelay.Context.Provider>,
-  "root",
-)
+              <button className="flex-2 rounded-lg bg-orange-500 px-3 py-2 text-center text-white">
+                {"Place Bid"->React.string}
+              </button>
+            </div>
+            <div className="flex flex-col justify-between">
+              <div className="flex items-center justify-between">
+                <p> {"vict0xr.eth"->React.string} </p>
+                <div className="flex gap-2">
+                  <p> {"0.4 Ξ"->React.string} </p>
+                  <p> {"🔗"->React.string} </p>
+                </div>
+              </div>
+              <div className="my-3 h-0 w-full border border-black" />
+              <div className="flex items-center justify-between">
+                <p> {"chilleeman.eth"->React.string} </p>
+                <div className="flex gap-2">
+                  <p> {"0.2 Ξ"->React.string} </p>
+                  <p> {"🔗"->React.string} </p>
+                </div>
+              </div>
+              <div className="my-3 h-0 w-full border border-black" />
+              <div className="flex items-center justify-between">
+                <p> {"adamstallard.eth"->React.string} </p>
+                <div className="flex gap-2">
+                  <p> {"0.1 Ξ"->React.string} </p>
+                  <p> {"🔗"->React.string} </p>
+                </div>
+              </div>
+              <div className="my-3 h-0 w-full border border-black" />
+            </div>
+            <div className="w-full py-2 text-center">
+              {" View
+              All
+              Bids"->React.string}
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+    {<>
+      <section>
+        <div className="flex flex-col">
+          <div>
+            <h1>
+              <p> {"One Noun, Every Day, Forever."->React.string} </p>
+            </h1>
+            <p>
+              <p>
+                {" Behold, an infinite work of art! Nouns is a community-owned
+                  brand that makes a positive impact by funding ideas and
+                  fostering collaboration. From collectors and technologists, to
+                  non-profits and brands, Nouns is for everyone."->React.string}
+              </p>
+            </p>
+          </div>
+        </div>
+        <div>
+          // {
+          //   /* <iframe
+          //     src="https://www.youtube.com/embed/lOzCA7bZG_k"
+          //     title="YouTube video player"
+          //     frameBorder="0"
+          //     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          //     allowFullScreen
+          //   ></iframe> */
+          // }
+        </div>
+      </section>
+      <section>
+        <div className="flex flex-col">
+          // {
+          //   /* <iframe
+          //     src="https://www.youtube.com/embed/oa79nN4gMPs"
+          //     title="YouTube video player"
+          //     frameBorder="0"
+          //     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          //     allowFullScreen
+          //   ></iframe> */
+          // }
+        </div>
+        <div className="flex flex-col">
+          <div>
+            <h1>
+              <p> {"Build With Nouns. Get Funded."->React.string} </p>
+            </h1>
+            <p>
+              <p>
+                {"There’s a way for everyone to get involved with Nouns. From
+                  whimsical endeavors like naming a frog, to ambitious projects
+                  like constructing a giant float for the Rose Parade, or even
+                  crypto infrastructure like. Nouns funds projects of all
+                  sizes and domains."->React.string}
+              </p>
+            </p>
+          </div>
+        </div>
+      </section>
+    </>}
+  </>
+}
