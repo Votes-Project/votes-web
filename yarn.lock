@@ -857,6 +857,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@emotion/is-prop-valid@npm:^0.8.2":
+  version: 0.8.8
+  resolution: "@emotion/is-prop-valid@npm:0.8.8"
+  dependencies:
+    "@emotion/memoize": 0.7.4
+  checksum: bb7ec6d48c572c540e24e47cc94fc2f8dec2d6a342ae97bc9c8b6388d9b8d283862672172a1bb62d335c02662afe6291e10c71e9b8642664a8b43416cdceffac
+  languageName: node
+  linkType: hard
+
+"@emotion/memoize@npm:0.7.4":
+  version: 0.7.4
+  resolution: "@emotion/memoize@npm:0.7.4"
+  checksum: 4e3920d4ec95995657a37beb43d3f4b7d89fed6caa2b173a4c04d10482d089d5c3ea50bbc96618d918b020f26ed6e9c4026bbd45433566576c1f7b056c3271dc
+  languageName: node
+  linkType: hard
+
 "@envelop/core@npm:^3.0.4, @envelop/core@npm:^3.0.6":
   version: 3.0.6
   resolution: "@envelop/core@npm:3.0.6"
@@ -2560,6 +2576,52 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-aria/ssr@npm:^3.6.0":
+  version: 3.7.0
+  resolution: "@react-aria/ssr@npm:3.7.0"
+  dependencies:
+    "@swc/helpers": ^0.5.0
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: cf4af47feb47c72ad1a5987b6ca341cba44687fd9bea6155e672c44dcb575e6801c3aaf4a036bb36da9e72f509eaf99c35c993a121017a8c0b0569125b27edfe
+  languageName: node
+  linkType: hard
+
+"@react-aria/utils@npm:3.17.0":
+  version: 3.17.0
+  resolution: "@react-aria/utils@npm:3.17.0"
+  dependencies:
+    "@react-aria/ssr": ^3.6.0
+    "@react-stately/utils": ^3.6.0
+    "@react-types/shared": ^3.18.1
+    "@swc/helpers": ^0.4.14
+    clsx: ^1.1.1
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: a7c9824441a9879ad650acac434c53ff903f2584bd67952f9002d35671497332e8c0a09e521085b60d91f95035fd2f99191dc52a08aea8a47136715f0fdf1c66
+  languageName: node
+  linkType: hard
+
+"@react-stately/utils@npm:^3.6.0":
+  version: 3.7.0
+  resolution: "@react-stately/utils@npm:3.7.0"
+  dependencies:
+    "@swc/helpers": ^0.5.0
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: 91feaae770d38a644b9ba3f633afb0560a51fddd153f75c9e486fca86409cb1b6917366859e59d0f62eab3440e530af97452949671e0f90a8a7e5638ba15b263
+  languageName: node
+  linkType: hard
+
+"@react-types/shared@npm:^3.18.1":
+  version: 3.18.1
+  resolution: "@react-types/shared@npm:3.18.1"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: 298822d1cca26b5da1bdf53a57d26d5619f3af816db3fdecdc8b99a3a305ca8ee352347ca43f426a5d79045b08cf32c00c6b083ad4a1002abf673de9dd4a9bb5
+  languageName: node
+  linkType: hard
+
 "@remix-run/web-blob@npm:^3.0.4":
   version: 3.0.4
   resolution: "@remix-run/web-blob@npm:3.0.4"
@@ -2885,6 +2947,24 @@ __metadata:
     "@stablelib/random": ^1.0.2
     "@stablelib/wipe": ^1.0.1
   checksum: f8537066b542b6770c1b5b2ae5ad0688d1b986e4bf818067c152c123a5471531987bbf024224f75f387f481ccc5b628e391e49e92102b8b1a3e2d449d6105402
+  languageName: node
+  linkType: hard
+
+"@swc/helpers@npm:^0.4.14":
+  version: 0.4.14
+  resolution: "@swc/helpers@npm:0.4.14"
+  dependencies:
+    tslib: ^2.4.0
+  checksum: 273fd3f3fc461a92f3790cc551ea054745c6d6959afbe1232e6d7aa1c722bbc114d308aab96bef5c78fc0303c85c7b472ef00e2253251cc89737f3b1af56e5a5
+  languageName: node
+  linkType: hard
+
+"@swc/helpers@npm:^0.5.0":
+  version: 0.5.1
+  resolution: "@swc/helpers@npm:0.5.1"
+  dependencies:
+    tslib: ^2.4.0
+  checksum: 71e0e27234590435e4c62b97ef5e796f88e786841a38c7116a5e27a3eafa7b9ead7cdec5249b32165902076de78446945311c973e59bddf77c1e24f33a8f272a
   languageName: node
   linkType: hard
 
@@ -4518,7 +4598,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"clsx@npm:^1.1.0":
+"clsx@npm:^1.1.0, clsx@npm:^1.1.1":
   version: 1.2.1
   resolution: "clsx@npm:1.2.1"
   checksum: 30befca8019b2eb7dbad38cff6266cf543091dae2825c856a62a8ccf2c3ab9c2907c4d12b288b73101196767f66812365400a227581484a05f968b0307cfaf12
@@ -5665,6 +5745,27 @@ __metadata:
   version: 4.2.0
   resolution: "fraction.js@npm:4.2.0"
   checksum: 8c76a6e21dedea87109d6171a0ac77afa14205794a565d71cb10d2925f629a3922da61bf45ea52dbc30bce4d8636dc0a27213a88cbd600eab047d82f9a3a94c5
+  languageName: node
+  linkType: hard
+
+"framer-motion@npm:^10.13.0":
+  version: 10.13.0
+  resolution: "framer-motion@npm:10.13.0"
+  dependencies:
+    "@emotion/is-prop-valid": ^0.8.2
+    tslib: ^2.4.0
+  peerDependencies:
+    react: ^18.0.0
+    react-dom: ^18.0.0
+  dependenciesMeta:
+    "@emotion/is-prop-valid":
+      optional: true
+  peerDependenciesMeta:
+    react:
+      optional: true
+    react-dom:
+      optional: true
+  checksum: b84b78b6994bd77814a3fa0dfb4f266b74221369d9e82e350f8c8b2ec952d683597a373fe49609645631af020de42a6ec041bac60a022e396ff0be70c4233d87
   languageName: node
   linkType: hard
 
@@ -8346,6 +8447,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-modal-sheet@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "react-modal-sheet@npm:2.0.0"
+  dependencies:
+    "@react-aria/utils": 3.17.0
+  peerDependencies:
+    framer-motion: ">=6"
+    react: ">=16"
+  checksum: a1757548e03cd3c02c4142e049d0f1dedf593f7d20c204fa946261bde6fef01f82456a30a3ec26422dce8465ad77f086a6f3995d527ac00627590e52448eeb35
+  languageName: node
+  linkType: hard
+
 "react-native-fs@npm:2.20.0":
   version: 2.20.0
   resolution: "react-native-fs@npm:2.20.0"
@@ -9969,6 +10082,7 @@ __metadata:
     "@vitejs/plugin-react-refresh": 1.3.3
     autoprefixer: ^10.4.14
     eslint: ^8.38.0
+    framer-motion: ^10.13.0
     graphql: ^16.7.1
     graphql-yoga: ^4.0.3
     npm-run-all: ^4.1.5
@@ -9978,6 +10092,7 @@ __metadata:
     react: ^18.2.0
     react-dom: ^18.2.0
     react-icons: ^4.10.1
+    react-modal-sheet: ^2.0.0
     react-relay: ^15.0.0
     relay-runtime: ^15.0.0
     rescript: 11.0.0-beta.1
