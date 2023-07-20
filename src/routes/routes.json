@@ -1,7 +1,12 @@
 [
   {
     "path": "/",
-    "name": "Test",
+    "name": "Main",
+    "children": []
+  },
+  {
+    "path": "/votes",
+    "name": "Votes",
     "children": []
   },
   {

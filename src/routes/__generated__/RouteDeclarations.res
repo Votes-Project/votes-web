@@ -4,12 +4,14 @@ open RelayRouter__Internal__DeclarationsSupport
 external unsafe_toPrepareProps: 'any => prepareProps = "%identity"
 
 
-@val external import__Test: (@as(json`"@rescriptModule/Test_route_renderer"`) _, unit) => promise<RouteRenderer.t> = "import"
+@val external import__Main: (@as(json`"@rescriptModule/Main_route_renderer"`) _, unit) => promise<RouteRenderer.t> = "import"
+
+@val external import__Votes: (@as(json`"@rescriptModule/Votes_route_renderer"`) _, unit) => promise<RouteRenderer.t> = "import"
 
 @val external import__FourOhFour: (@as(json`"@rescriptModule/FourOhFour_route_renderer"`) _, unit) => promise<RouteRenderer.t> = "import"
 
 let loadedRouteRenderers: Belt.HashMap.String.t<loadedRouteRenderer> = Belt.HashMap.String.make(
-  ~hintSize=2,
+  ~hintSize=3,
 )
 
 let make = (~prepareDisposeTimeout=5 * 60 * 1000): array<RelayRouter.Types.route> => {
@@ -17,8 +19,8 @@ let make = (~prepareDisposeTimeout=5 * 60 * 1000): array<RelayRouter.Types.route
 
   [
       {
-    let routeName = "Test"
-    let loadRouteRenderer = () => import__Test->doLoadRouteRenderer(~routeName, ~loadedRouteRenderers)
+    let routeName = "Main"
+    let loadRouteRenderer = () => import__Main->doLoadRouteRenderer(~routeName, ~loadedRouteRenderers)
     let makePrepareProps = (. 
     ~environment: RescriptRelay.Environment.t,
     ~pathParams: Js.Dict.t<string>,
@@ -27,7 +29,7 @@ let make = (~prepareDisposeTimeout=5 * 60 * 1000): array<RelayRouter.Types.route
   ): prepareProps => {
     ignore(pathParams)
     ignore(queryParams)
-    let prepareProps: Route__Test_route.Internal.prepareProps =   {
+    let prepareProps: Route__Main_route.Internal.prepareProps =   {
       environment: environment,
   
       location: location,
@@ -38,7 +40,7 @@ let make = (~prepareDisposeTimeout=5 * 60 * 1000): array<RelayRouter.Types.route
     {
       path: "/",
       name: routeName,
-      chunk: "Test_route_renderer",
+      chunk: "Main_route_renderer",
       loadRouteRenderer,
       preloadCode: (
         ~environment: RescriptRelay.Environment.t,
@@ -76,7 +78,79 @@ let make = (~prepareDisposeTimeout=5 * 60 * 1000): array<RelayRouter.Types.route
     ignore(pathParams)
     ignore(queryParams)
   
-    "Test:"
+    "Main:"
+  
+  
+  }
+  
+  ,
+        ~routeName,
+        ~intent
+      ),
+      children: [],
+    }
+  },
+  {
+    let routeName = "Votes"
+    let loadRouteRenderer = () => import__Votes->doLoadRouteRenderer(~routeName, ~loadedRouteRenderers)
+    let makePrepareProps = (. 
+    ~environment: RescriptRelay.Environment.t,
+    ~pathParams: Js.Dict.t<string>,
+    ~queryParams: RelayRouter.Bindings.QueryParams.t,
+    ~location: RelayRouter.History.location,
+  ): prepareProps => {
+    ignore(pathParams)
+    ignore(queryParams)
+    let prepareProps: Route__Votes_route.Internal.prepareProps =   {
+      environment: environment,
+  
+      location: location,
+    }
+    prepareProps->unsafe_toPrepareProps
+  }
+  
+    {
+      path: "/votes",
+      name: routeName,
+      chunk: "Votes_route_renderer",
+      loadRouteRenderer,
+      preloadCode: (
+        ~environment: RescriptRelay.Environment.t,
+        ~pathParams: Js.Dict.t<string>,
+        ~queryParams: RelayRouter.Bindings.QueryParams.t,
+        ~location: RelayRouter.History.location,
+      ) => preloadCode(
+        ~loadedRouteRenderers,
+        ~routeName,
+        ~loadRouteRenderer,
+        ~environment,
+        ~location,
+        ~makePrepareProps,
+        ~pathParams,
+        ~queryParams,
+      ),
+      prepare: (
+        ~environment: RescriptRelay.Environment.t,
+        ~pathParams: Js.Dict.t<string>,
+        ~queryParams: RelayRouter.Bindings.QueryParams.t,
+        ~location: RelayRouter.History.location,
+        ~intent: RelayRouter.Types.prepareIntent,
+      ) => prepareRoute(
+        ~environment,
+        ~pathParams,
+        ~queryParams,
+        ~location,
+        ~getPrepared,
+        ~loadRouteRenderer,
+        ~makePrepareProps,
+        ~makeRouteKey=(
+    ~pathParams: Js.Dict.t<string>,
+    ~queryParams: RelayRouter.Bindings.QueryParams.t
+  ): string => {
+    ignore(pathParams)
+    ignore(queryParams)
+  
+    "Votes:"
   
   
   }
