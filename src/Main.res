@@ -23,7 +23,7 @@ module Query = %relay(`
 `)
 
 @react.component @relay.deferredComponent
-let make = (~queryRef) => {
+let make = (~queryRef, ~children) => {
   let data = Query.usePreloaded(~queryRef)
   let (currentBid, _) = React.useState(_ => "0")
   let todaysDate = Date.make()->Date.toDateString
@@ -177,5 +177,6 @@ let make = (~queryRef) => {
         </div>
       </section>
     </>}
+    {children}
   </>
 }
