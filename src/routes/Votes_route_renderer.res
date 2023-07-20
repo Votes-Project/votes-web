@@ -5,5 +5,4 @@ let renderer = Routes.Votes.Route.makeRenderer(
   ~render=props => {
     React.null
   },
-  (),
 )
