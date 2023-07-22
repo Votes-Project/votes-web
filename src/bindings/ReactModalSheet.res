@@ -6,7 +6,7 @@ module Sheet = {
     ~className: string=?,
     ~children: React.element,
     ~isOpen: bool,
-    ~onClose: unit => unit,
+    ~onClose: 'a => unit,
   ) => t = "default"
 
   module Container = {
