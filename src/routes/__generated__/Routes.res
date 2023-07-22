@@ -3,10 +3,17 @@
 
 module Main = {
   module Route = Route__Main_route
+
+  module DailyQuestion = {
+    module Route = Route__Main__DailyQuestion_route
+
+  }
 }
 module Votes = {
   module Route = Route__Votes_route
+
 }
 module FourOhFour = {
   module Route = Route__FourOhFour_route
+
 }
