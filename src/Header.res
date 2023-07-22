@@ -21,7 +21,7 @@ let links = {
       <LuCalendarCheck size="1.5rem" />,
     ),
     ("Votes", Routes.Votes.Route.makeLink(), <LuCheckCircle size="1.5rem" />),
-    ("Questions", Routes.Main.Route.makeLink(), <LuHistory size="1.5rem" />),
+    ("Questions", Routes.Questions.Route.makeLink(), <LuHistory size="1.5rem" />),
   ]
 }
 

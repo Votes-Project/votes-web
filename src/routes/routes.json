@@ -13,6 +13,11 @@
     "children": []
   },
   {
+    "path": "/questions",
+    "name": "Questions",
+    "children": []
+  },
+  {
     "path": "*",
     "name": "FourOhFour"
   }

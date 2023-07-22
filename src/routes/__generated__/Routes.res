@@ -13,6 +13,10 @@ module Votes = {
   module Route = Route__Votes_route
 
 }
+module Questions = {
+  module Route = Route__Questions_route
+
+}
 module FourOhFour = {
   module Route = Route__FourOhFour_route
 
