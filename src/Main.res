@@ -41,7 +41,7 @@ let make = (~queryRef, ~children) => {
           <div />
         </div>
         <main
-          className="min-h-[558px] w-full !self-end bg-light-background px-[5%] pb-0 pt-[5%] lg:bg-background-light lg:pr-20 ">
+          className="min-h-[558px] w-full !self-end bg-background px-[5%] pb-0 pt-[5%] lg:bg-background-light lg:pr-20 ">
           <div className="!self-start p-4">
             <div className="flex items-center pt-5">
               <div className="flex gap-2">
