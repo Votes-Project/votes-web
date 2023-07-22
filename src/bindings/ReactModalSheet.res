@@ -23,6 +23,6 @@ module Sheet = {
   }
   module Backdrop = {
     @react.component @module("react-modal-sheet") @scope("default")
-    external make: (~className: string=?) => t = "Backdrop"
+    external make: (~className: string=?, ~onTap: ReactEvent.Mouse.t => unit) => t = "Backdrop"
   }
 }
