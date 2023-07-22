@@ -52,6 +52,7 @@ let make = () => {
         {links
         ->Array.map(((name, link, icon)) => {
           <RelayRouter.Link
+            key={name}
             to_={link}
             className="border border-active  hover:bg-active hover:text-white rounded-xl flex items-center font-semibold mr-4 px-3 h-10 justify-center gap-2 transition-all">
             {icon}
@@ -70,19 +71,24 @@ let make = () => {
     </nav>
     <div
       className={`${isOpen
-          ? "flex flex-col gap-4 w-full justify-center items-center py-10 bg-active h-full "
-          : "h-0"} color-active transition-all `}>
+          ? "py-10 bg-active w-full flex flex-col h-96"
+          : "max-h-0"} color-active transition-all justify-around items-center flex lg:max-h-0 lg:p-0 `}>
       {links
       ->Array.map(((name, link, icon)) => {
         <RelayRouter.Link
+          key={name}
           to_={link}
-          className="justify-center items-center w-[262px] flex px-2 py-3 border border-primary rounded-xl font-bold text-white text-xl gap-2 transition-all">
+          className={`lg:hidden justify-center items-center w-[262px] flex px-2 py-3 border border-primary rounded-xl font-bold text-white text-xl gap-2 transition-all ${isOpen
+              ? ""
+              : "hidden"}`}>
           {icon}
           {name->React.string}
         </RelayRouter.Link>
       })
       ->React.array}
-      <ConnectButton className={`${isOpen ? "" : "hidden"}`} />
+      <div className={`${isOpen ? "" : "hidden"} lg:hidden`}>
+        <ConnectButton />
+      </div>
     </div>
   </header>
 }
