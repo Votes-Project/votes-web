@@ -13,7 +13,7 @@ external unsafe_toPrepareProps: 'any => prepareProps = "%identity"
 @val external import__FourOhFour: (@as(json`"@rescriptModule/FourOhFour_route_renderer"`) _, unit) => promise<RouteRenderer.t> = "import"
 
 let loadedRouteRenderers: Belt.HashMap.String.t<loadedRouteRenderer> = Belt.HashMap.String.make(
-  ~hintSize=2,
+  ~hintSize=4,
 )
 
 let make = (~prepareDisposeTimeout=5 * 60 * 1000): array<RelayRouter.Types.route> => {
