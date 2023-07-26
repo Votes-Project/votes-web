@@ -16,6 +16,7 @@
     "resgraph": "resgraph build",
     "relay:watch": "rescript-relay-compiler --watch",
     "res:watch": "rescript build -with-deps -w",
+    "format": "rescript-relay-cli format-all-graphql",
     "resgraph:watch": "resgraph watch",
     "codegen": "run-s build:graph relay res resgraph"
   },

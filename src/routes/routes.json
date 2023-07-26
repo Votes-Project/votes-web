@@ -2,10 +2,13 @@
   {
     "path": "/",
     "name": "Main",
-    "children": [{
-      "path":"?question=bool",
-      "name":"DailyQuestion"
-    }]
+    "children": [
+      {
+        "path": "?question=bool",
+        "name": "DailyQuestion"
+      }
+      // { "path": "", "name": "Auction" }
+    ]
   },
   {
     "path": "/votes",

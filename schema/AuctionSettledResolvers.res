@@ -20,15 +20,30 @@ module Connection = {
   @module("../.graphclient/index.js") @val
   external document: GraphClient.document<GraphClient.result<data>> = "GetAuctionSettledsDocument"
 
+  @gql.enum
+  type orderBy_AuctionSettleds = | @as("id") ID | @as("tokenId") TokenId | @as("price") Winner
+
   @gql.field
-  let auctionSettleds = async (_: Schema.query, ~skip, ~first, ~after, ~before, ~last): option<
-    auctionSettledConnection,
-  > => {
+  let auctionSettleds = async (
+    _: Schema.query,
+    ~skip,
+    ~orderBy,
+    ~orderDirection,
+    ~first,
+    ~after,
+    ~before,
+    ~last,
+  ): option<auctionSettledConnection> => {
     open GraphClient
 
-    let res = await executeWithVars(
+    let res = await executeWithList(
       document,
-      {first: first->Option.getWithDefault(10), skip: skip->Option.getWithDefault(0)}, //Probably shouldn't have to write defaults here
+      {
+        first: first->Option.getWithDefault(10),
+        skip: skip->Option.getWithDefault(0),
+        orderBy: orderBy->Option.getWithDefault(ID),
+        orderDirection: orderDirection->Option.getWithDefault(Asc),
+      }, //Probably shouldn't have to write defaults here
     )
 
     res.data->Option.map(data =>

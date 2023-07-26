@@ -1,0 +1,6 @@
+query GetAuctionCreateds($first: Int, $orderBy: AuctionCreated_orderBy, $orderDirection: OrderDirection){
+  auctionCreateds(first: $first, orderBy: $orderBy, orderDirection: $orderDirection) {
+    id
+    tokenId
+  }
+}
