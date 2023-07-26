@@ -1,8 +1,60 @@
+enum OrderBy_AuctionCreateds {
+  id
+  tokenId
+}
+
+enum OrderBy_AuctionSettleds {
+  id
+  tokenId
+  price
+}
+
+enum OrderDirection {
+  asc
+  desc
+}
+
+enum SubgraphError {
+  allow
+  deny
+}
+
 
 """An object with an ID."""
 interface Node {
   id: ID!
   id: String!
+}
+
+
+"""GraphClient: A Votes Auction"""
+type AuctionCreated implements Node {
+  id: String!
+
+  """ID of Votes token *"""
+  tokenId: String!
+}
+
+
+"""A connection to a todo."""
+type AuctionCreatedConnection {
+
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [AuctionCreatedEdge]
+}
+
+
+"""An edge to an auction."""
+type AuctionCreatedEdge {
+
+  """The item at the end of the edge."""
+  node: AuctionCreated
+
+  """A cursor for use in pagination."""
+  cursor: String!
 }
 
 
@@ -57,9 +109,6 @@ type PageInfo {
 }
 
 type Query {
-
-  """The current time on the server, as a timestamp."""
-  currentTime: Float
   questionSubmitteds(skip: Int, first: Int, after: String, before: String, last: Int): QuestionSubmittedConnection
   questionSubmitted(id: String!): QuestionSubmitted
 
@@ -68,8 +117,10 @@ type Query {
 
   """Fetches an object given its ID."""
   node(id: ID!): Node
-  auctionSettleds(skip: Int, first: Int, after: String, before: String, last: Int): AuctionSettledConnection
+  auctionSettleds(skip: Int, orderBy: OrderBy_AuctionSettleds, orderDirection: OrderDirection, first: Int, after: String, before: String, last: Int): AuctionSettledConnection
   auctionSettled(id: String!): AuctionSettled
+  auctionCreateds(skip: Int, orderBy: OrderBy_AuctionCreateds, orderDirection: OrderDirection, first: Int, after: String, before: String, last: Int): AuctionCreatedConnection
+  auctionCreated(id: String!): AuctionCreated
 }
 
 type QuestionSubmitted implements Node {

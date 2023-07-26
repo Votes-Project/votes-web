@@ -17,6 +17,11 @@ let node = async (_: Schema.query, ~id, ~ctx: ResGraphContext.context): option<
       | None => panic("Did not find question submitted with that ID")
       | Some(questionSubmitted) => QuestionSubmitted(questionSubmitted)->Some
       }
+    | Some(AuctionCreated) =>
+      switch await ctx.dataLoaders.auctionCreated.byId->DataLoader.load(id) {
+      | None => panic("Did not find auction created with that ID")
+      | Some(auctionCreated) => AuctionCreated(auctionCreated)->Some
+      }
     }
   | _ => None
   }

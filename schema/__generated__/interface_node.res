@@ -5,15 +5,17 @@
 module Resolver = {
   @gql.interfaceResolver("node")
   type t =
+    | AuctionCreated(AuctionCreated.auctionCreated)
     | AuctionSettled(AuctionSettled.auctionSettled)
     | QuestionSubmitted(QuestionSubmitted.questionSubmitted)
 }
 
 module ImplementedBy = {
-  type t = AuctionSettled | QuestionSubmitted
+  type t = AuctionCreated | AuctionSettled | QuestionSubmitted
 
   let decode = (str: string) =>
     switch str {
+    | "AuctionCreated" => Some(AuctionCreated)
     | "AuctionSettled" => Some(AuctionSettled)
     | "QuestionSubmitted" => Some(QuestionSubmitted)
     | _ => None
@@ -23,6 +25,7 @@ module ImplementedBy = {
 }
 
 type typeMap<'a> = {
+  @as("AuctionCreated") auctionCreated: 'a,
   @as("AuctionSettled") auctionSettled: 'a,
   @as("QuestionSubmitted") questionSubmitted: 'a,
 }

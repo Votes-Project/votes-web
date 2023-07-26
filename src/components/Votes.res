@@ -5,7 +5,7 @@ module Query = %relay(`
         node {
           id
           tokenId
-          }
+        }
       }
     }
   }
