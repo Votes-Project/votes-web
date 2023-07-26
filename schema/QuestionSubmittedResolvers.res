@@ -27,7 +27,7 @@ module Connection = {
   > => {
     open GraphClient
 
-    let res = await executeWithVars(
+    let res = await executeWithList(
       document,
       {first: first->Option.getWithDefault(10), skip: skip->Option.getWithDefault(0)}, //Probably shouldn't have to write defaults here
     )

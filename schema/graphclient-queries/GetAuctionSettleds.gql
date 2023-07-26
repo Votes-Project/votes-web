@@ -1,5 +1,5 @@
-query GetAuctionSettleds($first: Int){
-  auctionSettleds(first: $first) {
+query GetAuctionSettleds($first: Int, $orderBy: AuctionSettled_orderBy, $orderDirection: OrderDirection) {
+  auctionSettleds(first: $first, orderBy: $orderBy, orderDirection: $orderDirection) {
     id
     winner
     tokenId

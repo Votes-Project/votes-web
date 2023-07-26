@@ -1,19 +1,26 @@
-type nodeVars = {id: string, block?: int, subgraphError?: [#allow | #deny]}
 type where // need to implement or leave opaque and write bindings
-type connectionVars = {
+
+@gql.enum
+type orderDirection = | @as("asc") Asc | @as("desc") Desc
+
+@gql.enum
+type subgraphError = | @as("allow") Allow | @as("deny") Deny
+
+type single = {id: string, block?: int, subgraphError?: [#allow | #deny]}
+type list<'orderBy> = {
   first?: int,
   skip?: int,
-  orderBy?: string,
-  orderDirection?: string,
+  orderBy?: 'orderBy,
+  orderDirection?: orderDirection,
   block?: int,
   where?: where,
-  subgraphError?: [#allow | #deny],
+  subgraphError?: subgraphError,
 }
 type result<'data> = {data?: 'data}
 type document<'data>
 @module("../../.graphclient/index.js")
 external execute: document<'data> => Promise.t<'data> = "execute"
 @module("../../.graphclient/index.js")
-external executeWithVars: (document<'data>, connectionVars) => Promise.t<'data> = "execute"
+external executeWithList: (document<'data>, list<'orderBy>) => Promise.t<'data> = "execute"
 @module("../../.graphclient/index.js")
-external executeWithId: (document<'data>, nodeVars) => Promise.t<'data> = "execute"
+external executeWithId: (document<'data>, single) => Promise.t<'data> = "execute"

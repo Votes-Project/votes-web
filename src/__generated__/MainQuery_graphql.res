@@ -4,28 +4,8 @@
 module Types = {
   @@warning("-30")
 
-  type rec response_auctionSettleds_edges_node = {
-    @live id: string,
-    tokenId: string,
-  }
-  and response_auctionSettleds_edges = {
-    node: option<response_auctionSettleds_edges_node>,
-  }
-  and response_auctionSettleds = {
-    edges: option<array<option<response_auctionSettleds_edges>>>,
-  }
-  and response_questionSubmitteds_edges_node = {
-    @live id: string,
-  }
-  and response_questionSubmitteds_edges = {
-    node: option<response_questionSubmitteds_edges_node>,
-  }
-  and response_questionSubmitteds = {
-    edges: option<array<option<response_questionSubmitteds_edges>>>,
-  }
   type response = {
-    auctionSettleds: option<response_auctionSettleds>,
-    questionSubmitteds: option<response_questionSubmitteds>,
+    fragmentRefs: RescriptRelay.fragmentRefs<[ | #Auction_auctionCreateds]>,
   }
   @live
   type rawResponse = response
@@ -53,7 +33,7 @@ module Internal = {
   type wrapResponseRaw
   @live
   let wrapResponseConverter: Js.Dict.t<Js.Dict.t<Js.Dict.t<string>>> = %raw(
-    json`{}`
+    json`{"__root":{"":{"f":""}}}`
   )
   @live
   let wrapResponseConverterMap = ()
@@ -67,7 +47,7 @@ module Internal = {
   type responseRaw
   @live
   let responseConverter: Js.Dict.t<Js.Dict.t<Js.Dict.t<string>>> = %raw(
-    json`{}`
+    json`{"__root":{"":{"f":""}}}`
   )
   @live
   let responseConverterMap = ()
@@ -97,88 +77,21 @@ type operationType = RescriptRelay.queryNode<relayOperationNode>
 
 
 let node: operationType = %raw(json` (function(){
-var v0 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "id",
-  "storageKey": null
-},
-v1 = [
+var v0 = [
   {
-    "alias": null,
-    "args": null,
-    "concreteType": "AuctionSettledConnection",
-    "kind": "LinkedField",
-    "name": "auctionSettleds",
-    "plural": false,
-    "selections": [
-      {
-        "alias": null,
-        "args": null,
-        "concreteType": "AuctionSettledEdge",
-        "kind": "LinkedField",
-        "name": "edges",
-        "plural": true,
-        "selections": [
-          {
-            "alias": null,
-            "args": null,
-            "concreteType": "AuctionSettled",
-            "kind": "LinkedField",
-            "name": "node",
-            "plural": false,
-            "selections": [
-              (v0/*: any*/),
-              {
-                "alias": null,
-                "args": null,
-                "kind": "ScalarField",
-                "name": "tokenId",
-                "storageKey": null
-              }
-            ],
-            "storageKey": null
-          }
-        ],
-        "storageKey": null
-      }
-    ],
-    "storageKey": null
+    "kind": "Literal",
+    "name": "first",
+    "value": 5
   },
   {
-    "alias": null,
-    "args": null,
-    "concreteType": "QuestionSubmittedConnection",
-    "kind": "LinkedField",
-    "name": "questionSubmitteds",
-    "plural": false,
-    "selections": [
-      {
-        "alias": null,
-        "args": null,
-        "concreteType": "QuestionSubmittedEdge",
-        "kind": "LinkedField",
-        "name": "edges",
-        "plural": true,
-        "selections": [
-          {
-            "alias": null,
-            "args": null,
-            "concreteType": "QuestionSubmitted",
-            "kind": "LinkedField",
-            "name": "node",
-            "plural": false,
-            "selections": [
-              (v0/*: any*/)
-            ],
-            "storageKey": null
-          }
-        ],
-        "storageKey": null
-      }
-    ],
-    "storageKey": null
+    "kind": "Literal",
+    "name": "orderBy",
+    "value": "tokenId"
+  },
+  {
+    "kind": "Literal",
+    "name": "orderDirection",
+    "value": "desc"
   }
 ];
 return {
@@ -187,7 +100,13 @@ return {
     "kind": "Fragment",
     "metadata": null,
     "name": "MainQuery",
-    "selections": (v1/*: any*/),
+    "selections": [
+      {
+        "args": null,
+        "kind": "FragmentSpread",
+        "name": "Auction_auctionCreateds"
+      }
+    ],
     "type": "Query",
     "abstractKey": null
   },
@@ -196,15 +115,114 @@ return {
     "argumentDefinitions": [],
     "kind": "Operation",
     "name": "MainQuery",
-    "selections": (v1/*: any*/)
+    "selections": [
+      {
+        "alias": null,
+        "args": (v0/*: any*/),
+        "concreteType": "AuctionCreatedConnection",
+        "kind": "LinkedField",
+        "name": "auctionCreateds",
+        "plural": false,
+        "selections": [
+          {
+            "alias": null,
+            "args": null,
+            "concreteType": "AuctionCreatedEdge",
+            "kind": "LinkedField",
+            "name": "edges",
+            "plural": true,
+            "selections": [
+              {
+                "alias": null,
+                "args": null,
+                "concreteType": "AuctionCreated",
+                "kind": "LinkedField",
+                "name": "node",
+                "plural": false,
+                "selections": [
+                  {
+                    "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
+                    "name": "id",
+                    "storageKey": null
+                  },
+                  {
+                    "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
+                    "name": "tokenId",
+                    "storageKey": null
+                  },
+                  {
+                    "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
+                    "name": "__typename",
+                    "storageKey": null
+                  }
+                ],
+                "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "cursor",
+                "storageKey": null
+              }
+            ],
+            "storageKey": null
+          },
+          {
+            "alias": null,
+            "args": null,
+            "concreteType": "PageInfo",
+            "kind": "LinkedField",
+            "name": "pageInfo",
+            "plural": false,
+            "selections": [
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "endCursor",
+                "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "hasNextPage",
+                "storageKey": null
+              }
+            ],
+            "storageKey": null
+          }
+        ],
+        "storageKey": "auctionCreateds(first:5,orderBy:\"tokenId\",orderDirection:\"desc\")"
+      },
+      {
+        "alias": null,
+        "args": (v0/*: any*/),
+        "filters": [
+          "orderBy",
+          "orderDirection"
+        ],
+        "handle": "connection",
+        "key": "Auction_auctionCreateds_auctionCreateds",
+        "kind": "LinkedHandle",
+        "name": "auctionCreateds"
+      }
+    ]
   },
   "params": {
-    "cacheID": "4c52fb90421c6164d3dfcf45821f747e",
+    "cacheID": "e3bfe47112ca285e51a5c8975ec4caeb",
     "id": null,
     "metadata": {},
     "name": "MainQuery",
     "operationKind": "query",
-    "text": "query MainQuery {\n  auctionSettleds {\n    edges {\n      node {\n        id\n        tokenId\n      }\n    }\n  }\n  questionSubmitteds {\n    edges {\n      node {\n        id\n      }\n    }\n  }\n}\n"
+    "text": "query MainQuery {\n  ...Auction_auctionCreateds\n}\n\nfragment AuctionItem_auctionCreated on AuctionCreated {\n  id\n  tokenId\n}\n\nfragment Auction_auctionCreateds on Query {\n  auctionCreateds(orderBy: tokenId, orderDirection: desc, first: 5) {\n    edges {\n      node {\n        id\n        ...AuctionItem_auctionCreated\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n"
   }
 };
 })() `)
