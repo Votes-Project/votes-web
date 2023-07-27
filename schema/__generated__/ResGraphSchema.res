@@ -76,6 +76,13 @@ let t_QuestionSubmittedConnection: ref<GraphQLObjectType.t> = Obj.magic({"conten
 let get_QuestionSubmittedConnection = () => t_QuestionSubmittedConnection.contents
 let t_QuestionSubmittedEdge: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
 let get_QuestionSubmittedEdge = () => t_QuestionSubmittedEdge.contents
+let input_Where_AuctionCreateds: ref<GraphQLInputObjectType.t> = Obj.magic({"contents": Js.null})
+let get_Where_AuctionCreateds = () => input_Where_AuctionCreateds.contents
+let input_Where_AuctionCreateds_conversionInstructions = []
+input_Where_AuctionCreateds_conversionInstructions->Array.pushMany([
+  ("id", makeInputObjectFieldConverterFn(v => v->Nullable.toOption)),
+  ("tokenId", makeInputObjectFieldConverterFn(v => v->Nullable.toOption)),
+])
 
 let interface_Node_resolveType = (v: Interface_node.Resolver.t) =>
   switch v {
@@ -344,6 +351,7 @@ t_Query.contents = GraphQLObjectType.make({
           "orderBy": {typ: enum_OrderBy_AuctionCreateds->GraphQLEnumType.toGraphQLType},
           "orderDirection": {typ: enum_OrderDirection->GraphQLEnumType.toGraphQLType},
           "skip": {typ: Scalars.int->Scalars.toGraphQLType},
+          "where": {typ: get_Where_AuctionCreateds()->GraphQLInputObjectType.toGraphQLType},
         }->makeArgs,
         resolve: makeResolveFn((src, args, ctx) => {
           let src = typeUnwrapper(src)
@@ -356,6 +364,13 @@ t_Query.contents = GraphQLObjectType.make({
             ~orderBy=args["orderBy"]->Nullable.toOption,
             ~orderDirection=args["orderDirection"]->Nullable.toOption,
             ~skip=args["skip"]->Nullable.toOption,
+            ~where=switch args["where"]->Nullable.toOption {
+            | None => None
+            | Some(v) =>
+              v
+              ->applyConversionToInputObject(input_Where_AuctionCreateds_conversionInstructions)
+              ->Some
+            },
           )
         }),
       },
@@ -576,6 +591,23 @@ t_QuestionSubmittedEdge.contents = GraphQLObjectType.make({
           let src = typeUnwrapper(src)
           src["node"]
         }),
+      },
+    }->makeFields,
+})
+input_Where_AuctionCreateds.contents = GraphQLInputObjectType.make({
+  name: "Where_AuctionCreateds",
+  description: ?None,
+  fields: () =>
+    {
+      "id": {
+        GraphQLInputObjectType.typ: Scalars.string->Scalars.toGraphQLType,
+        description: ?None,
+        deprecationReason: ?None,
+      },
+      "tokenId": {
+        GraphQLInputObjectType.typ: Scalars.string->Scalars.toGraphQLType,
+        description: ?None,
+        deprecationReason: ?None,
       },
     }->makeFields,
 })

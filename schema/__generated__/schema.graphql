@@ -19,6 +19,11 @@ enum SubgraphError {
   deny
 }
 
+input Where_AuctionCreateds {
+  id: String
+  tokenId: String
+}
+
 
 """An object with an ID."""
 interface Node {
@@ -119,7 +124,7 @@ type Query {
   node(id: ID!): Node
   auctionSettleds(skip: Int, orderBy: OrderBy_AuctionSettleds, orderDirection: OrderDirection, first: Int, after: String, before: String, last: Int): AuctionSettledConnection
   auctionSettled(id: String!): AuctionSettled
-  auctionCreateds(skip: Int, orderBy: OrderBy_AuctionCreateds, orderDirection: OrderDirection, first: Int, after: String, before: String, last: Int): AuctionCreatedConnection
+  auctionCreateds(skip: Int, orderBy: OrderBy_AuctionCreateds, orderDirection: OrderDirection, where: Where_AuctionCreateds, first: Int, after: String, before: String, last: Int): AuctionCreatedConnection
   auctionCreated(id: String!): AuctionCreated
 }
 

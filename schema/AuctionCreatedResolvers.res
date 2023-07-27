@@ -24,12 +24,19 @@ module Connection = {
   @gql.enum
   type orderBy_AuctionCreateds = | @as("id") ID | @as("tokenId") TokenId
 
+  @gql.inputObject
+  type where_AuctionCreateds = {
+    id?: string,
+    tokenId?: string,
+  }
+
   @gql.field
   let auctionCreateds = async (
     _: Schema.query,
     ~skip,
     ~orderBy,
     ~orderDirection,
+    ~where,
     ~first,
     ~after,
     ~before,
@@ -44,7 +51,8 @@ module Connection = {
         skip: skip->Option.getWithDefault(0),
         orderBy: orderBy->Option.getWithDefault(ID),
         orderDirection: orderDirection->Option.getWithDefault(Asc),
-      }, //Probably shouldn't have to write defaults here
+        where: where->Option.getWithDefault(({}: where_AuctionCreateds)),
+      }, //Probably shouldn't have to write defaults hereresolver
     )
 
     res.data->Option.map(data =>
