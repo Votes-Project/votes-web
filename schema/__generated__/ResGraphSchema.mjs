@@ -9,6 +9,16 @@ import * as QuestionSubmittedResolvers from "../QuestionSubmittedResolvers.mjs";
 
 var typeUnwrapper = (function typeUnwrapper(src) { if (src == null) return null; if (typeof src === 'object' && src.hasOwnProperty('_0')) return src['_0']; return src;});
 
+var applyConversionToInputObject = (function applyConversionToInputObject(obj, instructions) {
+      if (instructions.length === 0) return obj;
+      let newObj = Object.assign({}, obj);
+      instructions.forEach(instruction => {
+        let value = newObj[instruction[0]];
+         newObj[instruction[0]] = instruction[1](value);
+      })
+      return newObj;
+    });
+
 var enum_OrderBy_AuctionCreateds = new Graphql.GraphQLEnumType({
       name: "OrderBy_AuctionCreateds",
       values: {
@@ -107,6 +117,32 @@ var t_QuestionSubmittedConnection = {
 var t_QuestionSubmittedEdge = {
   contents: null
 };
+
+var input_Where_AuctionCreateds = {
+  contents: null
+};
+
+var input_Where_AuctionCreateds_conversionInstructions = [];
+
+input_Where_AuctionCreateds_conversionInstructions.push([
+      "id",
+      (function (v) {
+          if (v == null) {
+            return ;
+          } else {
+            return Caml_option.some(v);
+          }
+        })
+    ], [
+      "tokenId",
+      (function (v) {
+          if (v == null) {
+            return ;
+          } else {
+            return Caml_option.some(v);
+          }
+        })
+    ]);
 
 function interface_Node_resolveType(v) {
   switch (v.TAG) {
@@ -363,11 +399,15 @@ t_Query.contents = new Graphql.GraphQLObjectType({
                       },
                       skip: {
                         type: Graphql.GraphQLInt
+                      },
+                      where: {
+                        type: input_Where_AuctionCreateds.contents
                       }
                     },
                     resolve: Caml_option.some(function (src, args, ctx) {
                           var src$1 = typeUnwrapper(src);
-                          return AuctionCreatedResolvers.Connection.auctionCreateds(src$1, Caml_option.nullable_to_opt(args.skip), Caml_option.nullable_to_opt(args.orderBy), Caml_option.nullable_to_opt(args.orderDirection), Caml_option.nullable_to_opt(args.first), Caml_option.nullable_to_opt(args.after), Caml_option.nullable_to_opt(args.before), Caml_option.nullable_to_opt(args.last));
+                          var v = args.where;
+                          return AuctionCreatedResolvers.Connection.auctionCreateds(src$1, Caml_option.nullable_to_opt(args.skip), Caml_option.nullable_to_opt(args.orderBy), Caml_option.nullable_to_opt(args.orderDirection), !(v == null) ? applyConversionToInputObject(v, input_Where_AuctionCreateds_conversionInstructions) : undefined, Caml_option.nullable_to_opt(args.first), Caml_option.nullable_to_opt(args.after), Caml_option.nullable_to_opt(args.before), Caml_option.nullable_to_opt(args.last));
                         })
                   },
                   auctionSettled: {
@@ -573,6 +613,20 @@ t_QuestionSubmittedEdge.contents = new Graphql.GraphQLObjectType({
                 };
         }),
       interfaces: []
+    });
+
+input_Where_AuctionCreateds.contents = new Graphql.GraphQLInputObjectType({
+      name: "Where_AuctionCreateds",
+      fields: (function () {
+          return {
+                  id: {
+                    type: Graphql.GraphQLString
+                  },
+                  tokenId: {
+                    type: Graphql.GraphQLString
+                  }
+                };
+        })
     });
 
 var schema = new Graphql.GraphQLSchema({
