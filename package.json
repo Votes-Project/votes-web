@@ -5,7 +5,7 @@
   "type": "module",
   "packageManager": "yarn@3.2.1",
   "scripts": {
-    "build": "yarn res && vite build",
+    "build": "yarn codegen && vite build --outDir dist --ssrManifest --manifest",
     "preview": "vite preview",
     "build:graph": "graphclient build --fileType js",
     "dev": "vite",
@@ -18,7 +18,7 @@
     "res:watch": "rescript build -with-deps -w",
     "format": "rescript-relay-cli format-all-graphql",
     "resgraph:watch": "resgraph watch",
-    "codegen": "run-s build:graph relay res resgraph"
+    "codegen": "run-s build:graph relay res"
   },
   "dependencies": {
     "@glennsl/rescript-fetch": "^0.2.0",

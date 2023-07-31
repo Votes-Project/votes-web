@@ -1,0 +1,30 @@
+name: Check Generated Files were Committed
+
+on: [push]
+
+jobs:
+  build:
+    name: Check Generated Files were Committed
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2-beta
+        with:
+          node-version: 18
+        env:
+          CI: true
+      - name: Run install
+        uses: borales/actions-yarn@v4
+        with:
+          cmd: install
+      - name: Generate Frontend Files
+        run: |
+          yarn build
+      - name: git status
+        id: git_status
+        run: |
+          echo "::set-output name=status::$( git status --porcelain )"
+      - name: Exit if files modified
+        run: |
+          exit 1
+        if: steps.git_status.outputs.status

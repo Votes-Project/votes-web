@@ -9,8 +9,5 @@ let renderer = Routes.Main.Route.makeRenderer(
 
   // Render receives all the config `prepare` receives, and whatever `prepare` returns itself. It also receives `childRoutes`, which is any rendered route nested inside of it. So, if the route definition of this route has `children` and they match, the rendered output is in `childRoutes`. Each route with children is responsible for rendering its children. This makes layouting easy.
 
-  ~render=({prepared, childRoutes}) => {
-    Js.log2("childRoutes: ", childRoutes)
-    <Main queryRef=prepared> {childRoutes} </Main>
-  },
+  ~render=({prepared, childRoutes}) => <Main queryRef=prepared> {childRoutes} </Main>,
 )
