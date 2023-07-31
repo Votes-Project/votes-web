@@ -4,8 +4,18 @@
 module Types = {
   @@warning("-30")
 
+  type rec response_auctionCreateds_edges_node = {
+    @live id: string,
+    tokenId: string,
+  }
+  and response_auctionCreateds_edges = {
+    node: option<response_auctionCreateds_edges_node>,
+  }
+  and response_auctionCreateds = {
+    edges: option<array<option<response_auctionCreateds_edges>>>,
+  }
   type response = {
-    fragmentRefs: RescriptRelay.fragmentRefs<[ | #Auction_auctionCreateds]>,
+    auctionCreateds: option<response_auctionCreateds>,
   }
   @live
   type rawResponse = response
@@ -33,7 +43,7 @@ module Internal = {
   type wrapResponseRaw
   @live
   let wrapResponseConverter: Js.Dict.t<Js.Dict.t<Js.Dict.t<string>>> = %raw(
-    json`{"__root":{"":{"f":""}}}`
+    json`{}`
   )
   @live
   let wrapResponseConverterMap = ()
@@ -47,7 +57,7 @@ module Internal = {
   type responseRaw
   @live
   let responseConverter: Js.Dict.t<Js.Dict.t<Js.Dict.t<string>>> = %raw(
-    json`{"__root":{"":{"f":""}}}`
+    json`{}`
   )
   @live
   let responseConverterMap = ()
@@ -67,9 +77,24 @@ module Internal = {
 
 type queryRef
 
+@live
+@inline
+let connectionKey = "Main_auctionCreateds_auctionCreateds"
+
+%%private(
+  @live @module("relay-runtime") @scope("ConnectionHandler")
+  external internal_makeConnectionId: (RescriptRelay.dataId, @as("Main_auctionCreateds_auctionCreateds") _, 'arguments) => RescriptRelay.dataId = "getConnectionID"
+)
+
+@live
+let makeConnectionId = (connectionParentDataId: RescriptRelay.dataId, ) => {
+  let args = {"orderBy": Some("tokenId"), "orderDirection": Some("desc")}
+  internal_makeConnectionId(connectionParentDataId, args)
+}
 module Utils = {
   @@warning("-33")
   open Types
+
 }
 
 type relayOperationNode
@@ -77,22 +102,101 @@ type operationType = RescriptRelay.queryNode<relayOperationNode>
 
 
 let node: operationType = %raw(json` (function(){
-var v0 = [
+var v0 = {
+  "kind": "Literal",
+  "name": "orderBy",
+  "value": "tokenId"
+},
+v1 = {
+  "kind": "Literal",
+  "name": "orderDirection",
+  "value": "desc"
+},
+v2 = [
+  {
+    "alias": null,
+    "args": null,
+    "concreteType": "AuctionCreatedEdge",
+    "kind": "LinkedField",
+    "name": "edges",
+    "plural": true,
+    "selections": [
+      {
+        "alias": null,
+        "args": null,
+        "concreteType": "AuctionCreated",
+        "kind": "LinkedField",
+        "name": "node",
+        "plural": false,
+        "selections": [
+          {
+            "alias": null,
+            "args": null,
+            "kind": "ScalarField",
+            "name": "id",
+            "storageKey": null
+          },
+          {
+            "alias": null,
+            "args": null,
+            "kind": "ScalarField",
+            "name": "tokenId",
+            "storageKey": null
+          },
+          {
+            "alias": null,
+            "args": null,
+            "kind": "ScalarField",
+            "name": "__typename",
+            "storageKey": null
+          }
+        ],
+        "storageKey": null
+      },
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
+        "name": "cursor",
+        "storageKey": null
+      }
+    ],
+    "storageKey": null
+  },
+  {
+    "alias": null,
+    "args": null,
+    "concreteType": "PageInfo",
+    "kind": "LinkedField",
+    "name": "pageInfo",
+    "plural": false,
+    "selections": [
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
+        "name": "endCursor",
+        "storageKey": null
+      },
+      {
+        "alias": null,
+        "args": null,
+        "kind": "ScalarField",
+        "name": "hasNextPage",
+        "storageKey": null
+      }
+    ],
+    "storageKey": null
+  }
+],
+v3 = [
   {
     "kind": "Literal",
     "name": "first",
-    "value": 5
+    "value": 1
   },
-  {
-    "kind": "Literal",
-    "name": "orderBy",
-    "value": "tokenId"
-  },
-  {
-    "kind": "Literal",
-    "name": "orderDirection",
-    "value": "desc"
-  }
+  (v0/*: any*/),
+  (v1/*: any*/)
 ];
 return {
   "fragment": {
@@ -102,9 +206,17 @@ return {
     "name": "MainQuery",
     "selections": [
       {
-        "args": null,
-        "kind": "FragmentSpread",
-        "name": "Auction_auctionCreateds"
+        "alias": "auctionCreateds",
+        "args": [
+          (v0/*: any*/),
+          (v1/*: any*/)
+        ],
+        "concreteType": "AuctionCreatedConnection",
+        "kind": "LinkedField",
+        "name": "__Main_auctionCreateds_auctionCreateds_connection",
+        "plural": false,
+        "selections": (v2/*: any*/),
+        "storageKey": "__Main_auctionCreateds_auctionCreateds_connection(orderBy:\"tokenId\",orderDirection:\"desc\")"
       }
     ],
     "type": "Query",
@@ -118,111 +230,46 @@ return {
     "selections": [
       {
         "alias": null,
-        "args": (v0/*: any*/),
+        "args": (v3/*: any*/),
         "concreteType": "AuctionCreatedConnection",
         "kind": "LinkedField",
         "name": "auctionCreateds",
         "plural": false,
-        "selections": [
-          {
-            "alias": null,
-            "args": null,
-            "concreteType": "AuctionCreatedEdge",
-            "kind": "LinkedField",
-            "name": "edges",
-            "plural": true,
-            "selections": [
-              {
-                "alias": null,
-                "args": null,
-                "concreteType": "AuctionCreated",
-                "kind": "LinkedField",
-                "name": "node",
-                "plural": false,
-                "selections": [
-                  {
-                    "alias": null,
-                    "args": null,
-                    "kind": "ScalarField",
-                    "name": "id",
-                    "storageKey": null
-                  },
-                  {
-                    "alias": null,
-                    "args": null,
-                    "kind": "ScalarField",
-                    "name": "tokenId",
-                    "storageKey": null
-                  },
-                  {
-                    "alias": null,
-                    "args": null,
-                    "kind": "ScalarField",
-                    "name": "__typename",
-                    "storageKey": null
-                  }
-                ],
-                "storageKey": null
-              },
-              {
-                "alias": null,
-                "args": null,
-                "kind": "ScalarField",
-                "name": "cursor",
-                "storageKey": null
-              }
-            ],
-            "storageKey": null
-          },
-          {
-            "alias": null,
-            "args": null,
-            "concreteType": "PageInfo",
-            "kind": "LinkedField",
-            "name": "pageInfo",
-            "plural": false,
-            "selections": [
-              {
-                "alias": null,
-                "args": null,
-                "kind": "ScalarField",
-                "name": "endCursor",
-                "storageKey": null
-              },
-              {
-                "alias": null,
-                "args": null,
-                "kind": "ScalarField",
-                "name": "hasNextPage",
-                "storageKey": null
-              }
-            ],
-            "storageKey": null
-          }
-        ],
-        "storageKey": "auctionCreateds(first:5,orderBy:\"tokenId\",orderDirection:\"desc\")"
+        "selections": (v2/*: any*/),
+        "storageKey": "auctionCreateds(first:1,orderBy:\"tokenId\",orderDirection:\"desc\")"
       },
       {
         "alias": null,
-        "args": (v0/*: any*/),
+        "args": (v3/*: any*/),
         "filters": [
           "orderBy",
           "orderDirection"
         ],
         "handle": "connection",
-        "key": "Auction_auctionCreateds_auctionCreateds",
+        "key": "Main_auctionCreateds_auctionCreateds",
         "kind": "LinkedHandle",
         "name": "auctionCreateds"
       }
     ]
   },
   "params": {
-    "cacheID": "e3bfe47112ca285e51a5c8975ec4caeb",
+    "cacheID": "62ab6ae45613f9141a5b147ffd57e86e",
     "id": null,
-    "metadata": {},
+    "metadata": {
+      "connection": [
+        {
+          "count": null,
+          "cursor": null,
+          "direction": "forward",
+          "path": [
+            "auctionCreateds"
+          ]
+        }
+      ]
+    },
     "name": "MainQuery",
     "operationKind": "query",
-    "text": "query MainQuery {\n  ...Auction_auctionCreateds\n}\n\nfragment AuctionItem_auctionCreated on AuctionCreated {\n  id\n  tokenId\n}\n\nfragment Auction_auctionCreateds on Query {\n  auctionCreateds(orderBy: tokenId, orderDirection: desc, first: 5) {\n    edges {\n      node {\n        id\n        ...AuctionItem_auctionCreated\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n"
+    "text": "query MainQuery {\n  auctionCreateds(first: 1, orderBy: tokenId, orderDirection: desc) {\n    edges {\n      node {\n        id\n        tokenId\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n"
   }
 };
 })() `)

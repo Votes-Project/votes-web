@@ -83,7 +83,7 @@ var node = {
       }
     ]
   },
-  "name": "Auction_auctionCreateds",
+  "name": "AuctionListDisplay_auctionCreateds",
   "selections": [
     {
       "alias": "auctionCreateds",
@@ -125,6 +125,13 @@ var node = {
                   "args": null,
                   "kind": "ScalarField",
                   "name": "id",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "tokenId",
                   "storageKey": null
                 },
                 {
