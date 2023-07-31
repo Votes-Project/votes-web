@@ -1,4 +1,4 @@
-/* @sourceLoc Auction.res */
+/* @sourceLoc AuctionListDisplay.res */
 /* @generated */
 %%raw("/* @generated */")
 module Types = {
@@ -6,6 +6,7 @@ module Types = {
 
   type rec fragment_auctionCreateds_edges_node = {
     @live id: string,
+    tokenId: string,
     fragmentRefs: RescriptRelay.fragmentRefs<[ | #AuctionItem_auctionCreated]>,
   }
   and fragment_auctionCreateds_edges = {
@@ -39,7 +40,7 @@ module Internal = {
 type t
 type fragmentRef
 external getFragmentRef:
-  RescriptRelay.fragmentRefs<[> | #Auction_auctionCreateds]> => fragmentRef = "%identity"
+  RescriptRelay.fragmentRefs<[> | #AuctionListDisplay_auctionCreateds]> => fragmentRef = "%identity"
 
 @live
 @inline
@@ -114,7 +115,7 @@ let node: operationType = %raw(json` {
       }
     ]
   },
-  "name": "Auction_auctionCreateds",
+  "name": "AuctionListDisplay_auctionCreateds",
   "selections": [
     {
       "alias": "auctionCreateds",
@@ -156,6 +157,13 @@ let node: operationType = %raw(json` {
                   "args": null,
                   "kind": "ScalarField",
                   "name": "id",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "tokenId",
                   "storageKey": null
                 },
                 {

@@ -1,13 +1,14 @@
 [
   {
-    "path": "/",
+    "path": "/?tokenId=string",
     "name": "Main",
     "children": [
       {
-        "path": "?question=bool",
-        "name": "DailyQuestion"
-      }
-      // { "path": "", "name": "Auction" }
+        "path": "/dailyQuestion",
+        "name": "DailyQuestion",
+        "children": []
+      },
+      { "path": "", "name": "Auction", "children": [] }
     ]
   },
   {
