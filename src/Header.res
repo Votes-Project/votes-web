@@ -12,18 +12,6 @@ type headerItem = {
   link: string,
   icon: ReactIcons.t,
 }
-let links = {
-  open ReactIcons
-  [
-    (
-      "Daily Question",
-      Routes.Main.DailyQuestion.Route.makeLink(~question=true),
-      <LuCalendarCheck size="1.5rem" />,
-    ),
-    ("Votes", Routes.Votes.Route.makeLink(), <LuCheckCircle size="1.5rem" />),
-    ("Questions", Routes.Questions.Route.makeLink(), <LuHistory size="1.5rem" />),
-  ]
-}
 
 @react.component
 let make = () => {
@@ -31,6 +19,21 @@ let make = () => {
 
   let handleMenu = () => {
     setIsOpen(isOpen => !isOpen)
+  }
+
+  let {queryParams} = Routes.Main.DailyQuestion.Route.useQueryParams()
+  let links = {
+    open ReactIcons
+
+    [
+      (
+        "Daily Question",
+        Routes.Main.DailyQuestion.Route.makeLinkFromQueryParams(queryParams),
+        <LuCalendarCheck size="1.5rem" />,
+      ),
+      ("Votes", Routes.Votes.Route.makeLink(), <LuCheckCircle size="1.5rem" />),
+      ("Questions", Routes.Questions.Route.makeLink(), <LuHistory size="1.5rem" />),
+    ]
   }
 
   <header>
