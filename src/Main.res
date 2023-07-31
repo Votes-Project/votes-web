@@ -4,13 +4,49 @@ import viteLogo from "/vite.svg";
 
 module Query = %relay(`
   query MainQuery {
-    ...Auction_auctionCreateds
+    auctionCreateds(first: 1, orderBy: tokenId, orderDirection: desc)
+      @connection(key: "Main_auctionCreateds_auctionCreateds") {
+      edges {
+        node {
+          id
+          tokenId
+        }
+      }
+    }
   }
 `)
 
+type arrowDirection = LeftPress | RightPress
+exception InvalidRoute
 @react.component @relay.deferredComponent
 let make = (~queryRef, ~children) => {
-  let data = Query.usePreloaded(~queryRef)
+  let {push} = RelayRouter.Utils.useRouter()
+  let auctionCreatedEdges = switch Query.usePreloaded(~queryRef) {
+  | {auctionCreateds: Some({edges})} => edges->Option.getWithDefault([])
+  | _ => []
+  }
+
+  let todaysAuction =
+    auctionCreatedEdges
+    ->Array.get(0)
+    ->Option.flatMap(edge => edge->Option.flatMap(edge => edge.node))
+  let todaysTokenId = todaysAuction->Option.map(auction => auction.tokenId)
+
+  let todaysDate = Date.make()->Date.toDateString
+  let {queryParams} = Routes.Main.Auction.Route.useQueryParams()
+  let tokenId = switch queryParams.tokenId
+  ->Option.getWithDefault(todaysTokenId->Option.getExn)
+  ->Int.fromString {
+  | Some(tokenId) => tokenId
+  | None => raise(InvalidRoute)
+  }
+
+  let handleArrowPress = direction => {
+    switch direction {
+    | LeftPress => Routes.Main.Auction.Route.makeLink(~tokenId=Int.toString(tokenId - 1))->push
+    | RightPress => Routes.Main.Auction.Route.makeLink(~tokenId=Int.toString(tokenId + 1))->push
+    }
+  }
 
   <>
     <div className="wrapper flex flex-col">
@@ -26,9 +62,25 @@ let make = (~queryRef, ~children) => {
         </div>
         <main
           className="min-h-[558px] w-full !self-end bg-background px-[5%] pb-0 pt-[5%] lg:bg-background-light lg:pr-20 ">
-          <React.Suspense fallback={<div> {React.string("Loading Today's Auction...")} </div>}>
-            <Auction query=data.fragmentRefs />
-          </React.Suspense>
+          <div className="!self-start p-4">
+            <div className="flex items-center pt-5">
+              <div className="flex gap-2">
+                <button
+                  disabled={tokenId == 0}
+                  onClick={_ => handleArrowPress(LeftPress)}
+                  className="flex h-8 w-8 items-center justify-center rounded-full bg-primary ">
+                  {"⬅️"->React.string}
+                </button>
+                <button
+                  onClick={_ => handleArrowPress(RightPress)}
+                  className="flex h-8 w-8 items-center justify-center rounded-full bg-primary ">
+                  {"➡️"->React.string}
+                </button>
+                <p> {todaysDate->React.string} </p>
+              </div>
+            </div>
+            {children}
+          </div>
         </main>
       </div>
     </div>
@@ -91,6 +143,5 @@ let make = (~queryRef, ~children) => {
         </div>
       </section>
     </>}
-    {children}
   </>
 }

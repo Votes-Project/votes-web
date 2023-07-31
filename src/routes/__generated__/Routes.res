@@ -8,6 +8,10 @@ module Main = {
     module Route = Route__Main__DailyQuestion_route
 
   }
+  module Auction = {
+    module Route = Route__Main__Auction_route
+
+  }
 }
 module Votes = {
   module Route = Route__Votes_route
