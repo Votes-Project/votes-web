@@ -70,3 +70,14 @@ type enum_RequiredFieldAction_input =
   | THROW
 
 
+@live
+type rec input_Where_AuctionCreateds = {
+  id?: string,
+  tokenId?: string,
+}
+
+@live
+and input_Where_AuctionCreateds_nullable = {
+  id?: Js.Null.t<string>,
+  tokenId?: Js.Null.t<string>,
+}

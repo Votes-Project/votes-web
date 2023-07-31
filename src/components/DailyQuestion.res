@@ -30,8 +30,8 @@ module Sheet = {
   open ReactModalSheet
 
   @react.component
-  let make = (~isOpen, ~onClose, ~className) => {
-    <Sheet className isOpen onClose>
+  let make = (~isOpen, ~onClose, ~onCloseEnd, ~className) => {
+    <Sheet className isOpen onClose onCloseEnd>
       <Sheet.Container>
         <Sheet.Header />
         <Sheet.Content>
@@ -43,18 +43,19 @@ module Sheet = {
   }
 }
 
-@react.component
+@react.component @relay.deferredComponent
 let make = () => {
-  let {queryParams, setParams} = Routes.Main.DailyQuestion.Route.useQueryParams()
-  let isOpen = queryParams.question->Option.getWithDefault(false)
+  let {replace} = RelayRouter.Utils.useRouter()
+  let {queryParams, setParams} = Routes.Main.Route.useQueryParams()
+  let (isOpen, setIsOpen) = React.useState(_ => true)
 
-  let onClose = _ => setParams(~setter=_ => {question: None})
+  let onClose = _ => setIsOpen(_ => false)
+  let onCloseEnd = _ => Routes.Main.Route.makeLinkFromQueryParams(queryParams)->replace
 
   React.useEffect0(() => {
     let handleKeyDown = (e: ReactEvent.Keyboard.t) => {
-      e->ReactEvent.Keyboard.preventDefault
       switch e->ReactEvent.Keyboard.key {
-      | "Escape" => setParams(~setter=_ => {question: None})
+      | "Escape" => Routes.Main.Route.makeLinkFromQueryParams(queryParams)->replace
       | _ => ()
       }
     }
@@ -64,7 +65,7 @@ let make = () => {
   })
 
   <>
-    <Sheet className={"lg:hidden flex"} isOpen onClose />
+    <Sheet className={"lg:hidden flex"} isOpen onClose onCloseEnd />
     <Modal className={`hidden lg:flex`} isOpen onClose />
   </>
 }
