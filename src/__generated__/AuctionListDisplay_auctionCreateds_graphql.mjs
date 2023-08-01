@@ -28,7 +28,7 @@ function makeConnectionId(connectionParentDataId, orderByOpt, orderDirectionOpt)
     orderBy: orderBy$1,
     orderDirection: orderDirection$1
   };
-  return RelayRuntime.ConnectionHandler.getConnectionID(connectionParentDataId, "Auction_auctionCreateds_auctionCreateds", args);
+  return RelayRuntime.ConnectionHandler.getConnectionID(connectionParentDataId, "AuctionListDisplay_auctionCreateds_auctionCreateds", args);
 }
 
 function getConnectionNodes(connection) {
@@ -55,7 +55,7 @@ var Utils = {
 var node = {
   "argumentDefinitions": [
     {
-      "defaultValue": 5,
+      "defaultValue": 6,
       "kind": "LocalArgument",
       "name": "first"
     },
@@ -101,7 +101,7 @@ var node = {
       ],
       "concreteType": "AuctionCreatedConnection",
       "kind": "LinkedField",
-      "name": "__Auction_auctionCreateds_auctionCreateds_connection",
+      "name": "__AuctionListDisplay_auctionCreateds_auctionCreateds_connection",
       "plural": false,
       "selections": [
         {

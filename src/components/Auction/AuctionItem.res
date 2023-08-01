@@ -1,16 +1,38 @@
-module AuctionItemFragment = %relay(`
+module AuctionCreatedFragment = %relay(`
   fragment AuctionItem_auctionCreated on AuctionCreated {
     id
     tokenId
+    startTime
+    endTime
   }
 `)
 
+module AuctionSettledFragment = %relay(`
+  fragment AuctionItem_auctionSettled on AuctionSettled {
+    id
+    tokenId
+    winner
+    amount
+  }
+`)
+
+exception PastAuctionDoesNotExist
 @react.component
-let make = (~auctionCreated as auctionCreatedRef, ~index) => {
-  let auctionCreated = AuctionItemFragment.use(auctionCreatedRef)
+let make = (
+  ~auctionCreated as auctionCreatedRef,
+  ~isToday=false,
+  ~auctionSettled as auctionSettledRef=None,
+) => {
+  let auctionCreated = AuctionCreatedFragment.use(auctionCreatedRef)
+  let auctionSettled =
+    auctionSettledRef->Option.map(auctionSettledRef =>
+      AuctionSettledFragment.use(auctionSettledRef)
+    )
+  Js.log2("auctionSettled: ", auctionSettled)
+
   let (currentBid, _) = React.useState(_ => "0")
-  switch index {
-  | 0 =>
+  switch isToday {
+  | true =>
     <>
       <h1 className="font-['Fugaz One'] py-9 text-6xl font-bold lg:text-7xl">
         {`VOTE ${auctionCreated.tokenId}`->React.string}
@@ -70,9 +92,17 @@ let make = (~auctionCreated as auctionCreatedRef, ~index) => {
               Bids"->React.string}
       </div>
     </>
-  | _ =>
-    <h1 className="font-['Fugaz One'] py-9 text-6xl font-bold lg:text-7xl">
-      {`VOTE ${auctionCreated.tokenId}`->React.string}
-    </h1>
+  | false =>
+    switch auctionSettled {
+    | None => raise(PastAuctionDoesNotExist)
+    | Some(auctionSettled) =>
+      <>
+        <h1 className="font-['Fugaz One'] py-9 text-6xl font-bold lg:text-7xl">
+          {`VOTE ${auctionSettled.tokenId}`->React.string}
+        </h1>
+        <h2> {`Winner ${auctionSettled.winner}`->React.string} </h2>
+        <h2> {`Winning Bid: ${auctionSettled.amount} Ξ`->React.string} </h2>
+      </>
+    }
   }
 }
