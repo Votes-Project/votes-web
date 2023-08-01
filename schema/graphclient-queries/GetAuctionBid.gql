@@ -1,0 +1,8 @@
+query GetAuctionBid($id: ID!) {
+  auctionBid(id: $id) {
+    id
+    tokenId
+    amount
+    bidder
+  }
+}

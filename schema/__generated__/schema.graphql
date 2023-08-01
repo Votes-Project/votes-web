@@ -1,3 +1,9 @@
+enum OrderBy_AuctionBids {
+  id
+  tokenId
+  blockTimestamp
+}
+
 enum OrderBy_AuctionCreateds {
   id
   tokenId
@@ -19,6 +25,11 @@ enum SubgraphError {
   deny
 }
 
+input Where_AuctionBids {
+  id: String
+  tokenId: String
+}
+
 input Where_AuctionCreateds {
   id: String
   tokenId: String
@@ -29,6 +40,46 @@ input Where_AuctionCreateds {
 interface Node {
   id: ID!
   id: String!
+}
+
+
+"""GraphClient: A bid on a Vote Auction"""
+type AuctionBid implements Node {
+  id: String!
+
+  """The ID of the Vote Token"""
+  tokenId: String!
+
+  """The address of the bidder"""
+  bidder: String!
+
+  """The amount of the bid"""
+  amount: String!
+
+  """The time the bid was made"""
+  blockTimestamp: String!
+}
+
+
+"""A connection to a todo."""
+type AuctionBidConnection {
+
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [AuctionBidEdge]
+}
+
+
+"""An edge to an auction bid."""
+type AuctionBidEdge {
+
+  """The item at the end of the edge."""
+  node: AuctionBid
+
+  """A cursor for use in pagination."""
+  cursor: String!
 }
 
 
@@ -135,6 +186,8 @@ type Query {
   auctionSettled(id: String!): AuctionSettled
   auctionCreateds(skip: Int, orderBy: OrderBy_AuctionCreateds, orderDirection: OrderDirection, where: Where_AuctionCreateds, first: Int, after: String, before: String, last: Int): AuctionCreatedConnection
   auctionCreated(id: String!): AuctionCreated
+  auctionBids(orderBy: OrderBy_AuctionBids, orderDirection: OrderDirection, where: Where_AuctionBids, first: Int, after: String, before: String, last: Int): AuctionBidConnection
+  auctionBid(id: String!): AuctionBid
 }
 
 type QuestionSubmitted implements Node {
