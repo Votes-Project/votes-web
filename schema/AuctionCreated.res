@@ -5,6 +5,12 @@ type auctionCreated = {
   /** ID of Votes token **/
   @gql.field
   tokenId: string,
+  /** Start time of auction **/
+  @gql.field
+  startTime: string,
+  /** End time of auction **/
+  @gql.field
+  endTime: string,
 }
 
 /** An edge to an auction. */

@@ -21,7 +21,7 @@ module Connection = {
   external document: GraphClient.document<GraphClient.result<data>> = "GetAuctionSettledsDocument"
 
   @gql.enum
-  type orderBy_AuctionSettleds = | @as("id") ID | @as("tokenId") TokenId | @as("price") Winner
+  type orderBy_AuctionSettleds = | @as("id") ID | @as("tokenId") TokenId | @as("winner") Winner
 
   @gql.field
   let auctionSettleds = async (

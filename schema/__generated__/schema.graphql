@@ -6,7 +6,7 @@ enum OrderBy_AuctionCreateds {
 enum OrderBy_AuctionSettleds {
   id
   tokenId
-  price
+  winner
 }
 
 enum OrderDirection {
@@ -38,6 +38,12 @@ type AuctionCreated implements Node {
 
   """ID of Votes token *"""
   tokenId: String!
+
+  """Start time of auction *"""
+  startTime: String!
+
+  """End time of auction *"""
+  endTime: String!
 }
 
 
@@ -72,6 +78,9 @@ type AuctionSettled implements Node {
 
   """ID of Votes token *"""
   tokenId: String!
+
+  """Amount of winning bid *"""
+  amount: String!
 }
 
 
