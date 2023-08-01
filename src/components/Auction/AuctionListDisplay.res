@@ -54,7 +54,7 @@ let make = (~query, ~tokenId) => {
   let auctionFragments = Belt.Array.zip(
     auctionCreateds
     ->AuctionCreatedsFragment.getConnectionNodes
-    ->Array.toSpliced(~start=0, ~remove=1, ~insert=[]),
+    ->Array.toSpliced(~start=0, ~remove=1, ~insert=[]), // Note: Wouldn't have to do this splice if lists are in ascending order
     auctionSettleds->AuctionSettledsFragment.getConnectionNodes,
   )
 

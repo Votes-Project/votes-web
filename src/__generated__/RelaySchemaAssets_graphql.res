@@ -2,6 +2,21 @@
 @@warning("-30")
 
 @live @unboxed
+type enum_OrderBy_AuctionBids = 
+  | @as("id") Id
+  | @as("tokenId") TokenId
+  | @as("blockTimestamp") BlockTimestamp
+  | FutureAddedValue(string)
+
+
+@live @unboxed
+type enum_OrderBy_AuctionBids_input = 
+  | @as("id") Id
+  | @as("tokenId") TokenId
+  | @as("blockTimestamp") BlockTimestamp
+
+
+@live @unboxed
 type enum_OrderBy_AuctionCreateds = 
   | @as("id") Id
   | @as("tokenId") TokenId
@@ -71,7 +86,19 @@ type enum_RequiredFieldAction_input =
 
 
 @live
-type rec input_Where_AuctionCreateds = {
+type rec input_Where_AuctionBids = {
+  id?: string,
+  tokenId?: string,
+}
+
+@live
+and input_Where_AuctionBids_nullable = {
+  id?: Js.Null.t<string>,
+  tokenId?: Js.Null.t<string>,
+}
+
+@live
+and input_Where_AuctionCreateds = {
   id?: string,
   tokenId?: string,
 }

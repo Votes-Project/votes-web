@@ -19,6 +19,19 @@ let applyConversionToInputObject: (
       return newObj;
     }`)
 
+let enum_OrderBy_AuctionBids = GraphQLEnumType.make({
+  name: "OrderBy_AuctionBids",
+  description: ?None,
+  values: {
+    "id": {GraphQLEnumType.value: "id", description: ?None, deprecationReason: ?None},
+    "tokenId": {GraphQLEnumType.value: "tokenId", description: ?None, deprecationReason: ?None},
+    "blockTimestamp": {
+      GraphQLEnumType.value: "blockTimestamp",
+      description: ?None,
+      deprecationReason: ?None,
+    },
+  }->makeEnumValues,
+})
 let enum_OrderBy_AuctionCreateds = GraphQLEnumType.make({
   name: "OrderBy_AuctionCreateds",
   description: ?None,
@@ -54,6 +67,12 @@ let enum_SubgraphError = GraphQLEnumType.make({
 })
 let i_Node: ref<GraphQLInterfaceType.t> = Obj.magic({"contents": Js.null})
 let get_Node = () => i_Node.contents
+let t_AuctionBid: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
+let get_AuctionBid = () => t_AuctionBid.contents
+let t_AuctionBidConnection: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
+let get_AuctionBidConnection = () => t_AuctionBidConnection.contents
+let t_AuctionBidEdge: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
+let get_AuctionBidEdge = () => t_AuctionBidEdge.contents
 let t_AuctionCreated: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
 let get_AuctionCreated = () => t_AuctionCreated.contents
 let t_AuctionCreatedConnection: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
@@ -76,9 +95,16 @@ let t_QuestionSubmittedConnection: ref<GraphQLObjectType.t> = Obj.magic({"conten
 let get_QuestionSubmittedConnection = () => t_QuestionSubmittedConnection.contents
 let t_QuestionSubmittedEdge: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
 let get_QuestionSubmittedEdge = () => t_QuestionSubmittedEdge.contents
+let input_Where_AuctionBids: ref<GraphQLInputObjectType.t> = Obj.magic({"contents": Js.null})
+let get_Where_AuctionBids = () => input_Where_AuctionBids.contents
+let input_Where_AuctionBids_conversionInstructions = []
 let input_Where_AuctionCreateds: ref<GraphQLInputObjectType.t> = Obj.magic({"contents": Js.null})
 let get_Where_AuctionCreateds = () => input_Where_AuctionCreateds.contents
 let input_Where_AuctionCreateds_conversionInstructions = []
+input_Where_AuctionBids_conversionInstructions->Array.pushMany([
+  ("id", makeInputObjectFieldConverterFn(v => v->Nullable.toOption)),
+  ("tokenId", makeInputObjectFieldConverterFn(v => v->Nullable.toOption)),
+])
 input_Where_AuctionCreateds_conversionInstructions->Array.pushMany([
   ("id", makeInputObjectFieldConverterFn(v => v->Nullable.toOption)),
   ("tokenId", makeInputObjectFieldConverterFn(v => v->Nullable.toOption)),
@@ -86,6 +112,7 @@ input_Where_AuctionCreateds_conversionInstructions->Array.pushMany([
 
 let interface_Node_resolveType = (v: Interface_node.Resolver.t) =>
   switch v {
+  | AuctionBid(_) => "AuctionBid"
   | AuctionSettled(_) => "AuctionSettled"
   | AuctionCreated(_) => "AuctionCreated"
   | QuestionSubmitted(_) => "QuestionSubmitted"
@@ -109,6 +136,113 @@ i_Node.contents = GraphQLInterfaceType.make({
       },
     }->makeFields,
   resolveType: GraphQLInterfaceType.makeResolveInterfaceTypeFn(interface_Node_resolveType),
+})
+t_AuctionBid.contents = GraphQLObjectType.make({
+  name: "AuctionBid",
+  description: "GraphClient: A bid on a Vote Auction",
+  interfaces: [get_Node()],
+  fields: () =>
+    {
+      "amount": {
+        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        description: "The amount of the bid",
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["amount"]
+        }),
+      },
+      "bidder": {
+        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        description: "The address of the bidder",
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["bidder"]
+        }),
+      },
+      "blockTimestamp": {
+        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        description: "The time the bid was made",
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["blockTimestamp"]
+        }),
+      },
+      "id": {
+        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        description: ?None,
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["id"]
+        }),
+      },
+      "tokenId": {
+        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        description: "The ID of the Vote Token",
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["tokenId"]
+        }),
+      },
+    }->makeFields,
+})
+t_AuctionBidConnection.contents = GraphQLObjectType.make({
+  name: "AuctionBidConnection",
+  description: "A connection to a todo.",
+  interfaces: [],
+  fields: () =>
+    {
+      "edges": {
+        typ: GraphQLListType.make(
+          get_AuctionBidEdge()->GraphQLObjectType.toGraphQLType,
+        )->GraphQLListType.toGraphQLType,
+        description: "A list of edges.",
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["edges"]
+        }),
+      },
+      "pageInfo": {
+        typ: get_PageInfo()->GraphQLObjectType.toGraphQLType->nonNull,
+        description: "Information to aid in pagination.",
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["pageInfo"]
+        }),
+      },
+    }->makeFields,
+})
+t_AuctionBidEdge.contents = GraphQLObjectType.make({
+  name: "AuctionBidEdge",
+  description: "An edge to an auction bid.",
+  interfaces: [],
+  fields: () =>
+    {
+      "cursor": {
+        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        description: "A cursor for use in pagination.",
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["cursor"]
+        }),
+      },
+      "node": {
+        typ: get_AuctionBid()->GraphQLObjectType.toGraphQLType,
+        description: "The item at the end of the edge.",
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["node"]
+        }),
+      },
+    }->makeFields,
 })
 t_AuctionCreated.contents = GraphQLObjectType.make({
   name: "AuctionCreated",
@@ -356,6 +490,47 @@ t_Query.contents = GraphQLObjectType.make({
   interfaces: [],
   fields: () =>
     {
+      "auctionBid": {
+        typ: get_AuctionBid()->GraphQLObjectType.toGraphQLType,
+        description: ?None,
+        deprecationReason: ?None,
+        args: {"id": {typ: Scalars.string->Scalars.toGraphQLType->nonNull}}->makeArgs,
+        resolve: makeResolveFn((src, args, ctx) => {
+          let src = typeUnwrapper(src)
+          AuctionBidResolvers.Node.auctionBid(src, ~ctx, ~id=args["id"])
+        }),
+      },
+      "auctionBids": {
+        typ: get_AuctionBidConnection()->GraphQLObjectType.toGraphQLType,
+        description: ?None,
+        deprecationReason: ?None,
+        args: {
+          "after": {typ: Scalars.string->Scalars.toGraphQLType},
+          "before": {typ: Scalars.string->Scalars.toGraphQLType},
+          "first": {typ: Scalars.int->Scalars.toGraphQLType},
+          "last": {typ: Scalars.int->Scalars.toGraphQLType},
+          "orderBy": {typ: enum_OrderBy_AuctionBids->GraphQLEnumType.toGraphQLType},
+          "orderDirection": {typ: enum_OrderDirection->GraphQLEnumType.toGraphQLType},
+          "where": {typ: get_Where_AuctionBids()->GraphQLInputObjectType.toGraphQLType},
+        }->makeArgs,
+        resolve: makeResolveFn((src, args, ctx) => {
+          let src = typeUnwrapper(src)
+          AuctionBidResolvers.Connection.auctionBids(
+            src,
+            ~after=args["after"]->Nullable.toOption,
+            ~before=args["before"]->Nullable.toOption,
+            ~first=args["first"]->Nullable.toOption,
+            ~last=args["last"]->Nullable.toOption,
+            ~orderBy=args["orderBy"]->Nullable.toOption,
+            ~orderDirection=args["orderDirection"]->Nullable.toOption,
+            ~where=switch args["where"]->Nullable.toOption {
+            | None => None
+            | Some(v) =>
+              v->applyConversionToInputObject(input_Where_AuctionBids_conversionInstructions)->Some
+            },
+          )
+        }),
+      },
       "auctionCreated": {
         typ: get_AuctionCreated()->GraphQLObjectType.toGraphQLType,
         description: ?None,
@@ -618,6 +793,23 @@ t_QuestionSubmittedEdge.contents = GraphQLObjectType.make({
           let src = typeUnwrapper(src)
           src["node"]
         }),
+      },
+    }->makeFields,
+})
+input_Where_AuctionBids.contents = GraphQLInputObjectType.make({
+  name: "Where_AuctionBids",
+  description: ?None,
+  fields: () =>
+    {
+      "id": {
+        GraphQLInputObjectType.typ: Scalars.string->Scalars.toGraphQLType,
+        description: ?None,
+        deprecationReason: ?None,
+      },
+      "tokenId": {
+        GraphQLInputObjectType.typ: Scalars.string->Scalars.toGraphQLType,
+        description: ?None,
+        deprecationReason: ?None,
       },
     }->makeFields,
 })
