@@ -4,19 +4,19 @@
 module Types = {
   @@warning("-30")
 
-  type rec fragment_auctionCreateds_edges_node = {
+  type rec fragment_auctionSettleds_edges_node = {
     @live id: string,
     tokenId: string,
-    fragmentRefs: RescriptRelay.fragmentRefs<[ | #AuctionItem_auctionCreated]>,
+    fragmentRefs: RescriptRelay.fragmentRefs<[ | #AuctionItem_auctionSettled]>,
   }
-  and fragment_auctionCreateds_edges = {
-    node: option<fragment_auctionCreateds_edges_node>,
+  and fragment_auctionSettleds_edges = {
+    node: option<fragment_auctionSettleds_edges_node>,
   }
-  and fragment_auctionCreateds = {
-    edges: option<array<option<fragment_auctionCreateds_edges>>>,
+  and fragment_auctionSettleds = {
+    edges: option<array<option<fragment_auctionSettleds_edges>>>,
   }
   type fragment = {
-    auctionCreateds: option<fragment_auctionCreateds>,
+    auctionSettleds: option<fragment_auctionSettleds>,
   }
 }
 
@@ -25,7 +25,7 @@ module Internal = {
   type fragmentRaw
   @live
   let fragmentConverter: Js.Dict.t<Js.Dict.t<Js.Dict.t<string>>> = %raw(
-    json`{"__root":{"auctionCreateds_edges_node":{"f":""}}}`
+    json`{"__root":{"auctionSettleds_edges_node":{"f":""}}}`
   )
   @live
   let fragmentConverterMap = ()
@@ -40,19 +40,19 @@ module Internal = {
 type t
 type fragmentRef
 external getFragmentRef:
-  RescriptRelay.fragmentRefs<[> | #AuctionListDisplay_auctionCreateds]> => fragmentRef = "%identity"
+  RescriptRelay.fragmentRefs<[> | #AuctionListDisplay_auctionSettleds]> => fragmentRef = "%identity"
 
 @live
 @inline
-let connectionKey = "AuctionListDisplay_auctionCreateds_auctionCreateds"
+let connectionKey = "AuctionListDisplay_auctionSettleds_auctionSettleds"
 
 %%private(
   @live @module("relay-runtime") @scope("ConnectionHandler")
-  external internal_makeConnectionId: (RescriptRelay.dataId, @as("AuctionListDisplay_auctionCreateds_auctionCreateds") _, 'arguments) => RescriptRelay.dataId = "getConnectionID"
+  external internal_makeConnectionId: (RescriptRelay.dataId, @as("AuctionListDisplay_auctionSettleds_auctionSettleds") _, 'arguments) => RescriptRelay.dataId = "getConnectionID"
 )
 
 @live
-let makeConnectionId = (connectionParentDataId: RescriptRelay.dataId, ~orderBy: RelaySchemaAssets_graphql.enum_OrderBy_AuctionCreateds=TokenId, ~orderDirection: RelaySchemaAssets_graphql.enum_OrderDirection=Desc) => {
+let makeConnectionId = (connectionParentDataId: RescriptRelay.dataId, ~orderBy: RelaySchemaAssets_graphql.enum_OrderBy_AuctionSettleds=TokenId, ~orderDirection: RelaySchemaAssets_graphql.enum_OrderDirection=Desc) => {
   let orderBy = Some(orderBy)
   let orderDirection = Some(orderDirection)
   let args = {"orderBy": orderBy, "orderDirection": orderDirection}
@@ -63,7 +63,7 @@ module Utils = {
   open Types
 
   @live
-  let getConnectionNodes: option<Types.fragment_auctionCreateds> => array<Types.fragment_auctionCreateds_edges_node> = connection => 
+  let getConnectionNodes: option<Types.fragment_auctionSettleds> => array<Types.fragment_auctionSettleds_edges_node> = connection => 
     switch connection {
       | None => []
       | Some(connection) => 
@@ -87,7 +87,7 @@ type operationType = RescriptRelay.fragmentNode<relayOperationNode>
 let node: operationType = %raw(json` {
   "argumentDefinitions": [
     {
-      "defaultValue": 6,
+      "defaultValue": 5,
       "kind": "LocalArgument",
       "name": "first"
     },
@@ -110,15 +110,15 @@ let node: operationType = %raw(json` {
         "cursor": null,
         "direction": "forward",
         "path": [
-          "auctionCreateds"
+          "auctionSettleds"
         ]
       }
     ]
   },
-  "name": "AuctionListDisplay_auctionCreateds",
+  "name": "AuctionListDisplay_auctionSettleds",
   "selections": [
     {
-      "alias": "auctionCreateds",
+      "alias": "auctionSettleds",
       "args": [
         {
           "kind": "Variable",
@@ -131,15 +131,15 @@ let node: operationType = %raw(json` {
           "variableName": "orderDirection"
         }
       ],
-      "concreteType": "AuctionCreatedConnection",
+      "concreteType": "AuctionSettledConnection",
       "kind": "LinkedField",
-      "name": "__AuctionListDisplay_auctionCreateds_auctionCreateds_connection",
+      "name": "__AuctionListDisplay_auctionSettleds_auctionSettleds_connection",
       "plural": false,
       "selections": [
         {
           "alias": null,
           "args": null,
-          "concreteType": "AuctionCreatedEdge",
+          "concreteType": "AuctionSettledEdge",
           "kind": "LinkedField",
           "name": "edges",
           "plural": true,
@@ -147,7 +147,7 @@ let node: operationType = %raw(json` {
             {
               "alias": null,
               "args": null,
-              "concreteType": "AuctionCreated",
+              "concreteType": "AuctionSettled",
               "kind": "LinkedField",
               "name": "node",
               "plural": false,
@@ -169,7 +169,7 @@ let node: operationType = %raw(json` {
                 {
                   "args": null,
                   "kind": "FragmentSpread",
-                  "name": "AuctionItem_auctionCreated"
+                  "name": "AuctionItem_auctionSettled"
                 },
                 {
                   "alias": null,

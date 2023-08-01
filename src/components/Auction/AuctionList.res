@@ -1,6 +1,7 @@
 module Query = %relay(`
   query AuctionListQuery {
     ...AuctionListDisplay_auctionCreateds
+    ...AuctionListDisplay_auctionSettleds
   }
 `)
 
