@@ -26,7 +26,6 @@ node_modules
 .graphclient
 lib
 
-*.mjs
 .pnp.*
 .yarn/*
 !.yarn/patches
@@ -39,5 +38,8 @@ lib
 **/__generated__/**
 !/schema/__generated__/*
 !/src/__generated__/*
+!/src/routes/__generated__/*
+
+*.mjs
 ```
 .vercel
