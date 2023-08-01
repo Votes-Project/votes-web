@@ -18,7 +18,7 @@ type enum_OrderBy_AuctionCreateds_input =
 type enum_OrderBy_AuctionSettleds = 
   | @as("id") Id
   | @as("tokenId") TokenId
-  | @as("price") Price
+  | @as("winner") Winner
   | FutureAddedValue(string)
 
 
@@ -26,7 +26,7 @@ type enum_OrderBy_AuctionSettleds =
 type enum_OrderBy_AuctionSettleds_input = 
   | @as("id") Id
   | @as("tokenId") TokenId
-  | @as("price") Price
+  | @as("winner") Winner
 
 
 @live @unboxed
