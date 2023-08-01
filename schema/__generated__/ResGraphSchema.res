@@ -33,7 +33,7 @@ let enum_OrderBy_AuctionSettleds = GraphQLEnumType.make({
   values: {
     "id": {GraphQLEnumType.value: "id", description: ?None, deprecationReason: ?None},
     "tokenId": {GraphQLEnumType.value: "tokenId", description: ?None, deprecationReason: ?None},
-    "price": {GraphQLEnumType.value: "price", description: ?None, deprecationReason: ?None},
+    "winner": {GraphQLEnumType.value: "winner", description: ?None, deprecationReason: ?None},
   }->makeEnumValues,
 })
 let enum_OrderDirection = GraphQLEnumType.make({
@@ -116,6 +116,15 @@ t_AuctionCreated.contents = GraphQLObjectType.make({
   interfaces: [get_Node()],
   fields: () =>
     {
+      "endTime": {
+        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        description: "End time of auction *",
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["endTime"]
+        }),
+      },
       "id": {
         typ: Scalars.string->Scalars.toGraphQLType->nonNull,
         description: ?None,
@@ -123,6 +132,15 @@ t_AuctionCreated.contents = GraphQLObjectType.make({
         resolve: makeResolveFn((src, _args, _ctx) => {
           let src = typeUnwrapper(src)
           src["id"]
+        }),
+      },
+      "startTime": {
+        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        description: "Start time of auction *",
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["startTime"]
         }),
       },
       "tokenId": {
@@ -196,6 +214,15 @@ t_AuctionSettled.contents = GraphQLObjectType.make({
   interfaces: [get_Node()],
   fields: () =>
     {
+      "amount": {
+        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        description: "Amount of winning bid *",
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["amount"]
+        }),
+      },
       "id": {
         typ: Scalars.string->Scalars.toGraphQLType->nonNull,
         description: ?None,

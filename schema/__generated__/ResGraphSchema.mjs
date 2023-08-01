@@ -40,8 +40,8 @@ var enum_OrderBy_AuctionSettleds = new Graphql.GraphQLEnumType({
         tokenId: {
           value: "tokenId"
         },
-        price: {
-          value: "price"
+        winner: {
+          value: "winner"
         }
       }
     });
@@ -178,11 +178,25 @@ t_AuctionCreated.contents = new Graphql.GraphQLObjectType({
       description: "GraphClient: A Votes Auction",
       fields: (function () {
           return {
+                  endTime: {
+                    type: new Graphql.GraphQLNonNull(Graphql.GraphQLString),
+                    resolve: Caml_option.some(function (src, _args, _ctx) {
+                          return typeUnwrapper(src).endTime;
+                        }),
+                    description: "End time of auction *"
+                  },
                   id: {
                     type: new Graphql.GraphQLNonNull(Graphql.GraphQLString),
                     resolve: Caml_option.some(function (src, _args, _ctx) {
                           return typeUnwrapper(src).id;
                         })
+                  },
+                  startTime: {
+                    type: new Graphql.GraphQLNonNull(Graphql.GraphQLString),
+                    resolve: Caml_option.some(function (src, _args, _ctx) {
+                          return typeUnwrapper(src).startTime;
+                        }),
+                    description: "Start time of auction *"
                   },
                   tokenId: {
                     type: new Graphql.GraphQLNonNull(Graphql.GraphQLString),
@@ -249,6 +263,13 @@ t_AuctionSettled.contents = new Graphql.GraphQLObjectType({
       description: "GraphClient: A Settled Votes Auction",
       fields: (function () {
           return {
+                  amount: {
+                    type: new Graphql.GraphQLNonNull(Graphql.GraphQLString),
+                    resolve: Caml_option.some(function (src, _args, _ctx) {
+                          return typeUnwrapper(src).amount;
+                        }),
+                    description: "Amount of winning bid *"
+                  },
                   id: {
                     type: new Graphql.GraphQLNonNull(Graphql.GraphQLString),
                     resolve: Caml_option.some(function (src, _args, _ctx) {
