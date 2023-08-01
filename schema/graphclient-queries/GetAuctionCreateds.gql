@@ -2,5 +2,7 @@ query GetAuctionCreateds($first: Int, $orderBy: AuctionCreated_orderBy, $orderDi
   auctionCreateds(first: $first, orderBy: $orderBy, orderDirection: $orderDirection, where: $where) {
     id
     tokenId
+    startTime
+    endTime
   }
 }
