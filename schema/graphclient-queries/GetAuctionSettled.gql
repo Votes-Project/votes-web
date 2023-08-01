@@ -3,5 +3,6 @@ query GetAuctionSettled($id: ID!) {
     id
     winner
     tokenId
+    amount
   }
 }
