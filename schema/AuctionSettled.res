@@ -8,6 +8,9 @@ type auctionSettled = {
   /** ID of Votes token **/
   @gql.field
   tokenId: string,
+  /** Amount of winning bid **/
+  @gql.field
+  amount: string,
 }
 
 /** An edge to a settledAuction. */

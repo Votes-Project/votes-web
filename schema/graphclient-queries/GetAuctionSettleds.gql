@@ -3,5 +3,6 @@ query GetAuctionSettleds($first: Int, $orderBy: AuctionSettled_orderBy, $orderDi
     id
     winner
     tokenId
+    amount
   }
 }
