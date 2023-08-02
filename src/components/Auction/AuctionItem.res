@@ -20,6 +20,7 @@ exception PastAuctionDoesNotExist
 @react.component
 let make = (
   ~auctionCreated as auctionCreatedRef,
+  ~children,
   ~isToday=false,
   ~auctionSettled as auctionSettledRef=None,
 ) => {
@@ -28,7 +29,6 @@ let make = (
     auctionSettledRef->Option.map(auctionSettledRef =>
       AuctionSettledFragment.use(auctionSettledRef)
     )
-  Js.log2("auctionSettled: ", auctionSettled)
 
   let (currentBid, _) = React.useState(_ => "0")
   switch isToday {
@@ -60,32 +60,7 @@ let make = (
           {"Place Bid"->React.string}
         </button>
       </div>
-      <div className="flex flex-col justify-between">
-        <div className="flex items-center justify-between">
-          <p> {"vict0xr.eth"->React.string} </p>
-          <div className="flex gap-2">
-            <p> {"0.4 Ξ"->React.string} </p>
-            <p> {"🔗"->React.string} </p>
-          </div>
-        </div>
-        <div className="my-3 h-0 w-full border border-black" />
-        <div className="flex items-center justify-between">
-          <p> {"chilleeman.eth"->React.string} </p>
-          <div className="flex gap-2">
-            <p> {"0.2 Ξ"->React.string} </p>
-            <p> {"🔗"->React.string} </p>
-          </div>
-        </div>
-        <div className="my-3 h-0 w-full border border-black" />
-        <div className="flex items-center justify-between">
-          <p> {"adamstallard.eth"->React.string} </p>
-          <div className="flex gap-2">
-            <p> {"0.1 Ξ"->React.string} </p>
-            <p> {"🔗"->React.string} </p>
-          </div>
-        </div>
-        <div className="my-3 h-0 w-full border border-black" />
-      </div>
+      <div className="flex flex-col justify-between"> {children} </div>
       <div className="w-full py-2 text-center">
         {" View
               All

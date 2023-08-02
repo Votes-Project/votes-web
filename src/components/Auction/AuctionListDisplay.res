@@ -44,7 +44,7 @@ module AuctionSettledsFragment = %relay(`
   `)
 
 @react.component
-let make = (~query, ~tokenId) => {
+let make = (~query, ~children, ~tokenId) => {
   let {auctionCreateds} = AuctionCreatedsFragment.use(query)
 
   let {auctionSettleds} = AuctionSettledsFragment.use(query)
@@ -66,16 +66,17 @@ let make = (~query, ~tokenId) => {
   let auctionItems = switch tokenId {
   | None =>
     todaysAuctionFragment->Option.map(auctionCreated => [
-      <AuctionItem
-        auctionCreated={auctionCreated.fragmentRefs} key=auctionCreated.id isToday=true
-      />,
+      <AuctionItem auctionCreated={auctionCreated.fragmentRefs} key=auctionCreated.id isToday=true>
+        {children}
+      </AuctionItem>,
     ])
   | Some(tokenId) =>
     if isToday {
       todaysAuctionFragment->Option.map(auctionCreated => [
         <AuctionItem
-          auctionCreated={auctionCreated.fragmentRefs} key=auctionCreated.id isToday=true
-        />,
+          auctionCreated={auctionCreated.fragmentRefs} key=auctionCreated.id isToday=true>
+          {children}
+        </AuctionItem>,
       ])
     } else {
       auctionFragments
@@ -84,8 +85,9 @@ let make = (~query, ~tokenId) => {
         <AuctionItem
           auctionCreated={auctionCreated.fragmentRefs}
           auctionSettled={Some(auctionSettled.fragmentRefs)}
-          key=auctionCreated.id
-        />
+          key=auctionCreated.id>
+          {children}
+        </AuctionItem>
       })
       ->Some
     }

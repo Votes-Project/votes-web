@@ -46,7 +46,7 @@ module Sheet = {
 @react.component @relay.deferredComponent
 let make = () => {
   let {replace} = RelayRouter.Utils.useRouter()
-  let {queryParams, setParams} = Routes.Main.Route.useQueryParams()
+  let {queryParams} = Routes.Main.Route.useQueryParams()
   let (isOpen, setIsOpen) = React.useState(_ => true)
 
   let onClose = _ => setIsOpen(_ => false)

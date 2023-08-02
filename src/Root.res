@@ -20,11 +20,12 @@ import { optimism, goerli } from "wagmi/chains";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
 
-const { chains, publicClient } = configureChains(
-  [import.meta.env.NODE_ENV === "production" ? optimism : goerli],
+const voteChains = import.meta.env.NODE_ENV === "production" ? [optimism] : [goerli, optimism];
+
+const { chains, publicClient, webSocketPublicClient } = configureChains(
+  voteChains,
   [
     alchemyProvider({ apiKey: import.meta.env.VITE_PRIVATE_ALCHEMY_ID }),
-
     publicProvider(),
   ]
 );
@@ -32,7 +33,7 @@ const { chains, publicClient } = configureChains(
 
 
 const { connectors } = getDefaultWallets({
-  appName: "My RainbowKit App",
+  appName: "Votes",
   projectId: import.meta.env.VITE_WALLETCONNECT_PROJECT_ID,
   chains,
 });
@@ -41,14 +42,11 @@ const wagmiConfig = createConfig({
   autoConnect: true,
   connectors,
   publicClient,
+  webSocketPublicClient
 });
 
 `)
 
-module WagmiConfig = {
-  @react.component @module("wagmi")
-  external make: (~config: 'a, ~children: React.element) => React.element = "WagmiConfig"
-}
 module RainbowKitProvider = {
   @react.component @module("@rainbow-me/rainbowkit")
   external make: (~chains: 'a, ~children: React.element) => React.element = "RainbowKitProvider"
@@ -59,14 +57,14 @@ ReactDOMExperimental.renderConcurrentRootAtElementWithId(
     <RelayRouter.Provider value={Router.routerContext}>
       <React.Suspense fallback={React.string("Loading...")}>
         // <RescriptReactErrorBoundary fallback={_ => {<div> {React.string("Error!")} </div>}}>
-        <WagmiConfig config={%raw("wagmiConfig")}>
+        <Wagmi.WagmiConfig config={%raw("wagmiConfig")}>
           <RainbowKitProvider chains={%raw("chains")}>
             <RelayRouter.RouteRenderer
               // This renders all the time, and when there's a pending navigation (pending via React concurrent mode), pending will be `true`
               renderPending={pending => <PendingIndicatorBar pending />}
             />
           </RainbowKitProvider>
-        </WagmiConfig>
+        </Wagmi.WagmiConfig>
         // </RescriptReactErrorBoundary>
       </React.Suspense>
     </RelayRouter.Provider>
