@@ -6,12 +6,12 @@ module Query = %relay(`
 `)
 
 @react.component @relay.deferredComponent
-let make = (~queryRef, ~tokenId) => {
+let make = (~queryRef, ~children, ~tokenId) => {
   let data = Query.usePreloaded(~queryRef)
 
   <>
     <React.Suspense fallback={<div> {React.string("Loading Auctions...")} </div>}>
-      <AuctionListDisplay query={data.fragmentRefs} tokenId />
+      <AuctionListDisplay query={data.fragmentRefs} tokenId> {children} </AuctionListDisplay>
     </React.Suspense>
   </>
 }
