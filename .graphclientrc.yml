@@ -3,5 +3,9 @@ sources:
     handler:
       graphql:
         endpoint: https://api.studio.thegraph.com/query/9032/votes-goerli/v0.1.1
+    transforms:
+      - autoPagination:
+          validateSchema: true
+          limitOfRecords: 1000
 documents:
   - "./schema/graphclient-queries/**/*.{gql,graphql}"

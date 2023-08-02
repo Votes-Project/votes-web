@@ -11,6 +11,10 @@ module Main = {
   module Auction = {
     module Route = Route__Main__Auction_route
 
+    module Bids = {
+      module Route = Route__Main__Auction__Bids_route
+
+    }
   }
 }
 module Votes = {
