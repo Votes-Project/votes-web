@@ -3218,15 +3218,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wagmi/chains@npm:1.5.0":
-  version: 1.5.0
-  resolution: "@wagmi/chains@npm:1.5.0"
+"@wagmi/chains@npm:1.6.0":
+  version: 1.6.0
+  resolution: "@wagmi/chains@npm:1.6.0"
   peerDependencies:
     typescript: ">=5.0.4"
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 01605859fa22580b418a17fc57cfe8da6a65973e390a691be7f7c3f94c5469504b21e9dc29f296d20b48f756fe4d08088dacb82216327d6173d4be5899f865c8
+  checksum: 6c3d477936622f763b9e44c4a66c080020f1119165c8f6b840c51f5822880fedd5031036461d4b28df5cf1ae19cb12e139e4a4b3c129b475f0363fd9c4c8bb0d
   languageName: node
   linkType: hard
 
@@ -3257,11 +3257,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@wagmi/core@npm:1.3.7":
-  version: 1.3.7
-  resolution: "@wagmi/core@npm:1.3.7"
+"@wagmi/core@npm:1.3.8":
+  version: 1.3.8
+  resolution: "@wagmi/core@npm:1.3.8"
   dependencies:
-    "@wagmi/chains": 1.5.0
+    "@wagmi/chains": 1.6.0
     "@wagmi/connectors": 2.6.6
     abitype: 0.8.7
     eventemitter3: ^4.0.7
@@ -3272,7 +3272,7 @@ __metadata:
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 081325b2ff1af99580d9474a03eb03746c2f384302a59abf0a4c4c561a95150a59a0a400c80af368a710f8b1ba204527d8cccfca8fd60e775ca8eaec25af5fdd
+  checksum: e1ff791f10668ea094bd1e3fd6fec31fdb861e547aee3f66ee633ae38430acc7273aac5a3365c18803d4ab5d56203dcbb114a7abed9c2d261585173a67ca4672
   languageName: node
   linkType: hard
 
@@ -3863,6 +3863,21 @@ __metadata:
     zod:
       optional: true
   checksum: 4351466808969bcc73e5c535c3d96bb687ee2be0bccd48eba024c47e6cc248f0c8bd368f9e42dab35d39923e63b1349ade470f72812de27127968caf1a1426c9
+  languageName: node
+  linkType: hard
+
+"abitype@npm:0.9.3":
+  version: 0.9.3
+  resolution: "abitype@npm:0.9.3"
+  peerDependencies:
+    typescript: ">=5.0.4"
+    zod: ^3 >=3.19.1
+  peerDependenciesMeta:
+    typescript:
+      optional: true
+    zod:
+      optional: true
+  checksum: f97c5a118180563b9ed8b97da492a82d3ce53dcd7d96c87764e90dbe84c04ae72dd5703d1ed5a54601033ab1772b8a235a1b5aadaf7aad6c4b5fdad7fd3a69a7
   languageName: node
   linkType: hard
 
@@ -8734,10 +8749,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rescript-nodejs@npm:^14.3.1":
-  version: 14.4.0
-  resolution: "rescript-nodejs@npm:14.4.0"
-  checksum: 473228116076f18ceb03004edcc0d0b58bef8170d471766df554d47769c2633b880718c000294c2725b50805ae4d37f3f62bd33e91094a0e00865172f22356f8
+"rescript-nodejs@npm:15.0.0":
+  version: 15.0.0
+  resolution: "rescript-nodejs@npm:15.0.0"
+  checksum: f0b237c58a331a52d043b275fdb66389845298b175e1616f2d948b85c4b3f5e2de5d90b6984ac715b3ed532fb61c338f6b378f566f58ff7d0c10fd37ede54059
   languageName: node
   linkType: hard
 
@@ -8784,20 +8799,31 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rescript@npm:11.0.0-beta.1":
-  version: 11.0.0-beta.1
-  resolution: "rescript@npm:11.0.0-beta.1"
+"rescript@npm:11.0.0-beta.3":
+  version: 11.0.0-beta.3
+  resolution: "rescript@npm:11.0.0-beta.3"
   bin:
     bsc: bsc
     bstracing: lib/bstracing
     rescript: rescript
-  checksum: ada45e6a923d0af2ce6f642075fe47ffb1aaaf8581b9819747416a09034a0a4dc5cf89f00394e327b8759ea3eeff843efbf41800b454a5a8ec2b0c9233ae3803
+  checksum: 865f3f754349baec5783010a0632e9b3fa01a5b100eea35e1392b9d5323d0e9f181f9514c8c97be88213b31ed27a64e710117dcce3a5c7d0871223766e1f59b8
   languageName: node
   linkType: hard
 
-"resgraph@npm:^0.6.2":
-  version: 0.6.2
-  resolution: "resgraph@npm:0.6.2"
+"rescript@npm:11.0.0-beta.4":
+  version: 11.0.0-beta.4
+  resolution: "rescript@npm:11.0.0-beta.4"
+  bin:
+    bsc: bsc
+    bstracing: lib/bstracing
+    rescript: rescript
+  checksum: cf55a1dd8970595c07d8919341123cbb7f7b278b23153597da00a128d189f4ab54b86a6bd7d88089ee35122389d02a1ae69de74d81f1bc187e06ae6a444356ef
+  languageName: node
+  linkType: hard
+
+"resgraph@npm:0.6.3":
+  version: 0.6.3
+  resolution: "resgraph@npm:0.6.3"
   dependencies:
     "@glennsl/rescript-fetch": 0.2.0
     "@rescript/core": 0.4.0
@@ -8805,12 +8831,12 @@ __metadata:
     chokidar: ^3.5.3
     dataloader: ^2.2.2
     graphql-language-service: ^5.1.6
-    rescript: 11.0.0-beta.1
-    rescript-nodejs: ^14.3.1
+    rescript: 11.0.0-beta.3
+    rescript-nodejs: 15.0.0
     vscode-jsonrpc: ^5.0.1
   bin:
     resgraph: cli/Cli.mjs
-  checksum: accabc7802f68749ec156d2599fa0323ca7d49adc8c37710f4a477d54c78539aa0a0cac6dfd93643da48484aa477ee700eaad2a85e54da3bdccdfb0a9f8d9802
+  checksum: 159eccde13e3a40bbdaba1d641c34f44b66077c02bb1f5d90b9a12861fc91955e080cb07ffe50542a9ee23198488b4f326efd27fc0919dad8c812943b6d7b950
   languageName: node
   linkType: hard
 
@@ -10052,7 +10078,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"viem@npm:^1.0.0, viem@npm:^1.1.4":
+"viem@npm:^1.0.0":
   version: 1.2.10
   resolution: "viem@npm:1.2.10"
   dependencies:
@@ -10071,6 +10097,28 @@ __metadata:
     typescript:
       optional: true
   checksum: ba48d0c5e3ce3ad5994a4cfb26f7dbfdd73cc6930862f78b491e7abf176763e6216d4433fbf3ba6ab1825fbc4e573735c52a23bc83495ba059ed710793bb48dd
+  languageName: node
+  linkType: hard
+
+"viem@npm:^1.5.0":
+  version: 1.5.0
+  resolution: "viem@npm:1.5.0"
+  dependencies:
+    "@adraffy/ens-normalize": 1.9.0
+    "@noble/curves": 1.0.0
+    "@noble/hashes": 1.3.0
+    "@scure/bip32": 1.3.0
+    "@scure/bip39": 1.2.0
+    "@wagmi/chains": 1.6.0
+    abitype: 0.9.3
+    isomorphic-ws: 5.0.0
+    ws: 8.12.0
+  peerDependencies:
+    typescript: ">=5.0.4"
+  peerDependenciesMeta:
+    typescript:
+      optional: true
+  checksum: 28ff9e64a3076b339182a3bab5dc442222400da4c66d258bf35e961f9a2e555ba2b0f3b30bdb87f63142682530c25f0807113580fbf888f840930f39df4bd8e3
   languageName: node
   linkType: hard
 
@@ -10143,15 +10191,15 @@ __metadata:
     react-modal-sheet: ^2.0.0
     react-relay: ^15.0.0
     relay-runtime: ^15.0.0
-    rescript: 11.0.0-beta.1
+    rescript: 11.0.0-beta.4
     rescript-relay: 3.0.0-alpha.1
     rescript-relay-router: ^1.0.1
-    resgraph: ^0.6.2
+    resgraph: 0.6.3
     rollup-plugin-visualizer: ^5.9.2
     tailwindcss: ^3.3.2
-    viem: ^1.1.4
+    viem: ^1.5.0
     vite: ^4.4.3
-    wagmi: ^1.2.1
+    wagmi: ^1.3.9
   languageName: unknown
   linkType: soft
 
@@ -10169,14 +10217,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"wagmi@npm:^1.2.1":
-  version: 1.3.8
-  resolution: "wagmi@npm:1.3.8"
+"wagmi@npm:^1.3.9":
+  version: 1.3.9
+  resolution: "wagmi@npm:1.3.9"
   dependencies:
     "@tanstack/query-sync-storage-persister": ^4.27.1
     "@tanstack/react-query": ^4.28.0
     "@tanstack/react-query-persist-client": ^4.28.0
-    "@wagmi/core": 1.3.7
+    "@wagmi/core": 1.3.8
     abitype: 0.8.7
     use-sync-external-store: ^1.2.0
   peerDependencies:
@@ -10186,7 +10234,7 @@ __metadata:
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 88c67ec3cdb7ba444d5bb13ce99854f0fd6c79e9a93a795ccbd31012d3a212e812d2c7f0a5af5f7b6520fc40617bce2e382ae16b81fe7d3961ddd439aaedb561
+  checksum: bb58ab92dc18b8e054bd4a8feb4270aeb946e05174cfae556f67fd07a5edf063ddca944054b037ee65396236dea1be2532abbf7a87b8e22dff41b309b7c5d973
   languageName: node
   linkType: hard
 
