@@ -9,7 +9,7 @@
 // // import { useIsNetworkEnsSupported } from '../../hooks/useIsNetworkEnsSupported';
 @react.component
 let make = (~address, ~avatar=None, ~size=24) => {
-  let {data: ensName, isError} = Wagmi.useEnsName({
+  let {data: ensName} = Wagmi.useEnsName({
     address: address->Option.getWithDefault(""),
     chainId: 1,
     suspense: true,

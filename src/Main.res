@@ -51,7 +51,7 @@ let make = (~queryRef, ~children) => {
   <>
     <div className="wrapper flex flex-col">
       <Header />
-      <div className="flex flex-col bg-background-light lg:flex-row">
+      <div className="flex flex-col bg-secondary lg:flex-row">
         <div className="mx-[10%) mt-8 w-[80%] self-end md:mx-[15%] md:w-[70%] lg:w-full">
           <div className="relative h-0 w-full pt-[100%]">
             <img
@@ -61,7 +61,7 @@ let make = (~queryRef, ~children) => {
           <div />
         </div>
         <main
-          className="min-h-[558px] w-full !self-end bg-background px-[5%] pb-0 pt-[5%] lg:bg-background-light lg:pr-20 ">
+          className="min-h-[558px] w-full !self-end bg-background pr-[5%] pb-0 pt-[5%] lg:bg-secondary lg:pr-20 ">
           <div className="!self-start p-4">
             <div className="flex items-center pt-5">
               <div className="flex gap-2">
