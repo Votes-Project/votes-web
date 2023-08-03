@@ -37,7 +37,7 @@ let make = () => {
   }
 
   <header>
-    <nav className="bg-background-light flex w-full justify-between px-4 py-5">
+    <nav className="bg-secondary flex w-full justify-between px-4 py-5">
       <div className="flex gap-3 justify-center items-center ">
         <a
           href="https://vitejs.dev"
