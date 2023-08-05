@@ -1,13 +1,11 @@
-/* @sourceLoc AuctionItem.res */
+/* @sourceLoc AuctionCountdown.res */
 /* @generated */
 %%raw("/* @generated */")
 module Types = {
   @@warning("-30")
 
   type fragment = {
-    @live id: string,
-    tokenId: string,
-    fragmentRefs: RescriptRelay.fragmentRefs<[ | #AuctionCountdown_auctionCreated | #CreateBid_auctionCreated]>,
+    endTime: string,
   }
 }
 
@@ -16,7 +14,7 @@ module Internal = {
   type fragmentRaw
   @live
   let fragmentConverter: Js.Dict.t<Js.Dict.t<Js.Dict.t<string>>> = %raw(
-    json`{"__root":{"":{"f":""}}}`
+    json`{}`
   )
   @live
   let fragmentConverterMap = ()
@@ -31,7 +29,7 @@ module Internal = {
 type t
 type fragmentRef
 external getFragmentRef:
-  RescriptRelay.fragmentRefs<[> | #AuctionItem_auctionCreated]> => fragmentRef = "%identity"
+  RescriptRelay.fragmentRefs<[> | #AuctionCountdown_auctionCreated]> => fragmentRef = "%identity"
 
 module Utils = {
   @@warning("-33")
@@ -46,31 +44,14 @@ let node: operationType = %raw(json` {
   "argumentDefinitions": [],
   "kind": "Fragment",
   "metadata": null,
-  "name": "AuctionItem_auctionCreated",
+  "name": "AuctionCountdown_auctionCreated",
   "selections": [
     {
       "alias": null,
       "args": null,
       "kind": "ScalarField",
-      "name": "id",
+      "name": "endTime",
       "storageKey": null
-    },
-    {
-      "alias": null,
-      "args": null,
-      "kind": "ScalarField",
-      "name": "tokenId",
-      "storageKey": null
-    },
-    {
-      "args": null,
-      "kind": "FragmentSpread",
-      "name": "CreateBid_auctionCreated"
-    },
-    {
-      "args": null,
-      "kind": "FragmentSpread",
-      "name": "AuctionCountdown_auctionCreated"
     }
   ],
   "type": "AuctionCreated",
