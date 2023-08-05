@@ -1,4 +1,4 @@
-/* @sourceLoc AuctionItem.res */
+/* @sourceLoc AuctionList.res */
 /* @generated */
 %%raw("/* @generated */")
 module Types = {
@@ -31,7 +31,7 @@ module Internal = {
 type t
 type fragmentRef
 external getFragmentRef:
-  RescriptRelay.fragmentRefs<[> | #AuctionItem_auctionCreated]> => fragmentRef = "%identity"
+  RescriptRelay.fragmentRefs<[> | #AuctionList_AuctionItem_auctionCreated]> => fragmentRef = "%identity"
 
 module Utils = {
   @@warning("-33")
@@ -46,7 +46,7 @@ let node: operationType = %raw(json` {
   "argumentDefinitions": [],
   "kind": "Fragment",
   "metadata": null,
-  "name": "AuctionItem_auctionCreated",
+  "name": "AuctionList_AuctionItem_auctionCreated",
   "selections": [
     {
       "alias": null,
