@@ -33,12 +33,14 @@ let make = (~queryRef, ~children) => {
   let todaysTokenId = todaysAuction->Option.map(auction => auction.tokenId)
 
   let todaysDate = Date.make()->Date.toDateString
-  let {queryParams} = Routes.Main.Auction.Route.useQueryParams()
-  let tokenId = switch queryParams.tokenId
-  ->Option.getWithDefault(todaysTokenId->Option.getExn)
-  ->Int.fromString {
-  | Some(tokenId) => tokenId
-  | None => raise(InvalidRoute)
+  let {queryParams, setParams} = Routes.Main.Auction.Route.useQueryParams()
+
+  let tokenId = switch queryParams.tokenId {
+  | Some(tokenId) => tokenId->Int.fromString->Option.getExn
+  | None => {
+      setParams(~setter=_ => {tokenId: todaysTokenId})
+      todaysTokenId->Option.flatMap(todaysTokenId => Int.fromString(todaysTokenId))->Option.getExn
+    }
   }
 
   let handleArrowPress = direction => {
