@@ -265,12 +265,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "57dd4d278ebdcbda231963dd3bd099d8",
+    "cacheID": "bccf40b3dea92d623fccb7b7c092f3c2",
     "id": null,
     "metadata": {},
     "name": "AuctionListQuery",
     "operationKind": "query",
-    "text": "query AuctionListQuery {\n  ...AuctionListDisplay_auctionCreateds\n  ...AuctionListDisplay_auctionSettleds\n}\n\nfragment AuctionCountdown_auctionCreated on AuctionCreated {\n  endTime\n}\n\nfragment AuctionItem_auctionCreated on AuctionCreated {\n  id\n  tokenId\n  ...CreateBid_auctionCreated\n  ...AuctionCountdown_auctionCreated\n}\n\nfragment AuctionItem_auctionSettled on AuctionSettled {\n  id\n  tokenId\n  winner\n  amount\n}\n\nfragment AuctionListDisplay_auctionCreateds on Query {\n  auctionCreateds(orderBy: tokenId, orderDirection: desc, first: 5) {\n    edges {\n      node {\n        id\n        tokenId\n        endTime\n        ...AuctionItem_auctionCreated\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment AuctionListDisplay_auctionSettleds on Query {\n  auctionSettleds(orderBy: tokenId, orderDirection: desc, first: 5) {\n    edges {\n      node {\n        id\n        tokenId\n        ...AuctionItem_auctionSettled\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment CreateBid_auctionCreated on AuctionCreated {\n  tokenId\n}\n"
+    "text": "query AuctionListQuery {\n  ...AuctionListDisplay_auctionCreateds\n  ...AuctionListDisplay_auctionSettleds\n}\n\nfragment AuctionCountdown_auctionCreated on AuctionCreated {\n  endTime\n}\n\nfragment AuctionListDisplay_auctionCreateds on Query {\n  auctionCreateds(orderBy: tokenId, orderDirection: desc, first: 5) {\n    edges {\n      node {\n        id\n        tokenId\n        endTime\n        ...AuctionList_AuctionItem_auctionCreated\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment AuctionListDisplay_auctionSettleds on Query {\n  auctionSettleds(orderBy: tokenId, orderDirection: desc, first: 5) {\n    edges {\n      node {\n        id\n        tokenId\n        ...AuctionList_AuctionItem_auctionSettled\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment AuctionList_AuctionItem_auctionCreated on AuctionCreated {\n  id\n  tokenId\n  ...CreateBid_auctionCreated\n  ...AuctionCountdown_auctionCreated\n}\n\nfragment AuctionList_AuctionItem_auctionSettled on AuctionSettled {\n  id\n  tokenId\n  winner\n  amount\n}\n\nfragment CreateBid_auctionCreated on AuctionCreated {\n  tokenId\n}\n"
   }
 };
 })());

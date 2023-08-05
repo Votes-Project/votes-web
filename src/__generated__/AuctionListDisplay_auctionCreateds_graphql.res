@@ -1,4 +1,4 @@
-/* @sourceLoc AuctionListDisplay.res */
+/* @sourceLoc AuctionList.res */
 /* @generated */
 %%raw("/* @generated */")
 module Types = {
@@ -8,7 +8,7 @@ module Types = {
     endTime: string,
     @live id: string,
     tokenId: string,
-    fragmentRefs: RescriptRelay.fragmentRefs<[ | #AuctionItem_auctionCreated]>,
+    fragmentRefs: RescriptRelay.fragmentRefs<[ | #AuctionList_AuctionItem_auctionCreated]>,
   }
   and fragment_auctionCreateds_edges = {
     node: option<fragment_auctionCreateds_edges_node>,
@@ -177,7 +177,7 @@ let node: operationType = %raw(json` {
                 {
                   "args": null,
                   "kind": "FragmentSpread",
-                  "name": "AuctionItem_auctionCreated"
+                  "name": "AuctionList_AuctionItem_auctionCreated"
                 },
                 {
                   "alias": null,
