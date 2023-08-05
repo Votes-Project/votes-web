@@ -5,6 +5,7 @@ module Types = {
   @@warning("-30")
 
   type rec fragment_auctionCreateds_edges_node = {
+    endTime: string,
     @live id: string,
     tokenId: string,
     fragmentRefs: RescriptRelay.fragmentRefs<[ | #AuctionItem_auctionCreated]>,
@@ -87,7 +88,7 @@ type operationType = RescriptRelay.fragmentNode<relayOperationNode>
 let node: operationType = %raw(json` {
   "argumentDefinitions": [
     {
-      "defaultValue": 6,
+      "defaultValue": 5,
       "kind": "LocalArgument",
       "name": "first"
     },
@@ -164,6 +165,13 @@ let node: operationType = %raw(json` {
                   "args": null,
                   "kind": "ScalarField",
                   "name": "tokenId",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "endTime",
                   "storageKey": null
                 },
                 {

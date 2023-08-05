@@ -55,7 +55,7 @@ var Utils = {
 var node = {
   "argumentDefinitions": [
     {
-      "defaultValue": 6,
+      "defaultValue": 5,
       "kind": "LocalArgument",
       "name": "first"
     },
@@ -132,6 +132,13 @@ var node = {
                   "args": null,
                   "kind": "ScalarField",
                   "name": "tokenId",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "endTime",
                   "storageKey": null
                 },
                 {

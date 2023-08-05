@@ -77,54 +77,52 @@ type operationType = RescriptRelay.queryNode<relayOperationNode>
 
 
 let node: operationType = %raw(json` (function(){
-var v0 = {
-  "kind": "Literal",
-  "name": "orderBy",
-  "value": "tokenId"
-},
-v1 = {
-  "kind": "Literal",
-  "name": "orderDirection",
-  "value": "desc"
-},
-v2 = [
+var v0 = [
   {
     "kind": "Literal",
     "name": "first",
-    "value": 6
+    "value": 5
   },
-  (v0/*: any*/),
-  (v1/*: any*/)
+  {
+    "kind": "Literal",
+    "name": "orderBy",
+    "value": "tokenId"
+  },
+  {
+    "kind": "Literal",
+    "name": "orderDirection",
+    "value": "desc"
+  }
 ],
-v3 = {
+v1 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "id",
   "storageKey": null
 },
-v4 = {
+v2 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "tokenId",
   "storageKey": null
 },
-v5 = {
+v3 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "__typename",
   "storageKey": null
 },
-v6 = {
+v4 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "cursor",
   "storageKey": null
 },
-v7 = {
+v5 = {
   "alias": null,
   "args": null,
   "concreteType": "PageInfo",
@@ -149,18 +147,9 @@ v7 = {
   ],
   "storageKey": null
 },
-v8 = [
+v6 = [
   "orderBy",
   "orderDirection"
-],
-v9 = [
-  {
-    "kind": "Literal",
-    "name": "first",
-    "value": 5
-  },
-  (v0/*: any*/),
-  (v1/*: any*/)
 ];
 return {
   "fragment": {
@@ -191,7 +180,7 @@ return {
     "selections": [
       {
         "alias": null,
-        "args": (v2/*: any*/),
+        "args": (v0/*: any*/),
         "concreteType": "AuctionCreatedConnection",
         "kind": "LinkedField",
         "name": "auctionCreateds",
@@ -213,15 +202,8 @@ return {
                 "name": "node",
                 "plural": false,
                 "selections": [
-                  (v3/*: any*/),
-                  (v4/*: any*/),
-                  {
-                    "alias": null,
-                    "args": null,
-                    "kind": "ScalarField",
-                    "name": "startTime",
-                    "storageKey": null
-                  },
+                  (v1/*: any*/),
+                  (v2/*: any*/),
                   {
                     "alias": null,
                     "args": null,
@@ -229,22 +211,22 @@ return {
                     "name": "endTime",
                     "storageKey": null
                   },
-                  (v5/*: any*/)
+                  (v3/*: any*/)
                 ],
                 "storageKey": null
               },
-              (v6/*: any*/)
+              (v4/*: any*/)
             ],
             "storageKey": null
           },
-          (v7/*: any*/)
+          (v5/*: any*/)
         ],
-        "storageKey": "auctionCreateds(first:6,orderBy:\"tokenId\",orderDirection:\"desc\")"
+        "storageKey": "auctionCreateds(first:5,orderBy:\"tokenId\",orderDirection:\"desc\")"
       },
       {
         "alias": null,
-        "args": (v2/*: any*/),
-        "filters": (v8/*: any*/),
+        "args": (v0/*: any*/),
+        "filters": (v6/*: any*/),
         "handle": "connection",
         "key": "AuctionListDisplay_auctionCreateds_auctionCreateds",
         "kind": "LinkedHandle",
@@ -252,7 +234,7 @@ return {
       },
       {
         "alias": null,
-        "args": (v9/*: any*/),
+        "args": (v0/*: any*/),
         "concreteType": "AuctionSettledConnection",
         "kind": "LinkedField",
         "name": "auctionSettleds",
@@ -274,8 +256,8 @@ return {
                 "name": "node",
                 "plural": false,
                 "selections": [
-                  (v3/*: any*/),
-                  (v4/*: any*/),
+                  (v1/*: any*/),
+                  (v2/*: any*/),
                   {
                     "alias": null,
                     "args": null,
@@ -290,22 +272,22 @@ return {
                     "name": "amount",
                     "storageKey": null
                   },
-                  (v5/*: any*/)
+                  (v3/*: any*/)
                 ],
                 "storageKey": null
               },
-              (v6/*: any*/)
+              (v4/*: any*/)
             ],
             "storageKey": null
           },
-          (v7/*: any*/)
+          (v5/*: any*/)
         ],
         "storageKey": "auctionSettleds(first:5,orderBy:\"tokenId\",orderDirection:\"desc\")"
       },
       {
         "alias": null,
-        "args": (v9/*: any*/),
-        "filters": (v8/*: any*/),
+        "args": (v0/*: any*/),
+        "filters": (v6/*: any*/),
         "handle": "connection",
         "key": "AuctionListDisplay_auctionSettleds_auctionSettleds",
         "kind": "LinkedHandle",
@@ -314,12 +296,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "c699c9da7a6f7bef905e2b36cae9cdda",
+    "cacheID": "57dd4d278ebdcbda231963dd3bd099d8",
     "id": null,
     "metadata": {},
     "name": "AuctionListQuery",
     "operationKind": "query",
-    "text": "query AuctionListQuery {\n  ...AuctionListDisplay_auctionCreateds\n  ...AuctionListDisplay_auctionSettleds\n}\n\nfragment AuctionItem_auctionCreated on AuctionCreated {\n  id\n  tokenId\n  startTime\n  endTime\n}\n\nfragment AuctionItem_auctionSettled on AuctionSettled {\n  id\n  tokenId\n  winner\n  amount\n}\n\nfragment AuctionListDisplay_auctionCreateds on Query {\n  auctionCreateds(orderBy: tokenId, orderDirection: desc, first: 6) {\n    edges {\n      node {\n        id\n        tokenId\n        ...AuctionItem_auctionCreated\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment AuctionListDisplay_auctionSettleds on Query {\n  auctionSettleds(orderBy: tokenId, orderDirection: desc, first: 5) {\n    edges {\n      node {\n        id\n        tokenId\n        ...AuctionItem_auctionSettled\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n"
+    "text": "query AuctionListQuery {\n  ...AuctionListDisplay_auctionCreateds\n  ...AuctionListDisplay_auctionSettleds\n}\n\nfragment AuctionCountdown_auctionCreated on AuctionCreated {\n  endTime\n}\n\nfragment AuctionItem_auctionCreated on AuctionCreated {\n  id\n  tokenId\n  ...CreateBid_auctionCreated\n  ...AuctionCountdown_auctionCreated\n}\n\nfragment AuctionItem_auctionSettled on AuctionSettled {\n  id\n  tokenId\n  winner\n  amount\n}\n\nfragment AuctionListDisplay_auctionCreateds on Query {\n  auctionCreateds(orderBy: tokenId, orderDirection: desc, first: 5) {\n    edges {\n      node {\n        id\n        tokenId\n        endTime\n        ...AuctionItem_auctionCreated\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment AuctionListDisplay_auctionSettleds on Query {\n  auctionSettleds(orderBy: tokenId, orderDirection: desc, first: 5) {\n    edges {\n      node {\n        id\n        tokenId\n        ...AuctionItem_auctionSettled\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment CreateBid_auctionCreated on AuctionCreated {\n  tokenId\n}\n"
   }
 };
 })() `)
