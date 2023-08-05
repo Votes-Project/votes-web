@@ -9,9 +9,6 @@ module AuctionCreatedFragment = %relay(`
   }
 `)
 
-%%raw(`import { useContractWrite, usePrepareContractWrite } from 'wagmi'`)
-%%raw(`import auctionContractAbi from '/src/abis/Auction.json'`)
-
 exception ContractWriteDoesNotExist
 @react.component
 let make = (~queryRef as auctionCreatedRef, ~isToday) => {
