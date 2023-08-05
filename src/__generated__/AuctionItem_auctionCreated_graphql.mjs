@@ -5,7 +5,7 @@ import * as RescriptRelay from "rescript-relay/src/RescriptRelay.mjs";
 
 var Types = {};
 
-var fragmentConverter = {};
+var fragmentConverter = {"__root":{"":{"f":""}}};
 
 function convertFragment(v) {
   return RescriptRelay.convertObj(v, fragmentConverter, undefined, undefined);
@@ -40,18 +40,14 @@ var node = {
       "storageKey": null
     },
     {
-      "alias": null,
       "args": null,
-      "kind": "ScalarField",
-      "name": "startTime",
-      "storageKey": null
+      "kind": "FragmentSpread",
+      "name": "CreateBid_auctionCreated"
     },
     {
-      "alias": null,
       "args": null,
-      "kind": "ScalarField",
-      "name": "endTime",
-      "storageKey": null
+      "kind": "FragmentSpread",
+      "name": "AuctionCountdown_auctionCreated"
     }
   ],
   "type": "AuctionCreated",
