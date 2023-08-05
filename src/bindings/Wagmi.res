@@ -1,7 +1,22 @@
 type client
-type chain
 type connector
 type abi = JSON.t
+type value = BigInt.t
+module Chain = {
+  type blockExplorers
+  type contracts
+  type rpcUrls
+
+  type t = {
+    id: int,
+    blockExplorers: blockExplorers,
+    contracts: contracts,
+    name: string,
+    testnet: bool,
+    rpcUrls: rpcUrls,
+  }
+}
+
 type transactionResponse = {hash: string}
 
 type accountStatus =
@@ -20,16 +35,20 @@ type account = {
   status: accountStatus,
 }
 
-type queryInput<'data> = {
+type input = {
   chainId?: int,
   cacheTime?: int,
   enabled?: bool,
   scopeKey?: string,
   staleTime?: int,
   suspense?: bool,
+}
+
+type queryInput<'data> = {
   onSuccess?: Nullable.t<'data> => unit,
   onError?: Nullable.t<Exn.t> => unit,
   onSettled?: (Nullable.t<'data>, Nullable.t<Exn.t>) => unit,
+  ...input,
 }
 
 type status =
@@ -64,27 +83,29 @@ type onMutateInput<'args> = {
   args: 'args,
   overrides: overrides,
 }
+
 type mutationInput<'args> = {
-  address?: string,
-  abi: abi,
-  functionName: string,
-  chainId?: int,
   args?: 'args,
   account?: string,
-  value?: string,
+  value?: value,
   onMutate?: onMutateInput<'args> => unit,
   onSuccess?: Nullable.t<transactionResponse> => unit,
   onError?: Nullable.t<Exn.t> => unit,
   onSettled?: (Nullable.t<transactionResponse>, Nullable.t<Exn.t>) => unit,
+  ...input,
 }
+
 type contractConfig<'args> = {
+  address?: string,
+  abi: abi,
+  functionName: string,
   ...mutationInput<'args>,
 }
 
 type mutationReturn<'args> = {
-  write: (~config: contractConfig<'args>=?) => unit,
-  writeAsync: (~config: contractConfig<'args>=?) => Promise.t<transactionResponse>,
-  reset: unit => unit,
+  write?: (~config: mutationInput<'args>=?) => unit,
+  writeAsync?: (~config: mutationInput<'args>=?) => Promise.t<transactionResponse>,
+  reset?: unit => unit,
   ...result<string>,
 }
 
@@ -119,8 +140,13 @@ type ensNameInput = {address: string, ...queryInput<string>}
 type usePrepareContractWriteReturn<'args> = {config: contractConfig<'args>}
 @module("wagmi")
 external usePrepareContractWrite: (
-  ~config: mutationInput<'args>=?,
+  ~config: contractConfig<'args>=?,
 ) => usePrepareContractWriteReturn<'args> = "usePrepareContractWrite"
 
 @module("wagmi")
 external useContractWrite: contractConfig<'args> => mutationReturn<'args> = "useContractWrite"
+
+type unsupportedChain = {unsupported: bool, ...Chain.t}
+type useNetworkReturn = {chain?: unsupportedChain, chains: array<Chain.t>}
+@module("wagmi")
+external useNetwork: unit => useNetworkReturn = "useNetwork"

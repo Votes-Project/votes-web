@@ -1,7 +1,7 @@
 module AuctionCreatedsFragment = %relay(`
   fragment AuctionListDisplay_auctionCreateds on Query
   @argumentDefinitions(
-    first: { type: "Int", defaultValue: 6 }
+    first: { type: "Int", defaultValue: 5 }
     orderBy: { type: "OrderBy_AuctionCreateds", defaultValue: tokenId }
     orderDirection: { type: "OrderDirection", defaultValue: desc }
   ) {
@@ -14,6 +14,7 @@ module AuctionCreatedsFragment = %relay(`
         node {
           id
           tokenId
+          endTime
           ...AuctionItem_auctionCreated
         }
       }
@@ -49,35 +50,68 @@ let make = (~query, ~children, ~tokenId) => {
 
   let {auctionSettleds} = AuctionSettledsFragment.use(query)
 
-  let todaysAuctionFragment =
-    auctionCreateds->AuctionCreatedsFragment.getConnectionNodes->Array.shift
-  let auctionFragments = Belt.Array.zip(
-    auctionCreateds
-    ->AuctionCreatedsFragment.getConnectionNodes
-    ->Array.toSpliced(~start=0, ~remove=1, ~insert=[]), // Note: Wouldn't have to do this splice if lists are in ascending order
-    auctionSettleds->AuctionSettledsFragment.getConnectionNodes,
-  )
+  let isTodaySettled = {
+    let latestAuctionTokenId =
+      auctionCreateds
+      ->AuctionCreatedsFragment.getConnectionNodes
+      ->Array.get(0)
+      ->Option.map(({tokenId}) => tokenId)
+    let latestSettledAuctionTokenId =
+      auctionSettleds
+      ->AuctionSettledsFragment.getConnectionNodes
+      ->Array.get(0)
+      ->Option.map(({tokenId}) => tokenId)
 
-  let isToday =
-    todaysAuctionFragment
-    ->Option.map(({tokenId}) => tokenId)
-    ->Option.equal(tokenId, (a, b) => a == b)
+    latestAuctionTokenId->Option.equal(latestSettledAuctionTokenId, (a, b) => a == b)
+  }
 
-  let auctionItems = switch tokenId {
-  | None =>
-    todaysAuctionFragment->Option.map(auctionCreated => [
+  let (todaysAuctionCreatedFragment, todaysAuctionSettledFragment) = isTodaySettled
+    ? (
+        auctionCreateds->AuctionCreatedsFragment.getConnectionNodes->Array.get(0),
+        auctionSettleds->AuctionSettledsFragment.getConnectionNodes->Array.get(0),
+      )
+    : (auctionCreateds->AuctionCreatedsFragment.getConnectionNodes->Array.get(0), None)
+
+  let auctionFragments = {
+    let auctionCreatedNodes = isTodaySettled
+      ? auctionCreateds->AuctionCreatedsFragment.getConnectionNodes
+      : auctionCreateds->AuctionCreatedsFragment.getConnectionNodes->Array.sliceToEnd(~start=1)
+    Belt.Array.zip(auctionCreatedNodes, auctionSettleds->AuctionSettledsFragment.getConnectionNodes)
+  }
+
+  let handleTodaysAuction = (
+    auctionCreatedFragment: option<
+      AuctionListDisplay_auctionCreateds_graphql.Types.fragment_auctionCreateds_edges_node,
+    >,
+    auctionSettledFragment: option<
+      AuctionListDisplay_auctionSettleds_graphql.Types.fragment_auctionSettleds_edges_node,
+    >,
+  ) =>
+    switch (auctionCreatedFragment, auctionSettledFragment) {
+    | (Some(auctionCreated), Some(auctionSettled)) =>
+      <AuctionItem
+        auctionCreated={auctionCreated.fragmentRefs}
+        auctionSettled={auctionSettled.fragmentRefs->Some}
+        key=auctionCreated.id
+        isToday=true>
+        {children}
+      </AuctionItem>
+    | (Some(auctionCreated), None) =>
       <AuctionItem auctionCreated={auctionCreated.fragmentRefs} key=auctionCreated.id isToday=true>
         {children}
-      </AuctionItem>,
-    ])
+      </AuctionItem>
+    | _ => <div> {"There are no auctions today"->React.string} </div>
+    }
+
+  let auctionItems = switch tokenId {
+  | None => handleTodaysAuction(todaysAuctionCreatedFragment, todaysAuctionSettledFragment)
   | Some(tokenId) =>
-    if isToday {
-      todaysAuctionFragment->Option.map(auctionCreated => [
-        <AuctionItem
-          auctionCreated={auctionCreated.fragmentRefs} key=auctionCreated.id isToday=true>
-          {children}
-        </AuctionItem>,
-      ])
+    if (
+      todaysAuctionCreatedFragment
+      ->Option.map(todaysAuction => tokenId == todaysAuction.tokenId)
+      ->Option.equal(Some(true), (a, b) => a == b)
+    ) {
+      handleTodaysAuction(todaysAuctionCreatedFragment, todaysAuctionSettledFragment)
     } else {
       auctionFragments
       ->Array.filter(((auctionCreated, _)) => tokenId == auctionCreated.tokenId)
@@ -89,9 +123,9 @@ let make = (~query, ~children, ~tokenId) => {
           {children}
         </AuctionItem>
       })
-      ->Some
+      ->React.array
     }
   }
 
-  auctionItems->Option.getExn->React.array
+  auctionItems
 }
