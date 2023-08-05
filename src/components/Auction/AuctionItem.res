@@ -49,10 +49,10 @@ let make = (
         </div>
         <AuctionCountdown queryRef={auctionCreated.fragmentRefs} />
       </div>
-      <RescriptReactErrorBoundary
-        fallback={_ => {<div> {React.string("Bid Component Failed to Insantiate")} </div>}}>
-        <CreateBid queryRef=auctionCreated.fragmentRefs isToday />
-      </RescriptReactErrorBoundary>
+      // <RescriptReactErrorBoundary
+      //   fallback={_ => {<div> {React.string("Bid Component Failed to Insantiate")} </div>}}>
+      <CreateBid queryRef=auctionCreated.fragmentRefs isToday />
+      // </RescriptReactErrorBoundary>
       <div className="flex flex-col justify-between"> {children} </div>
       <div className="w-full py-2 text-center">
         {" View
