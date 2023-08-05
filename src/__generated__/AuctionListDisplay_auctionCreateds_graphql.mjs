@@ -144,7 +144,7 @@ var node = {
                 {
                   "args": null,
                   "kind": "FragmentSpread",
-                  "name": "AuctionItem_auctionCreated"
+                  "name": "AuctionList_AuctionItem_auctionCreated"
                 },
                 {
                   "alias": null,
