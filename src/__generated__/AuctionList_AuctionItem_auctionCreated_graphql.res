@@ -5,7 +5,9 @@ module Types = {
   @@warning("-30")
 
   type fragment = {
+    endTime: string,
     @live id: string,
+    startTime: string,
     tokenId: string,
     fragmentRefs: RescriptRelay.fragmentRefs<[ | #AuctionCountdown_auctionCreated | #CreateBid_auctionCreated]>,
   }
@@ -60,6 +62,20 @@ let node: operationType = %raw(json` {
       "args": null,
       "kind": "ScalarField",
       "name": "tokenId",
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "startTime",
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "endTime",
       "storageKey": null
     },
     {
