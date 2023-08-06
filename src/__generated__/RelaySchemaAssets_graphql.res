@@ -6,6 +6,7 @@ type enum_OrderBy_AuctionBids =
   | @as("id") Id
   | @as("tokenId") TokenId
   | @as("blockTimestamp") BlockTimestamp
+  | @as("amount") Amount
   | FutureAddedValue(string)
 
 
@@ -14,6 +15,7 @@ type enum_OrderBy_AuctionBids_input =
   | @as("id") Id
   | @as("tokenId") TokenId
   | @as("blockTimestamp") BlockTimestamp
+  | @as("amount") Amount
 
 
 @live @unboxed

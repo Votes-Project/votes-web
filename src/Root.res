@@ -52,6 +52,17 @@ module RainbowKitProvider = {
   external make: (~chains: 'a, ~children: React.element) => React.element = "RainbowKitProvider"
 }
 
+module TodaysAuctionProvider = {
+  open TodaysAuctionContext
+  @react.component
+  let make = (~children) => {
+    let (todaysAuction, setTodaysAuction) = React.useState(_ => None)
+    <TodaysAuctionContext.Provider value={{todaysAuction, setTodaysAuction}}>
+      {children}
+    </TodaysAuctionContext.Provider>
+  }
+}
+
 ReactDOMExperimental.renderConcurrentRootAtElementWithId(
   <RescriptRelay.Context.Provider environment={RelayEnv.environment}>
     <RelayRouter.Provider value={Router.routerContext}>
@@ -59,10 +70,12 @@ ReactDOMExperimental.renderConcurrentRootAtElementWithId(
         // <RescriptReactErrorBoundary fallback={_ => {<div> {React.string("Error!")} </div>}}>
         <Wagmi.WagmiConfig config={%raw("wagmiConfig")}>
           <RainbowKitProvider chains={%raw("chains")}>
-            <RelayRouter.RouteRenderer
-              // This renders all the time, and when there's a pending navigation (pending via React concurrent mode), pending will be `true`
-              renderPending={pending => <PendingIndicatorBar pending />}
-            />
+            <TodaysAuctionProvider>
+              <RelayRouter.RouteRenderer
+                // This renders all the time, and when there's a pending navigation (pending via React concurrent mode), pending will be `true`
+                renderPending={pending => <PendingIndicatorBar pending />}
+              />
+            </TodaysAuctionProvider>
           </RainbowKitProvider>
         </Wagmi.WagmiConfig>
         // </RescriptReactErrorBoundary>
