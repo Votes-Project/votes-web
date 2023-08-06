@@ -46,10 +46,12 @@ let make = (~queryRef as auctionCreatedRef) => {
 
   <div className="flex items-center justify-between">
     <p> {"Time Left"->React.string} </p>
-    <p>
-      {`${hours}h
+    {secondsRemaining < 0
+      ? <p> {"0h 0m 0s"->React.string} </p>
+      : <p>
+          {`${hours}h
       ${minutes}m
       ${seconds}s`->React.string}
-    </p>
+        </p>}
   </div>
 }

@@ -31,6 +31,9 @@ var enum_OrderBy_AuctionBids = new Graphql.GraphQLEnumType({
         },
         blockTimestamp: {
           value: "blockTimestamp"
+        },
+        amount: {
+          value: "amount"
         }
       }
     });

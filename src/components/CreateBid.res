@@ -14,7 +14,6 @@ exception ContractWriteDoesNotExist
 let make = (~queryRef as auctionCreatedRef, ~isToday) => {
   let (bidAmount, setBidAmount) = React.useState(_ => "")
   let auctionCreated = AuctionCreatedFragment.use(auctionCreatedRef)
-  let network = Wagmi.useNetwork()
 
   let {config} = Wagmi.usePrepareContractWrite(
     ~config={
@@ -23,21 +22,19 @@ let make = (~queryRef as auctionCreatedRef, ~isToday) => {
       functionName: "createBid",
       value: bidAmount->Viem.parseEther->Option.getWithDefault(BigInt.fromString("0")),
       args: [auctionCreated.tokenId->Int.fromString],
-      chainId: network.chain->Option.map(({id}) => id)->Option.getWithDefault(5),
     },
   )
 
-  let (currentBid, _) = React.useState(_ => "0.0000001")
+  let (currentBid, _) = React.useState(_ => "")
 
   let onBidChange = e => {
     let value = ReactEvent.Form.currentTarget(e)["value"]
-
     setBidAmount(_ => value)
   }
 
   let createBid = Wagmi.useContractWrite(config)
 
-  let handleBid = () =>
+  let handleCreateBid = () =>
     switch createBid.write {
     | Some(createBid) => createBid()
     | None => raise(ContractWriteDoesNotExist)
@@ -57,7 +54,7 @@ let make = (~queryRef as auctionCreatedRef, ~isToday) => {
       disabled={!isToday ||
       bidAmount == "" ||
       bidAmount->Float.fromString->Option.equal(currentBid->Float.fromString, (a, b) => a < b)}
-      onClick={_ => handleBid()}>
+      onClick={_ => handleCreateBid()}>
       {"Place Bid"->React.string}
     </button>
   </div>
