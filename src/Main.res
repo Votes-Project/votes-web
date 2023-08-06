@@ -2,51 +2,53 @@
 import viteLogo from "/vite.svg";
 `)
 
-module Query = %relay(`
-  query MainQuery {
-    auctionCreateds(first: 1, orderBy: tokenId, orderDirection: desc)
-      @connection(key: "Main_auctionCreateds_auctionCreateds") {
-      edges {
-        node {
-          id
-          tokenId
-        }
-      }
-    }
-  }
-`)
-
 type arrowDirection = LeftPress | RightPress
 exception InvalidRoute
 @react.component @relay.deferredComponent
-let make = (~queryRef, ~children) => {
+let make = (~children) => {
+  let {todaysAuction} = React.useContext(TodaysAuctionContext.context)
+
   let {push} = RelayRouter.Utils.useRouter()
-  let auctionCreatedEdges = switch Query.usePreloaded(~queryRef) {
-  | {auctionCreateds: Some({edges})} => edges->Option.getWithDefault([])
-  | _ => []
+
+  let startTime = switch todaysAuction {
+  | Some({startTime}) => startTime
+  | _ => "Could not fetch auction date"
   }
+  let auctionDate =
+    startTime
+    ->Float.fromString
+    ->Option.map(startTime => startTime *. 1000.)
+    ->Option.map(todaysStartTime =>
+      todaysStartTime
+      ->Date.fromTime
+      ->Date.toLocaleDateStringWithLocaleAndOptions("en-US", {dateStyle: #long})
+    )
 
-  let todaysAuction =
-    auctionCreatedEdges
-    ->Array.get(0)
-    ->Option.flatMap(edge => edge->Option.flatMap(edge => edge.node))
-  let todaysTokenId = todaysAuction->Option.map(auction => auction.tokenId)
-
-  let todaysDate = Date.make()->Date.toDateString
-  let {queryParams, setParams} = Routes.Main.Auction.Route.useQueryParams()
+  let {queryParams} = Routes.Main.Auction.Route.useQueryParams()
 
   let tokenId = switch queryParams.tokenId {
-  | Some(tokenId) => tokenId->Int.fromString->Option.getExn
-  | None => {
-      setParams(~setter=_ => {tokenId: todaysTokenId})
-      todaysTokenId->Option.flatMap(todaysTokenId => Int.fromString(todaysTokenId))->Option.getExn
+  | Some(tokenId) => tokenId
+  | None =>
+    switch todaysAuction {
+    | Some({tokenId}) => tokenId
+    | _ => ""
     }
   }
 
   let handleArrowPress = direction => {
     switch direction {
-    | LeftPress => Routes.Main.Auction.Route.makeLink(~tokenId=Int.toString(tokenId - 1))->push
-    | RightPress => Routes.Main.Auction.Route.makeLink(~tokenId=Int.toString(tokenId + 1))->push
+    | LeftPress =>
+      Routes.Main.Auction.Route.makeLink(
+        ~tokenId=tokenId
+        ->Int.fromString
+        ->Option.mapWithDefault("", tokenId => (tokenId - 1)->Int.toString),
+      )->push
+    | RightPress =>
+      Routes.Main.Auction.Route.makeLink(
+        ~tokenId=tokenId
+        ->Int.fromString
+        ->Option.mapWithDefault("", tokenId => (tokenId + 1)->Int.toString),
+      )->push
     }
   }
 
@@ -54,31 +56,34 @@ let make = (~queryRef, ~children) => {
     <div className="wrapper flex flex-col">
       <Header />
       <div className="flex flex-col bg-secondary lg:flex-row">
-        <div className="mx-[10%) mt-8 w-[80%] self-end md:mx-[15%] md:w-[70%] lg:w-full">
+        <div className="mx-[10%) mt-8 w-[50%] self-end md:mx-[15%] md:w-[50%] lg:w-full">
           <div className="relative h-0 w-full pt-[100%]">
             <img
               className="absolute left-0 top-0 h-auto w-full align-middle " src={%raw("viteLogo")}
             />
           </div>
-          <div />
         </div>
         <main
-          className="min-h-[558px] w-full !self-end bg-background pr-[5%] pb-0 pt-[5%] lg:bg-secondary lg:pr-20 ">
+          className="min-h-[558px] w-full !self-end bg-background pr-[5%] pb-0 lg:bg-secondary lg:pr-20 ">
           <div className="!self-start p-4">
             <div className="flex items-center pt-5">
-              <div className="flex gap-2">
+              <div className="flex gap-2 items-center">
                 <button
-                  disabled={tokenId == 0}
+                  disabled={tokenId == "0"}
                   onClick={_ => handleArrowPress(LeftPress)}
                   className="flex h-8 w-8 items-center justify-center rounded-full bg-primary ">
                   {"⬅️"->React.string}
                 </button>
                 <button
                   onClick={_ => handleArrowPress(RightPress)}
+                  disabled={tokenId ==
+                    todaysAuction
+                    ->Option.flatMap(auction => auction.tokenId)
+                    ->Option.getWithDefault("")}
                   className="flex h-8 w-8 items-center justify-center rounded-full bg-primary ">
                   {"➡️"->React.string}
                 </button>
-                <p> {todaysDate->React.string} </p>
+                <p> {auctionDate->Option.getWithDefault("")->React.string} </p>
               </div>
             </div>
             {children}
@@ -89,7 +94,7 @@ let make = (~queryRef, ~children) => {
     {<>
       <section>
         <div className="flex flex-col">
-          <h1> {"The Daily Vote"->React.string} </h1>
+          <h1 className=" text-9xl font-bold"> {"The Daily Vote"->React.string} </h1>
           <p>
             {" Each day ushers in a fresh Vote, ripe with the potential for a new question. Remember, the early bird snags the juiciest worm - earlier Votes have priority over later Votes. So rise and shine, folks!
 

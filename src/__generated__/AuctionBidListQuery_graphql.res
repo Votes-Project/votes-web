@@ -4,32 +4,22 @@
 module Types = {
   @@warning("-30")
 
-  @live type where_AuctionBids = RelaySchemaAssets_graphql.input_Where_AuctionBids
   type response = {
     fragmentRefs: RescriptRelay.fragmentRefs<[ | #AuctionBidListDisplay_auctionBids]>,
   }
   @live
   type rawResponse = response
   @live
-  type variables = {
-    where?: where_AuctionBids,
-  }
+  type variables = unit
   @live
-  type refetchVariables = {
-    where: option<option<where_AuctionBids>>,
-  }
-  @live let makeRefetchVariables = (
-    ~where=?,
-  ): refetchVariables => {
-    where: where
-  }
-
+  type refetchVariables = unit
+  @live let makeRefetchVariables = () => ()
 }
 
 module Internal = {
   @live
   let variablesConverter: Js.Dict.t<Js.Dict.t<Js.Dict.t<string>>> = %raw(
-    json`{"where_AuctionBids":{},"__root":{"where":{"r":"where_AuctionBids"}}}`
+    json`{}`
   )
   @live
   let variablesConverterMap = ()
@@ -89,45 +79,30 @@ type operationType = RescriptRelay.queryNode<relayOperationNode>
 let node: operationType = %raw(json` (function(){
 var v0 = [
   {
-    "defaultValue": null,
-    "kind": "LocalArgument",
-    "name": "where"
-  }
-],
-v1 = {
-  "kind": "Variable",
-  "name": "where",
-  "variableName": "where"
-},
-v2 = [
-  {
     "kind": "Literal",
     "name": "first",
-    "value": 5
+    "value": 1000
   },
   {
     "kind": "Literal",
     "name": "orderBy",
-    "value": "blockTimestamp"
+    "value": "tokenId"
   },
   {
     "kind": "Literal",
     "name": "orderDirection",
     "value": "desc"
-  },
-  (v1/*: any*/)
+  }
 ];
 return {
   "fragment": {
-    "argumentDefinitions": (v0/*: any*/),
+    "argumentDefinitions": [],
     "kind": "Fragment",
     "metadata": null,
     "name": "AuctionBidListQuery",
     "selections": [
       {
-        "args": [
-          (v1/*: any*/)
-        ],
+        "args": null,
         "kind": "FragmentSpread",
         "name": "AuctionBidListDisplay_auctionBids"
       }
@@ -137,13 +112,13 @@ return {
   },
   "kind": "Request",
   "operation": {
-    "argumentDefinitions": (v0/*: any*/),
+    "argumentDefinitions": [],
     "kind": "Operation",
     "name": "AuctionBidListQuery",
     "selections": [
       {
         "alias": null,
-        "args": (v2/*: any*/),
+        "args": (v0/*: any*/),
         "concreteType": "AuctionBidConnection",
         "kind": "LinkedField",
         "name": "auctionBids",
@@ -183,14 +158,14 @@ return {
                     "alias": null,
                     "args": null,
                     "kind": "ScalarField",
-                    "name": "bidder",
+                    "name": "amount",
                     "storageKey": null
                   },
                   {
                     "alias": null,
                     "args": null,
                     "kind": "ScalarField",
-                    "name": "amount",
+                    "name": "bidder",
                     "storageKey": null
                   },
                   {
@@ -239,15 +214,14 @@ return {
             "storageKey": null
           }
         ],
-        "storageKey": null
+        "storageKey": "auctionBids(first:1000,orderBy:\"tokenId\",orderDirection:\"desc\")"
       },
       {
         "alias": null,
-        "args": (v2/*: any*/),
+        "args": (v0/*: any*/),
         "filters": [
           "orderBy",
-          "orderDirection",
-          "where"
+          "orderDirection"
         ],
         "handle": "connection",
         "key": "AuctionBidListDisplay_auctionBids_auctionBids",
@@ -257,12 +231,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "d0bc1ce398df63c74116414b285b0c0a",
+    "cacheID": "f6e615b87b6bf6962d48493556c0b480",
     "id": null,
     "metadata": {},
     "name": "AuctionBidListQuery",
     "operationKind": "query",
-    "text": "query AuctionBidListQuery(\n  $where: Where_AuctionBids\n) {\n  ...AuctionBidListDisplay_auctionBids_3FC4Qo\n}\n\nfragment AuctionBidListDisplay_auctionBids_3FC4Qo on Query {\n  auctionBids(orderBy: blockTimestamp, orderDirection: desc, first: 5, where: $where) {\n    edges {\n      node {\n        id\n        tokenId\n        ...AuctionBidList_AuctionBidItem_auctionBid\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment AuctionBidList_AuctionBidItem_auctionBid on AuctionBid {\n  id\n  tokenId\n  bidder\n  amount\n}\n"
+    "text": "query AuctionBidListQuery {\n  ...AuctionBidListDisplay_auctionBids\n}\n\nfragment AuctionBidListDisplay_auctionBids on Query {\n  auctionBids(orderBy: tokenId, orderDirection: desc, first: 1000) {\n    edges {\n      node {\n        id\n        tokenId\n        amount\n        ...AuctionBidList_AuctionBidItem_auctionBid\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment AuctionBidList_AuctionBidItem_auctionBid on AuctionBid {\n  id\n  tokenId\n  bidder\n  amount\n}\n"
   }
 };
 })() `)

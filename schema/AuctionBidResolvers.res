@@ -23,7 +23,10 @@ module Connection = {
 
   @gql.enum
   type orderBy_AuctionBids =
-    | @as("id") ID | @as("tokenId") TokenId | @as("blockTimestamp") BlockTimestamp
+    | @as("id") ID
+    | @as("tokenId") TokenId
+    | @as("blockTimestamp") BlockTimestamp
+    | @as("amount") Amount
 
   @gql.inputObject
   type where_AuctionBids = {

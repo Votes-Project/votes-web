@@ -2,6 +2,7 @@ enum OrderBy_AuctionBids {
   id
   tokenId
   blockTimestamp
+  amount
 }
 
 enum OrderBy_AuctionCreateds {

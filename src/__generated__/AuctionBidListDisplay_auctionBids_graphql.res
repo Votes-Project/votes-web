@@ -5,6 +5,7 @@ module Types = {
   @@warning("-30")
 
   type rec fragment_auctionBids_edges_node = {
+    amount: string,
     @live id: string,
     tokenId: string,
     fragmentRefs: RescriptRelay.fragmentRefs<[ | #AuctionBidList_AuctionBidItem_auctionBid]>,
@@ -52,10 +53,10 @@ let connectionKey = "AuctionBidListDisplay_auctionBids_auctionBids"
 )
 
 @live
-let makeConnectionId = (connectionParentDataId: RescriptRelay.dataId, ~orderBy: RelaySchemaAssets_graphql.enum_OrderBy_AuctionBids=BlockTimestamp, ~orderDirection: RelaySchemaAssets_graphql.enum_OrderDirection=Desc, ~where: option<RelaySchemaAssets_graphql.input_Where_AuctionBids>=?) => {
+let makeConnectionId = (connectionParentDataId: RescriptRelay.dataId, ~orderBy: RelaySchemaAssets_graphql.enum_OrderBy_AuctionBids=TokenId, ~orderDirection: RelaySchemaAssets_graphql.enum_OrderDirection=Desc) => {
   let orderBy = Some(orderBy)
   let orderDirection = Some(orderDirection)
-  let args = {"orderBy": orderBy, "orderDirection": orderDirection, "where": where}
+  let args = {"orderBy": orderBy, "orderDirection": orderDirection}
   internal_makeConnectionId(connectionParentDataId, args)
 }
 module Utils = {
@@ -87,12 +88,12 @@ type operationType = RescriptRelay.fragmentNode<relayOperationNode>
 let node: operationType = %raw(json` {
   "argumentDefinitions": [
     {
-      "defaultValue": 5,
+      "defaultValue": 1000,
       "kind": "LocalArgument",
       "name": "first"
     },
     {
-      "defaultValue": "blockTimestamp",
+      "defaultValue": "tokenId",
       "kind": "LocalArgument",
       "name": "orderBy"
     },
@@ -100,11 +101,6 @@ let node: operationType = %raw(json` {
       "defaultValue": "desc",
       "kind": "LocalArgument",
       "name": "orderDirection"
-    },
-    {
-      "defaultValue": null,
-      "kind": "LocalArgument",
-      "name": "where"
     }
   ],
   "kind": "Fragment",
@@ -134,11 +130,6 @@ let node: operationType = %raw(json` {
           "kind": "Variable",
           "name": "orderDirection",
           "variableName": "orderDirection"
-        },
-        {
-          "kind": "Variable",
-          "name": "where",
-          "variableName": "where"
         }
       ],
       "concreteType": "AuctionBidConnection",
@@ -174,6 +165,13 @@ let node: operationType = %raw(json` {
                   "args": null,
                   "kind": "ScalarField",
                   "name": "tokenId",
+                  "storageKey": null
+                },
+                {
+                  "alias": null,
+                  "args": null,
+                  "kind": "ScalarField",
+                  "name": "amount",
                   "storageKey": null
                 },
                 {
