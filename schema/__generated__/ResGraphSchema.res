@@ -30,6 +30,7 @@ let enum_OrderBy_AuctionBids = GraphQLEnumType.make({
       description: ?None,
       deprecationReason: ?None,
     },
+    "amount": {GraphQLEnumType.value: "amount", description: ?None, deprecationReason: ?None},
   }->makeEnumValues,
 })
 let enum_OrderBy_AuctionCreateds = GraphQLEnumType.make({

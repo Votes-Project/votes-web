@@ -3,6 +3,8 @@ module AuctionItem = {
   fragment AuctionList_AuctionItem_auctionCreated on AuctionCreated {
     id
     tokenId
+    startTime
+    endTime
     ...CreateBid_auctionCreated
     ...AuctionCountdown_auctionCreated
   }
@@ -32,7 +34,34 @@ module AuctionItem = {
         AuctionSettledFragment.use(auctionSettledRef)
       )
 
-    let (currentBid, _) = React.useState(_ => "0.0000001")
+    let {todaysAuction, setTodaysAuction} = React.useContext(TodaysAuctionContext.context)
+
+    React.useEffect3(() => {
+      let {tokenId, startTime, endTime} = auctionCreated
+      if isToday {
+        open TodaysAuctionContext
+        setTodaysAuction(todaysAuction =>
+          todaysAuction->Option.mapWithDefault(
+            Some({tokenId, startTime, endTime}),
+            todaysAuction => Some({
+              ...todaysAuction,
+              tokenId,
+              startTime,
+              endTime,
+            }),
+          )
+        )
+      } else {
+        ()
+      }
+      None
+    }, (auctionCreated, isToday, setTodaysAuction))
+
+    let currentBid = switch todaysAuction {
+    | Some(todaysAuction) => todaysAuction.currentBid->Option.getWithDefault("0")
+
+    | _ => "Bid failed to load"
+    }
 
     switch isToday && auctionSettled->Option.isNone {
     | true =>
@@ -44,8 +73,8 @@ module AuctionItem = {
           <div className="flex items-center justify-between">
             <p> {"Current Bid"->React.string} </p>
             <p>
+              {"Ξ "->React.string}
               {currentBid->React.string}
-              {"Ξ"->React.string}
             </p>
           </div>
           <AuctionCountdown queryRef={auctionCreated.fragmentRefs} />
@@ -127,7 +156,6 @@ module AuctionListDisplay = {
   @react.component
   let make = (~query, ~children, ~tokenId) => {
     let {auctionCreateds} = AuctionCreatedsFragment.use(query)
-
     let {auctionSettleds} = AuctionSettledsFragment.use(query)
 
     let isTodaySettled = {

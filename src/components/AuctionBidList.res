@@ -8,9 +8,30 @@ module AuctionBidItem = {
   }
 `)
   @react.component
-  let make = (~auctionBid as auctionBidRef) => {
+  let make = (~auctionBid as auctionBidRef, ~isCurrentBid) => {
     let {amount, bidder} = AuctionBidItemFragment.use(auctionBidRef)
     let amount = amount->BigInt.fromString->Viem.formatUnits(18)
+
+    let {setTodaysAuction} = React.useContext(TodaysAuctionContext.context)
+
+    React.useEffect3(() => {
+      if isCurrentBid {
+        open TodaysAuctionContext
+        setTodaysAuction(todaysAuction =>
+          todaysAuction->Option.mapWithDefault(
+            Some({currentBid: amount}),
+            todaysAuction => Some({
+              ...todaysAuction,
+              currentBid: amount,
+            }),
+          )
+        )
+      } else {
+        ()
+      }
+      None
+    }, (isCurrentBid, amount, setTodaysAuction))
+
     <>
       <div className="flex items-center justify-between">
         <ShortAddress address={Some(bidder)} />
@@ -28,21 +49,20 @@ module AuctionBidListDisplay = {
   module AuctionBidsFragment = %relay(`
   fragment AuctionBidListDisplay_auctionBids on Query
   @argumentDefinitions(
-    first: { type: "Int", defaultValue: 5 }
-    orderBy: { type: "OrderBy_AuctionBids", defaultValue: blockTimestamp }
+    first: { type: "Int", defaultValue: 1000}
+    orderBy: { type: "OrderBy_AuctionBids", defaultValue: tokenId }
     orderDirection: { type: "OrderDirection", defaultValue: desc }
-    where: { type: "Where_AuctionBids"}
   ) {
     auctionBids(
       orderBy: $orderBy
       orderDirection: $orderDirection
       first: $first
-      where: $where
     ) @connection(key: "AuctionBidListDisplay_auctionBids_auctionBids") {
       edges {
         node {
           id
           tokenId
+          amount
           ...AuctionBidList_AuctionBidItem_auctionBid
         }
       }
@@ -51,20 +71,51 @@ module AuctionBidListDisplay = {
   `)
   @react.component
   let make = (~query) => {
+    let {queryParams} = Routes.Main.Auction.Bids.Route.useQueryParams()
+    let {todaysAuction} = React.useContext(TodaysAuctionContext.context)
+    let tokenId = switch (queryParams.tokenId, todaysAuction) {
+    | (Some(tokenId), _) => tokenId
+    | (None, Some({tokenId})) => tokenId
+    | _ => ""
+    }
+
     let {auctionBids} = AuctionBidsFragment.use(query)
+    let groupedBids = Dict.make()
 
     auctionBids
     ->AuctionBidsFragment.getConnectionNodes
-    ->Array.map(auctionBid => {
-      <AuctionBidItem auctionBid={auctionBid.fragmentRefs} key=auctionBid.id />
+    ->Array.forEach(auctionBid => {
+      let bidsByTokenId = groupedBids->Dict.get(auctionBid.tokenId)->Option.getWithDefault(list{})
+      groupedBids->Dict.set(auctionBid.tokenId, list{...bidsByTokenId, auctionBid})
     })
+
+    let sortBids = (
+      bids: list<AuctionBidListDisplay_auctionBids_graphql.Types.fragment_auctionBids_edges_node>,
+    ) =>
+      bids->List.sort((a, b) => {
+        BigInt.fromString(a.amount) > b.amount->BigInt.fromString ? -1.0 : 1.0
+      })
+
+    groupedBids
+    ->Dict.get(tokenId)
+    ->Option.mapWithDefault(list{}, sortBids)
+    ->List.mapWithIndex((i, auctionBid) => {
+      i == 0
+        ? <AuctionBidItem
+            auctionBid={auctionBid.fragmentRefs} key=auctionBid.id isCurrentBid=true
+          />
+        : <AuctionBidItem
+            auctionBid={auctionBid.fragmentRefs} key=auctionBid.id isCurrentBid=false
+          />
+    })
+    ->List.toArray
     ->React.array
   }
 }
 
 module Query = %relay(`
-  query AuctionBidListQuery($where: Where_AuctionBids) {
-    ...AuctionBidListDisplay_auctionBids @arguments(where: $where)
+  query AuctionBidListQuery {
+    ...AuctionBidListDisplay_auctionBids
   }
 `)
 
