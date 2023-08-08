@@ -175,6 +175,7 @@ type PageInfo {
 }
 
 type Query {
+  verification(contextId: String!): Verification
   questionSubmitteds(skip: Int, first: Int, after: String, before: String, last: Int): QuestionSubmittedConnection
   questionSubmitted(id: String!): QuestionSubmitted
 
@@ -227,5 +228,32 @@ type QuestionSubmittedEdge {
 
   """A cursor for use in pagination."""
   cursor: String!
+}
+
+
+"""Data fields from a verified contextID"""
+type Verification implements Node {
+  id: String!
+
+  """the key of app"""
+  app: String!
+
+  """The context the contextID is linked to. This should always be Votes"""
+  context: String!
+
+  """Bool value denoting whether the BrightID is owned by a unique human"""
+  unique: Boolean!
+
+  """Array of ids linked to the Votes context"""
+  contextIds: [String!]!
+
+  """The timestamp of the verification"""
+  timestamp: Float
+
+  """The signature of the verification"""
+  sig: String
+
+  """The public key of the verification"""
+  publicKey: String
 }
 
