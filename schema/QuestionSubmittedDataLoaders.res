@@ -1,9 +1,6 @@
 type t = {byId: DataLoader.t<string, option<QuestionSubmitted.questionSubmitted>>}
 
-type data = {
-  auctionSettled: AuctionSettled.auctionSettled,
-  questionSubmitted: QuestionSubmitted.questionSubmitted,
-}
+type data = {questionSubmitted: QuestionSubmitted.questionSubmitted}
 
 @module("../.graphclient/index.js") @val
 external document: GraphClient.document<GraphClient.result<data>> = "GetQuestionSubmittedDocument"

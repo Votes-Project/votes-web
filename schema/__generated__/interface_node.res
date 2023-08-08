@@ -9,10 +9,11 @@ module Resolver = {
     | AuctionCreated(AuctionCreated.auctionCreated)
     | AuctionSettled(AuctionSettled.auctionSettled)
     | QuestionSubmitted(QuestionSubmitted.questionSubmitted)
+    | Verification(Verification.verification)
 }
 
 module ImplementedBy = {
-  type t = AuctionBid | AuctionCreated | AuctionSettled | QuestionSubmitted
+  type t = AuctionBid | AuctionCreated | AuctionSettled | QuestionSubmitted | Verification
 
   let decode = (str: string) =>
     switch str {
@@ -20,6 +21,7 @@ module ImplementedBy = {
     | "AuctionCreated" => Some(AuctionCreated)
     | "AuctionSettled" => Some(AuctionSettled)
     | "QuestionSubmitted" => Some(QuestionSubmitted)
+    | "Verification" => Some(Verification)
     | _ => None
     }
 
@@ -31,6 +33,7 @@ type typeMap<'a> = {
   @as("AuctionCreated") auctionCreated: 'a,
   @as("AuctionSettled") auctionSettled: 'a,
   @as("QuestionSubmitted") questionSubmitted: 'a,
+  @as("Verification") verification: 'a,
 }
 
 module TypeMap: {
