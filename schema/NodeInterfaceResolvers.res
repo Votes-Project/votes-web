@@ -27,6 +27,11 @@ let node = async (_: Schema.query, ~id, ~ctx: ResGraphContext.context): option<
       | None => panic("Did not find auction bid with that ID")
       | Some(auctionBid) => AuctionBid(auctionBid)->Some
       }
+    | Some(Verification) =>
+      switch await ctx.dataLoaders.verification.byId->DataLoader.load(id) {
+      | None => panic("Did not find verification data with that ID")
+      | Some(verification) => Verification(verification)->Some
+      }
     }
   | _ => None
   }
