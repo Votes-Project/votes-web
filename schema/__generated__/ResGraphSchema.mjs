@@ -3,6 +3,7 @@
 import * as Graphql from "graphql";
 import * as Caml_option from "rescript/lib/es6/caml_option.js";
 import * as AuctionBidResolvers from "../AuctionBidResolvers.mjs";
+import * as VerificationResolvers from "../VerificationResolvers.mjs";
 import * as NodeInterfaceResolvers from "../NodeInterfaceResolvers.mjs";
 import * as AuctionCreatedResolvers from "../AuctionCreatedResolvers.mjs";
 import * as AuctionSettledResolvers from "../AuctionSettledResolvers.mjs";
@@ -149,6 +150,10 @@ var t_QuestionSubmittedEdge = {
   contents: null
 };
 
+var t_Verification = {
+  contents: null
+};
+
 var input_Where_AuctionBids = {
   contents: null
 };
@@ -211,6 +216,8 @@ function interface_Node_resolveType(v) {
         return "AuctionSettled";
     case "QuestionSubmitted" :
         return "QuestionSubmitted";
+    case "Verification" :
+        return "Verification";
     
   }
 }
@@ -728,6 +735,18 @@ t_Query.contents = new Graphql.GraphQLObjectType({
                           var src$1 = typeUnwrapper(src);
                           return QuestionSubmittedResolvers.Connection.questionSubmitteds(src$1, Caml_option.nullable_to_opt(args.skip), Caml_option.nullable_to_opt(args.first), Caml_option.nullable_to_opt(args.after), Caml_option.nullable_to_opt(args.before), Caml_option.nullable_to_opt(args.last));
                         })
+                  },
+                  verification: {
+                    type: t_Verification.contents,
+                    args: {
+                      contextId: {
+                        type: new Graphql.GraphQLNonNull(Graphql.GraphQLString)
+                      }
+                    },
+                    resolve: Caml_option.some(function (src, args, ctx) {
+                          var src$1 = typeUnwrapper(src);
+                          return VerificationResolvers.verification(src$1, args.contextId, ctx);
+                        })
                   }
                 };
         }),
@@ -828,6 +847,71 @@ t_QuestionSubmittedEdge.contents = new Graphql.GraphQLObjectType({
                 };
         }),
       interfaces: []
+    });
+
+t_Verification.contents = new Graphql.GraphQLObjectType({
+      name: "Verification",
+      description: "Data fields from a verified contextID",
+      fields: (function () {
+          return {
+                  app: {
+                    type: new Graphql.GraphQLNonNull(Graphql.GraphQLString),
+                    resolve: Caml_option.some(function (src, _args, _ctx) {
+                          return typeUnwrapper(src).app;
+                        }),
+                    description: "the key of app"
+                  },
+                  context: {
+                    type: new Graphql.GraphQLNonNull(Graphql.GraphQLString),
+                    resolve: Caml_option.some(function (src, _args, _ctx) {
+                          return typeUnwrapper(src).context;
+                        }),
+                    description: "The context the contextID is linked to. This should always be Votes"
+                  },
+                  contextIds: {
+                    type: new Graphql.GraphQLNonNull(new Graphql.GraphQLList(new Graphql.GraphQLNonNull(Graphql.GraphQLString))),
+                    resolve: Caml_option.some(function (src, _args, _ctx) {
+                          return typeUnwrapper(src).contextIds;
+                        }),
+                    description: "Array of ids linked to the Votes context"
+                  },
+                  id: {
+                    type: new Graphql.GraphQLNonNull(Graphql.GraphQLString),
+                    resolve: Caml_option.some(function (src, _args, _ctx) {
+                          return typeUnwrapper(src).id;
+                        })
+                  },
+                  publicKey: {
+                    type: Graphql.GraphQLString,
+                    resolve: Caml_option.some(function (src, _args, _ctx) {
+                          return typeUnwrapper(src).publicKey;
+                        }),
+                    description: "The public key of the verification"
+                  },
+                  sig: {
+                    type: Graphql.GraphQLString,
+                    resolve: Caml_option.some(function (src, _args, _ctx) {
+                          return typeUnwrapper(src).sig;
+                        }),
+                    description: "The signature of the verification"
+                  },
+                  timestamp: {
+                    type: Graphql.GraphQLFloat,
+                    resolve: Caml_option.some(function (src, _args, _ctx) {
+                          return typeUnwrapper(src).timestamp;
+                        }),
+                    description: "The timestamp of the verification"
+                  },
+                  unique: {
+                    type: new Graphql.GraphQLNonNull(Graphql.GraphQLBoolean),
+                    resolve: Caml_option.some(function (src, _args, _ctx) {
+                          return typeUnwrapper(src).unique;
+                        }),
+                    description: "Bool value denoting whether the BrightID is owned by a unique human"
+                  }
+                };
+        }),
+      interfaces: [i_Node.contents]
     });
 
 input_Where_AuctionBids.contents = new Graphql.GraphQLInputObjectType({
