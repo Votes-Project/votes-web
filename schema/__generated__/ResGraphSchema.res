@@ -96,6 +96,8 @@ let t_QuestionSubmittedConnection: ref<GraphQLObjectType.t> = Obj.magic({"conten
 let get_QuestionSubmittedConnection = () => t_QuestionSubmittedConnection.contents
 let t_QuestionSubmittedEdge: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
 let get_QuestionSubmittedEdge = () => t_QuestionSubmittedEdge.contents
+let t_Verification: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
+let get_Verification = () => t_Verification.contents
 let input_Where_AuctionBids: ref<GraphQLInputObjectType.t> = Obj.magic({"contents": Js.null})
 let get_Where_AuctionBids = () => input_Where_AuctionBids.contents
 let input_Where_AuctionBids_conversionInstructions = []
@@ -117,6 +119,7 @@ let interface_Node_resolveType = (v: Interface_node.Resolver.t) =>
   | AuctionSettled(_) => "AuctionSettled"
   | AuctionCreated(_) => "AuctionCreated"
   | QuestionSubmitted(_) => "QuestionSubmitted"
+  | Verification(_) => "Verification"
   }
 
 i_Node.contents = GraphQLInterfaceType.make({
@@ -675,6 +678,16 @@ t_Query.contents = GraphQLObjectType.make({
           )
         }),
       },
+      "verification": {
+        typ: get_Verification()->GraphQLObjectType.toGraphQLType,
+        description: ?None,
+        deprecationReason: ?None,
+        args: {"contextId": {typ: Scalars.string->Scalars.toGraphQLType->nonNull}}->makeArgs,
+        resolve: makeResolveFn((src, args, ctx) => {
+          let src = typeUnwrapper(src)
+          VerificationResolvers.verification(src, ~contextId=args["contextId"], ~ctx)
+        }),
+      },
     }->makeFields,
 })
 t_QuestionSubmitted.contents = GraphQLObjectType.make({
@@ -793,6 +806,88 @@ t_QuestionSubmittedEdge.contents = GraphQLObjectType.make({
         resolve: makeResolveFn((src, _args, _ctx) => {
           let src = typeUnwrapper(src)
           src["node"]
+        }),
+      },
+    }->makeFields,
+})
+t_Verification.contents = GraphQLObjectType.make({
+  name: "Verification",
+  description: "Data fields from a verified contextID",
+  interfaces: [get_Node()],
+  fields: () =>
+    {
+      "app": {
+        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        description: "the key of app",
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["app"]
+        }),
+      },
+      "context": {
+        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        description: "The context the contextID is linked to. This should always be Votes",
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["context"]
+        }),
+      },
+      "contextIds": {
+        typ: GraphQLListType.make(Scalars.string->Scalars.toGraphQLType->nonNull)
+        ->GraphQLListType.toGraphQLType
+        ->nonNull,
+        description: "Array of ids linked to the Votes context",
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["contextIds"]
+        }),
+      },
+      "id": {
+        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        description: ?None,
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["id"]
+        }),
+      },
+      "publicKey": {
+        typ: Scalars.string->Scalars.toGraphQLType,
+        description: "The public key of the verification",
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["publicKey"]
+        }),
+      },
+      "sig": {
+        typ: Scalars.string->Scalars.toGraphQLType,
+        description: "The signature of the verification",
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["sig"]
+        }),
+      },
+      "timestamp": {
+        typ: Scalars.float->Scalars.toGraphQLType,
+        description: "The timestamp of the verification",
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["timestamp"]
+        }),
+      },
+      "unique": {
+        typ: Scalars.boolean->Scalars.toGraphQLType->nonNull,
+        description: "Bool value denoting whether the BrightID is owned by a unique human",
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["unique"]
         }),
       },
     }->makeFields,
