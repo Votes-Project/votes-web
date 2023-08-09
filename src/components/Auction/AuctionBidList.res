@@ -49,7 +49,7 @@ module AuctionBidListDisplay = {
   module AuctionBidsFragment = %relay(`
   fragment AuctionBidListDisplay_auctionBids on Query
   @argumentDefinitions(
-    first: { type: "Int", defaultValue: 1000}
+    first: { type: "Int", defaultValue: 1000 }
     orderBy: { type: "OrderBy_AuctionBids", defaultValue: tokenId }
     orderDirection: { type: "OrderDirection", defaultValue: desc }
   ) {
