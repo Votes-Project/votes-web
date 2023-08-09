@@ -2,10 +2,35 @@
 import viteLogo from "/vite.svg";
 `)
 
+module Query = %relay(`
+  query MainQuery($contextId: String!) {
+    verification(contextId: $contextId) {
+      unique
+      contextIds
+      ...RequireVerification_verification
+    }
+  }
+`)
+
 type arrowDirection = LeftPress | RightPress
 exception InvalidRoute
 @react.component @relay.deferredComponent
 let make = (~children) => {
+  let contextId =
+    Dom.Storage2.localStorage->Dom.Storage2.getItem("contextId")->Option.getWithDefault("0")
+
+  let {verification} = Query.use(~variables={contextId: contextId})
+
+  switch verification {
+  | None => ()
+  | Some({contextIds}) =>
+    let _ =
+      contextIds
+      ->Array.get(0)
+      ->Option.map(contextId =>
+        Dom.Storage2.localStorage->Dom.Storage2.setItem("contextId", contextId)
+      )
+  }
   let {todaysAuction} = React.useContext(TodaysAuctionContext.context)
 
   let {push} = RelayRouter.Utils.useRouter()

@@ -91,7 +91,9 @@ let make = () => {
           app: verification.app,
           context: verification.context,
           contextIds: verification.contextIds,
-          id: verification.contextIds->Array.toString,
+          id: verification.contextIds
+          ->Array.get(0)
+          ->Option.getWithDefault(panic("Could not find a context ID")),
         }
       })
     }
