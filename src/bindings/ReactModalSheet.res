@@ -8,6 +8,8 @@ module Sheet = {
     ~isOpen: bool,
     ~onClose: 'a => unit,
     ~onCloseEnd: 'a => unit=?,
+    ~rootId: string=?,
+    ~snapPoints: array<float>=?,
   ) => t = "default"
 
   module Container = {
@@ -16,7 +18,7 @@ module Sheet = {
   }
   module Header = {
     @react.component @module("react-modal-sheet") @scope("default")
-    external make: (~className: string=?) => t = "Header"
+    external make: (~className: string=?, ~children: React.element=?) => t = "Header"
   }
   module Content = {
     @react.component @module("react-modal-sheet") @scope("default")

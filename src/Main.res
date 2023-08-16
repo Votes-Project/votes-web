@@ -20,7 +20,7 @@ let make = (~children) => {
       <Header />
       <main> {children} </main>
     </div>
-    {<>
+    {<div className="bg-background">
       <section>
         <div className="flex flex-col">
           <h1 className=" text-9xl font-bold"> {"The Daily Vote"->React.string} </h1>
@@ -84,6 +84,6 @@ Roll up, roll up! At Votes, your two cents isn’t spare change, it’s your gol
           </p>
         </div>
       </section>
-    </>}
+    </div>}
   </>
 }

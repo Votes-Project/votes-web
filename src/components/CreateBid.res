@@ -42,7 +42,7 @@ let make = (~queryRef as auctionCreatedRef, ~isToday) => {
 
   <div className="flex flex-col lg:flex-row w-full lg:items-center justify-around gap-2 py-10">
     <input
-      className="flex-1 rounded-2xl px-2 py-4 placeholder:text-lg placeholder:font-bold focus:border-sky-500 focus:outline-none focus:ring-1"
+      className="flex-1 rounded-2xl px-2 py-4 placeholder:text-lg placeholder:font-bold bg-background-light lg:bg-secondary focus:border-sky-500 focus:outline-none focus:ring-1"
       placeholder="Ξ 0.1 or more"
       step=0.1
       type_="number"
@@ -50,7 +50,7 @@ let make = (~queryRef as auctionCreatedRef, ~isToday) => {
       onInput={e => onBidChange(e)}
     />
     <button
-      className="flex-2 rounded-lg bg-orange-500 px-4 py-3 lg:px-3 lg:py-2 text-center text-white disabled:bg-background-light disabled:text-background text-xl lg:text-lg"
+      className="flex-2 rounded-lg bg-active px-4 py-3 lg:px-3 lg:py-2 text-center text-white disabled:bg-background-light disabled:text-background text-xl lg:text-lg"
       disabled={!isToday ||
       bidAmount == "" ||
       bidAmount->Float.fromString->Option.equal(currentBid->Float.fromString, (a, b) => a < b)}

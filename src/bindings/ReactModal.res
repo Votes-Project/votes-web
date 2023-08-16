@@ -1,11 +1,19 @@
 type t = React.element
+
+type style = {
+  content?: ReactDOM.Style.t,
+  overlay?: ReactDOM.Style.t,
+}
+
 @react.component @module("react-modal")
 external make: (
   ~className: string=?,
+  ~style: style=?,
   ~children: React.element,
   ~isOpen: bool,
   ~onRequestClose: 'a => unit,
-  ~conteentLabel: string=?,
+  ~contentLabel: string=?,
+  ~shouldCloseOnOverlayClick: bool=?,
 ) => t = "default"
 
 @module("react-modal")

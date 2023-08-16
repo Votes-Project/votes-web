@@ -4,7 +4,7 @@
 
 module ConnectButton = {
   @react.component @module("@rainbow-me/rainbowkit")
-  external make: (~className: string=?) => React.element = "ConnectButton"
+  external make: (~className: string=?, ~showBalance: bool=?) => React.element = "ConnectButton"
 }
 
 type headerItem = {
@@ -37,7 +37,7 @@ let make = () => {
   }
 
   <header>
-    <nav className="bg-secondary flex w-full justify-between px-4 py-2">
+    <nav className="bg-secondary noise flex w-full justify-between px-4 py-2">
       <div className="flex gap-3 justify-center items-center ">
         <RelayRouter.Link
           to_={Routes.Main.Route.makeLink()} className="relative z-2 px-2 py-0 transition-all">
@@ -55,13 +55,13 @@ let make = () => {
           <RelayRouter.Link
             key={name}
             to_={link}
-            className="border border-active  hover:bg-active hover:text-white rounded-xl flex items-center font-semibold mr-4 px-3 h-10 justify-center gap-2 transition-all">
+            className="border-[1.5px] border-primary  hover:bg-active hover:text-white rounded-xl flex items-center font-semibold mr-4 px-3 h-10 justify-center gap-2 transition-all">
             {icon}
             {name->React.string}
           </RelayRouter.Link>
         })
         ->React.array}
-        <ConnectButton />
+        <ConnectButton showBalance=false />
       </div>
       <div
         className={`lg:hidden ${isOpen
@@ -88,7 +88,7 @@ let make = () => {
       })
       ->React.array}
       <div className={`${isOpen ? "" : "hidden"} lg:hidden`}>
-        <ConnectButton />
+        <ConnectButton showBalance=false />
       </div>
     </div>
   </header>
