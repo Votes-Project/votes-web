@@ -4,10 +4,6 @@
 module Main = {
   module Route = Route__Main_route
 
-  module DailyQuestion = {
-    module Route = Route__Main__DailyQuestion_route
-
-  }
   module Auction = {
     module Route = Route__Main__Auction_route
 
@@ -16,14 +12,14 @@ module Main = {
 
     }
   }
-}
-module Votes = {
-  module Route = Route__Votes_route
+  module Votes = {
+    module Route = Route__Main__Votes_route
 
-}
-module Questions = {
-  module Route = Route__Questions_route
+  }
+  module Questions = {
+    module Route = Route__Main__Questions_route
 
+  }
 }
 module FourOhFour = {
   module Route = Route__FourOhFour_route
