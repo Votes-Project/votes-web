@@ -166,7 +166,8 @@ let make = () => {
   let (isOpen, setIsOpen) = React.useState(_ => true)
 
   let onClose = _ => setIsOpen(_ => false)
-  let onCloseEnd = _ => Routes.Main.Route.makeLinkFromQueryParams(queryParams)->replace
+  let onCloseEnd = _ =>
+    Routes.Main.Route.makeLinkFromQueryParams({...queryParams, dailyQuestion: None})->replace
 
   let (checkedIndex, setCheckedIndex) = React.useState(_ => None)
   let (hasAnswered, setHasAnswered) = React.useState(_ => false)
@@ -181,7 +182,8 @@ let make = () => {
   React.useEffect0(() => {
     let handleKeyDown = (e: ReactEvent.Keyboard.t) => {
       switch e->ReactEvent.Keyboard.key {
-      | "Escape" => Routes.Main.Route.makeLinkFromQueryParams(queryParams)->replace
+      | "Escape" =>
+        Routes.Main.Route.makeLinkFromQueryParams({...queryParams, dailyQuestion: None})->replace
       | _ => ()
       }
     }
@@ -208,6 +210,7 @@ let make = () => {
     <ReactModal
       isOpen
       onRequestClose={onClose}
+      onAfterClose={onCloseEnd}
       className="hidden md:flex "
       style={
         overlay: {

@@ -14,6 +14,7 @@ external make: (
   ~onRequestClose: 'a => unit,
   ~contentLabel: string=?,
   ~shouldCloseOnOverlayClick: bool=?,
+  ~onAfterClose: unit => unit=?,
 ) => t = "default"
 
 @module("react-modal")
