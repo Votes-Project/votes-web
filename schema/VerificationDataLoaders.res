@@ -83,18 +83,35 @@ let context = "Votes"
 let make = () => {
   byId: DataLoader.makeSingle(async id => {
     switch await BrightID.SDK.verifyContextId(~context, ~contextId=id) {
-    | exception _ => None
+    | exception e =>
+      let json = switch e {
+      | Exn.Error(error) => error->JSON.stringifyAny->Option.map(JSON.parseExn)
+      | _ => None
+      }
+      json->Option.flatMap(json =>
+        decodeError(json)->Option.map(
+          error =>
+            {
+              error: error.error,
+              errorNum: error.errorNum,
+              errorMessage: error.errorMessage,
+              code: error.code,
+            }->Verification.BrightIdError,
+        )
+      )
     | json =>
-      decodeData(json)->Option.map((verification): Verification.verification => {
-        {
+      decodeData(json)->Option.map(verification => {
+        let id =
+          verification.contextIds
+          ->Array.get(0)
+          ->Option.getWithDefault(panic("Could not find a context ID"))
+        Verification.Verification({
+          id,
           unique: verification.unique,
           app: verification.app,
           context: verification.context,
           contextIds: verification.contextIds,
-          id: verification.contextIds
-          ->Array.get(0)
-          ->Option.getWithDefault(panic("Could not find a context ID")),
-        }
+        })
       })
     }
   }),
