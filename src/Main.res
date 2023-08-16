@@ -1,26 +1,122 @@
+%%raw(`
+import viteLogo from "/vite.svg";
+`)
+
+module Query = %relay(`
+  query MainQuery($contextId: String!) {
+    verification(contextId: $contextId) {
+      unique
+      contextIds
+      ...RequireVerification_verification
+    }
+  }
+`)
+
+type arrowDirection = LeftPress | RightPress
 exception InvalidRoute
 @react.component @relay.deferredComponent
 let make = (~children) => {
-  // let contextId =
-  //   Dom.Storage2.localStorage->Dom.Storage2.getItem("contextId")->Option.getWithDefault("0")
+  let contextId =
+    Dom.Storage2.localStorage->Dom.Storage2.getItem("contextId")->Option.getWithDefault("0")
 
-  // switch verification {
-  // | None => ()
-  // | Some({contextIds}) =>
-  //   let _ =
-  //     contextIds
-  //     ->Array.get(0)
-  //     ->Option.map(contextId =>
-  //       Dom.Storage2.localStorage->Dom.Storage2.setItem("contextId", contextId)
-  //     )
-  // }
+  let {verification} = Query.use(~variables={contextId: contextId})
+
+  switch verification {
+  | None => ()
+  | Some({contextIds}) =>
+    let _ =
+      contextIds
+      ->Array.get(0)
+      ->Option.map(contextId =>
+        Dom.Storage2.localStorage->Dom.Storage2.setItem("contextId", contextId)
+      )
+  }
+  let {todaysAuction} = React.useContext(TodaysAuctionContext.context)
+
+  let {push} = RelayRouter.Utils.useRouter()
+
+  let startTime = switch todaysAuction {
+  | Some({startTime}) => startTime
+  | _ => "Could not fetch auction date"
+  }
+  let auctionDate =
+    startTime
+    ->Float.fromString
+    ->Option.map(startTime => startTime *. 1000.)
+    ->Option.map(todaysStartTime =>
+      todaysStartTime
+      ->Date.fromTime
+      ->Date.toLocaleDateStringWithLocaleAndOptions("en-US", {dateStyle: #long})
+    )
+
+  let {queryParams} = Routes.Main.Auction.Route.useQueryParams()
+
+  let tokenId = switch queryParams.tokenId {
+  | Some(tokenId) => tokenId
+  | None =>
+    switch todaysAuction {
+    | Some({tokenId}) => tokenId
+    | _ => ""
+    }
+  }
+
+  let handleArrowPress = direction => {
+    switch direction {
+    | LeftPress =>
+      Routes.Main.Auction.Route.makeLink(
+        ~tokenId=tokenId
+        ->Int.fromString
+        ->Option.mapWithDefault("", tokenId => (tokenId - 1)->Int.toString),
+      )->push
+    | RightPress =>
+      Routes.Main.Auction.Route.makeLink(
+        ~tokenId=tokenId
+        ->Int.fromString
+        ->Option.mapWithDefault("", tokenId => (tokenId + 1)->Int.toString),
+      )->push
+    }
+  }
 
   <>
     <div className="wrapper flex flex-col">
       <Header />
-      <main> {children} </main>
+      <div className="flex flex-col bg-secondary noise lg:flex-row">
+        <div className="mx-[10%) mt-8 w-[50%] self-end md:mx-[15%] md:w-[50%] lg:w-full">
+          <div className="relative h-0 w-full pt-[100%]">
+            <img
+              className="absolute left-0 top-0 h-auto w-full align-middle " src={%raw("viteLogo")}
+            />
+          </div>
+        </div>
+        <main
+          className="min-h-[558px] w-full !self-end bg-background pr-[5%] pb-0  lg:bg-transparent lg:pr-20 ">
+          <div className="!self-start p-4">
+            <div className="flex items-center pt-5">
+              <div className="flex gap-2 items-center">
+                <button
+                  disabled={tokenId == "0"}
+                  onClick={_ => handleArrowPress(LeftPress)}
+                  className="flex h-8 w-8 items-center justify-center rounded-full bg-primary ">
+                  {"⬅️"->React.string}
+                </button>
+                <button
+                  onClick={_ => handleArrowPress(RightPress)}
+                  disabled={tokenId ==
+                    todaysAuction
+                    ->Option.flatMap(auction => auction.tokenId)
+                    ->Option.getWithDefault("")}
+                  className="flex h-8 w-8 items-center justify-center rounded-full bg-primary ">
+                  {"➡️"->React.string}
+                </button>
+                <p> {auctionDate->Option.getWithDefault("")->React.string} </p>
+              </div>
+            </div>
+            {children}
+          </div>
+        </main>
+      </div>
     </div>
-    {<>
+    {<div className="bg-background">
       <section>
         <div className="flex flex-col">
           <h1 className=" text-9xl font-bold"> {"The Daily Vote"->React.string} </h1>
@@ -84,6 +180,6 @@ Roll up, roll up! At Votes, your two cents isn’t spare change, it’s your gol
           </p>
         </div>
       </section>
-    </>}
+    </div>}
   </>
 }

@@ -47,9 +47,23 @@ const wagmiConfig = createConfig({
 
 `)
 
-module RainbowKitProvider = {
-  @react.component @module("@rainbow-me/rainbowkit")
-  external make: (~chains: 'a, ~children: React.element) => React.element = "RainbowKitProvider"
+module RainbowKit = {
+  module Theme = {
+    type t
+    type themeInput = {
+      accentColor?: string,
+      accentColorForeground?: string,
+      borderRadius?: string,
+      fontStack?: string,
+      overlayBlur?: string,
+    }
+    @module("@rainbow-me/rainbowkit") external darkTheme: themeInput => t = "darkTheme"
+  }
+  module RainbowKitProvider = {
+    @react.component @module("@rainbow-me/rainbowkit")
+    external make: (~chains: 'a, ~children: React.element, ~theme: Theme.t=?) => React.element =
+      "RainbowKitProvider"
+  }
 }
 
 module TodaysAuctionProvider = {
@@ -80,14 +94,14 @@ ReactDOMExperimental.renderConcurrentRootAtElementWithId(
       <React.Suspense fallback={React.string("Loading...")}>
         // <RescriptReactErrorBoundary fallback={_ => {<div> {React.string("Error!")} </div>}}>
         <Wagmi.WagmiConfig config={%raw("wagmiConfig")}>
-          <RainbowKitProvider chains={%raw("chains")}>
+          <RainbowKit.RainbowKitProvider chains={%raw("chains")}>
             <TodaysAuctionProvider>
               <RelayRouter.RouteRenderer
                 // This renders all the time, and when there's a pending navigation (pending via React concurrent mode), pending will be `true`
                 renderPending={pending => <PendingIndicatorBar pending />}
               />
             </TodaysAuctionProvider>
-          </RainbowKitProvider>
+          </RainbowKit.RainbowKitProvider>
         </Wagmi.WagmiConfig>
         // </RescriptReactErrorBoundary>
       </React.Suspense>
