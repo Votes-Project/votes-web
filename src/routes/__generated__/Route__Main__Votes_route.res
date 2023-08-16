@@ -145,7 +145,7 @@ let useQueryParams = (): useQueryParamsReturn => {
 }
 
 @inline
-let routePattern = "/"
+let routePattern = "/votes"
 
 @live
 let makeLink = (~tokenId: option<string>=?, ~brightid: option<string>=?, ~dailyQuestion: option<string>=?) => {

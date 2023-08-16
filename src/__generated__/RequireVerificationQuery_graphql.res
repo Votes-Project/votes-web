@@ -1,12 +1,10 @@
-/* @sourceLoc Main.res */
+/* @sourceLoc RequireVerification.res */
 /* @generated */
 %%raw("/* @generated */")
 module Types = {
   @@warning("-30")
 
   type rec response_verification = {
-    contextIds: array<string>,
-    unique: bool,
     fragmentRefs: RescriptRelay.fragmentRefs<[ | #RequireVerification_verification]>,
   }
   type response = {
@@ -104,27 +102,13 @@ v1 = [
     "name": "contextId",
     "variableName": "contextId"
   }
-],
-v2 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "unique",
-  "storageKey": null
-},
-v3 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "contextIds",
-  "storageKey": null
-};
+];
 return {
   "fragment": {
     "argumentDefinitions": (v0/*: any*/),
     "kind": "Fragment",
     "metadata": null,
-    "name": "MainQuery",
+    "name": "RequireVerificationQuery",
     "selections": [
       {
         "alias": null,
@@ -134,8 +118,6 @@ return {
         "name": "verification",
         "plural": false,
         "selections": [
-          (v2/*: any*/),
-          (v3/*: any*/),
           {
             "args": null,
             "kind": "FragmentSpread",
@@ -152,7 +134,7 @@ return {
   "operation": {
     "argumentDefinitions": (v0/*: any*/),
     "kind": "Operation",
-    "name": "MainQuery",
+    "name": "RequireVerificationQuery",
     "selections": [
       {
         "alias": null,
@@ -162,8 +144,20 @@ return {
         "name": "verification",
         "plural": false,
         "selections": [
-          (v2/*: any*/),
-          (v3/*: any*/),
+          {
+            "alias": null,
+            "args": null,
+            "kind": "ScalarField",
+            "name": "unique",
+            "storageKey": null
+          },
+          {
+            "alias": null,
+            "args": null,
+            "kind": "ScalarField",
+            "name": "contextIds",
+            "storageKey": null
+          },
           {
             "alias": null,
             "args": null,
@@ -177,12 +171,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "ecbafdfccade431f6fda0cc8240ee0e2",
+    "cacheID": "8b314e926faebce0c43bbc1f151b523b",
     "id": null,
     "metadata": {},
-    "name": "MainQuery",
+    "name": "RequireVerificationQuery",
     "operationKind": "query",
-    "text": "query MainQuery(\n  $contextId: String!\n) {\n  verification(contextId: $contextId) {\n    unique\n    contextIds\n    ...RequireVerification_verification\n  }\n}\n\nfragment RequireVerification_verification on Verification {\n  unique\n  contextIds\n  id\n}\n"
+    "text": "query RequireVerificationQuery(\n  $contextId: String!\n) {\n  verification(contextId: $contextId) {\n    ...RequireVerification_verification\n  }\n}\n\nfragment RequireVerification_verification on Verification {\n  unique\n  contextIds\n  id\n}\n"
   }
 };
 })() `)

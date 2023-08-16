@@ -1,29 +1,24 @@
 [
   {
-    "path": "/?tokenId=string",
+    "path": "/?tokenId=string&brightid=string&dailyQuestion=string",
     "name": "Main",
     "children": [
-      {
-        "path": "/dailyQuestion",
-        "name": "DailyQuestion",
-        "children": []
-      },
       {
         "path": "",
         "name": "Auction",
         "children": [{ "path": "", "name": "Bids" }]
+      },
+      {
+        "path": "/votes",
+        "name": "Votes",
+        "children": []
+      },
+      {
+        "path": "/questions",
+        "name": "Questions",
+        "children": []
       }
     ]
-  },
-  {
-    "path": "/votes",
-    "name": "Votes",
-    "children": []
-  },
-  {
-    "path": "/questions",
-    "name": "Questions",
-    "children": []
   },
   {
     "path": "*",

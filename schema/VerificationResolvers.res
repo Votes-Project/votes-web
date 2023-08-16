@@ -1,14 +1,16 @@
 open Verification
 
-type data = {data: verification}
+type data = {verification: verification}
 
 @gql.field
 let verification = async (_: Schema.query, ~contextId, ~ctx: ResGraphContext.context): option<
   verification,
 > => {
   let data = await ctx.dataLoaders.verification.byId->DataLoader.load(contextId)
+  Js.log2("data: ", data)
+
   switch data {
-  | None => panic("Did not find verification with that ID")
+  | None => panic("Something went wrong fetching from BrightID Node")
   | Some(data) => Some(data)
   }
 }

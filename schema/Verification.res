@@ -1,6 +1,6 @@
 /** Data fields from a verified contextID */
 @gql.type
-type verification = {
+type verificationData = {
   ...NodeInterface.node,
   /** the key of app */
   @gql.field
@@ -25,30 +25,23 @@ type verification = {
   publicKey?: string,
 }
 
-// /** BrightID Error object */
-// @gql.type
-// type error = {
-//   /** Bool value denoting whether the BrightID is owned by a unique human */
-//   @gql.field
-//   error: bool,
-//   /** The error number */
-//   @gql.field
-//   errorNum: int,
-//   /** The error message */
-//   @gql.field
-//   errorMessage: string,
-//   /** The error code */
-//   @gql.field
-//   code: int,
-// }
+/** BrightID Error object */
+@gql.type
+type brightIdErrorObject = {
+  /** Returns true if response is an error */
+  @gql.field
+  error: bool,
+  /** The error number */
+  @gql.field
+  errorNum: int,
+  /** The error message */
+  @gql.field
+  errorMessage: string,
+  /** The error code */
+  @gql.field
+  code: int,
+}
 
 // /** Verification data type */
-// @gql.type
-// type verification = {
-//   /** The data of the verification */
-//   @gql.field
-//   data?: verificationData,
-//   /** The error of the verification */
-//   @gql.field
-//   error?: error,
-// }
+@gql.union
+type verification = Verification(verificationData) | BrightIdError(brightIdErrorObject)

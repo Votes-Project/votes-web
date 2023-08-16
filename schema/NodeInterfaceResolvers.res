@@ -29,7 +29,7 @@ let node = async (_: Schema.query, ~id, ~ctx: ResGraphContext.context): option<
       }
     | Some(Verification) =>
       switch await ctx.dataLoaders.verification.byId->DataLoader.load(id) {
-      | None => panic("Did not find verification data with that ID")
+      | None => panic("Something went wrong querying BrightID nodes")
       | Some(verification) => Verification(verification)->Some
       }
     }
