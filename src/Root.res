@@ -63,6 +63,17 @@ module TodaysAuctionProvider = {
   }
 }
 
+module RequireVerificationProvider = {
+  open RequireVerificationContext
+  @react.component
+  let make = (~children) => {
+    let (verification, setVerification) = React.useState(_ => None)
+    <RequireVerificationContext.Provider value={{verification, setVerification}}>
+      {children}
+    </RequireVerificationContext.Provider>
+  }
+}
+
 ReactDOMExperimental.renderConcurrentRootAtElementWithId(
   <RescriptRelay.Context.Provider environment={RelayEnv.environment}>
     <RelayRouter.Provider value={Router.routerContext}>
