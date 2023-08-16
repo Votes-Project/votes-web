@@ -18,3 +18,8 @@ a {
 canvas {
   position: absolute;
 }
+
+.noise {
+  /* ... */
+  background-image: url(/assets/noise.png);
+}
