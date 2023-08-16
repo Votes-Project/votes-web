@@ -243,6 +243,9 @@ module AuctionListDisplay = {
   }
 }
 
+%%raw(`
+import viteLogo from "/vite.svg";
+`)
 module Query = %relay(`
   query AuctionListQuery {
     ...AuctionListDisplay_auctionCreateds
@@ -250,13 +253,89 @@ module Query = %relay(`
   }
 `)
 
+type arrowDirection = LeftPress | RightPress
 @react.component @relay.deferredComponent
 let make = (~queryRef, ~children, ~tokenId) => {
+  let {push} = RelayRouter.Utils.useRouter()
   let data = Query.usePreloaded(~queryRef)
 
+  let {todaysAuction} = React.useContext(TodaysAuctionContext.context)
+
+  let startTime = switch todaysAuction {
+  | Some({startTime}) => startTime
+  | _ => "Could not fetch auction date"
+  }
+  let todaysAuctionTokenId = todaysAuction->Option.flatMap(todaysAuction => todaysAuction.tokenId)
+  let tokenId = switch (tokenId, todaysAuctionTokenId) {
+  | (Some(tokenId), _) => Some(tokenId)
+  | (None, Some(tokenId)) => Some(tokenId)
+  | _ => None
+  }
+
+  let auctionDate =
+    startTime
+    ->Float.fromString
+    ->Option.map(startTime => startTime *. 1000.)
+    ->Option.map(todaysStartTime =>
+      todaysStartTime
+      ->Date.fromTime
+      ->Date.toLocaleDateStringWithLocaleAndOptions("en-US", {dateStyle: #long})
+    )
+
+  let handleArrowPress = (direction, tokenId) => {
+    switch (direction, tokenId) {
+    | (LeftPress, Some(tokenId)) =>
+      Routes.Main.Auction.Route.makeLink(
+        ~tokenId=tokenId
+        ->Int.fromString
+        ->Option.mapWithDefault("", tokenId => (tokenId - 1)->Int.toString),
+      )->push
+    | (RightPress, Some(tokenId)) =>
+      Routes.Main.Auction.Route.makeLink(
+        ~tokenId=tokenId
+        ->Int.fromString
+        ->Option.mapWithDefault("", tokenId => (tokenId + 1)->Int.toString),
+      )->push
+    | _ => ()
+    }
+  }
+
   <>
-    <React.Suspense fallback={<div> {React.string("Loading Auctions...")} </div>}>
-      <AuctionListDisplay query={data.fragmentRefs} tokenId> {children} </AuctionListDisplay>
-    </React.Suspense>
+    <div className="flex flex-col bg-secondary lg:flex-row">
+      <div className="mx-[10%) mt-8 w-[50%] self-end md:mx-[15%] md:w-[50%] lg:w-full">
+        <div className="relative h-0 w-full pt-[100%]">
+          <img
+            className="absolute left-0 top-0 h-auto w-full align-middle " src={%raw("viteLogo")}
+          />
+        </div>
+      </div>
+      <div
+        className="min-h-[558px] w-full !self-end bg-background pr-[5%] pb-0 lg:bg-secondary lg:pr-20 ">
+        <div className="!self-start p-4">
+          <div className="flex items-center pt-5">
+            <div className="flex gap-2 items-center">
+              <button
+                disabled={tokenId->Option.equal(Some("0"), (a, b) => a == b)}
+                onClick={_ => handleArrowPress(LeftPress, tokenId)}
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-primary ">
+                {"⬅️"->React.string}
+              </button>
+              <button
+                onClick={_ => handleArrowPress(RightPress, tokenId)}
+                disabled={todaysAuction
+                ->Option.map(todaysAuction => todaysAuction.tokenId)
+                ->Option.equal(Some(tokenId), (a, b) => a == b)}
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-primary ">
+                {"➡️"->React.string}
+              </button>
+              <p> {auctionDate->Option.getWithDefault("")->React.string} </p>
+            </div>
+          </div>
+          <React.Suspense fallback={<div> {React.string("Loading Auctions...")} </div>}>
+            <AuctionListDisplay query={data.fragmentRefs} tokenId> {children} </AuctionListDisplay>
+          </React.Suspense>
+        </div>
+      </div>
+    </div>
   </>
 }

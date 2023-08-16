@@ -21,30 +21,28 @@ let make = () => {
     setIsOpen(isOpen => !isOpen)
   }
 
-  let {queryParams} = Routes.Main.DailyQuestion.Route.useQueryParams()
+  let {queryParams} = Routes.Main.Route.useQueryParams()
   let links = {
     open ReactIcons
 
     [
       (
         "Daily Question",
-        Routes.Main.DailyQuestion.Route.makeLinkFromQueryParams(queryParams),
+        Routes.Main.Route.makeLinkFromQueryParams({...queryParams, dailyQuestion: Some("")}),
         <LuCalendarCheck size="1.5rem" />,
       ),
-      ("Votes", Routes.Votes.Route.makeLink(), <LuCheckCircle size="1.5rem" />),
-      ("Questions", Routes.Questions.Route.makeLink(), <LuHistory size="1.5rem" />),
+      ("Votes", Routes.Main.Votes.Route.makeLink(), <LuCheckCircle size="1.5rem" />),
+      ("Questions", Routes.Main.Questions.Route.makeLink(), <LuHistory size="1.5rem" />),
     ]
   }
 
   <header>
     <nav className="bg-secondary flex w-full justify-between px-4 py-2">
       <div className="flex gap-3 justify-center items-center ">
-        <a
-          href="https://vitejs.dev"
-          target="_blank"
-          className="relative z-2 px-2 py-0 transition-all">
+        <RelayRouter.Link
+          to_={Routes.Main.Route.makeLink()} className="relative z-2 px-2 py-0 transition-all">
           <img src={viteLogo["default"]} className="w-16 h-16  lg:w-20 lg:h-20" alt="Vite logo" />
-        </a>
+        </RelayRouter.Link>
         <div
           className=" bg-active text-white hover:bg-white hover:text-active hover:cursor-pointer rounded-xl flex items-center font-semibold mr-4 px-3 h-10 justify-center gap-5 transition-all">
           <p className="text-2xl"> {"🦉"->React.string} </p>

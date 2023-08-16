@@ -6,6 +6,8 @@ module Internal = {
     environment: RescriptRelay.Environment.t,
     location: RelayRouter.History.location,
     tokenId: option<string>,
+    brightid: option<string>,
+    dailyQuestion: option<string>,
   }
 
   @live
@@ -15,6 +17,8 @@ module Internal = {
     environment: RescriptRelay.Environment.t,
     location: RelayRouter.History.location,
     tokenId: option<string>,
+    brightid: option<string>,
+    dailyQuestion: option<string>,
   }
 
   @live
@@ -36,6 +40,8 @@ module Internal = {
   
       location: location,
       tokenId: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("tokenId")->Belt.Option.flatMap(value => Some(value->Js.Global.decodeURIComponent)),
+      brightid: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("brightid")->Belt.Option.flatMap(value => Some(value->Js.Global.decodeURIComponent)),
+      dailyQuestion: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("dailyQuestion")->Belt.Option.flatMap(value => Some(value->Js.Global.decodeURIComponent)),
     }
   }
 
@@ -43,6 +49,8 @@ module Internal = {
 
 type queryParams = {
   tokenId: option<string>,
+  brightid: option<string>,
+  dailyQuestion: option<string>,
 }
 
 @live
@@ -52,15 +60,23 @@ let parseQueryParams = (search: string): queryParams => {
   {
     tokenId: queryParams->QueryParams.getParamByKey("tokenId")->Belt.Option.flatMap(value => Some(value->Js.Global.decodeURIComponent)),
 
+    brightid: queryParams->QueryParams.getParamByKey("brightid")->Belt.Option.flatMap(value => Some(value->Js.Global.decodeURIComponent)),
+
+    dailyQuestion: queryParams->QueryParams.getParamByKey("dailyQuestion")->Belt.Option.flatMap(value => Some(value->Js.Global.decodeURIComponent)),
+
   }
 }
 
 @live
 let makeQueryParams = (
   ~tokenId: option<string>=?, 
+  ~brightid: option<string>=?, 
+  ~dailyQuestion: option<string>=?, 
   ()
 ) => {
   tokenId: tokenId,
+  brightid: brightid,
+  dailyQuestion: dailyQuestion,
 }
 
 @live
@@ -72,6 +88,8 @@ let applyQueryParams = (
 
   
   queryParams->QueryParams.setParamOpt(~key="tokenId", ~value=newParams.tokenId->Belt.Option.map(tokenId => tokenId->Js.Global.encodeURIComponent))
+  queryParams->QueryParams.setParamOpt(~key="brightid", ~value=newParams.brightid->Belt.Option.map(brightid => brightid->Js.Global.encodeURIComponent))
+  queryParams->QueryParams.setParamOpt(~key="dailyQuestion", ~value=newParams.dailyQuestion->Belt.Option.map(dailyQuestion => dailyQuestion->Js.Global.encodeURIComponent))
 }
 
 @live
@@ -127,21 +145,31 @@ let useQueryParams = (): useQueryParamsReturn => {
 }
 
 @inline
-let routePattern = "/dailyQuestion"
+let routePattern = "/questions"
 
 @live
-let makeLink = (~tokenId: option<string>=?) => {
+let makeLink = (~tokenId: option<string>=?, ~brightid: option<string>=?, ~dailyQuestion: option<string>=?) => {
   open RelayRouter.Bindings
   let queryParams = QueryParams.make()
   switch tokenId {
     | None => ()
     | Some(tokenId) => queryParams->QueryParams.setParam(~key="tokenId", ~value=tokenId->Js.Global.encodeURIComponent)
   }
+
+  switch brightid {
+    | None => ()
+    | Some(brightid) => queryParams->QueryParams.setParam(~key="brightid", ~value=brightid->Js.Global.encodeURIComponent)
+  }
+
+  switch dailyQuestion {
+    | None => ()
+    | Some(dailyQuestion) => queryParams->QueryParams.setParam(~key="dailyQuestion", ~value=dailyQuestion->Js.Global.encodeURIComponent)
+  }
   RelayRouter.Bindings.generatePath(routePattern, Js.Dict.fromArray([])) ++ queryParams->QueryParams.toString
 }
 @live
 let makeLinkFromQueryParams = (queryParams: queryParams) => {
-  makeLink(~tokenId=?queryParams.tokenId, )
+  makeLink(~tokenId=?queryParams.tokenId, ~brightid=?queryParams.brightid, ~dailyQuestion=?queryParams.dailyQuestion, )
 }
 
 @live
