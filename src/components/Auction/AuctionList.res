@@ -98,7 +98,10 @@ module AuctionItem = {
           <h1 className="font-['Fugaz One'] py-9 text-6xl font-bold lg:text-7xl">
             {`VOTE ${auctionSettled.tokenId}`->React.string}
           </h1>
-          <h2> {`Winner ${auctionSettled.winner}`->React.string} </h2>
+          <div>
+            {"Winner:"->React.string}
+            <ShortAddress address={Some(auctionSettled.winner)} />
+          </div>
           <h2> {`Winning Bid: ${auctionSettled.amount} Ξ`->React.string} </h2>
         </>
       }
@@ -302,7 +305,7 @@ let make = (~queryRef, ~children, ~tokenId) => {
 
   <>
     <div className="flex flex-col bg-secondary noise lg:flex-row">
-      <div className="mx-[10%) mt-8 w-[50%] self-end md:mx-[15%] md:w-[50%] lg:w-full">
+      <div className="mx-[10%] mt-8 w-[50%] self-end md:mx-[15%] md:w-[50%] lg:w-full">
         <div className="relative h-0 w-full pt-[100%]">
           <img
             className="absolute left-0 top-0 h-auto w-full align-middle " src={%raw("viteLogo")}
@@ -311,7 +314,7 @@ let make = (~queryRef, ~children, ~tokenId) => {
       </div>
       <div
         className="min-h-[558px] w-full !self-end bg-background pr-[5%] pb-0 lg:bg-transparent lg:pr-20 ">
-        <div className="!self-start p-4">
+        <div className="!self-start px-4">
           <div className="flex items-center pt-5">
             <div className="flex gap-2 items-center">
               <button
