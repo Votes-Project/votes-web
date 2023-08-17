@@ -21,16 +21,24 @@ let make = () => {
     setIsOpen(isOpen => !isOpen)
   }
 
-  let {queryParams} = Routes.Main.Route.useQueryParams()
+  let {setParams} = Routes.Main.Route.useQueryParams()
+
+  let setDailyQuestion = dailyQuestion => {
+    setParams(
+      ~removeNotControlledParams=false,
+      ~navigationMode_=Push,
+      ~shallow=false,
+      ~setter=c => {
+        ...c,
+        dailyQuestion,
+      },
+    )
+  }
+
   let links = {
     open ReactIcons
 
     [
-      (
-        "Daily Question",
-        Routes.Main.Route.makeLinkFromQueryParams({...queryParams, dailyQuestion: Some("")}),
-        <LuCalendarCheck size="1.5rem" />,
-      ),
       ("Votes", Routes.Main.Votes.Route.makeLink(), <LuCheckCircle size="1.5rem" />),
       ("Questions", Routes.Main.Questions.Route.makeLink(), <LuHistory size="1.5rem" />),
     ]
@@ -50,6 +58,12 @@ let make = () => {
         </div>
       </div>
       <div className="hidden lg:flex lg:visible gap-4 justify-center items-center">
+        <button
+          onClick={_ => setDailyQuestion(Some(""))}
+          className="border-[1.5px] border-primary cursor-pointer  hover:bg-active hover:text-white rounded-xl flex items-center font-semibold mr-4 px-3 h-10 justify-center gap-2 transition-all">
+          <ReactIcons.LuCalendarCheck size="1.5rem" />
+          {"Daily Question"->React.string}
+        </button>
         {links
         ->Array.map(((name, link, icon)) => {
           <RelayRouter.Link
@@ -74,6 +88,14 @@ let make = () => {
       className={`${isOpen
           ? "py-10 bg-active w-full flex flex-col h-96"
           : "max-h-0"} color-active transition-all justify-around items-center flex lg:max-h-0 lg:p-0 `}>
+      <button
+        onClick={_ => setDailyQuestion(Some(""))}
+        className={`lg:hidden justify-center items-center w-[262px] flex px-2 py-3 border border-primary rounded-xl font-bold text-white text-xl gap-2 transition-all ${isOpen
+            ? ""
+            : "hidden"}`}>
+        <ReactIcons.LuCalendarCheck size="1.5rem" />
+        {"Daily Question"->React.string}
+      </button>
       {links
       ->Array.map(((name, link, icon)) => {
         <RelayRouter.Link
