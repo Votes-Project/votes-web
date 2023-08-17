@@ -91,7 +91,10 @@ module RequireVerificationProvider = {
 ReactDOMExperimental.renderConcurrentRootAtElementWithId(
   <RescriptRelay.Context.Provider environment={RelayEnv.environment}>
     <RelayRouter.Provider value={Router.routerContext}>
-      <React.Suspense fallback={React.string("Loading...")}>
+      <React.Suspense
+        fallback={<div className="flex justify-center items-center w-full h-screen">
+          {"Loading..."->React.string}
+        </div>}>
         // <RescriptReactErrorBoundary fallback={_ => {<div> {React.string("Error!")} </div>}}>
         <Wagmi.WagmiConfig config={%raw("wagmiConfig")}>
           <RainbowKit.RainbowKitProvider chains={%raw("chains")}>
