@@ -19,7 +19,6 @@ let useInterval = (callback: unit => unit, delay) => {
       savedCallback.current()
     }
     let id = setInterval(tick, delay)
-    Js.log2("delay: ", delay)
     Some(() => clearInterval(id))
   }, [delay])
 }
