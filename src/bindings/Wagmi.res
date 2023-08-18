@@ -18,6 +18,14 @@ module Chain = {
 }
 
 type transactionResponse = {hash: string}
+type mode = | @as("prepared") Prepared | @as("signing") Signing | @as("sending") Sending
+type writeContractParameters
+type preparedResult
+type preparedResponse = {
+  mode: mode,
+  request: writeContractParameters,
+  result: option<preparedResult>,
+}
 
 type accountStatus =
   | @as("connecting") Connecting

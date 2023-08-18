@@ -9,6 +9,7 @@ export default {
         "background-dark": "#828AB5",
         "default-darker": "#313753",
         primary: "#FFDACC",
+        "primary-dark": "#FFAD8F",
         secondary: "#FFF0EB",
         active: "#FB8A61",
       },
