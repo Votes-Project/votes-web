@@ -66,17 +66,20 @@ module AuctionItem = {
     switch isToday && auctionSettled->Option.isNone {
     | true =>
       <>
-        <h1 className="font-['Fugaz One'] py-9 text-6xl font-bold lg:text-7xl">
+        <h1 className="font-['Fugaz One'] py-9 text-6xl font-bold text-default-darker ">
           {`VOTE ${auctionCreated.tokenId}`->React.string}
         </h1>
-        <div className="flex flex-col ">
-          <div className="flex items-center justify-between">
-            <p> {"Current Bid"->React.string} </p>
-            <p>
+        <div className="flex flex-col lg:flex-row gap-5">
+          <div className="flex lg:flex-col items-start justify-between">
+            <p className="font-semibold lg:text-xl lg:text-primary-dark">
+              {"Current Bid"->React.string}
+            </p>
+            <p className="font-bold lg:text-3xl text-default-darker">
               {"Ξ "->React.string}
               {currentBid->React.string}
             </p>
           </div>
+          <div className="w-0 rounded-lg lg:border-primary border hidden lg:flex" />
           <AuctionCountdown queryRef={auctionCreated.fragmentRefs} />
         </div>
         // <RescriptReactErrorBoundary
@@ -85,9 +88,13 @@ module AuctionItem = {
         // </RescriptReactErrorBoundary>
         <div className="flex flex-col justify-between"> {children} </div>
         <div className="w-full py-2 text-center">
-          {" View
+          {currentBid == "0"
+            ? React.null
+            : <div className="text-default-darker">
+                {"View
               All
               Bids"->React.string}
+              </div>}
         </div>
       </>
     | false =>
@@ -95,7 +102,7 @@ module AuctionItem = {
       | None => raise(PastAuctionDoesNotExist)
       | Some(auctionSettled) =>
         <>
-          <h1 className="font-['Fugaz One'] py-9 text-6xl font-bold lg:text-7xl">
+          <h1 className="font-['Fugaz One'] py-9 text-6xl font-bold ">
             {`VOTE ${auctionSettled.tokenId}`->React.string}
           </h1>
           <div>
@@ -268,6 +275,7 @@ let make = (~queryRef, ~children, ~tokenId) => {
   | Some({startTime}) => startTime
   | _ => "Could not fetch auction date"
   }
+
   let todaysAuctionTokenId = todaysAuction->Option.flatMap(todaysAuction => todaysAuction.tokenId)
   let tokenId = switch (tokenId, todaysAuctionTokenId) {
   | (Some(tokenId), _) => Some(tokenId)
@@ -303,42 +311,42 @@ let make = (~queryRef, ~children, ~tokenId) => {
     }
   }
 
-  <>
-    <div className="flex flex-col bg-secondary noise lg:flex-row">
-      <div className="mx-[10%] mt-8 w-[50%] self-end md:mx-[15%] md:w-[50%] lg:w-full">
+  <div
+    className="flex flex-col bg-secondary noise lg:flex-row lg:justify-center lg:items-center m-auto max-w-6xl">
+    <div className="flex-[0_0_auto] w-[50%] flex">
+      <div className="self-end w-full">
         <div className="relative h-0 w-full pt-[100%]">
-          <img
-            className="absolute left-0 top-0 h-auto w-full align-middle " src={%raw("viteLogo")}
-          />
+          <img className="absolute left-0 top-0  w-full align-middle " src={%raw("viteLogo")} />
         </div>
       </div>
+    </div>
+    <React.Suspense
+      fallback={<div className="flex-1"> {React.string("Loading Auctions...")} </div>}>
       <div
-        className="min-h-[558px] w-full !self-end bg-background pr-[5%] pb-0 lg:bg-transparent lg:pr-20 ">
+        className="min-h-[558px] lg:flex-[0_0_auto] w-full !self-end bg-background pr-[5%] pb-0 lg:bg-transparent lg:w-[50%] lg:pr-20 ">
         <div className="!self-start px-4">
           <div className="flex items-center pt-5">
             <div className="flex gap-2 items-center">
               <button
                 disabled={tokenId->Option.equal(Some("0"), (a, b) => a == b)}
                 onClick={_ => handleArrowPress(LeftPress, tokenId)}
-                className="flex h-8 w-8 items-center justify-center rounded-full bg-primary ">
-                {"⬅️"->React.string}
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-primary disabled:bg-background-light ">
+                <ReactIcons.LuArrowLeft />
               </button>
               <button
                 onClick={_ => handleArrowPress(RightPress, tokenId)}
                 disabled={todaysAuction
                 ->Option.map(todaysAuction => todaysAuction.tokenId)
                 ->Option.equal(Some(tokenId), (a, b) => a == b)}
-                className="flex h-8 w-8 items-center justify-center rounded-full bg-primary ">
-                {"➡️"->React.string}
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-primary disabled:bg-background-light disabled:opacity-50 ">
+                <ReactIcons.LuArrowRight />
               </button>
               <p> {auctionDate->Option.getWithDefault("")->React.string} </p>
             </div>
           </div>
-          <React.Suspense fallback={<div> {React.string("Loading Auctions...")} </div>}>
-            <AuctionListDisplay query={data.fragmentRefs} tokenId> {children} </AuctionListDisplay>
-          </React.Suspense>
+          <AuctionListDisplay query={data.fragmentRefs} tokenId> {children} </AuctionListDisplay>
         </div>
       </div>
-    </div>
-  </>
+    </React.Suspense>
+  </div>
 }

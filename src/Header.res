@@ -44,8 +44,8 @@ let make = () => {
     ]
   }
 
-  <header>
-    <nav className="bg-secondary noise flex w-full justify-between px-4 py-2">
+  <header className="flex justify-center items-center">
+    <nav className=" bg-secondary max-w-7xl noise flex w-full justify-between px-4 pb-4 pt-2">
       <div className="flex gap-3 justify-center items-center ">
         <RelayRouter.Link
           to_={Routes.Main.Route.makeLink()} className="relative z-2 px-2 py-0 transition-all">
