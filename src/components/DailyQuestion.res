@@ -10,14 +10,18 @@ type choice = {
   correct: bool,
   details: string,
 }
-let choices = [
-  {value: "42", correct: true, details: "The answer to life, the universe and everything"},
-  {value: "0", correct: false, details: "The answer to life, the universe and everything"},
-  {value: "1", correct: false, details: "The answer to life, the universe and everything"},
-  {value: "2", correct: false, details: "The answer to life, the universe and everything"},
-]
-
 let longTitle = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec qu"
+let choices = [
+  {
+    value: longTitle,
+    correct: true,
+    details: "The answer to life, the universe and everything",
+  },
+  {value: longTitle, correct: false, details: "The answer to life, the universe and everything"},
+  {value: longTitle, correct: false, details: "The answer to life, the universe and everything"},
+  {value: longTitle, correct: false, details: "The answer to life, the universe and everything"},
+  {value: "42", correct: false, details: "The answer to life, the universe and everything"},
+]
 
 ReactModal.setAppElement("#root")
 
@@ -25,7 +29,7 @@ module QuestionHeader = {
   @react.component
   let make = () => {
     <div
-      className="font-semibold flex w-full justify-between items-center pt-6 pb-8 px-4 max-w-2xl text-sm">
+      className="font-semibold flex w-full justify-between items-center py-4 px-4 max-w-2xl text-sm">
       <p className="text-default-darker"> {"shedapp.eth"->React.string} </p>
       <div
         className="mx-3 max-w-[36px] h-0 flex-1 border-2 bg-black  border-default-darker rounded-md"
@@ -54,10 +58,10 @@ module QuestionTitle = {
     }
   }
 
-  let title = "Lorem ipsum dolor "
+  let title = longTitle
   @react.component
   let make = () => {
-    <div>
+    <div className="py-6">
       <h1
         className={`font-semibold text-default-darker pl-4 mb-6 ${titleStyle(
             title->String.length,
@@ -65,7 +69,7 @@ module QuestionTitle = {
         {title->React.string}
       </h1>
       <div
-        className="mx-4 max-w-[240px] h-0  border-2 bg-black  border-default-darker rounded-md"
+        className="mx-4 max-w-[180px] h-0 border-2 bg-black  border-default-darker rounded-md opacity-50"
       />
     </div>
   }
@@ -98,19 +102,12 @@ module ChoicesPage = {
         {choices
         ->Array.mapWithIndex((option, i) => {
           <div
-            className={`w-full  flex flex-row items-center mx-4 my-2 py-8 px-4 rounded-lg max-w-md ${choiceStyle(
+            className={`w-full  flex flex-row items-center mx-4 my-2 py-2 px-4 rounded-lg max-w-md min-h-[80px]  overflow-hidden ${choiceStyle(
                 i,
               )} transition-all`}
             key={i->Int.toString}
-            onClick={_ => handleChecked(i)}>
-            <input
-              className={`bg-background-dark checked:bg-primary checked:text-primary focus:ring-0 mr-4 outline-none border-none h-5 w-5 `}
-              type_="radio"
-              name="answer"
-              value={option.value}
-              checked={checkedIndex == Some(i)}
-            />
-            <label className="font-semibold"> {option.value->React.string} </label>
+            onClick={e => handleChecked(Some(e), i)}>
+            <p className={`font-semibold text-left`}> {option.value->React.string} </p>
           </div>
         })
         ->React.array}
@@ -143,13 +140,6 @@ module AnswerPage = {
       <QuestionTitle />
       <div
         className={`w-full  noises flex flex-row items-center my-4 py-8 px-4 rounded-lg max-w-md bg-active text-white`}>
-        <input
-          className={`bg-background-dark  text-primary mr-4 outline-none h-8 w-8`}
-          type_="radio"
-          name="answer"
-          value={Option.getExn(selectedChoice).value}
-          defaultChecked={true}
-        />
         <label className="font-semibold">
           {Option.getExn(selectedChoice).value->React.string}
         </label>
@@ -161,6 +151,7 @@ module AnswerPage = {
 @react.component @relay.deferredComponent
 let make = () => {
   open ReactModalSheet
+
   let {replace} = RelayRouter.Utils.useRouter()
   let {queryParams} = Routes.Main.Route.useQueryParams()
   let (isOpen, setIsOpen) = React.useState(_ => true)
@@ -172,7 +163,8 @@ let make = () => {
   let (checkedIndex, setCheckedIndex) = React.useState(_ => None)
   let (hasAnswered, setHasAnswered) = React.useState(_ => false)
 
-  let handleChecked = index => {
+  let handleChecked = (e: option<ReactEvent.Mouse.t>, index) => {
+    e->Option.map(ReactEvent.Mouse.stopPropagation)->ignore
     setCheckedIndex(_ => Some(index))
   }
   let handleVote = _ => {
@@ -193,17 +185,17 @@ let make = () => {
   })
 
   <>
-    <Sheet className="md:hidden flex" isOpen onClose onCloseEnd rootId={"root"} snapPoints={[0.75]}>
-      <Sheet.Container className="min-h-[864px]">
+    <Sheet className="md:hidden flex" isOpen onClose onCloseEnd rootId={"root"}>
+      <Sheet.Container className="lg:min-h-[864px]">
         <Sheet.Header className="bg-secondary noise flex justify-center ">
           <QuestionHeader />
         </Sheet.Header>
-        <Sheet.Content
-          className="bg-secondary noise px-4 h-full w-full flex flex-col justify-around ">
+        <Sheet.Scroller
+          className="bg-secondary noise px-4 flex flex-col justify-start hide-scrollbar">
           {hasAnswered
             ? <AnswerPage checkedIndex />
             : <ChoicesPage checkedIndex handleChecked handleVote />}
-        </Sheet.Content>
+        </Sheet.Scroller>
       </Sheet.Container>
       <Sheet.Backdrop onTap={onClose} />
     </Sheet>
@@ -227,9 +219,11 @@ let make = () => {
       <div className="justify-center items-center flex inset-0 z-50 ">
         <div className="relative w-auto mx-auto max-w-3xl">
           <div
-            className="flex flex-col border-0 rounded-xl shadow-xl relative w-full bg-secondary justify-center items-center min-w-[740px] min-h-[740px] noise">
-            <QuestionHeader />
-            <div className="bg-secondary w-full px-4 h-full flex flex-col justify-around noise">
+            className="flex flex-col border-0 rounded-xl shadow-xl relative w-full bg-secondary justify-start items-center min-w-[740px] max-h-[890px] noise overflow-scroll hide-scrollbar">
+            <div className=" w-full px-4 h-full flex flex-col justify-around noise">
+              <div className="w-full  flex justify-center items-center">
+                <QuestionHeader />
+              </div>
               {hasAnswered
                 ? <AnswerPage checkedIndex />
                 : <ChoicesPage checkedIndex handleChecked handleVote />}
