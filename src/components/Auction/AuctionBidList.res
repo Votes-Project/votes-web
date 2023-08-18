@@ -1,6 +1,7 @@
 module AuctionBidItem = {
   module AuctionBidItemFragment = %relay(`
-  fragment AuctionBidList_AuctionBidItem_auctionBid on AuctionBid {
+  fragment AuctionBidList_AuctionBidItem_auctionBid on AuctionBid
+   {
     id
     tokenId
     bidder
@@ -9,7 +10,7 @@ module AuctionBidItem = {
 `)
   @react.component
   let make = (~auctionBid as auctionBidRef, ~isCurrentBid) => {
-    let {amount, bidder} = AuctionBidItemFragment.use(auctionBidRef)
+    let {amount, bidder, id} = AuctionBidItemFragment.use(auctionBidRef)
     let amount = amount->BigInt.fromString->Viem.formatUnits(18)
 
     let {setTodaysAuction} = React.useContext(TodaysAuctionContext.context)
@@ -73,13 +74,13 @@ module AuctionBidListDisplay = {
   let make = (~query) => {
     let {queryParams} = Routes.Main.Auction.Bids.Route.useQueryParams()
     let {todaysAuction} = React.useContext(TodaysAuctionContext.context)
+    let {auctionBids} = AuctionBidsFragment.use(query)
     let tokenId = switch (queryParams.tokenId, todaysAuction) {
     | (Some(tokenId), _) => tokenId
     | (None, Some({tokenId})) => tokenId
     | _ => ""
     }
 
-    let {auctionBids} = AuctionBidsFragment.use(query)
     let groupedBids = Dict.make()
 
     auctionBids
