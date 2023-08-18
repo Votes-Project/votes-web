@@ -36,3 +36,22 @@ module LuHistory = {
     ~className: string=?,
   ) => t = "LuHistory"
 }
+
+module LuArrowLeft = {
+  @react.component @module("react-icons/lu")
+  external make: (
+    ~size: string=?,
+    ~color: string=?,
+    ~onClick: unit => unit=?,
+    ~className: string=?,
+  ) => t = "LuArrowLeft"
+}
+module LuArrowRight = {
+  @react.component @module("react-icons/lu")
+  external make: (
+    ~size: string=?,
+    ~color: string=?,
+    ~onClick: unit => unit=?,
+    ~className: string=?,
+  ) => t = "LuArrowRight"
+}
