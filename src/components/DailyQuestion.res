@@ -25,24 +25,6 @@ let choices = [
 
 ReactModal.setAppElement("#root")
 
-module QuestionHeader = {
-  @react.component
-  let make = () => {
-    <div
-      className="font-semibold flex w-full justify-between items-center py-4 px-4 max-w-2xl text-sm">
-      <p className="text-default-darker"> {"shedapp.eth"->React.string} </p>
-      <div
-        className="mx-3 max-w-[36px] h-0 flex-1 border-2 bg-black  border-default-darker rounded-md"
-      />
-      <p className="text-default-darker"> {"August 5 2023"->React.string} </p>
-      <div
-        className="mx-3 max-w-[36px] h-0 flex-1 border-2 bg-black border-default-darker rounded-md"
-      />
-      <p className="text-default-darker"> {"1000 Answers"->React.string} </p>
-    </div>
-  }
-}
-
 module QuestionTitle = {
   let titleStyle = titleLength => {
     if titleLength <= 50 {
@@ -61,7 +43,7 @@ module QuestionTitle = {
   let title = longTitle
   @react.component
   let make = () => {
-    <div className="py-6">
+    <div className="pt-6">
       <h1
         className={`font-semibold text-default-darker pl-4 mb-6 ${titleStyle(
             title->String.length,
@@ -69,8 +51,28 @@ module QuestionTitle = {
         {title->React.string}
       </h1>
       <div
-        className="mx-4 max-w-[180px] h-0 border-2 bg-black  border-default-darker rounded-md opacity-50"
+        className="mx-4 max-w-[180px] h-0 border-2 bg-black  border-default-darker rounded-md opacity-20"
       />
+    </div>
+  }
+}
+module QuestionHeader = {
+  @react.component
+  let make = () => {
+    <div className="flex flex-col">
+      <div
+        className="font-semibold flex w-full justify-between items-center py-4 px-4 max-w-2xl text-sm">
+        <p className="text-default-darker"> {"shedapp.eth"->React.string} </p>
+        <div
+          className="mx-3 max-w-[36px] h-0 flex-1 border-2 bg-black  border-default-darker rounded-md"
+        />
+        <p className="text-default-darker"> {"August 5 2023"->React.string} </p>
+        <div
+          className="mx-3 max-w-[36px] h-0 flex-1 border-2 bg-black border-default-darker rounded-md"
+        />
+        <p className="text-default-darker"> {"1000 Answers"->React.string} </p>
+      </div>
+      <QuestionTitle />
     </div>
   }
 }
@@ -97,7 +99,6 @@ module ChoicesPage = {
         : "text-default-darker shadow-inner bg-secondary border border-primary "
 
     <>
-      <QuestionTitle />
       <div className="flex flex-col justify-around items-center my-4 mr-4">
         {choices
         ->Array.mapWithIndex((option, i) => {
@@ -137,7 +138,6 @@ module AnswerPage = {
     let selectedChoice = checkedIndex->Option.flatMap(i => choices->Array.get(i))
 
     <>
-      <QuestionTitle />
       <div
         className={`w-full  noises flex flex-row items-center my-4 py-8 px-4 rounded-lg max-w-md bg-active text-white`}>
         <label className="font-semibold">
@@ -220,8 +220,9 @@ let make = () => {
         <div className="relative w-auto mx-auto max-w-3xl">
           <div
             className="flex flex-col border-0 rounded-xl shadow-xl relative w-full bg-secondary justify-start items-center min-w-[740px] max-h-[890px] noise overflow-scroll hide-scrollbar">
-            <div className=" w-full px-4 h-full flex flex-col justify-around noise">
-              <div className="w-full  flex justify-center items-center">
+            <div className=" w-full px-4 h-full flex flex-col justify-around">
+              <div
+                className="w-full  flex justify-center items-center sticky top-0 bg-secondary noise ">
                 <QuestionHeader />
               </div>
               {hasAnswered
