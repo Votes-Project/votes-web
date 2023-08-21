@@ -4,22 +4,40 @@
 module Types = {
   @@warning("-30")
 
-  type fragment = {
-    contextIds: array<string>,
-    @live id: string,
-    unique: bool,
-  }
+  @tag("__typename") type fragment = 
+    | BrightIdError(
+      {
+        @live __typename: [ | #BrightIdError],
+        error: bool,
+      }
+    )
+    | VerificationData(
+      {
+        @live __typename: [ | #VerificationData],
+        contextIds: array<string>,
+        @live id: string,
+        unique: bool,
+      }
+    )
+    | @as("__unselected") UnselectedUnionMember(string)
+
 }
 
+@live
+let unwrap_fragment: Types.fragment => Types.fragment = RescriptRelay_Internal.unwrapUnion(_, ["BrightIdError", "VerificationData"])
+@live
+let wrap_fragment: Types.fragment => Types.fragment = RescriptRelay_Internal.wrapUnion
 module Internal = {
   @live
   type fragmentRaw
   @live
   let fragmentConverter: Js.Dict.t<Js.Dict.t<Js.Dict.t<string>>> = %raw(
-    json`{}`
+    json`{"__root":{"":{"u":"fragment"}}}`
   )
   @live
-  let fragmentConverterMap = ()
+  let fragmentConverterMap = {
+    "fragment": unwrap_fragment,
+  }
   @live
   let convertFragment = v => v->RescriptRelay.convertObj(
     fragmentConverter,
@@ -42,48 +60,63 @@ type relayOperationNode
 type operationType = RescriptRelay.fragmentNode<relayOperationNode>
 
 
-%%private(let makeNode = (rescript_graphql_node_VerificationRefetchQuery): operationType => {
-  ignore(rescript_graphql_node_VerificationRefetchQuery)
-  %raw(json`{
+let node: operationType = %raw(json` {
   "argumentDefinitions": [],
   "kind": "Fragment",
-  "metadata": {
-    "refetch": {
-      "connection": null,
-      "fragmentPathInResult": [
-        "node"
-      ],
-      "operation": rescript_graphql_node_VerificationRefetchQuery,
-      "identifierField": "id"
-    }
-  },
+  "metadata": null,
   "name": "RequireVerification_verification",
   "selections": [
     {
       "alias": null,
       "args": null,
       "kind": "ScalarField",
-      "name": "unique",
+      "name": "__typename",
       "storageKey": null
     },
     {
-      "alias": null,
-      "args": null,
-      "kind": "ScalarField",
-      "name": "contextIds",
-      "storageKey": null
+      "kind": "InlineFragment",
+      "selections": [
+        {
+          "alias": null,
+          "args": null,
+          "kind": "ScalarField",
+          "name": "id",
+          "storageKey": null
+        },
+        {
+          "alias": null,
+          "args": null,
+          "kind": "ScalarField",
+          "name": "unique",
+          "storageKey": null
+        },
+        {
+          "alias": null,
+          "args": null,
+          "kind": "ScalarField",
+          "name": "contextIds",
+          "storageKey": null
+        }
+      ],
+      "type": "VerificationData",
+      "abstractKey": null
     },
     {
-      "alias": null,
-      "args": null,
-      "kind": "ScalarField",
-      "name": "id",
-      "storageKey": null
+      "kind": "InlineFragment",
+      "selections": [
+        {
+          "alias": null,
+          "args": null,
+          "kind": "ScalarField",
+          "name": "error",
+          "storageKey": null
+        }
+      ],
+      "type": "BrightIdError",
+      "abstractKey": null
     }
   ],
   "type": "Verification",
-  "abstractKey": null
-}`)
-})
-let node: operationType = makeNode(VerificationRefetchQuery_graphql.node)
+  "abstractKey": "__isVerification"
+} `)
 
