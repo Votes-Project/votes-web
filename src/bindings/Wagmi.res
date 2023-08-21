@@ -158,3 +158,28 @@ type unsupportedChain = {unsupported: bool, ...Chain.t}
 type useNetworkReturn = {chain?: unsupportedChain, chains: array<Chain.t>}
 @module("wagmi")
 external useNetwork: unit => useNetworkReturn = "useNetwork"
+
+module UseContractEvent = {
+  type eventLog<'args> = {
+    address: string,
+    args: 'args,
+    blockHash: string,
+    blockNumber: BigInt.t,
+    data: string,
+    eventName: string,
+    logIndex: int,
+    removed: bool,
+    topics: array<string>,
+    transactionHash: string,
+    transactionIndex: int,
+  }
+  type input<'args> = {
+    address: string,
+    abi: JSON.t,
+    eventName: string,
+    listener: array<eventLog<'args>> => unit,
+    chainId?: int,
+  }
+  @module("wagmi")
+  external make: input<'args> => unit = "useContractEvent"
+}

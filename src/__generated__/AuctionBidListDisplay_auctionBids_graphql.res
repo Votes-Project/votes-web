@@ -11,9 +11,11 @@ module Types = {
     fragmentRefs: RescriptRelay.fragmentRefs<[ | #AuctionBidList_AuctionBidItem_auctionBid]>,
   }
   and fragment_auctionBids_edges = {
+    @live __id: RescriptRelay.dataId,
     node: option<fragment_auctionBids_edges_node>,
   }
   and fragment_auctionBids = {
+    @live __id: RescriptRelay.dataId,
     edges: option<array<option<fragment_auctionBids_edges>>>,
   }
   type fragment = {
@@ -85,7 +87,20 @@ type relayOperationNode
 type operationType = RescriptRelay.fragmentNode<relayOperationNode>
 
 
-let node: operationType = %raw(json` {
+let node: operationType = %raw(json` (function(){
+var v0 = {
+  "kind": "ClientExtension",
+  "selections": [
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "__id",
+      "storageKey": null
+    }
+  ]
+};
+return {
   "argumentDefinitions": [
     {
       "defaultValue": 1000,
@@ -195,7 +210,8 @@ let node: operationType = %raw(json` {
               "kind": "ScalarField",
               "name": "cursor",
               "storageKey": null
-            }
+            },
+            (v0/*: any*/)
           ],
           "storageKey": null
         },
@@ -223,12 +239,14 @@ let node: operationType = %raw(json` {
             }
           ],
           "storageKey": null
-        }
+        },
+        (v0/*: any*/)
       ],
       "storageKey": null
     }
   ],
   "type": "Query",
   "abstractKey": null
-} `)
+};
+})() `)
 
