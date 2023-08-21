@@ -71,10 +71,10 @@ let make = (~queryRef as auctionCreatedRef) => {
           </button>
         </div>
       : <>
-          <p className="font-semibold lg:text-xl lg:text-primary-dark">
+          <p className="font-semibold text-xl text-background-dark lg:text-primary-dark">
             {"Time Left"->React.string}
           </p>
-          <p className="font-bold lg:text-3xl text-default-darker">
+          <p className="font-bold text-xl lg:text-3xl text-default-darker">
             {`${hours}h
       ${minutes}m
       ${seconds}s`->React.string}

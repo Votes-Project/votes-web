@@ -1,6 +1,6 @@
 @module external reactLogo: 'a = "./assets/react.svg"
 
-@module external viteLogo: 'a = "/vite.svg"
+@module external viteLogo: 'a = "/votesy.svg"
 
 module ConnectButton = {
   @react.component @module("@rainbow-me/rainbowkit")
@@ -44,12 +44,12 @@ let make = () => {
     ]
   }
 
-  <header className="flex justify-center items-center">
-    <nav className=" bg-secondary max-w-7xl noise flex w-full justify-between px-4 pb-4 pt-2">
+  <header className="flex flex-col justify-center items-center ">
+    <nav className=" bg-secondary max-w-7xl noise flex w-full justify-between px-4  pt-2">
       <div className="flex gap-3 justify-center items-center ">
         <RelayRouter.Link
-          to_={Routes.Main.Route.makeLink()} className="relative z-2 px-2 py-0 transition-all">
-          <img src={viteLogo["default"]} className="w-16 h-16  lg:w-20 lg:h-20" alt="Vite logo" />
+          to_={Routes.Main.Route.makeLink()} className="relative z-2 px-2 py-0 transition-all z-10">
+          <img src={viteLogo["default"]} className="w-24 h-24  " alt="Vite logo" />
         </RelayRouter.Link>
         <div
           className=" bg-active text-white hover:bg-white hover:text-active hover:cursor-pointer rounded-xl flex items-center font-semibold mr-4 px-3 h-10 justify-center gap-5 transition-all">
@@ -77,12 +77,12 @@ let make = () => {
         ->React.array}
         <ConnectButton showBalance=false />
       </div>
-      <div
+      <button
         className={`lg:hidden ${isOpen
             ? "border-2 border-active rounded-lg"
-            : ""}  flex justify-center items-center m-1`}>
-        <ReactIcons.LuMenu color="#FB8A61" size={"3rem"} onClick={_ => handleMenu()} />
-      </div>
+            : ""}  flex justify-center items-center m-1 h-11 self-center`}>
+        <ReactIcons.LuMenu color="#FB8A61" size={"2.5rem"} onClick={_ => handleMenu()} />
+      </button>
     </nav>
     <div
       className={`${isOpen
