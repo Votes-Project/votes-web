@@ -130,6 +130,10 @@ var t_AuctionSettledEdge = {
   contents: null
 };
 
+var t_BrightIdError = {
+  contents: null
+};
+
 var t_PageInfo = {
   contents: null
 };
@@ -150,7 +154,7 @@ var t_QuestionSubmittedEdge = {
   contents: null
 };
 
-var t_Verification = {
+var t_VerificationData = {
   contents: null
 };
 
@@ -206,6 +210,18 @@ input_Where_AuctionCreateds_conversionInstructions.push([
         })
     ]);
 
+var union_Verification = {
+  contents: null
+};
+
+function union_Verification_resolveType(v) {
+  if (v.TAG === "Verification") {
+    return "VerificationData";
+  } else {
+    return "BrightIdError";
+  }
+}
+
 function interface_Node_resolveType(v) {
   switch (v.TAG) {
     case "AuctionBid" :
@@ -216,8 +232,8 @@ function interface_Node_resolveType(v) {
         return "AuctionSettled";
     case "QuestionSubmitted" :
         return "QuestionSubmitted";
-    case "Verification" :
-        return "Verification";
+    case "VerificationData" :
+        return "VerificationData";
     
   }
 }
@@ -501,6 +517,44 @@ t_AuctionSettledEdge.contents = new Graphql.GraphQLObjectType({
       interfaces: []
     });
 
+t_BrightIdError.contents = new Graphql.GraphQLObjectType({
+      name: "BrightIdError",
+      description: "BrightID Error object",
+      fields: (function () {
+          return {
+                  code: {
+                    type: new Graphql.GraphQLNonNull(Graphql.GraphQLInt),
+                    resolve: Caml_option.some(function (src, _args, _ctx) {
+                          return typeUnwrapper(src).code;
+                        }),
+                    description: "The error code"
+                  },
+                  error: {
+                    type: new Graphql.GraphQLNonNull(Graphql.GraphQLBoolean),
+                    resolve: Caml_option.some(function (src, _args, _ctx) {
+                          return typeUnwrapper(src).error;
+                        }),
+                    description: "Returns true if response is an error"
+                  },
+                  errorMessage: {
+                    type: new Graphql.GraphQLNonNull(Graphql.GraphQLString),
+                    resolve: Caml_option.some(function (src, _args, _ctx) {
+                          return typeUnwrapper(src).errorMessage;
+                        }),
+                    description: "The error message"
+                  },
+                  errorNum: {
+                    type: new Graphql.GraphQLNonNull(Graphql.GraphQLInt),
+                    resolve: Caml_option.some(function (src, _args, _ctx) {
+                          return typeUnwrapper(src).errorNum;
+                        }),
+                    description: "The error number"
+                  }
+                };
+        }),
+      interfaces: []
+    });
+
 t_PageInfo.contents = new Graphql.GraphQLObjectType({
       name: "PageInfo",
       description: "Information about pagination in a connection.",
@@ -737,7 +791,7 @@ t_Query.contents = new Graphql.GraphQLObjectType({
                         })
                   },
                   verification: {
-                    type: t_Verification.contents,
+                    type: union_Verification.contents,
                     args: {
                       contextId: {
                         type: new Graphql.GraphQLNonNull(Graphql.GraphQLString)
@@ -849,8 +903,8 @@ t_QuestionSubmittedEdge.contents = new Graphql.GraphQLObjectType({
       interfaces: []
     });
 
-t_Verification.contents = new Graphql.GraphQLObjectType({
-      name: "Verification",
+t_VerificationData.contents = new Graphql.GraphQLObjectType({
+      name: "VerificationData",
       description: "Data fields from a verified contextID",
       fields: (function () {
           return {
@@ -940,6 +994,17 @@ input_Where_AuctionCreateds.contents = new Graphql.GraphQLInputObjectType({
                   }
                 };
         })
+    });
+
+union_Verification.contents = new Graphql.GraphQLUnionType({
+      name: "Verification",
+      types: (function () {
+          return [
+                  t_BrightIdError.contents,
+                  t_VerificationData.contents
+                ];
+        }),
+      resolveType: union_Verification_resolveType
     });
 
 var schema = new Graphql.GraphQLSchema({

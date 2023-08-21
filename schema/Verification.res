@@ -27,7 +27,7 @@ type verificationData = {
 
 /** BrightID Error object */
 @gql.type
-type brightIdErrorObject = {
+type brightIdError = {
   /** Returns true if response is an error */
   @gql.field
   error: bool,
@@ -44,4 +44,4 @@ type brightIdErrorObject = {
 
 // /** Verification data type */
 @gql.union
-type verification = Verification(verificationData) | BrightIdError(brightIdErrorObject)
+type verification = Verification(verificationData) | BrightIdError(brightIdError)
