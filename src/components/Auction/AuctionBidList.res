@@ -1,3 +1,8 @@
+@val @scope(("import", "meta", "env"))
+external auctionContractAddress: option<string> = "VITE_AUCTION_CONTRACT_ADDRESS"
+
+@module("/src/abis/Auction.json") external auctionContractAbi: JSON.t = "default"
+
 module AuctionBidItem = {
   module AuctionBidItemFragment = %relay(`
   fragment AuctionBidList_AuctionBidItem_auctionBid on AuctionBid
@@ -49,17 +54,20 @@ module AuctionBidItem = {
 module AuctionBidListDisplay = {
   module AuctionBidsFragment = %relay(`
   fragment AuctionBidListDisplay_auctionBids on Query
+
   @argumentDefinitions(
     first: { type: "Int", defaultValue: 1000 }
     orderBy: { type: "OrderBy_AuctionBids", defaultValue: tokenId }
     orderDirection: { type: "OrderDirection", defaultValue: desc }
-  ) {
+  ){
     auctionBids(
       orderBy: $orderBy
       orderDirection: $orderDirection
       first: $first
     ) @connection(key: "AuctionBidListDisplay_auctionBids_auctionBids") {
+      __id
       edges {
+        __id
         node {
           id
           tokenId
@@ -75,6 +83,55 @@ module AuctionBidListDisplay = {
     let {queryParams} = Routes.Main.Auction.Bids.Route.useQueryParams()
     let {todaysAuction} = React.useContext(TodaysAuctionContext.context)
     let {auctionBids} = AuctionBidsFragment.use(query)
+    let environment = RescriptRelay.useEnvironmentFromContext()
+
+    Wagmi.UseContractEvent.make({
+      address: auctionContractAddress->Belt.Option.getExn,
+      abi: auctionContractAbi,
+      eventName: "AuctionBid",
+      listener: events => {
+        switch events {
+        | [] => ()
+        | events => {
+            let event = events->Array.get(events->Array.length - 1)->Option.getExn
+            let {args, transactionHash, logIndex} = event
+            auctionBids->Option.mapWithDefault((), auctionBids => {
+              open RescriptRelay
+              let connectionId = auctionBids.__id
+              commitLocalUpdate(~environment, ~updater=store => {
+                open AuctionBidList_AuctionBidItem_auctionBid_graphql.Types
+                open RecordSourceSelectorProxy
+                open RecordProxy
+                let connectionRecord = store->get(~dataId=connectionId)->Option.getExn
+                let newAuctionBidRecord =
+                  store
+                  ->create(
+                    ~dataId=`client:new_auctionBid:${transactionHash}${logIndex->Int.toString}}`->makeDataId,
+                    ~typeName="AuctionBid",
+                  )
+                  ->setValueString(
+                    ~name="id",
+                    ~value=`${transactionHash}${logIndex->Int.toString}}`, // logIndex needs to be converted to a little endian I32. Probably okay though
+                  )
+                  ->setValueString(~name="tokenId", ~value=args.tokenId)
+                  ->setValueString(~name="bidder", ~value=args.bidder)
+                  ->setValueString(~name="amount", ~value=args.amount)
+
+                let newEdge = ConnectionHandler.createEdge(
+                  ~store,
+                  ~connection=connectionRecord,
+                  ~edgeType="AuctionBid",
+                  ~node=newAuctionBidRecord,
+                )
+
+                ConnectionHandler.insertEdgeBefore(~connection=connectionRecord, ~newEdge)
+              })
+            })
+          }
+        }
+      },
+    })
+
     let tokenId = switch (queryParams.tokenId, todaysAuction) {
     | (Some(tokenId), _) => tokenId
     | (None, Some({tokenId})) => tokenId
@@ -115,7 +172,7 @@ module AuctionBidListDisplay = {
 }
 
 module Query = %relay(`
-  query AuctionBidListQuery {
+  query AuctionBidListQuery @raw_response_type {
     ...AuctionBidListDisplay_auctionBids
   }
 `)
