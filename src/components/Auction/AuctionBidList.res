@@ -38,16 +38,15 @@ module AuctionBidItem = {
       None
     }, (isCurrentBid, amount, setTodaysAuction))
 
-    <>
-      <div className="flex items-center justify-between">
+    <li className="border-b p-3 border-background-dark" key=id>
+      <div className=" font-semibold flex items-center justify-between">
         <ShortAddress address={Some(bidder)} />
         <div className="flex gap-2">
-          <p> {`${amount} Ξ`->React.string} </p>
+          <p> {`Ξ ${amount}`->React.string} </p>
           <p> {"🔗"->React.string} </p>
         </div>
       </div>
-      <div className="my-3 h-0 w-full border border-black" />
-    </>
+    </li>
   }
 }
 
@@ -167,6 +166,7 @@ module AuctionBidListDisplay = {
           />
     })
     ->List.toArray
+    ->Array.slice(~start=0, ~end=3)
     ->React.array
   }
 }

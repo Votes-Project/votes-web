@@ -1,20 +1,6 @@
 exception InvalidRoute
 @react.component @relay.deferredComponent
 let make = (~children) => {
-  // let contextId =
-  //   Dom.Storage2.localStorage->Dom.Storage2.getItem("contextId")->Option.getWithDefault("0")
-
-  // switch verification {
-  // | None => ()
-  // | Some({contextIds}) =>
-  //   let _ =
-  //     contextIds
-  //     ->Array.get(0)
-  //     ->Option.map(contextId =>
-  //       Dom.Storage2.localStorage->Dom.Storage2.setItem("contextId", contextId)
-  //     )
-  // }
-
   <>
     <div className="wrapper flex flex-col">
       <Header />
