@@ -86,6 +86,8 @@ let t_AuctionSettledConnection: ref<GraphQLObjectType.t> = Obj.magic({"contents"
 let get_AuctionSettledConnection = () => t_AuctionSettledConnection.contents
 let t_AuctionSettledEdge: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
 let get_AuctionSettledEdge = () => t_AuctionSettledEdge.contents
+let t_BrightIdError: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
+let get_BrightIdError = () => t_BrightIdError.contents
 let t_PageInfo: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
 let get_PageInfo = () => t_PageInfo.contents
 let t_Query: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
@@ -96,8 +98,8 @@ let t_QuestionSubmittedConnection: ref<GraphQLObjectType.t> = Obj.magic({"conten
 let get_QuestionSubmittedConnection = () => t_QuestionSubmittedConnection.contents
 let t_QuestionSubmittedEdge: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
 let get_QuestionSubmittedEdge = () => t_QuestionSubmittedEdge.contents
-let t_Verification: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
-let get_Verification = () => t_Verification.contents
+let t_VerificationData: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
+let get_VerificationData = () => t_VerificationData.contents
 let input_Where_AuctionBids: ref<GraphQLInputObjectType.t> = Obj.magic({"contents": Js.null})
 let get_Where_AuctionBids = () => input_Where_AuctionBids.contents
 let input_Where_AuctionBids_conversionInstructions = []
@@ -112,6 +114,14 @@ input_Where_AuctionCreateds_conversionInstructions->Array.pushMany([
   ("id", makeInputObjectFieldConverterFn(v => v->Nullable.toOption)),
   ("tokenId", makeInputObjectFieldConverterFn(v => v->Nullable.toOption)),
 ])
+let union_Verification: ref<GraphQLUnionType.t> = Obj.magic({"contents": Js.null})
+let get_Verification = () => union_Verification.contents
+
+let union_Verification_resolveType = (v: Verification.verification) =>
+  switch v {
+  | Verification(_) => "VerificationData"
+  | BrightIdError(_) => "BrightIdError"
+  }
 
 let interface_Node_resolveType = (v: Interface_node.Resolver.t) =>
   switch v {
@@ -119,7 +129,7 @@ let interface_Node_resolveType = (v: Interface_node.Resolver.t) =>
   | AuctionSettled(_) => "AuctionSettled"
   | AuctionCreated(_) => "AuctionCreated"
   | QuestionSubmitted(_) => "QuestionSubmitted"
-  | Verification(_) => "Verification"
+  | VerificationData(_) => "VerificationData"
   }
 
 i_Node.contents = GraphQLInterfaceType.make({
@@ -444,6 +454,50 @@ t_AuctionSettledEdge.contents = GraphQLObjectType.make({
       },
     }->makeFields,
 })
+t_BrightIdError.contents = GraphQLObjectType.make({
+  name: "BrightIdError",
+  description: "BrightID Error object",
+  interfaces: [],
+  fields: () =>
+    {
+      "code": {
+        typ: Scalars.int->Scalars.toGraphQLType->nonNull,
+        description: "The error code",
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["code"]
+        }),
+      },
+      "error": {
+        typ: Scalars.boolean->Scalars.toGraphQLType->nonNull,
+        description: "Returns true if response is an error",
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["error"]
+        }),
+      },
+      "errorMessage": {
+        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        description: "The error message",
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["errorMessage"]
+        }),
+      },
+      "errorNum": {
+        typ: Scalars.int->Scalars.toGraphQLType->nonNull,
+        description: "The error number",
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["errorNum"]
+        }),
+      },
+    }->makeFields,
+})
 t_PageInfo.contents = GraphQLObjectType.make({
   name: "PageInfo",
   description: "Information about pagination in a connection.",
@@ -679,7 +733,7 @@ t_Query.contents = GraphQLObjectType.make({
         }),
       },
       "verification": {
-        typ: get_Verification()->GraphQLObjectType.toGraphQLType,
+        typ: get_Verification()->GraphQLUnionType.toGraphQLType,
         description: ?None,
         deprecationReason: ?None,
         args: {"contextId": {typ: Scalars.string->Scalars.toGraphQLType->nonNull}}->makeArgs,
@@ -810,8 +864,8 @@ t_QuestionSubmittedEdge.contents = GraphQLObjectType.make({
       },
     }->makeFields,
 })
-t_Verification.contents = GraphQLObjectType.make({
-  name: "Verification",
+t_VerificationData.contents = GraphQLObjectType.make({
+  name: "VerificationData",
   description: "Data fields from a verified contextID",
   interfaces: [get_Node()],
   fields: () =>
@@ -925,6 +979,12 @@ input_Where_AuctionCreateds.contents = GraphQLInputObjectType.make({
         deprecationReason: ?None,
       },
     }->makeFields,
+})
+union_Verification.contents = GraphQLUnionType.make({
+  name: "Verification",
+  description: ?None,
+  types: () => [get_BrightIdError(), get_VerificationData()],
+  resolveType: GraphQLUnionType.makeResolveUnionTypeFn(union_Verification_resolveType),
 })
 
 let schema = GraphQLSchemaType.make({"query": get_Query()})
