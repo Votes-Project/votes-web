@@ -48,7 +48,10 @@ let make = (~queryRef as auctionCreatedRef, ~isToday) => {
 
   <div className="flex flex-col lg:flex-row w-full lg:items-center justify-around gap-2 py-10">
     <input
-      className="flex-1 rounded-2xl px-2 py-4 placeholder:text-lg placeholder:font-bold bg-background-light lg:bg-secondary focus:border-sky-500 focus:outline-none focus:ring-1"
+      className="flex-1 rounded-2xl px-2 py-4 placeholder:text-lg placeholder:font-bold
+       bg-background-light border-background-dark
+       lg:bg-secondary  focus:outline-none focus:ring-1 [appearance:textfield]
+       [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
       placeholder="Ξ 0.1 or more"
       step=0.1
       type_="number"
