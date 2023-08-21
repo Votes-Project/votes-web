@@ -3,6 +3,8 @@
 let node = async (_: Schema.query, ~id, ~ctx: ResGraphContext.context): option<
   Interface_node.Resolver.t,
 > => {
+  Js.log2("id: ", id)
+
   switch id->ResGraph.idToString->String.split(":") {
   | [typenameAsString, id] =>
     switch typenameAsString->Interface_node.ImplementedBy.decode {
@@ -27,10 +29,14 @@ let node = async (_: Schema.query, ~id, ~ctx: ResGraphContext.context): option<
       | None => panic("Did not find auction bid with that ID")
       | Some(auctionBid) => AuctionBid(auctionBid)->Some
       }
-    | Some(Verification) =>
+    | Some(VerificationData) =>
       switch await ctx.dataLoaders.verification.byId->DataLoader.load(id) {
       | None => panic("Something went wrong querying BrightID nodes")
-      | Some(verification) => Verification(verification)->Some
+      | Some(verification) =>
+        switch verification {
+        | Verification(verificationData) => VerificationData(verificationData)->Some
+        | BrightIdError(e) => panic(e.errorMessage)
+        }
       }
     }
   | _ => None

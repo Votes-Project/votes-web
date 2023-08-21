@@ -26,6 +26,11 @@ enum SubgraphError {
   deny
 }
 
+union Verification = 
+  | VerificationData
+  | BrightIdError
+
+
 input Where_AuctionBids {
   id: String
   tokenId: String
@@ -158,6 +163,23 @@ type AuctionSettledEdge {
 }
 
 
+"""BrightID Error object"""
+type BrightIdError {
+
+  """Returns true if response is an error"""
+  error: Boolean!
+
+  """The error number"""
+  errorNum: Int!
+
+  """The error message"""
+  errorMessage: String!
+
+  """The error code"""
+  code: Int!
+}
+
+
 """Information about pagination in a connection."""
 type PageInfo {
 
@@ -232,7 +254,7 @@ type QuestionSubmittedEdge {
 
 
 """Data fields from a verified contextID"""
-type Verification implements Node {
+type VerificationData implements Node {
   id: String!
 
   """the key of app"""
