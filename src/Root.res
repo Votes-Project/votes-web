@@ -20,7 +20,7 @@ import { optimism, goerli } from "wagmi/chains";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
 
-const voteChains = import.meta.env.NODE_ENV === "production" ? [optimism] : [goerli, optimism];
+const voteChains = import.meta.env.NODE_ENV === "production" ? [optimism] : [goerli];
 
 const { chains, publicClient, webSocketPublicClient } = configureChains(
   voteChains,
