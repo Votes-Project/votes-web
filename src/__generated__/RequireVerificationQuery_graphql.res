@@ -5,6 +5,7 @@ module Types = {
   @@warning("-30")
 
   type rec response_verification = {
+    @live __typename: string,
     fragmentRefs: RescriptRelay.fragmentRefs<[ | #RequireVerification_verification]>,
   }
   type response = {
@@ -102,7 +103,21 @@ v1 = [
     "name": "contextId",
     "variableName": "contextId"
   }
-];
+],
+v2 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "__typename",
+  "storageKey": null
+},
+v3 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "id",
+  "storageKey": null
+};
 return {
   "fragment": {
     "argumentDefinitions": (v0/*: any*/),
@@ -113,11 +128,12 @@ return {
       {
         "alias": null,
         "args": (v1/*: any*/),
-        "concreteType": "Verification",
+        "concreteType": null,
         "kind": "LinkedField",
         "name": "verification",
         "plural": false,
         "selections": [
+          (v2/*: any*/),
           {
             "args": null,
             "kind": "FragmentSpread",
@@ -139,31 +155,59 @@ return {
       {
         "alias": null,
         "args": (v1/*: any*/),
-        "concreteType": "Verification",
+        "concreteType": null,
         "kind": "LinkedField",
         "name": "verification",
         "plural": false,
         "selections": [
+          (v2/*: any*/),
           {
-            "alias": null,
-            "args": null,
-            "kind": "ScalarField",
-            "name": "unique",
-            "storageKey": null
+            "kind": "TypeDiscriminator",
+            "abstractKey": "__isVerification"
           },
           {
-            "alias": null,
-            "args": null,
-            "kind": "ScalarField",
-            "name": "contextIds",
-            "storageKey": null
+            "kind": "InlineFragment",
+            "selections": [
+              (v3/*: any*/),
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "unique",
+                "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "contextIds",
+                "storageKey": null
+              }
+            ],
+            "type": "VerificationData",
+            "abstractKey": null
           },
           {
-            "alias": null,
-            "args": null,
-            "kind": "ScalarField",
-            "name": "id",
-            "storageKey": null
+            "kind": "InlineFragment",
+            "selections": [
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "error",
+                "storageKey": null
+              }
+            ],
+            "type": "BrightIdError",
+            "abstractKey": null
+          },
+          {
+            "kind": "InlineFragment",
+            "selections": [
+              (v3/*: any*/)
+            ],
+            "type": "Node",
+            "abstractKey": "__isNode"
           }
         ],
         "storageKey": null
@@ -171,12 +215,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "8b314e926faebce0c43bbc1f151b523b",
+    "cacheID": "12a3cc3b01d42b468da6d21373721af2",
     "id": null,
     "metadata": {},
     "name": "RequireVerificationQuery",
     "operationKind": "query",
-    "text": "query RequireVerificationQuery(\n  $contextId: String!\n) {\n  verification(contextId: $contextId) {\n    ...RequireVerification_verification\n  }\n}\n\nfragment RequireVerification_verification on Verification {\n  unique\n  contextIds\n  id\n}\n"
+    "text": "query RequireVerificationQuery(\n  $contextId: String!\n) {\n  verification(contextId: $contextId) {\n    __typename\n    ...RequireVerification_verification\n    ... on Node {\n      __isNode: __typename\n      __typename\n      id\n    }\n  }\n}\n\nfragment RequireVerification_verification on Verification {\n  __isVerification: __typename\n  __typename\n  ... on VerificationData {\n    id\n    unique\n    contextIds\n  }\n  ... on BrightIdError {\n    error\n  }\n}\n"
   }
 };
 })() `)
