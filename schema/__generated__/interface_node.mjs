@@ -15,8 +15,8 @@ function decode(str) {
         return "AuctionSettled";
     case "QuestionSubmitted" :
         return "QuestionSubmitted";
-    case "Verification" :
-        return "Verification";
+    case "VerificationData" :
+        return "VerificationData";
     default:
       return ;
   }
