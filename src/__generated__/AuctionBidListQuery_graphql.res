@@ -4,11 +4,38 @@
 module Types = {
   @@warning("-30")
 
+  @live
+  type rec rawResponse_auctionBids_edges_node = {
+    @live __typename: [ | #AuctionBid],
+    amount: string,
+    bidder: string,
+    @live id: string,
+    tokenId: string,
+  }
+  @live
+  and rawResponse_auctionBids_edges = {
+    @live __id: option<RescriptRelay.dataId>,
+    cursor: string,
+    node: option<rawResponse_auctionBids_edges_node>,
+  }
+  @live
+  and rawResponse_auctionBids_pageInfo = {
+    endCursor: option<string>,
+    hasNextPage: bool,
+  }
+  @live
+  and rawResponse_auctionBids = {
+    @live __id: option<RescriptRelay.dataId>,
+    edges: option<array<option<rawResponse_auctionBids_edges>>>,
+    pageInfo: rawResponse_auctionBids_pageInfo,
+  }
   type response = {
     fragmentRefs: RescriptRelay.fragmentRefs<[ | #AuctionBidListDisplay_auctionBids]>,
   }
   @live
-  type rawResponse = response
+  type rawResponse = {
+    auctionBids: option<rawResponse_auctionBids>,
+  }
   @live
   type variables = unit
   @live
@@ -57,12 +84,34 @@ module Internal = {
     responseConverterMap,
     Js.undefined
   )
-  type wrapRawResponseRaw = wrapResponseRaw
   @live
-  let convertWrapRawResponse = convertWrapResponse
-  type rawResponseRaw = responseRaw
+  type wrapRawResponseRaw
   @live
-  let convertRawResponse = convertResponse
+  let wrapRawResponseConverter: Js.Dict.t<Js.Dict.t<Js.Dict.t<string>>> = %raw(
+    json`{}`
+  )
+  @live
+  let wrapRawResponseConverterMap = ()
+  @live
+  let convertWrapRawResponse = v => v->RescriptRelay.convertObj(
+    wrapRawResponseConverter,
+    wrapRawResponseConverterMap,
+    Js.null
+  )
+  @live
+  type rawResponseRaw
+  @live
+  let rawResponseConverter: Js.Dict.t<Js.Dict.t<Js.Dict.t<string>>> = %raw(
+    json`{}`
+  )
+  @live
+  let rawResponseConverterMap = ()
+  @live
+  let convertRawResponse = v => v->RescriptRelay.convertObj(
+    rawResponseConverter,
+    rawResponseConverterMap,
+    Js.undefined
+  )
 }
 
 type queryRef
@@ -93,7 +142,19 @@ var v0 = [
     "name": "orderDirection",
     "value": "desc"
   }
-];
+],
+v1 = {
+  "kind": "ClientExtension",
+  "selections": [
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "__id",
+      "storageKey": null
+    }
+  ]
+};
 return {
   "fragment": {
     "argumentDefinitions": [],
@@ -184,7 +245,8 @@ return {
                 "kind": "ScalarField",
                 "name": "cursor",
                 "storageKey": null
-              }
+              },
+              (v1/*: any*/)
             ],
             "storageKey": null
           },
@@ -212,7 +274,8 @@ return {
               }
             ],
             "storageKey": null
-          }
+          },
+          (v1/*: any*/)
         ],
         "storageKey": "auctionBids(first:1000,orderBy:\"tokenId\",orderDirection:\"desc\")"
       },
