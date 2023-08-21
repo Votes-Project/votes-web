@@ -27,12 +27,17 @@ module AuctionItem = {
     ~isToday=false,
     ~isSettled=true,
     ~auctionSettled as auctionSettledRef=None,
+    ~setAuctionDate,
   ) => {
     let auctionCreated = AuctionCreatedFragment.use(auctionCreatedRef)
     let auctionSettled =
       auctionSettledRef->Option.map(auctionSettledRef =>
         AuctionSettledFragment.use(auctionSettledRef)
       )
+    React.useEffect2(() => {
+      setAuctionDate(_ => auctionCreated.startTime->Some)
+      None
+    }, (auctionCreated, setAuctionDate))
 
     let {todaysAuction, setTodaysAuction} = React.useContext(TodaysAuctionContext.context)
 
@@ -71,10 +76,10 @@ module AuctionItem = {
         </h1>
         <div className="flex flex-col lg:flex-row gap-5">
           <div className="flex lg:flex-col items-start justify-between">
-            <p className="font-semibold lg:text-xl lg:text-primary-dark">
+            <p className="font-semibold text-xl lg:text-primary-dark text-background-dark">
               {"Current Bid"->React.string}
             </p>
-            <p className="font-bold lg:text-3xl text-default-darker">
+            <p className="font-bold text-xl lg:text-3xl text-default-darker">
               {"Ξ "->React.string}
               {currentBid->React.string}
             </p>
@@ -86,14 +91,12 @@ module AuctionItem = {
         //   fallback={_ => {<div> {React.string("Bid Component Failed to Insantiate")} </div>}}>
         <CreateBid queryRef=auctionCreated.fragmentRefs isToday />
         // </RescriptReactErrorBoundary>
-        <div className="flex flex-col justify-between"> {children} </div>
+        <ul className="flex flex-col justify-between"> {children} </ul>
         <div className="w-full py-2 text-center">
           {currentBid == "0"
             ? React.null
-            : <div className="text-default-darker">
-                {"View
-              All
-              Bids"->React.string}
+            : <div className="font-semibold text-background-dark">
+                {"View All Bids"->React.string}
               </div>}
         </div>
       </>
@@ -164,7 +167,7 @@ module AuctionListDisplay = {
   `)
 
   @react.component
-  let make = (~query, ~children, ~tokenId) => {
+  let make = (~query, ~children, ~tokenId, ~setAuctionDate) => {
     let {auctionCreateds} = AuctionCreatedsFragment.use(query)
     let {auctionSettleds} = AuctionSettledsFragment.use(query)
 
@@ -214,15 +217,22 @@ module AuctionListDisplay = {
           auctionCreated={auctionCreated.fragmentRefs}
           auctionSettled={auctionSettled.fragmentRefs->Some}
           key=auctionCreated.id
-          isToday=true>
+          isToday=true
+          setAuctionDate>
           {children}
         </AuctionItem>
       | (Some(auctionCreated), None) =>
         <AuctionItem
-          auctionCreated={auctionCreated.fragmentRefs} key=auctionCreated.id isToday=true>
+          auctionCreated={auctionCreated.fragmentRefs}
+          key=auctionCreated.id
+          isToday=true
+          setAuctionDate>
           {children}
         </AuctionItem>
-      | _ => <div> {"There are no auctions today"->React.string} </div>
+      | _ =>
+        <div className="text-center ">
+          {"Could not load auction data. This is probably a network issue "->React.string}
+        </div>
       }
 
     let auctionItems = switch tokenId {
@@ -241,7 +251,8 @@ module AuctionListDisplay = {
           <AuctionItem
             auctionCreated={auctionCreated.fragmentRefs}
             auctionSettled={Some(auctionSettled.fragmentRefs)}
-            key=auctionCreated.id>
+            key=auctionCreated.id
+            setAuctionDate>
             {children}
           </AuctionItem>
         })
@@ -268,6 +279,7 @@ type arrowDirection = LeftPress | RightPress
 let make = (~queryRef, ~children, ~tokenId) => {
   let {push} = RelayRouter.Utils.useRouter()
   let data = Query.usePreloaded(~queryRef)
+  let (auctionDate, setAuctionDate) = React.useState(() => None)
 
   let {todaysAuction} = React.useContext(TodaysAuctionContext.context)
 
@@ -283,9 +295,9 @@ let make = (~queryRef, ~children, ~tokenId) => {
   | _ => None
   }
 
-  let auctionDate =
-    startTime
-    ->Float.fromString
+  let auctionDateLocale =
+    auctionDate
+    ->Option.flatMap(Float.fromString)
     ->Option.map(startTime => startTime *. 1000.)
     ->Option.map(todaysStartTime =>
       todaysStartTime
@@ -311,42 +323,47 @@ let make = (~queryRef, ~children, ~tokenId) => {
     }
   }
 
-  <div
-    className="flex flex-col bg-secondary noise lg:flex-row lg:justify-center lg:items-center m-auto max-w-6xl">
-    <div className="flex-[0_0_auto] w-[50%] flex">
-      <div className="self-end w-full">
-        <div className="relative h-0 w-full pt-[100%]">
-          <img className="absolute left-0 top-0  w-full align-middle " src={%raw("viteLogo")} />
-        </div>
-      </div>
-    </div>
-    <React.Suspense
-      fallback={<div className="flex-1"> {React.string("Loading Auctions...")} </div>}>
-      <div
-        className="min-h-[558px] lg:flex-[0_0_auto] w-full !self-end bg-background pr-[5%] pb-0 lg:bg-transparent lg:w-[50%] lg:pr-20 ">
-        <div className="!self-start px-4">
-          <div className="flex items-center pt-5">
-            <div className="flex gap-2 items-center">
-              <button
-                disabled={tokenId->Option.equal(Some("0"), (a, b) => a == b)}
-                onClick={_ => handleArrowPress(LeftPress, tokenId)}
-                className="flex h-8 w-8 items-center justify-center rounded-full bg-primary disabled:bg-background-light ">
-                <ReactIcons.LuArrowLeft />
-              </button>
-              <button
-                onClick={_ => handleArrowPress(RightPress, tokenId)}
-                disabled={todaysAuction
-                ->Option.map(todaysAuction => todaysAuction.tokenId)
-                ->Option.equal(Some(tokenId), (a, b) => a == b)}
-                className="flex h-8 w-8 items-center justify-center rounded-full bg-primary disabled:bg-background-light disabled:opacity-50 ">
-                <ReactIcons.LuArrowRight />
-              </button>
-              <p> {auctionDate->Option.getWithDefault("")->React.string} </p>
-            </div>
+  <div className=" bg-secondary noise w-full  shadow-inner pt-4">
+    <div className="max-w-6xl m-auto flex flex-col lg:flex-row lg:justify-center lg:items-center">
+      <div className="flex-[0_0_auto] w-[50%] flex">
+        <div className="self-end w-full">
+          <div className="relative h-0 w-full pt-[100%]">
+            <img className="absolute left-0 top-0  w-full align-middle " src={%raw("viteLogo")} />
           </div>
-          <AuctionListDisplay query={data.fragmentRefs} tokenId> {children} </AuctionListDisplay>
         </div>
       </div>
-    </React.Suspense>
+      <React.Suspense
+        fallback={<div className="flex-1"> {React.string("Loading Auctions...")} </div>}>
+        <div
+          className="min-h-[558px] lg:flex-[0_0_auto] w-full !self-end bg-background pr-[5%] pb-0 lg:bg-transparent lg:w-[50%] lg:pr-20 ">
+          <div className="!self-start px-4">
+            <div className="flex items-center pt-5">
+              <div className="flex gap-2 items-center">
+                <button
+                  disabled={tokenId->Option.equal(Some("0"), (a, b) => a == b)}
+                  onClick={_ => handleArrowPress(LeftPress, tokenId)}
+                  className="flex h-8 w-8 items-center justify-center rounded-full bg-primary disabled:bg-background-light ">
+                  <ReactIcons.LuArrowLeft />
+                </button>
+                <button
+                  onClick={_ => handleArrowPress(RightPress, tokenId)}
+                  disabled={todaysAuction
+                  ->Option.map(todaysAuction => todaysAuction.tokenId)
+                  ->Option.equal(Some(tokenId), (a, b) => a == b)}
+                  className="flex h-8 w-8 items-center justify-center rounded-full bg-primary disabled:bg-background-light disabled:opacity-50 ">
+                  <ReactIcons.LuArrowRight />
+                </button>
+                <p className="font-semibold text-background-dark lg:text-primary-dark">
+                  {auctionDateLocale->Option.getWithDefault("")->React.string}
+                </p>
+              </div>
+            </div>
+            <AuctionListDisplay query={data.fragmentRefs} tokenId setAuctionDate>
+              {children}
+            </AuctionListDisplay>
+          </div>
+        </div>
+      </React.Suspense>
+    </div>
   </div>
 }
