@@ -32,8 +32,6 @@ module Connection = {
       {first: first->Option.getWithDefault(10), skip: skip->Option.getWithDefault(0)}, //Probably shouldn't have to write defaults here
     )
 
-    Js.log(res.data)
-
     res.data->Option.map(data =>
       data.questionSubmitteds
       ->Array.map(questionSubmitted => (questionSubmitted :> QuestionSubmitted.questionSubmitted))

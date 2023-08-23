@@ -4,6 +4,7 @@ import * as Graphql from "graphql";
 import * as Caml_option from "rescript/lib/es6/caml_option.js";
 import * as AuctionBidResolvers from "../AuctionBidResolvers.mjs";
 import * as VerificationResolvers from "../VerificationResolvers.mjs";
+import * as VoteTransferResolvers from "../VoteTransferResolvers.mjs";
 import * as NodeInterfaceResolvers from "../NodeInterfaceResolvers.mjs";
 import * as AuctionCreatedResolvers from "../AuctionCreatedResolvers.mjs";
 import * as AuctionSettledResolvers from "../AuctionSettledResolvers.mjs";
@@ -62,6 +63,24 @@ var enum_OrderBy_AuctionSettleds = new Graphql.GraphQLEnumType({
         },
         winner: {
           value: "winner"
+        }
+      }
+    });
+
+var enum_OrderBy_Transfers = new Graphql.GraphQLEnumType({
+      name: "OrderBy_Transfers",
+      values: {
+        id: {
+          value: "id"
+        },
+        tokenId: {
+          value: "tokenId"
+        },
+        winner: {
+          value: "winner"
+        },
+        blockNumber: {
+          value: "blockNumber"
         }
       }
     });
@@ -158,6 +177,18 @@ var t_VerificationData = {
   contents: null
 };
 
+var t_VoteTransfer = {
+  contents: null
+};
+
+var t_VoteTransferConnection = {
+  contents: null
+};
+
+var t_VoteTransferEdge = {
+  contents: null
+};
+
 var input_Where_AuctionBids = {
   contents: null
 };
@@ -169,6 +200,12 @@ var input_Where_AuctionCreateds = {
 };
 
 var input_Where_AuctionCreateds_conversionInstructions = [];
+
+var input_Where_Transfers = {
+  contents: null
+};
+
+var input_Where_Transfers_conversionInstructions = [];
 
 input_Where_AuctionBids_conversionInstructions.push([
       "id",
@@ -191,6 +228,26 @@ input_Where_AuctionBids_conversionInstructions.push([
     ]);
 
 input_Where_AuctionCreateds_conversionInstructions.push([
+      "id",
+      (function (v) {
+          if (v == null) {
+            return ;
+          } else {
+            return Caml_option.some(v);
+          }
+        })
+    ], [
+      "tokenId",
+      (function (v) {
+          if (v == null) {
+            return ;
+          } else {
+            return Caml_option.some(v);
+          }
+        })
+    ]);
+
+input_Where_Transfers_conversionInstructions.push([
       "id",
       (function (v) {
           if (v == null) {
@@ -234,6 +291,8 @@ function interface_Node_resolveType(v) {
         return "QuestionSubmitted";
     case "VerificationData" :
         return "VerificationData";
+    case "VoteTransfer" :
+        return "VoteTransfer";
     
   }
 }
@@ -801,6 +860,52 @@ t_Query.contents = new Graphql.GraphQLObjectType({
                           var src$1 = typeUnwrapper(src);
                           return VerificationResolvers.verification(src$1, args.contextId, ctx);
                         })
+                  },
+                  voteTransfer: {
+                    type: t_VoteTransfer.contents,
+                    args: {
+                      id: {
+                        type: new Graphql.GraphQLNonNull(Graphql.GraphQLString)
+                      }
+                    },
+                    resolve: Caml_option.some(function (src, args, ctx) {
+                          var src$1 = typeUnwrapper(src);
+                          return VoteTransferResolvers.$$Node.voteTransfer(src$1, args.id, ctx);
+                        })
+                  },
+                  voteTransfers: {
+                    type: t_VoteTransferConnection.contents,
+                    args: {
+                      after: {
+                        type: Graphql.GraphQLString
+                      },
+                      before: {
+                        type: Graphql.GraphQLString
+                      },
+                      first: {
+                        type: Graphql.GraphQLInt
+                      },
+                      last: {
+                        type: Graphql.GraphQLInt
+                      },
+                      orderBy: {
+                        type: enum_OrderBy_Transfers
+                      },
+                      orderDirection: {
+                        type: enum_OrderDirection
+                      },
+                      skip: {
+                        type: Graphql.GraphQLInt
+                      },
+                      where: {
+                        type: input_Where_Transfers.contents
+                      }
+                    },
+                    resolve: Caml_option.some(function (src, args, ctx) {
+                          var src$1 = typeUnwrapper(src);
+                          var v = args.where;
+                          return VoteTransferResolvers.Connection.voteTransfers(src$1, Caml_option.nullable_to_opt(args.skip), Caml_option.nullable_to_opt(args.orderBy), Caml_option.nullable_to_opt(args.orderDirection), !(v == null) ? applyConversionToInputObject(v, input_Where_Transfers_conversionInstructions) : undefined, Caml_option.nullable_to_opt(args.first), Caml_option.nullable_to_opt(args.after), Caml_option.nullable_to_opt(args.before), Caml_option.nullable_to_opt(args.last));
+                        })
                   }
                 };
         }),
@@ -968,6 +1073,94 @@ t_VerificationData.contents = new Graphql.GraphQLObjectType({
       interfaces: [i_Node.contents]
     });
 
+t_VoteTransfer.contents = new Graphql.GraphQLObjectType({
+      name: "VoteTransfer",
+      description: "GraphClient: A Transfer Event for a Vote token",
+      fields: (function () {
+          return {
+                  blockNumber: {
+                    type: new Graphql.GraphQLNonNull(Graphql.GraphQLInt),
+                    resolve: Caml_option.some(function (src, _args, _ctx) {
+                          return typeUnwrapper(src).blockNumber;
+                        })
+                  },
+                  id: {
+                    type: new Graphql.GraphQLNonNull(Graphql.GraphQLString),
+                    resolve: Caml_option.some(function (src, _args, _ctx) {
+                          return typeUnwrapper(src).id;
+                        })
+                  },
+                  to: {
+                    type: new Graphql.GraphQLNonNull(Graphql.GraphQLString),
+                    resolve: Caml_option.some(function (src, _args, _ctx) {
+                          return typeUnwrapper(src).to;
+                        })
+                  },
+                  tokenId: {
+                    type: new Graphql.GraphQLNonNull(Graphql.GraphQLString),
+                    resolve: Caml_option.some(function (src, _args, _ctx) {
+                          return typeUnwrapper(src).tokenId;
+                        })
+                  },
+                  transactionHash: {
+                    type: new Graphql.GraphQLNonNull(Graphql.GraphQLString),
+                    resolve: Caml_option.some(function (src, _args, _ctx) {
+                          return typeUnwrapper(src).transactionHash;
+                        })
+                  }
+                };
+        }),
+      interfaces: [i_Node.contents]
+    });
+
+t_VoteTransferConnection.contents = new Graphql.GraphQLObjectType({
+      name: "VoteTransferConnection",
+      description: "A connection to a vote transfer.",
+      fields: (function () {
+          return {
+                  edges: {
+                    type: new Graphql.GraphQLList(t_VoteTransferEdge.contents),
+                    resolve: Caml_option.some(function (src, _args, _ctx) {
+                          return typeUnwrapper(src).edges;
+                        }),
+                    description: "A list of edges."
+                  },
+                  pageInfo: {
+                    type: new Graphql.GraphQLNonNull(t_PageInfo.contents),
+                    resolve: Caml_option.some(function (src, _args, _ctx) {
+                          return typeUnwrapper(src).pageInfo;
+                        }),
+                    description: "Information to aid in pagination."
+                  }
+                };
+        }),
+      interfaces: []
+    });
+
+t_VoteTransferEdge.contents = new Graphql.GraphQLObjectType({
+      name: "VoteTransferEdge",
+      description: "An edge to a vote transfer event.",
+      fields: (function () {
+          return {
+                  cursor: {
+                    type: new Graphql.GraphQLNonNull(Graphql.GraphQLString),
+                    resolve: Caml_option.some(function (src, _args, _ctx) {
+                          return typeUnwrapper(src).cursor;
+                        }),
+                    description: "A cursor for use in pagination."
+                  },
+                  node: {
+                    type: t_VoteTransfer.contents,
+                    resolve: Caml_option.some(function (src, _args, _ctx) {
+                          return typeUnwrapper(src).node;
+                        }),
+                    description: "The item at the end of the edge."
+                  }
+                };
+        }),
+      interfaces: []
+    });
+
 input_Where_AuctionBids.contents = new Graphql.GraphQLInputObjectType({
       name: "Where_AuctionBids",
       fields: (function () {
@@ -984,6 +1177,20 @@ input_Where_AuctionBids.contents = new Graphql.GraphQLInputObjectType({
 
 input_Where_AuctionCreateds.contents = new Graphql.GraphQLInputObjectType({
       name: "Where_AuctionCreateds",
+      fields: (function () {
+          return {
+                  id: {
+                    type: Graphql.GraphQLString
+                  },
+                  tokenId: {
+                    type: Graphql.GraphQLString
+                  }
+                };
+        })
+    });
+
+input_Where_Transfers.contents = new Graphql.GraphQLInputObjectType({
+      name: "Where_Transfers",
       fields: (function () {
           return {
                   id: {

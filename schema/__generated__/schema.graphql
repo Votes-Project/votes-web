@@ -16,6 +16,13 @@ enum OrderBy_AuctionSettleds {
   winner
 }
 
+enum OrderBy_Transfers {
+  id
+  tokenId
+  winner
+  blockNumber
+}
+
 enum OrderDirection {
   asc
   desc
@@ -37,6 +44,11 @@ input Where_AuctionBids {
 }
 
 input Where_AuctionCreateds {
+  id: String
+  tokenId: String
+}
+
+input Where_Transfers {
   id: String
   tokenId: String
 }
@@ -197,6 +209,8 @@ type PageInfo {
 }
 
 type Query {
+  voteTransfers(skip: Int, orderBy: OrderBy_Transfers, orderDirection: OrderDirection, where: Where_Transfers, first: Int, after: String, before: String, last: Int): VoteTransferConnection
+  voteTransfer(id: String!): VoteTransfer
   verification(contextId: String!): Verification
   questionSubmitteds(skip: Int, first: Int, after: String, before: String, last: Int): QuestionSubmittedConnection
   questionSubmitted(id: String!): QuestionSubmitted
@@ -277,5 +291,37 @@ type VerificationData implements Node {
 
   """The public key of the verification"""
   publicKey: String
+}
+
+
+"""GraphClient: A Transfer Event for a Vote token"""
+type VoteTransfer implements Node {
+  id: String!
+  tokenId: String!
+  to: String!
+  transactionHash: String!
+  blockNumber: Int!
+}
+
+
+"""A connection to a vote transfer."""
+type VoteTransferConnection {
+
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [VoteTransferEdge]
+}
+
+
+"""An edge to a vote transfer event."""
+type VoteTransferEdge {
+
+  """The item at the end of the edge."""
+  node: VoteTransfer
+
+  """A cursor for use in pagination."""
+  cursor: String!
 }
 
