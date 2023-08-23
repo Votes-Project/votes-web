@@ -3,8 +3,6 @@
 let node = async (_: Schema.query, ~id, ~ctx: ResGraphContext.context): option<
   Interface_node.Resolver.t,
 > => {
-  Js.log2("id: ", id)
-
   switch id->ResGraph.idToString->String.split(":") {
   | [typenameAsString, id] =>
     switch typenameAsString->Interface_node.ImplementedBy.decode {
@@ -37,6 +35,11 @@ let node = async (_: Schema.query, ~id, ~ctx: ResGraphContext.context): option<
         | Verification(verificationData) => VerificationData(verificationData)->Some
         | BrightIdError(e) => panic(e.errorMessage)
         }
+      }
+    | Some(VoteTransfer) =>
+      switch await ctx.dataLoaders.voteTransfer.byId->DataLoader.load(id) {
+      | None => panic("Something went wrong querying vote transfer nodes")
+      | Some(voteTransfer) => VoteTransfer(voteTransfer)->Some
       }
     }
   | _ => None

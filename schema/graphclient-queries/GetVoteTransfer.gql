@@ -1,0 +1,9 @@
+query GetVoteTransfer($id: ID!) {
+  transfer(id: $id) {
+    id
+    tokenId
+    to
+    transactionHash
+    blockNumber
+  }
+}

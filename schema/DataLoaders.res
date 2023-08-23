@@ -4,6 +4,7 @@ type t = {
   questionSubmitted: QuestionSubmittedDataLoaders.t,
   auctionBid: AuctionBidDataLoaders.t,
   verification: VerificationDataLoaders.t,
+  voteTransfer: VoteTransferDataLoaders.t,
 }
 
 let make = () => {
@@ -12,4 +13,5 @@ let make = () => {
   questionSubmitted: QuestionSubmittedDataLoaders.make(),
   auctionBid: AuctionBidDataLoaders.make(),
   verification: VerificationDataLoaders.make(),
+  voteTransfer: VoteTransferDataLoaders.make(),
 }

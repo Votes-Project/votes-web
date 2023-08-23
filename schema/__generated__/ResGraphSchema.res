@@ -50,6 +50,20 @@ let enum_OrderBy_AuctionSettleds = GraphQLEnumType.make({
     "winner": {GraphQLEnumType.value: "winner", description: ?None, deprecationReason: ?None},
   }->makeEnumValues,
 })
+let enum_OrderBy_Transfers = GraphQLEnumType.make({
+  name: "OrderBy_Transfers",
+  description: ?None,
+  values: {
+    "id": {GraphQLEnumType.value: "id", description: ?None, deprecationReason: ?None},
+    "tokenId": {GraphQLEnumType.value: "tokenId", description: ?None, deprecationReason: ?None},
+    "winner": {GraphQLEnumType.value: "winner", description: ?None, deprecationReason: ?None},
+    "blockNumber": {
+      GraphQLEnumType.value: "blockNumber",
+      description: ?None,
+      deprecationReason: ?None,
+    },
+  }->makeEnumValues,
+})
 let enum_OrderDirection = GraphQLEnumType.make({
   name: "OrderDirection",
   description: ?None,
@@ -100,17 +114,30 @@ let t_QuestionSubmittedEdge: ref<GraphQLObjectType.t> = Obj.magic({"contents": J
 let get_QuestionSubmittedEdge = () => t_QuestionSubmittedEdge.contents
 let t_VerificationData: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
 let get_VerificationData = () => t_VerificationData.contents
+let t_VoteTransfer: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
+let get_VoteTransfer = () => t_VoteTransfer.contents
+let t_VoteTransferConnection: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
+let get_VoteTransferConnection = () => t_VoteTransferConnection.contents
+let t_VoteTransferEdge: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
+let get_VoteTransferEdge = () => t_VoteTransferEdge.contents
 let input_Where_AuctionBids: ref<GraphQLInputObjectType.t> = Obj.magic({"contents": Js.null})
 let get_Where_AuctionBids = () => input_Where_AuctionBids.contents
 let input_Where_AuctionBids_conversionInstructions = []
 let input_Where_AuctionCreateds: ref<GraphQLInputObjectType.t> = Obj.magic({"contents": Js.null})
 let get_Where_AuctionCreateds = () => input_Where_AuctionCreateds.contents
 let input_Where_AuctionCreateds_conversionInstructions = []
+let input_Where_Transfers: ref<GraphQLInputObjectType.t> = Obj.magic({"contents": Js.null})
+let get_Where_Transfers = () => input_Where_Transfers.contents
+let input_Where_Transfers_conversionInstructions = []
 input_Where_AuctionBids_conversionInstructions->Array.pushMany([
   ("id", makeInputObjectFieldConverterFn(v => v->Nullable.toOption)),
   ("tokenId", makeInputObjectFieldConverterFn(v => v->Nullable.toOption)),
 ])
 input_Where_AuctionCreateds_conversionInstructions->Array.pushMany([
+  ("id", makeInputObjectFieldConverterFn(v => v->Nullable.toOption)),
+  ("tokenId", makeInputObjectFieldConverterFn(v => v->Nullable.toOption)),
+])
+input_Where_Transfers_conversionInstructions->Array.pushMany([
   ("id", makeInputObjectFieldConverterFn(v => v->Nullable.toOption)),
   ("tokenId", makeInputObjectFieldConverterFn(v => v->Nullable.toOption)),
 ])
@@ -125,6 +152,7 @@ let union_Verification_resolveType = (v: Verification.verification) =>
 
 let interface_Node_resolveType = (v: Interface_node.Resolver.t) =>
   switch v {
+  | VoteTransfer(_) => "VoteTransfer"
   | AuctionBid(_) => "AuctionBid"
   | AuctionSettled(_) => "AuctionSettled"
   | AuctionCreated(_) => "AuctionCreated"
@@ -742,6 +770,49 @@ t_Query.contents = GraphQLObjectType.make({
           VerificationResolvers.verification(src, ~contextId=args["contextId"], ~ctx)
         }),
       },
+      "voteTransfer": {
+        typ: get_VoteTransfer()->GraphQLObjectType.toGraphQLType,
+        description: ?None,
+        deprecationReason: ?None,
+        args: {"id": {typ: Scalars.string->Scalars.toGraphQLType->nonNull}}->makeArgs,
+        resolve: makeResolveFn((src, args, ctx) => {
+          let src = typeUnwrapper(src)
+          VoteTransferResolvers.Node.voteTransfer(src, ~ctx, ~id=args["id"])
+        }),
+      },
+      "voteTransfers": {
+        typ: get_VoteTransferConnection()->GraphQLObjectType.toGraphQLType,
+        description: ?None,
+        deprecationReason: ?None,
+        args: {
+          "after": {typ: Scalars.string->Scalars.toGraphQLType},
+          "before": {typ: Scalars.string->Scalars.toGraphQLType},
+          "first": {typ: Scalars.int->Scalars.toGraphQLType},
+          "last": {typ: Scalars.int->Scalars.toGraphQLType},
+          "orderBy": {typ: enum_OrderBy_Transfers->GraphQLEnumType.toGraphQLType},
+          "orderDirection": {typ: enum_OrderDirection->GraphQLEnumType.toGraphQLType},
+          "skip": {typ: Scalars.int->Scalars.toGraphQLType},
+          "where": {typ: get_Where_Transfers()->GraphQLInputObjectType.toGraphQLType},
+        }->makeArgs,
+        resolve: makeResolveFn((src, args, ctx) => {
+          let src = typeUnwrapper(src)
+          VoteTransferResolvers.Connection.voteTransfers(
+            src,
+            ~after=args["after"]->Nullable.toOption,
+            ~before=args["before"]->Nullable.toOption,
+            ~first=args["first"]->Nullable.toOption,
+            ~last=args["last"]->Nullable.toOption,
+            ~orderBy=args["orderBy"]->Nullable.toOption,
+            ~orderDirection=args["orderDirection"]->Nullable.toOption,
+            ~skip=args["skip"]->Nullable.toOption,
+            ~where=switch args["where"]->Nullable.toOption {
+            | None => None
+            | Some(v) =>
+              v->applyConversionToInputObject(input_Where_Transfers_conversionInstructions)->Some
+            },
+          )
+        }),
+      },
     }->makeFields,
 })
 t_QuestionSubmitted.contents = GraphQLObjectType.make({
@@ -946,6 +1017,113 @@ t_VerificationData.contents = GraphQLObjectType.make({
       },
     }->makeFields,
 })
+t_VoteTransfer.contents = GraphQLObjectType.make({
+  name: "VoteTransfer",
+  description: "GraphClient: A Transfer Event for a Vote token",
+  interfaces: [get_Node()],
+  fields: () =>
+    {
+      "blockNumber": {
+        typ: Scalars.int->Scalars.toGraphQLType->nonNull,
+        description: ?None,
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["blockNumber"]
+        }),
+      },
+      "id": {
+        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        description: ?None,
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["id"]
+        }),
+      },
+      "to": {
+        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        description: ?None,
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["to"]
+        }),
+      },
+      "tokenId": {
+        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        description: ?None,
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["tokenId"]
+        }),
+      },
+      "transactionHash": {
+        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        description: ?None,
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["transactionHash"]
+        }),
+      },
+    }->makeFields,
+})
+t_VoteTransferConnection.contents = GraphQLObjectType.make({
+  name: "VoteTransferConnection",
+  description: "A connection to a vote transfer.",
+  interfaces: [],
+  fields: () =>
+    {
+      "edges": {
+        typ: GraphQLListType.make(
+          get_VoteTransferEdge()->GraphQLObjectType.toGraphQLType,
+        )->GraphQLListType.toGraphQLType,
+        description: "A list of edges.",
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["edges"]
+        }),
+      },
+      "pageInfo": {
+        typ: get_PageInfo()->GraphQLObjectType.toGraphQLType->nonNull,
+        description: "Information to aid in pagination.",
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["pageInfo"]
+        }),
+      },
+    }->makeFields,
+})
+t_VoteTransferEdge.contents = GraphQLObjectType.make({
+  name: "VoteTransferEdge",
+  description: "An edge to a vote transfer event.",
+  interfaces: [],
+  fields: () =>
+    {
+      "cursor": {
+        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        description: "A cursor for use in pagination.",
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["cursor"]
+        }),
+      },
+      "node": {
+        typ: get_VoteTransfer()->GraphQLObjectType.toGraphQLType,
+        description: "The item at the end of the edge.",
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["node"]
+        }),
+      },
+    }->makeFields,
+})
 input_Where_AuctionBids.contents = GraphQLInputObjectType.make({
   name: "Where_AuctionBids",
   description: ?None,
@@ -965,6 +1143,23 @@ input_Where_AuctionBids.contents = GraphQLInputObjectType.make({
 })
 input_Where_AuctionCreateds.contents = GraphQLInputObjectType.make({
   name: "Where_AuctionCreateds",
+  description: ?None,
+  fields: () =>
+    {
+      "id": {
+        GraphQLInputObjectType.typ: Scalars.string->Scalars.toGraphQLType,
+        description: ?None,
+        deprecationReason: ?None,
+      },
+      "tokenId": {
+        GraphQLInputObjectType.typ: Scalars.string->Scalars.toGraphQLType,
+        description: ?None,
+        deprecationReason: ?None,
+      },
+    }->makeFields,
+})
+input_Where_Transfers.contents = GraphQLInputObjectType.make({
+  name: "Where_Transfers",
   description: ?None,
   fields: () =>
     {
