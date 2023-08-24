@@ -44,7 +44,7 @@ let make = () => {
     ]
   }
 
-  <header className="flex flex-col justify-center items-center ">
+  <header className="flex flex-col justify-center items-center m-[-5px] ">
     <nav className=" bg-secondary max-w-7xl noise flex w-full justify-between px-4  pt-2">
       <div className="flex gap-3 justify-center items-center ">
         <RelayRouter.Link
@@ -52,9 +52,12 @@ let make = () => {
           <img src={viteLogo["default"]} className="w-24 h-24  " alt="Vite logo" />
         </RelayRouter.Link>
         <div
-          className=" bg-active text-white hover:bg-white hover:text-active hover:cursor-pointer rounded-xl flex items-center font-semibold mr-4 px-3 h-10 justify-center gap-5 transition-all">
-          <p className="text-2xl"> {"🦉"->React.string} </p>
-          <p className="text-lg"> {"1000"->React.string} </p>
+          className=" border border-primary  hover:bg-secondary  hover:cursor-pointer rounded-xl flex items-center font-semibold mr-4 px-2 h-10 justify-center transition-all">
+          <p className="text-lg text-active  ml-1 mr-2"> {"Voters"->React.string} </p>
+          <div className="flex items-center justify-around text-default-darker">
+            <ReactIcons.GiOwl size="1.5rem" />
+            <p className="text-lg ml-1 mr-2"> {1000->Int.toLocaleString->React.string} </p>
+          </div>
         </div>
       </div>
       <div className="hidden lg:flex lg:visible gap-4 justify-center items-center">
@@ -86,7 +89,7 @@ let make = () => {
     </nav>
     <div
       className={`${isOpen
-          ? "py-10 bg-active w-full flex flex-col h-96"
+          ? "py-10 bg-active w-full flex flex-col h-96 m-[-8px]"
           : "max-h-0"} color-active transition-all justify-around items-center flex lg:max-h-0 lg:p-0 `}>
       <button
         onClick={_ => setDailyQuestion(Some(""))}
