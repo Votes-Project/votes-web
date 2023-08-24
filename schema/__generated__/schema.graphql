@@ -51,6 +51,7 @@ input Where_AuctionCreateds {
 input Where_Transfers {
   id: String
   tokenId: String
+  from: String
 }
 
 

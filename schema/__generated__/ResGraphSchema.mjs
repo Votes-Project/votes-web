@@ -265,6 +265,15 @@ input_Where_Transfers_conversionInstructions.push([
             return Caml_option.some(v);
           }
         })
+    ], [
+      "from",
+      (function (v) {
+          if (v == null) {
+            return ;
+          } else {
+            return Caml_option.some(v);
+          }
+        })
     ]);
 
 var union_Verification = {
@@ -1193,6 +1202,9 @@ input_Where_Transfers.contents = new Graphql.GraphQLInputObjectType({
       name: "Where_Transfers",
       fields: (function () {
           return {
+                  from: {
+                    type: Graphql.GraphQLString
+                  },
                   id: {
                     type: Graphql.GraphQLString
                   },

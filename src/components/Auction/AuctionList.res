@@ -264,9 +264,6 @@ module AuctionListDisplay = {
   }
 }
 
-%%raw(`
-import viteLogo from "/vite.svg";
-`)
 module Query = %relay(`
   query AuctionListQuery {
     ...AuctionListDisplay_auctionCreateds
@@ -274,7 +271,8 @@ module Query = %relay(`
   }
 `)
 
-@module external radarChart: {"default": string} = "/assets/RadarChart.png"
+@module("/assets/RadarChart.png")
+external radarChart: string = "default"
 
 type arrowDirection = LeftPress | RightPress
 @react.component @relay.deferredComponent
@@ -326,9 +324,7 @@ let make = (~queryRef, ~children, ~tokenId) => {
       <div className="  lg:w-[50%] w-[80%] md:w-[70%] mx-3 md:mx-4 lg:mx-0 flex align-end ">
         <div className="self-end w-full">
           <div className="relative h-0 w-full pt-[100%]">
-            <img
-              className="absolute left-0 top-0  w-full align-middle " src={radarChart["default"]}
-            />
+            <img className="absolute left-0 top-0  w-full align-middle " src={radarChart} />
           </div>
         </div>
       </div>
