@@ -25,13 +25,13 @@ module BrightIDModal = {
   ReactModal.setAppElement("#root")
   @react.component
   let make = (~contextId, ~verification) => {
-    let {setVerification} = React.useContext(RequireVerificationContext.context)
+    // let {setVerification} = React.useContext(RequireVerificationContext.context)
     // let (verification, refetch) = RequireVerificationFragment.useRefetchable(
     //   verification->Option.getUnsafe,
     // )
-    let verification = RequireVerificationFragment.use(verification->Option.getUnsafe)
+    // let verification = RequireVerificationFragment.use(verification->Option.getUnsafe)
 
-    let (isRefetching, startTransition) = ReactExperimental.useTransition()
+    // let (isRefetching, startTransition) = ReactExperimental.useTransition()
 
     let uri = BrightID.SDK.generateDeeplink(~context, ~contextId)
     // let handleConfirmLink = () => {

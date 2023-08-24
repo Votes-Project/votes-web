@@ -55,3 +55,13 @@ module LuArrowRight = {
     ~className: string=?,
   ) => t = "LuArrowRight"
 }
+
+module GiOwl = {
+  @react.component @module("react-icons/gi")
+  external make: (
+    ~size: string=?,
+    ~color: string=?,
+    ~onClick: unit => unit=?,
+    ~className: string=?,
+  ) => t = "GiOwl"
+}
