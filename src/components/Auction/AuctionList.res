@@ -274,6 +274,8 @@ module Query = %relay(`
   }
 `)
 
+@module external radarChart: {"default": string} = "/assets/RadarChart.png"
+
 type arrowDirection = LeftPress | RightPress
 @react.component @relay.deferredComponent
 let make = (~queryRef, ~children, ~tokenId) => {
@@ -282,11 +284,6 @@ let make = (~queryRef, ~children, ~tokenId) => {
   let (auctionDate, setAuctionDate) = React.useState(() => None)
 
   let {todaysAuction} = React.useContext(TodaysAuctionContext.context)
-
-  let startTime = switch todaysAuction {
-  | Some({startTime}) => startTime
-  | _ => "Could not fetch auction date"
-  }
 
   let todaysAuctionTokenId = todaysAuction->Option.flatMap(todaysAuction => todaysAuction.tokenId)
   let tokenId = switch (tokenId, todaysAuctionTokenId) {
@@ -324,11 +321,14 @@ let make = (~queryRef, ~children, ~tokenId) => {
   }
 
   <div className=" bg-secondary noise w-full  shadow-inner pt-4">
-    <div className="max-w-6xl m-auto flex flex-col lg:flex-row lg:justify-center lg:items-center">
-      <div className="flex-[0_0_auto] w-[50%] flex">
+    <div
+      className="lg:flex-[0_0_auto] lg:max-w-6xl m-auto flex flex-col lg:flex-row lg:justify-center lg:items-center flex-shrink-0 max-w-full">
+      <div className="  lg:w-[50%] w-[80%] md:w-[70%] mx-3 md:mx-4 lg:mx-0 flex align-end ">
         <div className="self-end w-full">
           <div className="relative h-0 w-full pt-[100%]">
-            <img className="absolute left-0 top-0  w-full align-middle " src={%raw("viteLogo")} />
+            <img
+              className="absolute left-0 top-0  w-full align-middle " src={radarChart["default"]}
+            />
           </div>
         </div>
       </div>
