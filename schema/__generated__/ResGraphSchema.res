@@ -140,6 +140,7 @@ input_Where_AuctionCreateds_conversionInstructions->Array.pushMany([
 input_Where_Transfers_conversionInstructions->Array.pushMany([
   ("id", makeInputObjectFieldConverterFn(v => v->Nullable.toOption)),
   ("tokenId", makeInputObjectFieldConverterFn(v => v->Nullable.toOption)),
+  ("from", makeInputObjectFieldConverterFn(v => v->Nullable.toOption)),
 ])
 let union_Verification: ref<GraphQLUnionType.t> = Obj.magic({"contents": Js.null})
 let get_Verification = () => union_Verification.contents
@@ -1163,6 +1164,11 @@ input_Where_Transfers.contents = GraphQLInputObjectType.make({
   description: ?None,
   fields: () =>
     {
+      "from": {
+        GraphQLInputObjectType.typ: Scalars.string->Scalars.toGraphQLType,
+        description: ?None,
+        deprecationReason: ?None,
+      },
       "id": {
         GraphQLInputObjectType.typ: Scalars.string->Scalars.toGraphQLType,
         description: ?None,
