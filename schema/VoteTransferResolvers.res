@@ -31,6 +31,7 @@ module Connection = {
   type where_Transfers = {
     id?: string,
     tokenId?: string,
+    from?: string,
   }
 
   @gql.field

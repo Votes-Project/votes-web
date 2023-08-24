@@ -4,18 +4,8 @@
 module Types = {
   @@warning("-30")
 
-  type rec response_auctionSettleds_edges_node = {
-    @live id: string,
-    tokenId: string,
-  }
-  and response_auctionSettleds_edges = {
-    node: option<response_auctionSettleds_edges_node>,
-  }
-  and response_auctionSettleds = {
-    edges: option<array<option<response_auctionSettleds_edges>>>,
-  }
   type response = {
-    auctionSettleds: option<response_auctionSettleds>,
+    fragmentRefs: RescriptRelay.fragmentRefs<[ | #Votes_VoteListDisplay_voteTransfers]>,
   }
   @live
   type rawResponse = response
@@ -43,7 +33,7 @@ module Internal = {
   type wrapResponseRaw
   @live
   let wrapResponseConverter: Js.Dict.t<Js.Dict.t<Js.Dict.t<string>>> = %raw(
-    json`{}`
+    json`{"__root":{"":{"f":""}}}`
   )
   @live
   let wrapResponseConverterMap = ()
@@ -57,7 +47,7 @@ module Internal = {
   type responseRaw
   @live
   let responseConverter: Js.Dict.t<Js.Dict.t<Js.Dict.t<string>>> = %raw(
-    json`{}`
+    json`{"__root":{"":{"f":""}}}`
   )
   @live
   let responseConverterMap = ()
@@ -89,51 +79,26 @@ type operationType = RescriptRelay.queryNode<relayOperationNode>
 let node: operationType = %raw(json` (function(){
 var v0 = [
   {
-    "alias": null,
-    "args": null,
-    "concreteType": "AuctionSettledConnection",
-    "kind": "LinkedField",
-    "name": "auctionSettleds",
-    "plural": false,
-    "selections": [
-      {
-        "alias": null,
-        "args": null,
-        "concreteType": "AuctionSettledEdge",
-        "kind": "LinkedField",
-        "name": "edges",
-        "plural": true,
-        "selections": [
-          {
-            "alias": null,
-            "args": null,
-            "concreteType": "AuctionSettled",
-            "kind": "LinkedField",
-            "name": "node",
-            "plural": false,
-            "selections": [
-              {
-                "alias": null,
-                "args": null,
-                "kind": "ScalarField",
-                "name": "id",
-                "storageKey": null
-              },
-              {
-                "alias": null,
-                "args": null,
-                "kind": "ScalarField",
-                "name": "tokenId",
-                "storageKey": null
-              }
-            ],
-            "storageKey": null
-          }
-        ],
-        "storageKey": null
-      }
-    ],
-    "storageKey": null
+    "kind": "Literal",
+    "name": "first",
+    "value": 100
+  },
+  {
+    "kind": "Literal",
+    "name": "orderBy",
+    "value": "tokenId"
+  },
+  {
+    "kind": "Literal",
+    "name": "orderDirection",
+    "value": "desc"
+  },
+  {
+    "kind": "Literal",
+    "name": "where",
+    "value": {
+      "from": "0x0000000000000000000000000000000000000000"
+    }
   }
 ];
 return {
@@ -142,7 +107,13 @@ return {
     "kind": "Fragment",
     "metadata": null,
     "name": "VotesQuery",
-    "selections": (v0/*: any*/),
+    "selections": [
+      {
+        "args": null,
+        "kind": "FragmentSpread",
+        "name": "Votes_VoteListDisplay_voteTransfers"
+      }
+    ],
     "type": "Query",
     "abstractKey": null
   },
@@ -151,15 +122,115 @@ return {
     "argumentDefinitions": [],
     "kind": "Operation",
     "name": "VotesQuery",
-    "selections": (v0/*: any*/)
+    "selections": [
+      {
+        "alias": null,
+        "args": (v0/*: any*/),
+        "concreteType": "VoteTransferConnection",
+        "kind": "LinkedField",
+        "name": "voteTransfers",
+        "plural": false,
+        "selections": [
+          {
+            "alias": null,
+            "args": null,
+            "concreteType": "VoteTransferEdge",
+            "kind": "LinkedField",
+            "name": "edges",
+            "plural": true,
+            "selections": [
+              {
+                "alias": null,
+                "args": null,
+                "concreteType": "VoteTransfer",
+                "kind": "LinkedField",
+                "name": "node",
+                "plural": false,
+                "selections": [
+                  {
+                    "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
+                    "name": "id",
+                    "storageKey": null
+                  },
+                  {
+                    "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
+                    "name": "tokenId",
+                    "storageKey": null
+                  },
+                  {
+                    "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
+                    "name": "__typename",
+                    "storageKey": null
+                  }
+                ],
+                "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "cursor",
+                "storageKey": null
+              }
+            ],
+            "storageKey": null
+          },
+          {
+            "alias": null,
+            "args": null,
+            "concreteType": "PageInfo",
+            "kind": "LinkedField",
+            "name": "pageInfo",
+            "plural": false,
+            "selections": [
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "endCursor",
+                "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": null,
+                "kind": "ScalarField",
+                "name": "hasNextPage",
+                "storageKey": null
+              }
+            ],
+            "storageKey": null
+          }
+        ],
+        "storageKey": "voteTransfers(first:100,orderBy:\"tokenId\",orderDirection:\"desc\",where:{\"from\":\"0x0000000000000000000000000000000000000000\"})"
+      },
+      {
+        "alias": null,
+        "args": (v0/*: any*/),
+        "filters": [
+          "orderBy",
+          "orderDirection",
+          "where"
+        ],
+        "handle": "connection",
+        "key": "VoteListDisplay_voteTransfers_voteTransfers",
+        "kind": "LinkedHandle",
+        "name": "voteTransfers"
+      }
+    ]
   },
   "params": {
-    "cacheID": "4ad625943937922de573cff16b5db613",
+    "cacheID": "78e62aa0b2c5854a6a5474f880b0827d",
     "id": null,
     "metadata": {},
     "name": "VotesQuery",
     "operationKind": "query",
-    "text": "query VotesQuery {\n  auctionSettleds {\n    edges {\n      node {\n        id\n        tokenId\n      }\n    }\n  }\n}\n"
+    "text": "query VotesQuery {\n  ...Votes_VoteListDisplay_voteTransfers\n}\n\nfragment Votes_VoteItem_voteTransfer on VoteTransfer {\n  id\n  tokenId\n}\n\nfragment Votes_VoteListDisplay_voteTransfers on Query {\n  voteTransfers(orderBy: tokenId, orderDirection: desc, first: 100, where: {from: \"0x0000000000000000000000000000000000000000\"}) {\n    edges {\n      node {\n        id\n        tokenId\n        ...Votes_VoteItem_voteTransfer\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n"
   }
 };
 })() `)
