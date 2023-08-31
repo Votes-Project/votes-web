@@ -57,9 +57,10 @@ let make = (~queryRef as auctionCreatedRef) => {
     }
   }, 1000)
 
+  let totalMinutesRemaining = secondsRemaining / 60
   let seconds = secondsRemaining->mod(60)->Int.toString
-  let minutes = (secondsRemaining / 60)->mod(60)->Int.toString
-  let hours = (secondsRemaining / (60 * 60))->mod(24)->Int.toString
+  let minutes = totalMinutesRemaining->mod(60)->Int.toString
+  let hours = (totalMinutesRemaining / 60)->Int.toString
 
   <div className="flex lg:flex-col items-start justify-between">
     {secondsRemaining < 0
