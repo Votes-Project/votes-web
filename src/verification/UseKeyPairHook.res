@@ -8,6 +8,32 @@ module Nacl = {
   external fromSecretKey: Uint8Array.t => keyPair = "fromSecretKey"
 }
 
+module Crypto = {
+  type keyPair = {
+    publicKey: Uint8Array.t,
+    privateKey: Uint8Array.t,
+  }
+  type algorithm = | @as("ed25519") ED25519 | @as("x25519") X25519
+  type format = | @as("pem") PEM | @as("der") DER | @as("raw") RAW | @as("jwk") JWK
+  type \"type" = | @as("pkcs8") PKCS8 | @as("spki") SPKI | @as("sec1") SEC1
+  type encoding = {
+    format: format,
+    \"type": \"type",
+  }
+  type options = {
+    privateKeyEncoding: encoding,
+    publicKeyEncoding: encoding,
+  }
+  type keyObject = {
+    key: Uint8Array.t,
+    format: format,
+  }
+  @send @scope(("crypto", "subtle"))
+  external generateKey: (Dom.window, algorithm, ~options: options=?) => keyPair = "generateKey"
+  @module("crypto")
+  external createPublicKey: keyObject => Uint8Array.t = "createPublicKey"
+}
+
 let useKeyPair = () => {
   let localPrivateKey =
     Dom.Storage2.localStorage->Dom.Storage2.getItem("votes_privateKey")->Option.map(Uint8Array.from)
@@ -18,7 +44,8 @@ let useKeyPair = () => {
   | (Some(publicKey), Some(privateKey)) => (publicKey, privateKey)
 
   | (None, Some(privateKey)) =>
-    let {publicKey} = Nacl.fromSecretKey(privateKey)
+    let publicKey = Crypto.createPublicKey({key: privateKey, format: JWK})
+    Js.log2("publicKey: ", publicKey)
     Dom.Storage2.localStorage->Dom.Storage2.setItem(
       "votes_publicKey",
       publicKey->TypedArray.toString,
@@ -26,7 +53,14 @@ let useKeyPair = () => {
     (publicKey, privateKey)
 
   | _ =>
-    let {publicKey, secretKey: privateKey} = Nacl.keyPair()
+    let {publicKey, privateKey} = Crypto.generateKey(
+      window,
+      ED25519,
+      ~options={
+        privateKeyEncoding: {format: JWK, \"type": PKCS8},
+        publicKeyEncoding: {format: JWK, \"type": SPKI},
+      },
+    )
 
     Dom.Storage2.localStorage->Dom.Storage2.setItem(
       "votes_publicKey",
