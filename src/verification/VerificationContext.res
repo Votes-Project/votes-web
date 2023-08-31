@@ -1,4 +1,4 @@
-type verification = {isVerified: bool, contextId: string}
+type verification = {isVerified: bool, contextId: Uint8Array.t}
 
 type context = {
   verification: option<verification>,

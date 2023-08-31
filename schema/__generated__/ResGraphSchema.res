@@ -762,7 +762,7 @@ t_Query.contents = GraphQLObjectType.make({
         }),
       },
       "verification": {
-        typ: get_Verification()->GraphQLUnionType.toGraphQLType,
+        typ: get_Verification()->GraphQLUnionType.toGraphQLType->nonNull,
         description: ?None,
         deprecationReason: ?None,
         args: {"contextId": {typ: Scalars.string->Scalars.toGraphQLType->nonNull}}->makeArgs,
