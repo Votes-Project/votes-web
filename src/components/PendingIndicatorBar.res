@@ -1,8 +1,8 @@
 @react.component
 let make = (~pending) =>
-  <div className="fixed flex justify-center top-0 w-full pointer-events-none z-20">
+  <div className="flex justify-center top-1 w-full pointer-events-none z-20 absolute">
     {switch pending {
     | false => React.null
-    | true => React.string("...")
+    | true => <div className="bg-active h-2 w-8 animate-pulse rounded-md" />
     }}
   </div>
