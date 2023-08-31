@@ -1,4 +1,4 @@
-/* @sourceLoc RequireVerification.res */
+/* @sourceLoc LinkBrightID.res */
 /* @generated */
 %%raw("/* @generated */")
 module Types = {
@@ -49,7 +49,7 @@ module Internal = {
 type t
 type fragmentRef
 external getFragmentRef:
-  RescriptRelay.fragmentRefs<[> | #RequireVerification_verification]> => fragmentRef = "%identity"
+  RescriptRelay.fragmentRefs<[> | #LinkBrightID_verification]> => fragmentRef = "%identity"
 
 module Utils = {
   @@warning("-33")
@@ -64,7 +64,7 @@ let node: operationType = %raw(json` {
   "argumentDefinitions": [],
   "kind": "Fragment",
   "metadata": null,
-  "name": "RequireVerification_verification",
+  "name": "LinkBrightID_verification",
   "selections": [
     {
       "alias": null,

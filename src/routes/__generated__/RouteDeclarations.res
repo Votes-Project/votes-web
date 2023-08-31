@@ -39,8 +39,9 @@ let make = (~prepareDisposeTimeout=5 * 60 * 1000): array<RelayRouter.Types.route
   
       location: location,
       tokenId: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("tokenId")->Belt.Option.flatMap(value => Some(value->Js.Global.decodeURIComponent)),
-      brightid: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("brightid")->Belt.Option.flatMap(value => Some(value->Js.Global.decodeURIComponent)),
+      linkBrightID: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("linkBrightID")->Belt.Option.flatMap(value => Some(value->Js.Global.decodeURIComponent)),
       dailyQuestion: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("dailyQuestion")->Belt.Option.flatMap(value => Some(value->Js.Global.decodeURIComponent)),
+      contextId: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("contextId")->Belt.Option.flatMap(value => value->Js.Global.decodeURIComponent->RouterUint8Array.parse),
     }
     prepareProps->unsafe_toPrepareProps
   }
@@ -88,8 +89,9 @@ let make = (~prepareDisposeTimeout=5 * 60 * 1000): array<RelayRouter.Types.route
     "Main:"
   
       ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("tokenId")->Belt.Option.getWithDefault("")
-      ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("brightid")->Belt.Option.getWithDefault("")
+      ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("linkBrightID")->Belt.Option.getWithDefault("")
       ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("dailyQuestion")->Belt.Option.getWithDefault("")
+      ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("contextId")->Belt.Option.getWithDefault("")
   }
   
   ,
@@ -111,8 +113,9 @@ let make = (~prepareDisposeTimeout=5 * 60 * 1000): array<RelayRouter.Types.route
       
           location: location,
           tokenId: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("tokenId")->Belt.Option.flatMap(value => Some(value->Js.Global.decodeURIComponent)),
-          brightid: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("brightid")->Belt.Option.flatMap(value => Some(value->Js.Global.decodeURIComponent)),
+          linkBrightID: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("linkBrightID")->Belt.Option.flatMap(value => Some(value->Js.Global.decodeURIComponent)),
           dailyQuestion: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("dailyQuestion")->Belt.Option.flatMap(value => Some(value->Js.Global.decodeURIComponent)),
+          contextId: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("contextId")->Belt.Option.flatMap(value => value->Js.Global.decodeURIComponent->RouterUint8Array.parse),
         }
         prepareProps->unsafe_toPrepareProps
       }
@@ -160,8 +163,9 @@ let make = (~prepareDisposeTimeout=5 * 60 * 1000): array<RelayRouter.Types.route
         "Main__Auction:"
       
           ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("tokenId")->Belt.Option.getWithDefault("")
-          ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("brightid")->Belt.Option.getWithDefault("")
+          ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("linkBrightID")->Belt.Option.getWithDefault("")
           ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("dailyQuestion")->Belt.Option.getWithDefault("")
+          ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("contextId")->Belt.Option.getWithDefault("")
       }
       
       ,
@@ -183,8 +187,9 @@ let make = (~prepareDisposeTimeout=5 * 60 * 1000): array<RelayRouter.Types.route
             
                 location: location,
                 tokenId: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("tokenId")->Belt.Option.flatMap(value => Some(value->Js.Global.decodeURIComponent)),
-                brightid: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("brightid")->Belt.Option.flatMap(value => Some(value->Js.Global.decodeURIComponent)),
+                linkBrightID: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("linkBrightID")->Belt.Option.flatMap(value => Some(value->Js.Global.decodeURIComponent)),
                 dailyQuestion: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("dailyQuestion")->Belt.Option.flatMap(value => Some(value->Js.Global.decodeURIComponent)),
+                contextId: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("contextId")->Belt.Option.flatMap(value => value->Js.Global.decodeURIComponent->RouterUint8Array.parse),
               }
               prepareProps->unsafe_toPrepareProps
             }
@@ -232,8 +237,9 @@ let make = (~prepareDisposeTimeout=5 * 60 * 1000): array<RelayRouter.Types.route
               "Main__Auction__Bids:"
             
                 ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("tokenId")->Belt.Option.getWithDefault("")
-                ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("brightid")->Belt.Option.getWithDefault("")
+                ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("linkBrightID")->Belt.Option.getWithDefault("")
                 ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("dailyQuestion")->Belt.Option.getWithDefault("")
+                ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("contextId")->Belt.Option.getWithDefault("")
             }
             
             ,
@@ -260,8 +266,9 @@ let make = (~prepareDisposeTimeout=5 * 60 * 1000): array<RelayRouter.Types.route
       
           location: location,
           tokenId: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("tokenId")->Belt.Option.flatMap(value => Some(value->Js.Global.decodeURIComponent)),
-          brightid: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("brightid")->Belt.Option.flatMap(value => Some(value->Js.Global.decodeURIComponent)),
+          linkBrightID: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("linkBrightID")->Belt.Option.flatMap(value => Some(value->Js.Global.decodeURIComponent)),
           dailyQuestion: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("dailyQuestion")->Belt.Option.flatMap(value => Some(value->Js.Global.decodeURIComponent)),
+          contextId: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("contextId")->Belt.Option.flatMap(value => value->Js.Global.decodeURIComponent->RouterUint8Array.parse),
         }
         prepareProps->unsafe_toPrepareProps
       }
@@ -309,8 +316,9 @@ let make = (~prepareDisposeTimeout=5 * 60 * 1000): array<RelayRouter.Types.route
         "Main__Votes:"
       
           ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("tokenId")->Belt.Option.getWithDefault("")
-          ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("brightid")->Belt.Option.getWithDefault("")
+          ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("linkBrightID")->Belt.Option.getWithDefault("")
           ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("dailyQuestion")->Belt.Option.getWithDefault("")
+          ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("contextId")->Belt.Option.getWithDefault("")
       }
       
       ,
@@ -335,8 +343,9 @@ let make = (~prepareDisposeTimeout=5 * 60 * 1000): array<RelayRouter.Types.route
       
           location: location,
           tokenId: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("tokenId")->Belt.Option.flatMap(value => Some(value->Js.Global.decodeURIComponent)),
-          brightid: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("brightid")->Belt.Option.flatMap(value => Some(value->Js.Global.decodeURIComponent)),
+          linkBrightID: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("linkBrightID")->Belt.Option.flatMap(value => Some(value->Js.Global.decodeURIComponent)),
           dailyQuestion: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("dailyQuestion")->Belt.Option.flatMap(value => Some(value->Js.Global.decodeURIComponent)),
+          contextId: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("contextId")->Belt.Option.flatMap(value => value->Js.Global.decodeURIComponent->RouterUint8Array.parse),
         }
         prepareProps->unsafe_toPrepareProps
       }
@@ -384,8 +393,9 @@ let make = (~prepareDisposeTimeout=5 * 60 * 1000): array<RelayRouter.Types.route
         "Main__Questions:"
       
           ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("tokenId")->Belt.Option.getWithDefault("")
-          ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("brightid")->Belt.Option.getWithDefault("")
+          ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("linkBrightID")->Belt.Option.getWithDefault("")
           ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("dailyQuestion")->Belt.Option.getWithDefault("")
+          ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("contextId")->Belt.Option.getWithDefault("")
       }
       
       ,
