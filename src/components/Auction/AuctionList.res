@@ -91,11 +91,12 @@ module AuctionItem = {
         //   fallback={_ => {<div> {React.string("Bid Component Failed to Insantiate")} </div>}}>
         <CreateBid queryRef=auctionCreated.fragmentRefs isToday />
         // </RescriptReactErrorBoundary>
-        <ul className="flex flex-col justify-between"> {children} </ul>
-        <div className="w-full py-2 text-center">
+        <ul className="flex flex-col justify-between py-4"> {children} </ul>
+        <div className="w-full py-2 text-center pb-4">
           {currentBid == "0"
             ? React.null
-            : <div className="font-semibold text-background-dark">
+            : <div
+                className="font-semibold text-background-dark hover:text-default-darker cursor-pointer">
                 {"View All Bids"->React.string}
               </div>}
         </div>
@@ -338,16 +339,16 @@ let make = (~queryRef, ~children, ~tokenId) => {
                 <button
                   disabled={tokenId->Option.equal(Some("0"), (a, b) => a == b)}
                   onClick={_ => handleArrowPress(LeftPress, tokenId)}
-                  className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-dark disabled:bg-background-light ">
-                  <ReactIcons.LuArrowLeft />
+                  className="flex h-8 w-8 items-center justify-center rounded-full bg-background-dark lg:bg-primary-dark disabled:bg-background-light ">
+                  <ReactIcons.LuArrowLeft color="white" />
                 </button>
                 <button
                   onClick={_ => handleArrowPress(RightPress, tokenId)}
                   disabled={todaysAuction
                   ->Option.map(todaysAuction => todaysAuction.tokenId)
                   ->Option.equal(Some(tokenId), (a, b) => a == b)}
-                  className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-dark disabled:bg-background-light disabled:opacity-50 ">
-                  <ReactIcons.LuArrowRight />
+                  className="flex h-8 w-8 items-center justify-center rounded-full lg:bg-primary-dark bg-background-dark disabled:bg-background-light disabled:opacity-50 ">
+                  <ReactIcons.LuArrowRight color="white" />
                 </button>
                 <p className="font-semibold text-background-dark lg:text-active">
                   {auctionDateLocale->Option.getWithDefault("")->React.string}
