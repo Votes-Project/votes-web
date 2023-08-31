@@ -4,7 +4,6 @@ external auctionContractAddress: option<string> = "VITE_AUCTION_CONTRACT_ADDRESS
 module AuctionCreatedFragment = %relay(`
   fragment AuctionCountdown_auctionCreated on AuctionCreated {
     endTime
-
   }
 `)
 
@@ -72,7 +71,7 @@ let make = (~queryRef as auctionCreatedRef) => {
           </button>
         </div>
       : <>
-          <p className="font-semibold text-xl text-background-dark lg:text-primary-dark">
+          <p className="font-semibold text-xl text-background-dark lg:text-active">
             {"Time Left"->React.string}
           </p>
           <p className="font-bold text-xl lg:text-3xl text-default-darker">

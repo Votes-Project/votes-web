@@ -5,8 +5,7 @@ external auctionContractAddress: option<string> = "VITE_AUCTION_CONTRACT_ADDRESS
 
 module AuctionBidItem = {
   module AuctionBidItemFragment = %relay(`
-  fragment AuctionBidList_AuctionBidItem_auctionBid on AuctionBid
-   {
+  fragment AuctionBidList_AuctionBidItem_auctionBid on AuctionBid {
     id
     tokenId
     bidder
@@ -53,12 +52,11 @@ module AuctionBidItem = {
 module AuctionBidListDisplay = {
   module AuctionBidsFragment = %relay(`
   fragment AuctionBidListDisplay_auctionBids on Query
-
   @argumentDefinitions(
     first: { type: "Int", defaultValue: 1000 }
     orderBy: { type: "OrderBy_AuctionBids", defaultValue: tokenId }
     orderDirection: { type: "OrderDirection", defaultValue: desc }
-  ){
+  ) {
     auctionBids(
       orderBy: $orderBy
       orderDirection: $orderDirection
