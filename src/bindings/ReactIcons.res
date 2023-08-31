@@ -56,12 +56,12 @@ module LuArrowRight = {
   ) => t = "LuArrowRight"
 }
 
-module GiOwl = {
-  @react.component @module("react-icons/gi")
+module LuVote = {
+  @react.component @module("react-icons/lu")
   external make: (
     ~size: string=?,
     ~color: string=?,
     ~onClick: unit => unit=?,
     ~className: string=?,
-  ) => t = "GiOwl"
+  ) => t = "LuVote"
 }
