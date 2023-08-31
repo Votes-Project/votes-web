@@ -15,6 +15,7 @@ type headerItem = {
 
 @react.component
 let make = () => {
+  let (publicKey, _) = UseKeyPairHook.useKeyPair()
   let (isOpen, setIsOpen) = React.useState(_ => false)
 
   let handleMenu = () => {
@@ -30,6 +31,7 @@ let make = () => {
       ~shallow=false,
       ~setter=c => {
         ...c,
+        contextId: Some(publicKey),
         dailyQuestion,
       },
     )
@@ -44,7 +46,7 @@ let make = () => {
     ]
   }
 
-  <header className="bg-secondary  flex flex-col justify-center items-center mb-[-5px] w-full">
+  <header className="bg-secondary  flex flex-col justify-center items-center mb-[-8px] w-full">
     <nav className=" max-w-7xl flex w-full justify-between px-4 pt-2">
       <div className="flex gap-3 justify-center items-center ">
         <RelayRouter.Link
