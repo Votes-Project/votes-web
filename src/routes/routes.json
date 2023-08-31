@@ -1,6 +1,6 @@
 [
   {
-    "path": "/?tokenId=string&brightid=string&dailyQuestion=string",
+    "path": "/?tokenId=string&linkBrightID=string&dailyQuestion=string&contextId=RouterUint8Array.t",
     "name": "Main",
     "children": [
       {

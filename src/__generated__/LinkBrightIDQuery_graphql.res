@@ -1,4 +1,4 @@
-/* @sourceLoc RequireVerification.res */
+/* @sourceLoc LinkBrightID.res */
 /* @generated */
 %%raw("/* @generated */")
 module Types = {
@@ -6,10 +6,10 @@ module Types = {
 
   type rec response_verification = {
     @live __typename: string,
-    fragmentRefs: RescriptRelay.fragmentRefs<[ | #RequireVerification_verification]>,
+    fragmentRefs: RescriptRelay.fragmentRefs<[ | #DailyQuestion_verification | #LinkBrightID_verification]>,
   }
   type response = {
-    verification: option<response_verification>,
+    verification: response_verification,
   }
   @live
   type rawResponse = response
@@ -123,7 +123,7 @@ return {
     "argumentDefinitions": (v0/*: any*/),
     "kind": "Fragment",
     "metadata": null,
-    "name": "RequireVerificationQuery",
+    "name": "LinkBrightIDQuery",
     "selections": [
       {
         "alias": null,
@@ -137,7 +137,12 @@ return {
           {
             "args": null,
             "kind": "FragmentSpread",
-            "name": "RequireVerification_verification"
+            "name": "LinkBrightID_verification"
+          },
+          {
+            "args": null,
+            "kind": "FragmentSpread",
+            "name": "DailyQuestion_verification"
           }
         ],
         "storageKey": null
@@ -150,7 +155,7 @@ return {
   "operation": {
     "argumentDefinitions": (v0/*: any*/),
     "kind": "Operation",
-    "name": "RequireVerificationQuery",
+    "name": "LinkBrightIDQuery",
     "selections": [
       {
         "alias": null,
@@ -215,12 +220,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "12a3cc3b01d42b468da6d21373721af2",
+    "cacheID": "dc61fde7cea0022fbc96d7b3c8b1b04e",
     "id": null,
     "metadata": {},
-    "name": "RequireVerificationQuery",
+    "name": "LinkBrightIDQuery",
     "operationKind": "query",
-    "text": "query RequireVerificationQuery(\n  $contextId: String!\n) {\n  verification(contextId: $contextId) {\n    __typename\n    ...RequireVerification_verification\n    ... on Node {\n      __isNode: __typename\n      __typename\n      id\n    }\n  }\n}\n\nfragment RequireVerification_verification on Verification {\n  __isVerification: __typename\n  __typename\n  ... on VerificationData {\n    id\n    unique\n    contextIds\n  }\n  ... on BrightIdError {\n    error\n  }\n}\n"
+    "text": "query LinkBrightIDQuery(\n  $contextId: String!\n) {\n  verification(contextId: $contextId) {\n    __typename\n    ...LinkBrightID_verification\n    ...DailyQuestion_verification\n    ... on Node {\n      __isNode: __typename\n      __typename\n      id\n    }\n  }\n}\n\nfragment DailyQuestion_verification on Verification {\n  __isVerification: __typename\n  __typename\n  ... on VerificationData {\n    id\n    unique\n    contextIds\n  }\n  ... on BrightIdError {\n    error\n  }\n}\n\nfragment LinkBrightID_verification on Verification {\n  __isVerification: __typename\n  __typename\n  ... on VerificationData {\n    id\n    unique\n    contextIds\n  }\n  ... on BrightIdError {\n    error\n  }\n}\n"
   }
 };
 })() `)

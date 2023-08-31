@@ -71,20 +71,16 @@ module TodaysAuctionProvider = {
   @react.component
   let make = (~children) => {
     let (todaysAuction, setTodaysAuction) = React.useState(_ => None)
-    <TodaysAuctionContext.Provider value={{todaysAuction, setTodaysAuction}}>
-      {children}
-    </TodaysAuctionContext.Provider>
+    <Provider value={{todaysAuction, setTodaysAuction}}> {children} </Provider>
   }
 }
 
 module RequireVerificationProvider = {
-  open RequireVerificationContext
+  open VerificationContext
   @react.component
   let make = (~children) => {
     let (verification, setVerification) = React.useState(_ => None)
-    <RequireVerificationContext.Provider value={{verification, setVerification}}>
-      {children}
-    </RequireVerificationContext.Provider>
+    <Provider value={{verification, setVerification}}> {children} </Provider>
   }
 }
 

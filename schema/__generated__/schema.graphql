@@ -212,7 +212,7 @@ type PageInfo {
 type Query {
   voteTransfers(skip: Int, orderBy: OrderBy_Transfers, orderDirection: OrderDirection, where: Where_Transfers, first: Int, after: String, before: String, last: Int): VoteTransferConnection
   voteTransfer(id: String!): VoteTransfer
-  verification(contextId: String!): Verification
+  verification(contextId: String!): Verification!
   questionSubmitteds(skip: Int, first: Int, after: String, before: String, last: Int): QuestionSubmittedConnection
   questionSubmitted(id: String!): QuestionSubmitted
 
