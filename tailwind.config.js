@@ -4,15 +4,21 @@ export default {
   theme: {
     extend: {
       colors: {
-        background: "#D6D8E6",
-        "background-light": "#E9EAF2",
-        "background-dark": "#828AB5",
+        background: "#e4eaec",
+        "background-light": "#ffffff",
+        "background-dark": "#b6c7cd",
         "default-darker": "#313753",
         primary: "#FFDACC",
-        "primary-dark": "#FFAD8F",
-        secondary: "#FFF0EB",
+        "primary-dark": "#ffae8f",
+        secondary: "#fff4f0",
         active: "#FB8A61",
       },
+      dropShadow: {
+        glow: [
+          "0 0px 20px rgba(255,255, 255, 0.35)",
+          "0 0px 65px rgba(255, 255,255, 0.2)"
+        ]
+      }
     },
   },
   plugins: [require("@tailwindcss/forms")],
