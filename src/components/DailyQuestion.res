@@ -1,10 +1,3 @@
-@send
-external addEventListener: (Dom.document, [#keypress | #keydown], 'a => unit) => unit =
-  "addEventListener"
-@send
-external removeEventListener: (Dom.document, [#keypress | #keydown], 'a => unit) => unit =
-  "removeEventListener"
-
 type choice = {
   value: string,
   correct: bool,
@@ -150,16 +143,6 @@ module AnswerPage = {
 
 @react.component @relay.deferredComponent
 let make = () => {
-  open ReactModalSheet
-
-  let {replace} = RelayRouter.Utils.useRouter()
-  let {queryParams} = Routes.Main.Route.useQueryParams()
-  let (isOpen, setIsOpen) = React.useState(_ => true)
-
-  let onClose = _ => setIsOpen(_ => false)
-  let onCloseEnd = _ =>
-    Routes.Main.Route.makeLinkFromQueryParams({...queryParams, dailyQuestion: None})->replace
-
   let (checkedIndex, setCheckedIndex) = React.useState(_ => None)
   let (hasAnswered, setHasAnswered) = React.useState(_ => false)
 
@@ -171,67 +154,9 @@ let make = () => {
     setHasAnswered(_ => true)
   }
 
-  React.useEffect0(() => {
-    let handleKeyDown = (e: ReactEvent.Keyboard.t) => {
-      switch e->ReactEvent.Keyboard.key {
-      | "Escape" =>
-        Routes.Main.Route.makeLinkFromQueryParams({...queryParams, dailyQuestion: None})->replace
-      | _ => ()
-      }
-    }
-    document->addEventListener(#keydown, handleKeyDown)
-
-    Some(() => document->removeEventListener(#keydown, handleKeyDown))
-  })
-
   <>
-    <Sheet className="md:hidden flex" isOpen onClose onCloseEnd rootId={"root"}>
-      <Sheet.Container className="lg:min-h-[864px]">
-        <Sheet.Header className="bg-secondary noise flex justify-center ">
-          <QuestionHeader />
-        </Sheet.Header>
-        <Sheet.Scroller
-          className="bg-secondary noise px-4 flex flex-col justify-start hide-scrollbar">
-          {hasAnswered
-            ? <AnswerPage checkedIndex />
-            : <ChoicesPage checkedIndex handleChecked handleVote />}
-        </Sheet.Scroller>
-      </Sheet.Container>
-      <Sheet.Backdrop onTap={onClose} />
-    </Sheet>
-    <ReactModal
-      isOpen
-      onRequestClose={onClose}
-      onAfterClose={onCloseEnd}
-      className="hidden md:flex "
-      style={
-        overlay: {
-          backgroundColor: "rgba(0,0,0,0.5)",
-          outline: "none",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        },
-        content: {
-          outline: "none",
-        },
-      }>
-      <div className="justify-center items-center flex inset-0 z-50 ">
-        <div className="relative w-auto mx-auto max-w-3xl">
-          <div
-            className="flex flex-col border-0 rounded-xl shadow-xl relative w-full bg-secondary justify-start items-center min-w-[740px] max-h-[890px] noise overflow-scroll hide-scrollbar">
-            <div className=" w-full px-4 h-full flex flex-col justify-around">
-              <div
-                className="w-full  flex justify-center items-center sticky top-0 bg-secondary noise ">
-                <QuestionHeader />
-              </div>
-              {hasAnswered
-                ? <AnswerPage checkedIndex />
-                : <ChoicesPage checkedIndex handleChecked handleVote />}
-            </div>
-          </div>
-        </div>
-      </div>
-    </ReactModal>
+    {hasAnswered
+      ? <AnswerPage checkedIndex />
+      : <ChoicesPage checkedIndex handleChecked handleVote />}
   </>
 }
