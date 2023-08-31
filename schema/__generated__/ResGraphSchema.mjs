@@ -859,7 +859,7 @@ t_Query.contents = new Graphql.GraphQLObjectType({
                         })
                   },
                   verification: {
-                    type: union_Verification.contents,
+                    type: new Graphql.GraphQLNonNull(union_Verification.contents),
                     args: {
                       contextId: {
                         type: new Graphql.GraphQLNonNull(Graphql.GraphQLString)

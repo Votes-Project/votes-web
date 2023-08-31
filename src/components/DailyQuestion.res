@@ -70,6 +70,28 @@ module QuestionHeader = {
   }
 }
 
+module VerificationFragment = %relay(`
+  fragment DailyQuestion_verification on Verification {
+    ... on VerificationData {
+      id
+      unique
+      contextIds
+    }
+    ... on BrightIdError {
+      error
+    }
+  }`)
+
+module RainbowKit = {
+  type useConnectModal = {openConnectModal: unit => unit}
+  type useAccountModal = {openAccountModal: unit => unit}
+
+  @module("@rainbow-me/rainbowkit")
+  external useConnectModal: unit => useConnectModal = "useConnectModal"
+  @module("@rainbow-me/rainbowkit")
+  external useAccountModal: unit => useAccountModal = "useAccountModal"
+}
+
 module ChoicesPage = {
   let titleStyle = titleLength => {
     if titleLength <= 50 {
@@ -84,41 +106,129 @@ module ChoicesPage = {
       "text-md"
     }
   }
+
   @react.component
-  let make = (~checkedIndex, ~handleChecked, ~handleVote) => {
+  let make = (~verification, ~checkedIndex, ~handleChecked, ~handleVote) => {
+    let {address} = Wagmi.useAccount()
+    let {openConnectModal} = RainbowKit.useConnectModal()
+    let {openAccountModal} = RainbowKit.useAccountModal()
+    let {queryParams, setParams} = Routes.Main.Route.useQueryParams()
+    let (publicKey, _) = UseKeyPairHook.useKeyPair()
+    let verificationData = VerificationFragment.use(verification)
+    let {setVerification} = React.useContext(VerificationContext.context)
+
+    // React.useEffect2(() => {
+    //   switch verificationData {
+    //   | VerificationData(verificationData) => {
+    //       open VerificationContext
+    //       let contextId =
+    //         verificationData.contextIds->Array.get(0)->Option.map(Uint8Array.from)->Option.getExn
+    //       let isVerified = verificationData.unique
+    //       setVerification(_ => Some({contextId, isVerified}))
+    //       None
+    //     }
+    //   | BrightIdError(_) =>
+    //     setVerification(_ => Some({contextId: publicKey, isVerified: false}))
+    //     None
+
+    //   | _ => None
+    //   }
+    // }, (setVerification, queryParams))
     let choiceStyle = i =>
       checkedIndex == Some(i)
         ? "bg-active text-white shadow border border-active"
         : "text-default-darker shadow-inner bg-secondary border border-primary "
 
+    let brightIDImageStyle = verificationData => {
+      open DailyQuestion_verification_graphql.Types
+      switch verificationData {
+      | BrightIdError(_) => "filter grayscale"
+      | VerificationData({unique: true}) => ""
+      | VerificationData({unique: false}) => "filter grayscale bg-red-500"
+      | _ => "filter grayscale"
+      }
+    }
+
+    let ethereumImageStyle = address =>
+      switch address->Nullable.toOption {
+      | None => "filter grayscale"
+      | Some(_) => ""
+      }
+
+    let handleEthereumClick = _ => {
+      switch address->Nullable.toOption {
+      | None => openConnectModal()
+      | Some(_) => openAccountModal()
+      }
+    }
+
+    let setLinkBrightID = linkBrightID => {
+      setParams(
+        ~removeNotControlledParams=false,
+        ~navigationMode_=Push,
+        ~shallow=false,
+        ~setter=c => {
+          ...c,
+          linkBrightID,
+          contextId: Some(publicKey),
+        },
+      )
+    }
+
+    let handleBrightIDClick = (_, verificationData) => {
+      open DailyQuestion_verification_graphql.Types
+      switch verificationData {
+      | BrightIdError(_) => setLinkBrightID(Some(""))
+      | VerificationData({unique: true}) => ()
+      | VerificationData({unique: false}) => ()
+      | _ => setLinkBrightID(Some(""))
+      }
+    }
+
     <>
       <div className="flex flex-col justify-around items-center my-4 mr-4">
         {choices
         ->Array.mapWithIndex((option, i) => {
-          <div
-            className={`w-full  flex flex-row items-center mx-4 my-2 py-2 px-4 rounded-lg max-w-md min-h-[80px]  overflow-hidden ${choiceStyle(
+          <button
+            className={`w-full  flex flex-row items-center mx-4 my-2 py-2 px-4 rounded-lg max-w-md min-h-[80px] overflow-hidden ${choiceStyle(
                 i,
               )} transition-all`}
             key={i->Int.toString}
-            onClick={e => handleChecked(Some(e), i)}>
+            onClick={_ => {
+              handleChecked(i)
+            }}>
             <p className={`font-semibold text-left`}> {option.value->React.string} </p>
-          </div>
+          </button>
         })
         ->React.array}
       </div>
-      <div className="flex flex-col  justify-center items-center mb-6 gap-3">
-        <button
-          className="py-2 px-8 bg-active text-white rounded-lg text-2xl font-bold disabled:bg-background-light disabled:opacity-50"
-          disabled={checkedIndex->Option.isNone}
-          onClick={_ => handleVote()}>
-          {"Vote"->React.string}
-        </button>
+      <div className="flex flex-col justify-center items-center mb-6 gap-3">
+        <div className="flex flex-row w-[80%] items-center justify-around px-10">
+          <button className="align-middle" onClick={e => handleBrightIDClick(e, verificationData)}>
+            <img
+              className={`w-[48px] ${brightIDImageStyle(verificationData)}`}
+              src={"https://unitap.app/assets/images/navbar/bright-icon.svg"}
+            />
+          </button>
+          <button
+            className="py-2 px-8 bg-active text-white rounded-lg text-2xl font-bold disabled:bg-background-light disabled:opacity-50"
+            disabled={checkedIndex->Option.isNone}
+            onClick={_ => handleVote()}>
+            {"Vote"->React.string}
+          </button>
+          <button className="align-middle " onClick=handleEthereumClick>
+            <img
+              className={`w-[48px] hover:drop-shadow-glow ${ethereumImageStyle(address)}`}
+              src="https://ethereum.org/static/2aba39d4e25d90caabb0c85a58c6aba9/d5a11/eth-glyph-colored.webp"
+            />
+          </button>
+        </div>
         <button
           className="text-background-dark
               font-semibold
               underline
             ">
-          {"Abstain"->React.string}
+          {"None of the Above"->React.string}
         </button>
       </div>
     </>
@@ -132,7 +242,7 @@ module AnswerPage = {
 
     <>
       <div
-        className={`w-full  noises flex flex-row items-center my-4 py-8 px-4 rounded-lg max-w-md bg-active text-white`}>
+        className={`w-full flex flex-row items-center my-4 py-8 px-4 rounded-lg max-w-md bg-active text-white`}>
         <label className="font-semibold">
           {Option.getExn(selectedChoice).value->React.string}
         </label>
@@ -141,22 +251,32 @@ module AnswerPage = {
   }
 }
 
+module Query = %relay(`
+  query DailyQuestionQuery($contextId: String!) {
+    verification(contextId: $contextId) {
+      ...DailyQuestion_verification
+    }
+  }`)
+
 @react.component @relay.deferredComponent
-let make = () => {
+let make = (~queryRef) => {
+  let {verification} = Query.usePreloaded(~queryRef)
+
   let (checkedIndex, setCheckedIndex) = React.useState(_ => None)
   let (hasAnswered, setHasAnswered) = React.useState(_ => false)
 
-  let handleChecked = (e: option<ReactEvent.Mouse.t>, index) => {
-    e->Option.map(ReactEvent.Mouse.stopPropagation)->ignore
+  let handleChecked = index => {
     setCheckedIndex(_ => Some(index))
   }
   let handleVote = _ => {
     setHasAnswered(_ => true)
   }
 
-  <>
-    {hasAnswered
+  {
+    hasAnswered
       ? <AnswerPage checkedIndex />
-      : <ChoicesPage checkedIndex handleChecked handleVote />}
-  </>
+      : <ChoicesPage
+          verification={verification.fragmentRefs} checkedIndex handleChecked handleVote
+        />
+  }
 }

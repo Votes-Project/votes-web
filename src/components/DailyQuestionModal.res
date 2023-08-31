@@ -4,7 +4,10 @@ external addEventListener: (Dom.document, [#keypress | #keydown], 'a => unit) =>
 @send
 external removeEventListener: (Dom.document, [#keypress | #keydown], 'a => unit) => unit =
   "removeEventListener"
+@send
+external querySelector: (Dom.document, string) => unit = "querySelector"
 
+ReactModal.setAppElement("#root")
 @react.component
 let make = (~children, ~isOpen) => {
   let {setParams} = Routes.Main.Route.useQueryParams()
@@ -16,6 +19,7 @@ let make = (~children, ~isOpen) => {
       ~shallow=false,
       ~setter=c => {
         ...c,
+        contextId: None,
         dailyQuestion,
       },
     )
@@ -52,7 +56,7 @@ let make = (~children, ~isOpen) => {
     <ReactModal
       isOpen
       onRequestClose={onClose}
-      className="hidden md:flex "
+      className="hidden md:flex pointer-events-auto"
       style={
         overlay: {
           backgroundColor: "rgba(0,0,0,0.5)",
@@ -65,7 +69,7 @@ let make = (~children, ~isOpen) => {
           outline: "none",
         },
       }>
-      <div className="justify-center items-center flex inset-0 z-50 ">
+      <div className="justify-center items-center flex inset-0 ">
         <div className="relative w-auto mx-auto max-w-3xl">
           <div
             className="flex flex-col border-0 rounded-xl shadow-xl relative w-full bg-secondary justify-start items-center min-w-[740px] max-h-[890px] noise overflow-scroll hide-scrollbar">
