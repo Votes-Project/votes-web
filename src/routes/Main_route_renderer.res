@@ -22,6 +22,7 @@ let renderer = Routes.Main.Route.makeRenderer(
   // Render receives all the config `prepare` receives, and whatever `prepare` returns itself. It also receives `childRoutes`, which is any rendered route nested inside of it. So, if the route definition of this route has `children` and they match, the rendered output is in `childRoutes`. Each route with children is responsible for rendering its children. This makes layouting easy.
 
   ~render=({childRoutes, dailyQuestion, brightid}) => {
+    Js.log2("dailyQuestion: ", dailyQuestion)
     <>
       <Main> {childRoutes} </Main>
       {switch brightid {
@@ -31,13 +32,17 @@ let renderer = Routes.Main.Route.makeRenderer(
       // </RescriptReactErrorBoundary>
       | _ => React.null
       }}
-      {switch dailyQuestion {
-      | Some(_) =>
-        // <RescriptReactErrorBoundary fallback={_ => "Error"->React.string}>
-        <DailyQuestion />
-      // </RescriptReactErrorBoundary>
-      | _ => React.null
-      }}
+      <DailyQuestionModal isOpen={dailyQuestion->Option.isSome}>
+        {switch dailyQuestion {
+        | Some(_) =>
+          // <RescriptReactErrorBoundary fallback={_ => "Error"->React.string}>
+
+          <DailyQuestion />
+
+        // </RescriptReactErrorBoundary>
+        | _ => React.null
+        }}
+      </DailyQuestionModal>
     </>
   },
 )
