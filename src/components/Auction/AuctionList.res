@@ -76,7 +76,7 @@ module AuctionItem = {
         </h1>
         <div className="flex flex-col lg:flex-row gap-5">
           <div className="flex lg:flex-col items-start justify-between">
-            <p className="font-semibold text-xl lg:text-primary-dark text-background-dark">
+            <p className="font-semibold text-xl lg:text-active text-background-dark">
               {"Current Bid"->React.string}
             </p>
             <p className="font-bold text-xl lg:text-3xl text-default-darker">
@@ -338,7 +338,7 @@ let make = (~queryRef, ~children, ~tokenId) => {
                 <button
                   disabled={tokenId->Option.equal(Some("0"), (a, b) => a == b)}
                   onClick={_ => handleArrowPress(LeftPress, tokenId)}
-                  className="flex h-8 w-8 items-center justify-center rounded-full bg-primary disabled:bg-background-light ">
+                  className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-dark disabled:bg-background-light ">
                   <ReactIcons.LuArrowLeft />
                 </button>
                 <button
@@ -346,10 +346,10 @@ let make = (~queryRef, ~children, ~tokenId) => {
                   disabled={todaysAuction
                   ->Option.map(todaysAuction => todaysAuction.tokenId)
                   ->Option.equal(Some(tokenId), (a, b) => a == b)}
-                  className="flex h-8 w-8 items-center justify-center rounded-full bg-primary disabled:bg-background-light disabled:opacity-50 ">
+                  className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-dark disabled:bg-background-light disabled:opacity-50 ">
                   <ReactIcons.LuArrowRight />
                 </button>
-                <p className="font-semibold text-background-dark lg:text-primary-dark">
+                <p className="font-semibold text-background-dark lg:text-active">
                   {auctionDateLocale->Option.getWithDefault("")->React.string}
                 </p>
               </div>
