@@ -35,7 +35,10 @@ module VoteListDisplay = {
     first: { type: "Int", defaultValue: 100 }
     orderBy: { type: "OrderBy_Transfers", defaultValue: tokenId }
     orderDirection: { type: "OrderDirection", defaultValue: desc }
-    where: { type: "Where_Transfers", defaultValue: {from:"0x0000000000000000000000000000000000000000"} }
+    where: {
+      type: "Where_Transfers"
+      defaultValue: { from: "0x0000000000000000000000000000000000000000" }
+    }
   ) {
     voteTransfers(
       orderBy: $orderBy
@@ -77,7 +80,7 @@ module VoteListDisplay = {
           </label>
         </div>
       </nav>
-      <ul className="grid grid-cols-3 grid-flow-row px-2 gap-4 md:grid-cols-6 lg:grid-cols-12">
+      <ul className="grid grid-cols-3 grid-flow-row px-2 gap-4 md:grid-cols-6">
         {votes->React.array}
       </ul>
     </div>
@@ -87,7 +90,7 @@ module VoteListDisplay = {
 module Query = %relay(`
   query VotesQuery {
     ...Votes_VoteListDisplay_voteTransfers
-    }
+  }
 `)
 
 @react.component @relay.deferredComponent
