@@ -1,40 +1,51 @@
 @react.component
 let make = () => {
-  <div className="flex flex-col w-full items-center justify-center px-3 pt-16  ">
-    <section className="w-full p-4 mx-auto space-y-2">
-      <h1 className="font-bold text-7xl cursor-pointer"> {"The Daily Vote"->React.string} </h1>
-      <p className="text-xl pt-4">
+  open ReactIcons
+  <div className="flex flex-col w-full items-center justify-center px-3 pt-16 ">
+    <section className="w-full p-4 mx-auto space-y-2 max-w-5xl">
+      <h1 className="font-bold text-7xl cursor-pointer text-default-darker">
+        {"The Daily Vote"->React.string}
+      </h1>
+      <p className="text-xl pt-4 text-default-darker">
         {" Each day ushers in a fresh Vote, ripe with the potential for a new question. Remember, the early bird snags the juiciest worm - earlier Votes have priority over later Votes. So rise and shine, folks!"->React.string}
       </p>
     </section>
-    <div>
-      <section className="w-full mx-auto space-y-2  ">
-        <details className="p-4 rounded-lg">
+    <div className="w-full flex flex-col justify-center items-center max-w-5xl ">
+      <section className="w-full mx-auto space-y-2   ">
+        <details className="p-4 rounded-lg w-full ">
           <summary
-            className=" text-default-darker font-bold hover:text-active text-3xl px-4 py-2 cursor-pointer [&::-webkit-details-marker]:hidden list-none">
+            className="flex flex-row justify-between items-center w-full text-default-darker font-bold hover:text-active text-3xl px-4 py-2 cursor-pointer [&::-webkit-details-marker]:hidden list-none">
             {"What's the Deal with VOTE tokens?"->React.string}
+            <LuChevronDown size={"2.5rem"} className="open:rotate-180 transition-all" />
           </summary>
-          <div className="text-lg px-5 py-4">
-            <p>
-              {"
-                  HODL
-                  Join the revolution, folks! Secure a Votes NFT in our daily auction and become part of BrightID’s global brigade. As each day rolls by, our network expands, and so does the ripple of your impact. Hold onto your Vote, and watch your influence grow!
-
-                  SURVEY
-                  Cast your query to the cosmos! All BrightID Verified Users have their ears to the ground, waiting for your question. Invest your vote wisely, and let your query echo around the world!
-
-                  EDUCATE
-                  Remember, knowledge is the key to the kingdom! With each response to your question, you’re spreading valuable insights, providing feedback, or sharing your two cents. Let’s embark on this journey of learning together, one Vote at a time!
-                  "->React.string}
-            </p>
-          </div>
+          <ul className="text-lg px-5 py-4">
+            <label>
+              {"HODL"->React.string}
+              <li>
+                {" Join the revolution, folks! Secure a Votes NFT in our daily auction and become part of BrightID’s global brigade. As each day rolls by, our network expands, and so does the ripple of your impact. Hold onto your Vote, and watch your influence grow!"->React.string}
+              </li>
+            </label>
+            <label>
+              {"SURVEY"->React.string}
+              <li>
+                {" Cast your query to the cosmos! All BrightID Verified Users have their ears to the ground, waiting for your question. Invest your vote wisely, and let your query echo around the world!"->React.string}
+              </li>
+            </label>
+            <label>
+              {"EDUCATE"->React.string}
+              <li>
+                {" Remember, knowledge is the key to the kingdom! With each response to your question, you’re spreading valuable insights, providing feedback, or sharing your two cents. Let’s embark on this journey of learning together, one Vote at a time!"->React.string}
+              </li>
+            </label>
+          </ul>
         </details>
       </section>
-      <section className="w-full mx-auto space-y-2  ">
-        <details className="p-4 rounded-lg">
+      <section className="w-full mx-auto space-y-2   ">
+        <details className="p-4 rounded-lg w-full">
           <summary
-            className=" text-default-darker font-bold hover:text-active text-3xl px-4 py-2   cursor-pointer  [&::-webkit-details-marker]:hidden list-none">
+            className="flex flex-row justify-between items-center w-full text-default-darker font-bold hover:text-active text-3xl px-4 py-2   cursor-pointer  [&::-webkit-details-marker]:hidden list-none">
             {"Flash Votes in a Jiffy"->React.string}
+            <LuChevronDown size={"2.5rem"} className="open:rotate-180 transition-all" />
           </summary>
           <div className="text-lg px-5 py-4">
             <p>
@@ -45,11 +56,12 @@ let make = () => {
           </div>
         </details>
       </section>
-      <section className="w-full mx-auto space-y-2  ">
-        <details className="p-4 rounded-lg">
+      <section className="w-full mx-auto space-y-2   ">
+        <details className="p-4 rounded-lg w-full">
           <summary
-            className=" text-default-darker font-bold hover:text-active text-3xl px-4 py-2   cursor-pointer  [&::-webkit-details-marker]:hidden list-none">
+            className="flex flex-row justify-between items-center w-full text-default-darker font-bold hover:text-active text-3xl px-4 py-2   cursor-pointer  [&::-webkit-details-marker]:hidden list-none">
             {"Pouring into the Community Pot!"->React.string}
+            <LuChevronDown size={"2.5rem"} className="open:rotate-180 transition-all" />
           </summary>
           <div className="text-lg px-5 py-4">
             <p>
@@ -62,11 +74,12 @@ Every question posed, every Vote snagged, pours into the Bright DAO’s communit
           </div>
         </details>
       </section>
-      <section className="w-full mx-auto space-y-2  ">
-        <details className="p-4 rounded-lg">
+      <section className="w-full mx-auto space-y-2   ">
+        <details className="p-4 rounded-lg w-full transition-all">
           <summary
-            className=" text-default-darker font-bold hover:text-active text-3xl px-4 py-2   cursor-pointer  [&::-webkit-details-marker]:hidden list-none">
+            className="flex flex-row justify-between items-center w-full text-default-darker font-bold hover:text-active text-3xl px-4 py-2   cursor-pointer  [&::-webkit-details-marker]:hidden list-none">
             {"A Hot-Off-The-Press Keepsake!"->React.string}
+            <LuChevronDown size={"2.5rem"} className="" />
           </summary>
           <div className="text-lg px-5 py-4">
             <p>
@@ -76,11 +89,12 @@ Every question posed, every Vote snagged, pours into the Bright DAO’s communit
           </div>
         </details>
       </section>
-      <section className="w-full mx-auto space-y-2  ">
-        <details className="p-4 rounded-lg">
+      <section className="w-full mx-auto space-y-2   ">
+        <details className="p-4 rounded-lg w-full">
           <summary
-            className=" text-default-darker font-bold hover:text-active text-3xl px-4 py-2   cursor-pointer  [&::-webkit-details-marker]:hidden list-none">
+            className="flex flex-row justify-between items-center w-full text-default-darker font-bold hover:text-active text-3xl px-4 py-2   cursor-pointer  [&::-webkit-details-marker]:hidden list-none">
             {"Your Lucky Number is Up!"->React.string}
+            <LuChevronDown size={"2.5rem"} className="open:rotate-180 transition-all" />
           </summary>
           <div className="text-lg px-5 py-4">
             <p>
@@ -91,11 +105,12 @@ Every question posed, every Vote snagged, pours into the Bright DAO’s communit
           </div>
         </details>
       </section>
-      <section className="w-full mx-auto space-y-2  ">
-        <details className="p-4 rounded-lg">
+      <section className="w-full mx-auto space-y-2   ">
+        <details className="p-4 rounded-lg w-full">
           <summary
-            className=" text-default-darker font-bold hover:text-active text-3xl px-4 py-2   cursor-pointer  [&::-webkit-details-marker]:hidden list-none">
+            className="flex flex-row justify-between items-center w-full text-default-darker font-bold hover:text-active text-3xl px-4 py-2   cursor-pointer  [&::-webkit-details-marker]:hidden list-none">
             {"The Community Queue Keeps the Show Going"->React.string}
+            <LuChevronDown size={"2.5rem"} className="open:rotate-180 transition-all" />
           </summary>
           <div className="text-lg px-5 py-4">
             <p>
@@ -105,11 +120,12 @@ Every question posed, every Vote snagged, pours into the Bright DAO’s communit
           </div>
         </details>
       </section>
-      <section className="w-full mx-auto space-y-2  ">
-        <details className="p-4 rounded-lg">
+      <section className="w-full mx-auto space-y-2   ">
+        <details className="p-4 rounded-lg w-full">
           <summary
-            className=" text-default-darker font-bold hover:text-active text-3xl px-4 py-2 cursor-pointer  [&::-webkit-details-marker]:hidden list-none">
+            className="flex flex-row justify-between items-center w-full text-default-darker font-bold hover:text-active text-3xl px-4 py-2 cursor-pointer  [&::-webkit-details-marker]:hidden list-none">
             {"Step Right Up, Share Your Take!"->React.string}
+            <LuChevronDown size={"2.5rem"} className="open:rotate-180 transition-all" />
           </summary>
           <div className="text-lg px-5 py-4">
             <p>
