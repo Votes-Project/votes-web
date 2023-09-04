@@ -8,7 +8,7 @@ module Internal = {
     tokenId: option<string>,
     linkBrightID: option<string>,
     dailyQuestion: option<string>,
-    contextId: option<RouterUint8Array.t>,
+    contextId: option<string>,
   }
 
   @live
@@ -20,7 +20,7 @@ module Internal = {
     tokenId: option<string>,
     linkBrightID: option<string>,
     dailyQuestion: option<string>,
-    contextId: option<RouterUint8Array.t>,
+    contextId: option<string>,
   }
 
   @live
@@ -44,7 +44,7 @@ module Internal = {
       tokenId: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("tokenId")->Belt.Option.flatMap(value => Some(value->Js.Global.decodeURIComponent)),
       linkBrightID: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("linkBrightID")->Belt.Option.flatMap(value => Some(value->Js.Global.decodeURIComponent)),
       dailyQuestion: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("dailyQuestion")->Belt.Option.flatMap(value => Some(value->Js.Global.decodeURIComponent)),
-      contextId: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("contextId")->Belt.Option.flatMap(value => value->Js.Global.decodeURIComponent->RouterUint8Array.parse),
+      contextId: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("contextId")->Belt.Option.flatMap(value => Some(value->Js.Global.decodeURIComponent)),
     }
   }
 
@@ -54,7 +54,7 @@ type queryParams = {
   tokenId: option<string>,
   linkBrightID: option<string>,
   dailyQuestion: option<string>,
-  contextId: option<RouterUint8Array.t>,
+  contextId: option<string>,
 }
 
 @live
@@ -68,7 +68,7 @@ let parseQueryParams = (search: string): queryParams => {
 
     dailyQuestion: queryParams->QueryParams.getParamByKey("dailyQuestion")->Belt.Option.flatMap(value => Some(value->Js.Global.decodeURIComponent)),
 
-    contextId: queryParams->QueryParams.getParamByKey("contextId")->Belt.Option.flatMap(value => value->Js.Global.decodeURIComponent->RouterUint8Array.parse),
+    contextId: queryParams->QueryParams.getParamByKey("contextId")->Belt.Option.flatMap(value => Some(value->Js.Global.decodeURIComponent)),
 
   }
 }
@@ -78,7 +78,7 @@ let makeQueryParams = (
   ~tokenId: option<string>=?, 
   ~linkBrightID: option<string>=?, 
   ~dailyQuestion: option<string>=?, 
-  ~contextId: option<RouterUint8Array.t>=?, 
+  ~contextId: option<string>=?, 
   ()
 ) => {
   tokenId: tokenId,
@@ -98,7 +98,7 @@ let applyQueryParams = (
   queryParams->QueryParams.setParamOpt(~key="tokenId", ~value=newParams.tokenId->Belt.Option.map(tokenId => tokenId->Js.Global.encodeURIComponent))
   queryParams->QueryParams.setParamOpt(~key="linkBrightID", ~value=newParams.linkBrightID->Belt.Option.map(linkBrightID => linkBrightID->Js.Global.encodeURIComponent))
   queryParams->QueryParams.setParamOpt(~key="dailyQuestion", ~value=newParams.dailyQuestion->Belt.Option.map(dailyQuestion => dailyQuestion->Js.Global.encodeURIComponent))
-  queryParams->QueryParams.setParamOpt(~key="contextId", ~value=newParams.contextId->Belt.Option.map(contextId => contextId->RouterUint8Array.serialize->Js.Global.encodeURIComponent))
+  queryParams->QueryParams.setParamOpt(~key="contextId", ~value=newParams.contextId->Belt.Option.map(contextId => contextId->Js.Global.encodeURIComponent))
 }
 
 @live
@@ -157,7 +157,7 @@ let useQueryParams = (): useQueryParamsReturn => {
 let routePattern = "/votes"
 
 @live
-let makeLink = (~tokenId: option<string>=?, ~linkBrightID: option<string>=?, ~dailyQuestion: option<string>=?, ~contextId: option<RouterUint8Array.t>=?) => {
+let makeLink = (~tokenId: option<string>=?, ~linkBrightID: option<string>=?, ~dailyQuestion: option<string>=?, ~contextId: option<string>=?) => {
   open RelayRouter.Bindings
   let queryParams = QueryParams.make()
   switch tokenId {
@@ -177,7 +177,7 @@ let makeLink = (~tokenId: option<string>=?, ~linkBrightID: option<string>=?, ~da
 
   switch contextId {
     | None => ()
-    | Some(contextId) => queryParams->QueryParams.setParam(~key="contextId", ~value=contextId->RouterUint8Array.serialize->Js.Global.encodeURIComponent)
+    | Some(contextId) => queryParams->QueryParams.setParam(~key="contextId", ~value=contextId->Js.Global.encodeURIComponent)
   }
   RelayRouter.Bindings.generatePath(routePattern, Js.Dict.fromArray([])) ++ queryParams->QueryParams.toString
 }
