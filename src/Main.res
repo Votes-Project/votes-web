@@ -1,7 +1,7 @@
 @react.component @relay.deferredComponent
 let make = (~children) => {
   <>
-    <div className="wrapper flex flex-col">
+    <div className="wrapper bg-primary noise flex flex-col">
       <Header />
       <main> {children} </main>
     </div>
