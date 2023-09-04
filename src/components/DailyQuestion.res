@@ -113,7 +113,7 @@ module ChoicesPage = {
     let {openConnectModal} = RainbowKit.useConnectModal()
     let {openAccountModal} = RainbowKit.useAccountModal()
     let {queryParams, setParams} = Routes.Main.Route.useQueryParams()
-    let (publicKey, _) = UseKeyPairHook.useKeyPair()
+    let keys = UseKeyPairHook.useKeyPair()
     let verificationData = VerificationFragment.use(verification)
     let {setVerification} = React.useContext(VerificationContext.context)
 
@@ -170,7 +170,7 @@ module ChoicesPage = {
         ~setter=c => {
           ...c,
           linkBrightID,
-          contextId: Some(publicKey),
+          contextId: keys->Option.map(({contextId}) => contextId),
         },
       )
     }

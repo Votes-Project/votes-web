@@ -32,9 +32,20 @@ module Query = %relay(`
 @react.component
 let make = (~queryRef, ~contextId) => {
   let data = Query.usePreloaded(~queryRef)
-  let uri = BrightID.SDK.generateDeeplink(~context, ~contextId=TypedArray.toString(contextId))
+  let uri = BrightID.SDK.generateDeeplink(~context, ~contextId)
+  let {setParams} = Routes.Main.Route.useQueryParams()
 
-  let {replace} = RelayRouter.Utils.useRouter()
+  let setLinkBrightID = linkBrightID => {
+    setParams(
+      ~removeNotControlledParams=false,
+      ~navigationMode_=Push,
+      ~shallow=false,
+      ~setter=c => {
+        ...c,
+        linkBrightID,
+      },
+    )
+  }
 
   let isVerified = false
   // requireVerificationContext.verification->Option.mapWithDefault(false, ({isVerified}) =>

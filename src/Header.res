@@ -15,7 +15,7 @@ type headerItem = {
 
 @react.component
 let make = () => {
-  let (publicKey, _) = UseKeyPairHook.useKeyPair()
+  let keys = UseKeyPairHook.useKeyPair()
   let (isOpen, setIsOpen) = React.useState(_ => false)
 
   let handleMenu = () => {
@@ -31,7 +31,7 @@ let make = () => {
       ~shallow=false,
       ~setter=c => {
         ...c,
-        contextId: Some(publicKey),
+        contextId: keys->Option.map(({contextId}) => contextId),
         dailyQuestion,
       },
     )
@@ -46,7 +46,7 @@ let make = () => {
     ]
   }
 
-  <header className="bg-secondary  flex flex-col justify-center items-center mb-[-8px] w-full">
+  <header className=" flex flex-col justify-center items-center mb-[-8px] w-full">
     <nav className=" max-w-7xl flex w-full justify-between px-4 pt-2">
       <div className="flex gap-3 justify-center items-center ">
         <RelayRouter.Link
@@ -65,7 +65,7 @@ let make = () => {
       <div className="hidden lg:flex lg:visible gap-4 justify-center items-center">
         <button
           onClick={_ => setDailyQuestion(Some(""))}
-          className="border-[1.5px] border-primary cursor-pointer  hover:bg-active hover:text-white rounded-xl flex items-center font-semibold mr-4 px-3 h-10 justify-center gap-2 transition-all">
+          className="border-[1.5px] border-primary cursor-pointer  hover:bg-primary-dark hover:text-white rounded-xl flex items-center font-semibold mr-4 px-3 h-10 justify-center gap-2 transition-all">
           <ReactIcons.LuCalendarCheck size="1.5rem" />
           {"Daily Question"->React.string}
         </button>
@@ -74,7 +74,7 @@ let make = () => {
           <RelayRouter.Link
             key={name}
             to_={link}
-            className="border-[1.5px] border-primary  hover:bg-active hover:text-white rounded-xl flex items-center font-semibold mr-4 px-3 h-10 justify-center gap-2 transition-all">
+            className="border-[1.5px] border-primary  hover:bg-primary-dark hover:text-white rounded-xl flex items-center font-semibold mr-4 px-3 h-10 justify-center gap-2 transition-all">
             {icon}
             {name->React.string}
           </RelayRouter.Link>
@@ -95,7 +95,7 @@ let make = () => {
           : "max-h-0"} color-active transition-all justify-around items-center flex lg:max-h-0 lg:p-0 `}>
       <button
         onClick={_ => setDailyQuestion(Some(""))}
-        className={`lg:hidden justify-center items-center w-[262px] flex px-2 py-3 border border-primary rounded-xl font-bold text-white text-xl gap-2 transition-all ${isOpen
+        className={`hover:bg-secondary hover:text-active lg:hidden justify-center items-center w-[262px] flex px-2 py-3 border border-primary rounded-xl font-bold text-white text-xl gap-2 transition-all ${isOpen
             ? ""
             : "hidden"}`}>
         <ReactIcons.LuCalendarCheck size="1.5rem" />
@@ -106,7 +106,7 @@ let make = () => {
         <RelayRouter.Link
           key={name}
           to_={link}
-          className={`lg:hidden justify-center items-center w-[262px] flex px-2 py-3 border border-primary rounded-xl font-bold text-white text-xl gap-2 transition-all ${isOpen
+          className={`hover:bg-secondary hover:text-active lg:hidden justify-center items-center w-[262px] flex px-2 py-3 border border-primary rounded-xl font-bold text-white text-xl gap-2 transition-all ${isOpen
               ? ""
               : "hidden"}`}>
           {icon}
