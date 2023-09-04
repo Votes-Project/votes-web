@@ -22,7 +22,6 @@ let make = (~children, ~isOpen) => {
       ~shallow=false,
       ~setter=c => {
         ...c,
-        contextId: None,
         linkBrightID,
       },
     )
@@ -61,5 +60,23 @@ let make = (~children, ~isOpen) => {
   //   })
   // }
 
-  <ReactModal isOpen onRequestClose=onClose> {children} </ReactModal>
+  <ReactModal
+    style={
+      overlay: {
+        backgroundColor: "rgba(0,0,0,0.6)",
+        backdropFilter: "blur(10px)",
+        outline: "none",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      },
+      content: {
+        outline: "none",
+      },
+    }
+    className="bg-none w-full h-screen"
+    isOpen
+    onRequestClose=onClose>
+    {children}
+  </ReactModal>
 }
