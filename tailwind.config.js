@@ -6,12 +6,13 @@ export default {
       colors: {
         background: "#e4eaec",
         "background-light": "#ffffff",
-        "background-dark": "#b6c7cd",
+        "background-dark": "#a1c7d3",
         "default-darker": "#313753",
         primary: "#FFDACC",
         "primary-dark": "#ffae8f",
         secondary: "#fff4f0",
         active: "#FB8A61",
+        "default-disabled": "#ece6e4"
       },
       dropShadow: {
         glow: [
