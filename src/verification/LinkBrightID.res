@@ -3,7 +3,19 @@ let {context} = module(Constants)
 module QRCode = {
   module SVG = {
     @react.component @module("qrcode.react")
-    external make: (~value: string, ~size: int=?) => React.element = "default"
+    external make: (~className: string, ~value: string, ~size: int=?) => React.element = "default"
+  }
+}
+
+module DeviceDetect = {
+  @module("react-device-detect") external isMobile: bool = "isMobile"
+  module BrowserView = {
+    @react.component @module("react-device-detect")
+    external make: (~children: React.element) => React.element = "BrowserView"
+  }
+  module MobileView = {
+    @react.component @module("react-device-detect")
+    external make: (~children: React.element) => React.element = "MobileView"
   }
 }
 
@@ -52,16 +64,30 @@ let make = (~queryRef, ~contextId) => {
   //   isVerified
   // )
 
-  <div className="flex flex-col w-full justify-center items-around h-full">
-    <h1> {"This feature requires a Verified BrightID"->React.string} </h1>
-    <div>
-      <QRCode.SVG value={uri} size={200} />
+  <div className="flex flex-col w-full justify-around items-center h-full">
+    <button
+      onClick={_ => setLinkBrightID(None)} className="absolute text-white text-2xl top-8 right-8">
+      {"❌"->React.string}
+    </button>
+    <div className="w-full text-center">
+      <h1 className="text-white text-3xl font-bold py-4">
+        {"Scan the QR Code to Link BrightID"->React.string}
+      </h1>
     </div>
-    <a href=uri>
-      <button className="bg-rose-500"> {"📱Link "->React.string} </button>
-    </a>
-    <button className="bg-rose-500" onClick={_ => ()}>
-      {"Confirm BrightID Link "->React.string}
+    <div className="w-full flex flex-col justify-center items-center gap-3">
+      <DeviceDetect.BrowserView>
+        <QRCode.SVG className="static border-4 border-active rounded-md" value={uri} size={400} />
+      </DeviceDetect.BrowserView>
+      <DeviceDetect.MobileView>
+        <a href=uri>
+          <button className="text-3xl py-4 px-2 bg-active rounded-full">
+            {"Link Bright ID"->React.string}
+          </button>
+        </a>
+      </DeviceDetect.MobileView>
+    </div>
+    <button className="p-4 bg-background-light rounded-lg font-semibold" onClick={_ => ()}>
+      {"Check BrightID Status"->React.string}
     </button>
   </div>
 }
