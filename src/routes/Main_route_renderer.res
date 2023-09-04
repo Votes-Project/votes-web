@@ -57,8 +57,9 @@ let renderer = Routes.Main.Route.makeRenderer(
         {switch (dailyQuestion, dailyQuestionQueryRef) {
         | (Some(_), Some(queryRef)) =>
           // <RescriptReactErrorBoundary fallback={_ => "Error"->React.string}>
-
-          <DailyQuestion queryRef />
+          <React.Suspense fallback={<p> {"Loading"->React.string} </p>}>
+            <DailyQuestion queryRef />
+          </React.Suspense>
 
         // </RescriptReactErrorBoundary>
         | _ => React.null
@@ -68,7 +69,9 @@ let renderer = Routes.Main.Route.makeRenderer(
         {switch (linkBrightID, linkBrightIDQueryRef, contextId) {
         | (Some(_), Some(queryRef), Some(contextId)) =>
           // <RescriptReactErrorBoundary fallback={_ => "Error"->React.string}>
-          <LinkBrightID queryRef contextId />
+          <React.Suspense fallback={<p> {"Loading"->React.string} </p>}>
+            <LinkBrightID queryRef contextId />
+          </React.Suspense>
         // </RescriptReactErrorBoundary>
         | _ => React.null
         }}

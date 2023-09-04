@@ -319,7 +319,7 @@ let make = (~queryRef, ~children, ~tokenId) => {
     }
   }
 
-  <div className=" bg-secondary noise w-full  shadow-inner pt-4">
+  <div className=" w-full pt-4">
     <div
       className="lg:flex-[0_0_auto] lg:max-w-6xl m-auto flex flex-col lg:flex-row lg:justify-center lg:items-center flex-shrink-0 max-w-full">
       <div className="  lg:w-[50%] w-[80%] md:w-[70%] mx-3 md:mx-4 lg:mx-0 flex align-end ">
@@ -329,17 +329,17 @@ let make = (~queryRef, ~children, ~tokenId) => {
           </div>
         </div>
       </div>
-      <React.Suspense
-        fallback={<div className="flex-1"> {React.string("Loading Auctions...")} </div>}>
-        <div
-          className="min-h-[558px] lg:flex-[0_0_auto] w-full !self-end bg-background pr-[5%] pb-0 lg:bg-transparent lg:w-[50%] lg:pr-20 ">
+      <div
+        className="min-h-[558px] lg:flex-[0_0_auto] w-full !self-end bg-white pr-[5%] pb-0 lg:bg-transparent lg:w-[50%] lg:pr-20 ">
+        <React.Suspense
+          fallback={<div className="flex-1"> {React.string("Loading Auctions...")} </div>}>
           <div className="!self-start px-4">
             <div className="flex items-center pt-5">
               <div className="flex gap-2 items-center">
                 <button
                   disabled={tokenId->Option.equal(Some("0"), (a, b) => a == b)}
                   onClick={_ => handleArrowPress(LeftPress, tokenId)}
-                  className="flex h-8 w-8 items-center justify-center rounded-full bg-background-dark lg:bg-primary-dark disabled:bg-background-light ">
+                  className="flex h-8 w-8 items-center justify-center rounded-full bg-background-dark lg:bg-primary-dark disabled:bg-default-disabled ">
                   <ReactIcons.LuArrowLeft color="white" />
                 </button>
                 <button
@@ -347,7 +347,7 @@ let make = (~queryRef, ~children, ~tokenId) => {
                   disabled={todaysAuction
                   ->Option.map(todaysAuction => todaysAuction.tokenId)
                   ->Option.equal(Some(tokenId), (a, b) => a == b)}
-                  className="flex h-8 w-8 items-center justify-center rounded-full lg:bg-primary-dark bg-background-dark disabled:bg-background-light disabled:opacity-50 ">
+                  className="flex h-8 w-8 items-center justify-center rounded-full lg:bg-primary-dark bg-background-dark disabled:bg-default-disabled disabled:opacity-50 ">
                   <ReactIcons.LuArrowRight color="white" />
                 </button>
                 <p className="font-semibold text-background-dark lg:text-active">
@@ -359,8 +359,8 @@ let make = (~queryRef, ~children, ~tokenId) => {
               {children}
             </AuctionListDisplay>
           </div>
-        </div>
-      </React.Suspense>
+        </React.Suspense>
+      </div>
     </div>
   </div>
 }
