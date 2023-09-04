@@ -16,9 +16,9 @@ let decodeData = json => {
         Some(String(app)),
         Some(String(context)),
         Some(Array(contextIdsRaw)),
-        Some(Number(timestampRaw)),
-        Some(String(sig)),
-        Some(String(publicKey)),
+        timestamp,
+        sig,
+        publicKey,
       ) =>
       Some({
         unique: switch unique {
@@ -34,9 +34,18 @@ let decodeData = json => {
           | _ => None
           }
         ),
-        timestamp: timestampRaw,
-        sig,
-        publicKey,
+        timestamp: switch timestamp {
+        | Some(Number(timestamp)) => timestamp
+        | _ => 0.
+        },
+        sig: switch sig {
+        | Some(String(sig)) => sig
+        | _ => ""
+        },
+        publicKey: switch publicKey {
+        | Some(String(publicKey)) => publicKey
+        | _ => ""
+        },
       })
     | _ => None
     }
@@ -101,10 +110,7 @@ let make = () => {
       )
     | json =>
       decodeData(json)->Option.map(verification => {
-        let id =
-          verification.contextIds
-          ->Array.get(0)
-          ->Option.getWithDefault(panic("Could not find a context ID"))
+        let id = verification.contextIds->Array.get(0)->Option.getUnsafe
         Verification.Verification({
           id,
           unique: verification.unique,
