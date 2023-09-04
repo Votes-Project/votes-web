@@ -59,7 +59,7 @@ let make = (~queryRef as auctionCreatedRef, ~isToday) => {
       onInput={e => onBidChange(e)}
     />
     <button
-      className="flex-2 rounded-lg bg-active px-4 py-3 lg:px-3 lg:py-2 text-center text-white disabled:bg-background-light disabled:text-background text-xl lg:text-lg"
+      className="flex-2 rounded-lg bg-active px-4 py-3 lg:px-3 lg:py-2 text-center text-white disabled:bg-default-disabled disabled:text-background-light text-xl lg:text-lg"
       disabled={!isToday ||
       bidAmount == "" ||
       bidAmount->Float.fromString->Option.equal(currentBid->Float.fromString, (a, b) => a < b)}
