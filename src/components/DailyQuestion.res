@@ -211,7 +211,7 @@ module ChoicesPage = {
             />
           </button>
           <button
-            className="py-2 px-8 bg-active text-white rounded-lg text-2xl font-bold disabled:bg-background-light disabled:opacity-50"
+            className="py-2 px-8 bg-active text-white rounded-lg text-2xl font-bold disabled:bg-default-disabled disabled:opacity-50"
             disabled={checkedIndex->Option.isNone}
             onClick={_ => handleVote()}>
             {"Vote"->React.string}
