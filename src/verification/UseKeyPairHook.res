@@ -23,7 +23,11 @@ let useKeyPair = () => {
             privateKey,
             contextId,
           }))
-        | exception e => raise(e)
+        | exception e => {
+            Dom.Storage2.localStorage->Dom.Storage2.removeItem("votes_publicKey")
+            Dom.Storage2.localStorage->Dom.Storage2.removeItem("votes_privateKey")
+            setKeyPair(_ => None)
+          }
         }
       | _ =>
         switch await Jose.generateKeyPair(
@@ -33,7 +37,6 @@ let useKeyPair = () => {
           },
         ) {
         | {publicKey, privateKey} =>
-          Js.log2("privateKey: ", privateKey)
           switch (
             await Jose.exportSPKI(publicKey),
             await Jose.exportPKCS8(privateKey),
