@@ -64,7 +64,7 @@ let make = () => {
       </div>
       <div className="hidden lg:flex lg:visible gap-4 justify-center items-center">
         <button
-          onClick={_ => setDailyQuestion(Some(""))}
+          onClick={_ => setDailyQuestion(Some(0))}
           className="border-[1.5px] border-primary cursor-pointer  hover:bg-primary-dark hover:text-white rounded-xl flex items-center font-semibold mr-4 px-3 h-10 justify-center gap-2 transition-all">
           <ReactIcons.LuCalendarCheck size="1.5rem" />
           {"Daily Question"->React.string}
@@ -94,7 +94,7 @@ let make = () => {
           ? "py-10 bg-active w-full flex flex-col h-96 m-[-8px]"
           : "max-h-0"} color-active transition-all justify-around items-center flex lg:max-h-0 lg:p-0 `}>
       <button
-        onClick={_ => setDailyQuestion(Some(""))}
+        onClick={_ => setDailyQuestion(Some(0))}
         className={`hover:bg-secondary hover:text-active lg:hidden justify-center items-center w-[262px] flex px-2 py-3 border border-primary rounded-xl font-bold text-white text-xl gap-2 transition-all ${isOpen
             ? ""
             : "hidden"}`}>

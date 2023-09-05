@@ -40,25 +40,6 @@ let make = (~children, ~isOpen) => {
 
     Some(() => document->removeEventListener(#keydown, handleKeyDown))
   })
-  let verificationContext = React.useContext(VerificationContext.context)
-
-  // let {setVerification} = React.useContext(RequireVerificationContext.context)
-  // let (verification, refetch) = RequireVerificationFragment.useRefetchable(
-  //   verification->Option.getUnsafe,
-  // )
-  // let verification = RequireVerificationFragment.use(verification->Option.getUnsafe)
-
-  // let (isRefetching, startTransition) = ReactExperimental.useTransition()
-
-  // let handleConfirmLink = () => {
-  //   startTransition(() => {
-  //     let _ = refetch(~variables={id: Some(contextId)}, ~fetchPolicy=RescriptRelay.NetworkOnly)
-  //     setVerification(_ => Some({
-  //       isVerified: verification.unique,
-  //       contextId: verification.contextIds[0]->Option.getExn,
-  //     }))
-  //   })
-  // }
 
   <ReactModal
     style={
@@ -72,9 +53,10 @@ let make = (~children, ~isOpen) => {
       },
       content: {
         outline: "none",
+        pointerEvents: "none",
       },
     }
-    className="bg-none w-full h-screen"
+    className="w-full h-screen pointer-events-auto max-w-3xl"
     isOpen
     onRequestClose=onClose>
     {children}
