@@ -1,6 +1,6 @@
 [
   {
-    "path": "/?tokenId=string&linkBrightID=string&dailyQuestion=string&contextId=string",
+    "path": "/?tokenId=string&linkBrightID=int&dailyQuestion=int&contextId=string",
     "name": "Main",
     "children": [
       {
