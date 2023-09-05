@@ -44,7 +44,7 @@ module QuestionTitle = {
         {title->React.string}
       </h1>
       <div
-        className="mx-4 max-w-[180px] h-0 border-2 bg-black  border-default-darker rounded-md opacity-20"
+        className="mx-6 max-w-[180px] h-0 border bg-black  border-default-darker rounded-md opacity-20"
       />
     </div>
   }
@@ -178,10 +178,10 @@ module ChoicesPage = {
     let handleBrightIDClick = (_, verificationData) => {
       open DailyQuestion_verification_graphql.Types
       switch verificationData {
-      | BrightIdError(_) => setLinkBrightID(Some(""))
+      | BrightIdError(_) => setLinkBrightID(Some(0))
       | VerificationData({unique: true}) => ()
       | VerificationData({unique: false}) => ()
-      | _ => setLinkBrightID(Some(""))
+      | _ => setLinkBrightID(Some(0))
       }
     }
 

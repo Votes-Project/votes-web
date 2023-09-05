@@ -19,23 +19,17 @@ module DeviceDetect = {
   }
 }
 
-module LinkBrightIDFragment = %relay(`
-  fragment LinkBrightID_verification on Verification {
-    ... on VerificationData {
-      id
-      unique
-      contextIds
-    }
-    ... on BrightIdError {
-      error
-    }
-  }
-`)
-
 module Query = %relay(`
   query LinkBrightIDQuery($contextId: String!) {
     verification(contextId: $contextId) {
-      ...LinkBrightID_verification
+      ... on VerificationData {
+        id
+        unique
+        contextIds
+      }
+      ... on BrightIdError {
+        error
+      }
       ...DailyQuestion_verification
     }
   }
@@ -43,34 +37,52 @@ module Query = %relay(`
 
 @react.component
 let make = (~queryRef, ~contextId) => {
-  let data = Query.usePreloaded(~queryRef)
+  let {verification} = Query.usePreloaded(~queryRef)
+  let (isRefetching, startTransition) = ReactExperimental.useTransition()
+
   let uri = BrightID.SDK.generateDeeplink(~context, ~contextId)
-  let {setParams} = Routes.Main.Route.useQueryParams()
+  let {setParams, queryParams} = Routes.Main.Route.useQueryParams()
 
   let setLinkBrightID = linkBrightID => {
     setParams(
       ~removeNotControlledParams=false,
-      ~navigationMode_=Push,
+      ~navigationMode_=Replace,
       ~shallow=false,
       ~setter=c => {
         ...c,
         linkBrightID,
       },
+      ~onAfterParamsSet=_ => {
+        startTransition(_ => ())
+      },
     )
   }
 
-  let isVerified = false
-  // requireVerificationContext.verification->Option.mapWithDefault(false, ({isVerified}) =>
-  //   isVerified
-  // )
+  React.useEffect1(() => {
+    switch verification.unique {
+    | None => ()
+    | Some(_) => setLinkBrightID(None)
+    }
+    None
+  }, [verification])
+
+  let linkText = linkBrightID =>
+    switch (linkBrightID, isRefetching) {
+    | (Some(0), _) => "Confirm Link"
+    | (Some(1), true) => "Confirming..."
+    | (Some(_), true) => "Retrying..."
+    | (Some(_), false) => "Failed...Retry?"
+    | _ => "Confirm Link"
+    }
 
   <div className="flex flex-col w-full justify-around items-center h-full">
     <button
-      onClick={_ => setLinkBrightID(None)} className="absolute text-white text-2xl top-8 right-8">
+      onClick={_ => setLinkBrightID(None)}
+      className=" pointer-events-auto absolute text-white text-4xl top-16 right-16">
       {"❌"->React.string}
     </button>
     <div className="w-full text-center">
-      <h1 className="text-white text-3xl font-bold py-4">
+      <h1 className="text-white text-3xl lg:text-4xl font-bold pt-4">
         {"Scan the QR Code to Link BrightID"->React.string}
       </h1>
     </div>
@@ -80,14 +92,17 @@ let make = (~queryRef, ~contextId) => {
       </DeviceDetect.BrowserView>
       <DeviceDetect.MobileView>
         <a href=uri>
-          <button className="text-3xl py-4 px-2 bg-active rounded-full">
-            {"Link Bright ID"->React.string}
+          <button className="text-3xl p-4 text-white bg-active rounded-full font-bold">
+            {"Link BrightID"->React.string}
           </button>
         </a>
       </DeviceDetect.MobileView>
     </div>
-    <button className="p-4 bg-background-light rounded-lg font-semibold" onClick={_ => ()}>
-      {"Check BrightID Status"->React.string}
+    <button
+      className="p-4 bg-background-light rounded-lg font-semibold pointer-events-auto "
+      onClick={_ =>
+        setLinkBrightID(queryParams.linkBrightID->Option.map(linkBrightID => linkBrightID + 1))}>
+      {linkText(queryParams.linkBrightID)->React.string}
     </button>
   </div>
 }

@@ -17,7 +17,7 @@ let renderer = Routes.Main.Route.makeRenderer(
     ]->Array.filterMap(v => v),
   ~prepare=({environment, dailyQuestion, linkBrightID, contextId}) => {
     switch (dailyQuestion, linkBrightID, contextId) {
-    | (Some(_), Some(_), Some(contextId)) => (
+    | (Some(_), Some(linkBrightIDKey), Some(contextId)) => (
         DailyQuestionQuery_graphql.load(
           ~environment,
           ~variables={contextId: contextId},
@@ -26,7 +26,8 @@ let renderer = Routes.Main.Route.makeRenderer(
         LinkBrightIDQuery_graphql.load(
           ~environment,
           ~variables={contextId: contextId},
-          ~fetchPolicy=StoreOrNetwork,
+          ~fetchPolicy=NetworkOnly,
+          ~fetchKey=linkBrightIDKey->Int.toString,
         )->Some,
       )
     | (Some(_), None, Some(contextId)) => (
@@ -37,12 +38,13 @@ let renderer = Routes.Main.Route.makeRenderer(
         )->Some,
         None,
       )
-    | (None, Some(_), Some(contextId)) => (
+    | (None, Some(linkBrightIDKey), Some(contextId)) => (
         None,
         LinkBrightIDQuery_graphql.load(
           ~environment,
           ~variables={contextId: contextId},
-          ~fetchPolicy=StoreOrNetwork,
+          ~fetchPolicy=NetworkOnly,
+          ~fetchKey=linkBrightIDKey->Int.toString,
         )->Some,
       )
     | _ => (None, None)
@@ -50,6 +52,17 @@ let renderer = Routes.Main.Route.makeRenderer(
   },
   ~render=({childRoutes, dailyQuestion, linkBrightID, contextId, prepared}) => {
     let (dailyQuestionQueryRef, linkBrightIDQueryRef) = prepared
+    let keys = UseKeyPairHook.useKeyPair()
+    switch (keys, contextId) {
+    | (Some(keys), Some(contextId)) =>
+      if keys.contextId == contextId {
+        () // do nothing
+      } else {
+        //invalidate store
+        ()
+      }
+    | _ => ()
+    }
 
     <>
       <Main> {childRoutes} </Main>
@@ -57,7 +70,8 @@ let renderer = Routes.Main.Route.makeRenderer(
         {switch (dailyQuestion, dailyQuestionQueryRef) {
         | (Some(_), Some(queryRef)) =>
           // <RescriptReactErrorBoundary fallback={_ => "Error"->React.string}>
-          <React.Suspense fallback={<p> {"Loading"->React.string} </p>}>
+          <React.Suspense
+            fallback={<div className="min-h-[896px]"> {"Loading"->React.string} </div>}>
             <DailyQuestion queryRef />
           </React.Suspense>
 
