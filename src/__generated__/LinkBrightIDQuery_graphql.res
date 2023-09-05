@@ -6,7 +6,11 @@ module Types = {
 
   type rec response_verification = {
     @live __typename: string,
-    fragmentRefs: RescriptRelay.fragmentRefs<[ | #DailyQuestion_verification | #LinkBrightID_verification]>,
+    contextIds: option<array<string>>,
+    error: option<bool>,
+    @live id: option<string>,
+    unique: option<bool>,
+    fragmentRefs: RescriptRelay.fragmentRefs<[ | #DailyQuestion_verification]>,
   }
   type response = {
     verification: response_verification,
@@ -117,6 +121,42 @@ v3 = {
   "kind": "ScalarField",
   "name": "id",
   "storageKey": null
+},
+v4 = {
+  "kind": "InlineFragment",
+  "selections": [
+    (v3/*: any*/),
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "unique",
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "contextIds",
+      "storageKey": null
+    }
+  ],
+  "type": "VerificationData",
+  "abstractKey": null
+},
+v5 = {
+  "kind": "InlineFragment",
+  "selections": [
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "error",
+      "storageKey": null
+    }
+  ],
+  "type": "BrightIdError",
+  "abstractKey": null
 };
 return {
   "fragment": {
@@ -134,11 +174,8 @@ return {
         "plural": false,
         "selections": [
           (v2/*: any*/),
-          {
-            "args": null,
-            "kind": "FragmentSpread",
-            "name": "LinkBrightID_verification"
-          },
+          (v4/*: any*/),
+          (v5/*: any*/),
           {
             "args": null,
             "kind": "FragmentSpread",
@@ -170,42 +207,8 @@ return {
             "kind": "TypeDiscriminator",
             "abstractKey": "__isVerification"
           },
-          {
-            "kind": "InlineFragment",
-            "selections": [
-              (v3/*: any*/),
-              {
-                "alias": null,
-                "args": null,
-                "kind": "ScalarField",
-                "name": "unique",
-                "storageKey": null
-              },
-              {
-                "alias": null,
-                "args": null,
-                "kind": "ScalarField",
-                "name": "contextIds",
-                "storageKey": null
-              }
-            ],
-            "type": "VerificationData",
-            "abstractKey": null
-          },
-          {
-            "kind": "InlineFragment",
-            "selections": [
-              {
-                "alias": null,
-                "args": null,
-                "kind": "ScalarField",
-                "name": "error",
-                "storageKey": null
-              }
-            ],
-            "type": "BrightIdError",
-            "abstractKey": null
-          },
+          (v4/*: any*/),
+          (v5/*: any*/),
           {
             "kind": "InlineFragment",
             "selections": [
@@ -220,12 +223,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "dc61fde7cea0022fbc96d7b3c8b1b04e",
+    "cacheID": "a6c35d2e2c4160253898ed2284121f41",
     "id": null,
     "metadata": {},
     "name": "LinkBrightIDQuery",
     "operationKind": "query",
-    "text": "query LinkBrightIDQuery(\n  $contextId: String!\n) {\n  verification(contextId: $contextId) {\n    __typename\n    ...LinkBrightID_verification\n    ...DailyQuestion_verification\n    ... on Node {\n      __isNode: __typename\n      __typename\n      id\n    }\n  }\n}\n\nfragment DailyQuestion_verification on Verification {\n  __isVerification: __typename\n  __typename\n  ... on VerificationData {\n    id\n    unique\n    contextIds\n  }\n  ... on BrightIdError {\n    error\n  }\n}\n\nfragment LinkBrightID_verification on Verification {\n  __isVerification: __typename\n  __typename\n  ... on VerificationData {\n    id\n    unique\n    contextIds\n  }\n  ... on BrightIdError {\n    error\n  }\n}\n"
+    "text": "query LinkBrightIDQuery(\n  $contextId: String!\n) {\n  verification(contextId: $contextId) {\n    __typename\n    ... on VerificationData {\n      id\n      unique\n      contextIds\n    }\n    ... on BrightIdError {\n      error\n    }\n    ...DailyQuestion_verification\n    ... on Node {\n      __isNode: __typename\n      __typename\n      id\n    }\n  }\n}\n\nfragment DailyQuestion_verification on Verification {\n  __isVerification: __typename\n  __typename\n  ... on VerificationData {\n    id\n    unique\n    contextIds\n  }\n  ... on BrightIdError {\n    error\n  }\n}\n"
   }
 };
 })() `)
