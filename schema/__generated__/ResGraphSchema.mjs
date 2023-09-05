@@ -313,9 +313,6 @@ i_Node.contents = new Graphql.GraphQLInterfaceType({
           return {
                   id: {
                     type: new Graphql.GraphQLNonNull(Graphql.GraphQLID)
-                  },
-                  id: {
-                    type: new Graphql.GraphQLNonNull(Graphql.GraphQLString)
                   }
                 };
         }),
@@ -350,9 +347,10 @@ t_AuctionBid.contents = new Graphql.GraphQLObjectType({
                     description: "The time the bid was made"
                   },
                   id: {
-                    type: new Graphql.GraphQLNonNull(Graphql.GraphQLString),
-                    resolve: Caml_option.some(function (src, _args, _ctx) {
-                          return typeUnwrapper(src).id;
+                    type: new Graphql.GraphQLNonNull(Graphql.GraphQLID),
+                    resolve: Caml_option.some(function (src, args, ctx) {
+                          var src$1 = typeUnwrapper(src);
+                          return NodeInterfaceResolvers.id(src$1, "AuctionBid");
                         })
                   },
                   tokenId: {
@@ -428,9 +426,10 @@ t_AuctionCreated.contents = new Graphql.GraphQLObjectType({
                     description: "End time of auction *"
                   },
                   id: {
-                    type: new Graphql.GraphQLNonNull(Graphql.GraphQLString),
-                    resolve: Caml_option.some(function (src, _args, _ctx) {
-                          return typeUnwrapper(src).id;
+                    type: new Graphql.GraphQLNonNull(Graphql.GraphQLID),
+                    resolve: Caml_option.some(function (src, args, ctx) {
+                          var src$1 = typeUnwrapper(src);
+                          return NodeInterfaceResolvers.id(src$1, "AuctionCreated");
                         })
                   },
                   startTime: {
@@ -513,9 +512,10 @@ t_AuctionSettled.contents = new Graphql.GraphQLObjectType({
                     description: "Amount of winning bid *"
                   },
                   id: {
-                    type: new Graphql.GraphQLNonNull(Graphql.GraphQLString),
-                    resolve: Caml_option.some(function (src, _args, _ctx) {
-                          return typeUnwrapper(src).id;
+                    type: new Graphql.GraphQLNonNull(Graphql.GraphQLID),
+                    resolve: Caml_option.some(function (src, args, ctx) {
+                          var src$1 = typeUnwrapper(src);
+                          return NodeInterfaceResolvers.id(src$1, "AuctionSettled");
                         })
                   },
                   tokenId: {
@@ -938,9 +938,10 @@ t_QuestionSubmitted.contents = new Graphql.GraphQLObjectType({
                         })
                   },
                   id: {
-                    type: new Graphql.GraphQLNonNull(Graphql.GraphQLString),
-                    resolve: Caml_option.some(function (src, _args, _ctx) {
-                          return typeUnwrapper(src).id;
+                    type: new Graphql.GraphQLNonNull(Graphql.GraphQLID),
+                    resolve: Caml_option.some(function (src, args, ctx) {
+                          var src$1 = typeUnwrapper(src);
+                          return NodeInterfaceResolvers.id(src$1, "QuestionSubmitted");
                         })
                   },
                   options: {
@@ -1044,9 +1045,10 @@ t_VerificationData.contents = new Graphql.GraphQLObjectType({
                     description: "Array of ids linked to the Votes context"
                   },
                   id: {
-                    type: new Graphql.GraphQLNonNull(Graphql.GraphQLString),
-                    resolve: Caml_option.some(function (src, _args, _ctx) {
-                          return typeUnwrapper(src).id;
+                    type: new Graphql.GraphQLNonNull(Graphql.GraphQLID),
+                    resolve: Caml_option.some(function (src, args, ctx) {
+                          var src$1 = typeUnwrapper(src);
+                          return NodeInterfaceResolvers.id(src$1, "VerificationData");
                         })
                   },
                   publicKey: {
@@ -1094,9 +1096,10 @@ t_VoteTransfer.contents = new Graphql.GraphQLObjectType({
                         })
                   },
                   id: {
-                    type: new Graphql.GraphQLNonNull(Graphql.GraphQLString),
-                    resolve: Caml_option.some(function (src, _args, _ctx) {
-                          return typeUnwrapper(src).id;
+                    type: new Graphql.GraphQLNonNull(Graphql.GraphQLID),
+                    resolve: Caml_option.some(function (src, args, ctx) {
+                          var src$1 = typeUnwrapper(src);
+                          return NodeInterfaceResolvers.id(src$1, "VoteTransfer");
                         })
                   },
                   to: {
