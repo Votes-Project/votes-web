@@ -1,4 +1,4 @@
-type keys = {
+type keyPair = {
   publicKey: string,
   privateKey: string,
   contextId: string,
@@ -23,7 +23,7 @@ let useKeyPair = () => {
             privateKey,
             contextId,
           }))
-        | exception e => {
+        | exception _ => {
             Dom.Storage2.localStorage->Dom.Storage2.removeItem("votes_publicKey")
             Dom.Storage2.localStorage->Dom.Storage2.removeItem("votes_privateKey")
             setKeyPair(_ => None)
