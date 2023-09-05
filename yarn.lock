@@ -1141,6 +1141,32 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@floating-ui/core@npm:^1.4.1":
+  version: 1.4.1
+  resolution: "@floating-ui/core@npm:1.4.1"
+  dependencies:
+    "@floating-ui/utils": ^0.1.1
+  checksum: be4ab864fe17eeba5e205bd554c264b9a4895a57c573661bbf638357fa3108677fed7ba3269ec15b4da90e29274c9b626d5a15414e8d1fe691e210d02a03695c
+  languageName: node
+  linkType: hard
+
+"@floating-ui/dom@npm:^1.0.0":
+  version: 1.5.1
+  resolution: "@floating-ui/dom@npm:1.5.1"
+  dependencies:
+    "@floating-ui/core": ^1.4.1
+    "@floating-ui/utils": ^0.1.1
+  checksum: ddb509030978536ba7b321cf8c764ae9d0142a3b1fefb7e6bc050a5de7e825e12131fa5089009edabf7c125fb274886da211a5220fe17a71d875a7a96eb1386c
+  languageName: node
+  linkType: hard
+
+"@floating-ui/utils@npm:^0.1.1":
+  version: 0.1.1
+  resolution: "@floating-ui/utils@npm:0.1.1"
+  checksum: 548acdda7902f45b0afbe34e2e7f4cbff0696b95bad8c039f80936519de24ef2ec20e79902825b7815294b37f51a7c52ee86288b0688869a57cc229a164d86b4
+  languageName: node
+  linkType: hard
+
 "@glennsl/rescript-fetch@npm:0.2.0, @glennsl/rescript-fetch@npm:^0.2.0":
   version: 0.2.0
   resolution: "@glennsl/rescript-fetch@npm:0.2.0"
@@ -4609,7 +4635,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"classnames@npm:^2.2.6":
+"classnames@npm:^2.2.6, classnames@npm:^2.3.0":
   version: 2.3.2
   resolution: "classnames@npm:2.3.2"
   checksum: 2c62199789618d95545c872787137262e741f9db13328e216b093eea91c85ef2bfb152c1f9e63027204e2559a006a92eb74147d46c800a9f96297ae1d9f96f4e
@@ -5820,8 +5846,8 @@ __metadata:
   linkType: hard
 
 "framer-motion@npm:^10.13.0":
-  version: 10.13.0
-  resolution: "framer-motion@npm:10.13.0"
+  version: 10.16.3
+  resolution: "framer-motion@npm:10.16.3"
   dependencies:
     "@emotion/is-prop-valid": ^0.8.2
     tslib: ^2.4.0
@@ -5836,7 +5862,7 @@ __metadata:
       optional: true
     react-dom:
       optional: true
-  checksum: b84b78b6994bd77814a3fa0dfb4f266b74221369d9e82e350f8c8b2ec952d683597a373fe49609645631af020de42a6ec041bac60a022e396ff0be70c4233d87
+  checksum: 2bed46e7f3cfa1f118f21cac5b5afeece5b7e4718b603fe8dd35dde63887218b449b61afc2ca27ffd2b1c810d16a5d8fc3f877a8d7ee7da601a1ba742dcbd343
   languageName: node
   linkType: hard
 
@@ -8720,6 +8746,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-tooltip@npm:latest":
+  version: 5.21.1
+  resolution: "react-tooltip@npm:5.21.1"
+  dependencies:
+    "@floating-ui/dom": ^1.0.0
+    classnames: ^2.3.0
+  peerDependencies:
+    react: ">=16.14.0"
+    react-dom: ">=16.14.0"
+  checksum: 44fbe22169eecc12b32e401460997c3b26bae96f70c527260ad41b5015c2ead37b8f713e01737be2fb748ffbb7b6ee8c461a9f46b064c36e6b39a542aab1b852
+  languageName: node
+  linkType: hard
+
 "react-vertical-timeline-component@npm:^3.6.0":
   version: 3.6.0
   resolution: "react-vertical-timeline-component@npm:3.6.0"
@@ -10308,6 +10347,7 @@ __metadata:
     react-modal: ^3.16.1
     react-modal-sheet: ^2.0.0
     react-relay: ^15.0.0
+    react-tooltip: latest
     react-vertical-timeline-component: ^3.6.0
     relay-runtime: ^15.0.0
     rescript: 11.0.0-beta.4
