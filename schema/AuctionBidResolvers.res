@@ -5,6 +5,7 @@ module Node = {
   @module("../.graphclient/index.js") @val
   external document: GraphClient.document<GraphClient.result<data>> = "GetAuctionBidDocument"
 
+  /* takes a Graphclient ID and returns a single AuctionBid Item */
   @gql.field
   let auctionBid = async (_: Schema.query, ~id, ~ctx: ResGraphContext.context): option<
     auctionBid,
@@ -57,10 +58,10 @@ module Connection = {
       },
     )
 
-    res.data->Option.map(data =>
+    res.data->Option.map(data => {
       data.auctionBids
       ->Array.map(auctionBid => (auctionBid :> AuctionBid.auctionBid))
       ->ResGraph.Connections.connectionFromArray(~args={first: None, after, before, last})
-    )
+    })
   }
 }
