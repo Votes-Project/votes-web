@@ -1,10 +1,11 @@
 @react.component @relay.deferredComponent
 let make = (~children) => {
+  open FramerMotion
   <>
-    <div className="wrapper bg-primary noise flex flex-col">
+    <Motion.Div layoutId="background-noise" className="wrapper bg-primary noise flex flex-col">
       <Header />
       <main> {children} </main>
-    </div>
+    </Motion.Div>
     <div className="bg-background w-full">
       <VotesDetails />
     </div>
