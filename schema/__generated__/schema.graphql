@@ -58,13 +58,11 @@ input Where_Transfers {
 """An object with an ID."""
 interface Node {
   id: ID!
-  id: String!
 }
 
 
 """GraphClient: A bid on a Vote Auction"""
 type AuctionBid implements Node {
-  id: String!
 
   """The ID of the Vote Token"""
   tokenId: String!
@@ -77,6 +75,7 @@ type AuctionBid implements Node {
 
   """The time the bid was made"""
   blockTimestamp: String!
+  id: ID!
 }
 
 
@@ -104,7 +103,6 @@ type AuctionBidEdge {
 
 """GraphClient: A Votes Auction"""
 type AuctionCreated implements Node {
-  id: String!
 
   """ID of Votes token *"""
   tokenId: String!
@@ -114,6 +112,7 @@ type AuctionCreated implements Node {
 
   """End time of auction *"""
   endTime: String!
+  id: ID!
 }
 
 
@@ -141,7 +140,6 @@ type AuctionCreatedEdge {
 
 """GraphClient: A Settled Votes Auction"""
 type AuctionSettled implements Node {
-  id: String!
 
   """Winner of auction"""
   winner: String!
@@ -151,6 +149,7 @@ type AuctionSettled implements Node {
 
   """Amount of winning bid *"""
   amount: String!
+  id: ID!
 }
 
 
@@ -230,7 +229,6 @@ type Query {
 }
 
 type QuestionSubmitted implements Node {
-  id: String!
 
   """ID of the vote token attached to the question. If the community vote is
   used this will be the zero address"""
@@ -243,6 +241,7 @@ type QuestionSubmitted implements Node {
   options: [String!]!
   answers: [String!]
   answerNum: Int
+  id: ID!
 }
 
 
@@ -270,7 +269,6 @@ type QuestionSubmittedEdge {
 
 """Data fields from a verified contextID"""
 type VerificationData implements Node {
-  id: String!
 
   """the key of app"""
   app: String!
@@ -292,16 +290,17 @@ type VerificationData implements Node {
 
   """The public key of the verification"""
   publicKey: String
+  id: ID!
 }
 
 
 """GraphClient: A Transfer Event for a Vote token"""
 type VoteTransfer implements Node {
-  id: String!
   tokenId: String!
   to: String!
   transactionHash: String!
   blockNumber: Int!
+  id: ID!
 }
 
 
