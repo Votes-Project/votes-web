@@ -92,6 +92,34 @@ module RainbowKit = {
   external useAccountModal: unit => useAccountModal = "useAccountModal"
 }
 
+module LinkStatusTooltip = {
+  @react.component
+  let make = (~verificationData) => {
+    open DailyQuestion_verification_graphql.Types
+    switch verificationData {
+    | BrightIdError(_) =>
+      <ReactTooltip anchorSelect="#brightid-link-status">
+        <div className="flex flex-col justify-center items-center">
+          <p className="text-white text-sm font-semibold">
+            {"Link Votes to Bright ID"->React.string}
+          </p>
+        </div>
+      </ReactTooltip>
+    | VerificationData({unique: true}) => <> </>
+    | VerificationData({unique: false}) =>
+      <ReactTooltip
+        anchorSelect="#brightid-link-status" openOnClick=true closeOnEsc=true variant={Warning}>
+        <div className="flex flex-col justify-center items-center">
+          <p className="text-white text-sm font-semibold">
+            {"This Bright ID does not meet the requirements for a unique human"->React.string}
+          </p>
+        </div>
+      </ReactTooltip>
+    | _ => React.null
+    }
+  }
+}
+
 module ChoicesPage = {
   let titleStyle = titleLength => {
     if titleLength <= 50 {
@@ -114,6 +142,7 @@ module ChoicesPage = {
     let {openAccountModal} = RainbowKit.useAccountModal()
     let {queryParams, setParams} = Routes.Main.Route.useQueryParams()
     let keys = UseKeyPairHook.useKeyPair()
+
     let verificationData = VerificationFragment.use(verification)
     let {setVerification} = React.useContext(VerificationContext.context)
 
@@ -204,7 +233,11 @@ module ChoicesPage = {
       </div>
       <div className="flex flex-col justify-center items-center mb-6 gap-3">
         <div className="flex flex-row w-[80%] items-center justify-around px-10">
-          <button className="align-middle" onClick={e => handleBrightIDClick(e, verificationData)}>
+          <LinkStatusTooltip verificationData />
+          <button
+            id="brightid-link-status"
+            className="align-middle"
+            onClick={e => handleBrightIDClick(e, verificationData)}>
             <img
               className={`w-[48px] ${brightIDImageStyle(verificationData)}`}
               src={"https://unitap.app/assets/images/navbar/bright-icon.svg"}
