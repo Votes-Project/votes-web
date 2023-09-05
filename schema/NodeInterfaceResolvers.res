@@ -3,7 +3,7 @@
 let node = async (_: Schema.query, ~id, ~ctx: ResGraphContext.context): option<
   Interface_node.Resolver.t,
 > => {
-  switch id->ResGraph.idToString->String.split(":") {
+  switch id->ResGraph.idToString->ResGraph.Utils.Base64.decode->String.split(":") {
   | [typenameAsString, id] =>
     switch typenameAsString->Interface_node.ImplementedBy.decode {
     | None => None
