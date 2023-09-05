@@ -88,9 +88,13 @@ ReactDOMExperimental.renderConcurrentRootAtElementWithId(
   <RescriptRelay.Context.Provider environment={RelayEnv.environment}>
     <RelayRouter.Provider value={Router.routerContext}>
       <React.Suspense
-        fallback={<div
-          className="bg-primary noise fixed noise animate-[grain_12s_steps(10)_infinite] w-[300%] h-[300%] left-[-50%] top-[-100%]"
-        />}>
+        fallback={
+          open FramerMotion
+          <Motion.Div
+            layoutId="background-noise"
+            className="bg-primary noise fixed noise animate-[grain_12s_steps(10)_infinite] w-[300%] h-[300%] left-[-50%] top-[-100%]"
+          />
+        }>
         // <RescriptReactErrorBoundary fallback={_ => {<div> {React.string("Error!")} </div>}}>
         <Wagmi.WagmiConfig config={%raw("wagmiConfig")}>
           <RainbowKit.RainbowKitProvider chains={%raw("chains")}>
