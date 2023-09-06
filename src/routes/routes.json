@@ -9,6 +9,11 @@
         "children": [{ "path": "", "name": "Bids" }]
       },
       {
+        "path": "/queue",
+        "name": "Queue",
+        "children": []
+      },
+      {
         "path": "/votes",
         "name": "Votes",
         "children": []
