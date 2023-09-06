@@ -38,9 +38,11 @@ module Query = %relay(`
 @react.component
 let make = (~queryRef, ~contextId) => {
   let {verification} = Query.usePreloaded(~queryRef)
+
   let (isRefetching, startTransition) = ReactExperimental.useTransition()
 
   let uri = BrightID.SDK.generateDeeplink(~context, ~contextId)
+
   let {setParams, queryParams} = Routes.Main.Route.useQueryParams()
 
   let setLinkBrightID = linkBrightID => {
@@ -76,33 +78,30 @@ let make = (~queryRef, ~contextId) => {
     }
 
   <div className="flex flex-col w-full justify-around items-center h-full">
-    <button
-      onClick={_ => setLinkBrightID(None)}
-      className=" pointer-events-auto absolute text-white text-4xl top-16 right-16">
-      {"❌"->React.string}
-    </button>
     <div className="w-full text-center">
       <h1 className="text-white text-3xl lg:text-4xl font-bold pt-4">
         {"Scan the QR Code to Link BrightID"->React.string}
       </h1>
     </div>
-    <div className="w-full flex flex-col justify-center items-center gap-3">
+    <div className=" flex flex-col justify-center items-center bg-black/10 p-4 rounded-xl">
       <DeviceDetect.BrowserView>
         <QRCode.SVG className="static border-4 border-active rounded-md" value={uri} size={400} />
       </DeviceDetect.BrowserView>
       <DeviceDetect.MobileView>
-        <a href=uri>
-          <button className="text-3xl p-4 text-white bg-active rounded-full font-bold">
-            {"Link BrightID"->React.string}
-          </button>
+        <a
+          href=uri
+          className="pointer-events-auto appearance-button text-3xl p-4 text-white bg-active rounded-full font-bold">
+          {"Link BrightID"->React.string}
         </a>
       </DeviceDetect.MobileView>
     </div>
-    <button
-      className="p-4 bg-background-light rounded-lg font-semibold pointer-events-auto "
-      onClick={_ =>
-        setLinkBrightID(queryParams.linkBrightID->Option.map(linkBrightID => linkBrightID + 1))}>
-      {linkText(queryParams.linkBrightID)->React.string}
-    </button>
+    <div className="  bg-black/10 p-4 rounded-xl">
+      <button
+        className="p-4 bg-background-light rounded-lg font-semibold pointer-events-auto "
+        onClick={_ =>
+          queryParams.linkBrightID->Option.map(linkBrightID => linkBrightID + 1)->setLinkBrightID}>
+        {queryParams.linkBrightID->linkText->React.string}
+      </button>
+    </div>
   </div>
 }
