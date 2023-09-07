@@ -46,7 +46,7 @@ let make = (~queryRef as auctionCreatedRef, ~isToday) => {
     | None => raise(ContractWriteDoesNotExist)
     }
 
-  <div className="flex flex-col lg:flex-row w-full lg:items-center justify-around gap-2 py-10">
+  <div className="flex flex-col lg:flex-row w-full lg:items-center justify-around gap-2 p-10">
     <input
       className="flex-1 rounded-2xl px-2 py-4 placeholder:text-lg placeholder:font-bold
        bg-background-light border-background-dark
