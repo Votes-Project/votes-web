@@ -1,8 +1,10 @@
+module Queue = %relay.deferredComponent(Queue.make)
 let renderer = Routes.Main.Queue.Route.makeRenderer(
-  ~prepare=props => {
+  ~prepareCode=_ => [Queue.preload()],
+  ~prepare=_ => {
     ()
   },
-  ~render=props => {
-    <div> {React.string("Queue")} </div>
+  ~render=_ => {
+    <Queue />
   },
 )

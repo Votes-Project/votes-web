@@ -275,7 +275,7 @@ module Query = %relay(`
 @module("/assets/RadarChart.png")
 external radarChart: string = "default"
 
-type arrowDirection = LeftPress | RightPress
+type arrowPress = LeftPress | RightPress | QueuePress
 @react.component @relay.deferredComponent
 let make = (~queryRef, ~children, ~tokenId) => {
   let {push} = RelayRouter.Utils.useRouter()
@@ -315,7 +315,30 @@ let make = (~queryRef, ~children, ~tokenId) => {
         ->Int.fromString
         ->Option.mapWithDefault("", tokenId => (tokenId + 1)->Int.toString),
       )->push
+    | (QueuePress, _) => Routes.Main.Queue.Route.makeLink()->push
     | _ => ()
+    }
+  }
+
+  let isToday =
+    todaysAuction
+    ->Option.map(todaysAuction => todaysAuction.tokenId)
+    ->Option.equal(Some(tokenId), (a, b) => a == b)
+
+  let rightArrowOrQueue = isToday => {
+    switch isToday {
+    | false =>
+      <button
+        onClick={_ => handleArrowPress(RightPress, tokenId)}
+        className="flex h-8 w-8 items-center justify-center rounded-full lg:bg-primary-dark bg-background-dark disabled:bg-default-disabled disabled:opacity-50 ">
+        <ReactIcons.LuArrowRight color="white" />
+      </button>
+    | true =>
+      <button
+        onClick={_ => handleArrowPress(QueuePress, tokenId)}
+        className="flex h-8 w-8 items-center justify-center rounded-full lg:bg-primary-dark bg-background-dark disabled:bg-default-disabled disabled:opacity-50 ">
+        <ReactIcons.LuListOrdered color="white" />
+      </button>
     }
   }
 
@@ -342,14 +365,7 @@ let make = (~queryRef, ~children, ~tokenId) => {
                   className="flex h-8 w-8 items-center justify-center rounded-full bg-background-dark lg:bg-primary-dark disabled:bg-default-disabled ">
                   <ReactIcons.LuArrowLeft color="white" />
                 </button>
-                <button
-                  onClick={_ => handleArrowPress(RightPress, tokenId)}
-                  disabled={todaysAuction
-                  ->Option.map(todaysAuction => todaysAuction.tokenId)
-                  ->Option.equal(Some(tokenId), (a, b) => a == b)}
-                  className="flex h-8 w-8 items-center justify-center rounded-full lg:bg-primary-dark bg-background-dark disabled:bg-default-disabled disabled:opacity-50 ">
-                  <ReactIcons.LuArrowRight color="white" />
-                </button>
+                {rightArrowOrQueue(isToday)}
                 <p className="font-semibold text-background-dark lg:text-active">
                   {auctionDateLocale->Option.getWithDefault("")->React.string}
                 </p>
