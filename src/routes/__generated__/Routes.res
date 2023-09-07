@@ -16,6 +16,10 @@ module Main = {
     module Route = Route__Main__Queue_route
 
   }
+  module Raffles = {
+    module Route = Route__Main__Raffles_route
+
+  }
   module Votes = {
     module Route = Route__Main__Votes_route
 

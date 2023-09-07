@@ -12,6 +12,8 @@ external unsafe_toPrepareProps: 'any => prepareProps = "%identity"
 
 @val external import__Main__Queue: (@as(json`"@rescriptModule/Main__Queue_route_renderer"`) _, unit) => promise<RouteRenderer.t> = "import"
 
+@val external import__Main__Raffles: (@as(json`"@rescriptModule/Main__Raffles_route_renderer"`) _, unit) => promise<RouteRenderer.t> = "import"
+
 @val external import__Main__Votes: (@as(json`"@rescriptModule/Main__Votes_route_renderer"`) _, unit) => promise<RouteRenderer.t> = "import"
 
 @val external import__Main__Questions: (@as(json`"@rescriptModule/Main__Questions_route_renderer"`) _, unit) => promise<RouteRenderer.t> = "import"
@@ -19,7 +21,7 @@ external unsafe_toPrepareProps: 'any => prepareProps = "%identity"
 @val external import__FourOhFour: (@as(json`"@rescriptModule/FourOhFour_route_renderer"`) _, unit) => promise<RouteRenderer.t> = "import"
 
 let loadedRouteRenderers: Belt.HashMap.String.t<loadedRouteRenderer> = Belt.HashMap.String.make(
-  ~hintSize=7,
+  ~hintSize=8,
 )
 
 let make = (~prepareDisposeTimeout=5 * 60 * 1000): array<RelayRouter.Types.route> => {
@@ -276,7 +278,7 @@ let make = (~prepareDisposeTimeout=5 * 60 * 1000): array<RelayRouter.Types.route
       }
       
         {
-          path: "/queue",
+          path: "queue",
           name: routeName,
           chunk: "Main__Queue_route_renderer",
           loadRouteRenderer,
@@ -316,6 +318,83 @@ let make = (~prepareDisposeTimeout=5 * 60 * 1000): array<RelayRouter.Types.route
         ignore(pathParams)
       
         "Main__Queue:"
+      
+          ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("tokenId")->Belt.Option.getWithDefault("")
+          ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("linkBrightID")->Belt.Option.getWithDefault("")
+          ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("dailyQuestion")->Belt.Option.getWithDefault("")
+          ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("contextId")->Belt.Option.getWithDefault("")
+      }
+      
+      ,
+            ~routeName,
+            ~intent
+          ),
+          children: [],
+        }
+      },
+      {
+        let routeName = "Main__Raffles"
+        let loadRouteRenderer = () => import__Main__Raffles->doLoadRouteRenderer(~routeName, ~loadedRouteRenderers)
+        let makePrepareProps = (. 
+        ~environment: RescriptRelay.Environment.t,
+        ~pathParams: Js.Dict.t<string>,
+        ~queryParams: RelayRouter.Bindings.QueryParams.t,
+        ~location: RelayRouter.History.location,
+      ): prepareProps => {
+        ignore(pathParams)
+        let prepareProps: Route__Main__Raffles_route.Internal.prepareProps =   {
+          environment: environment,
+      
+          location: location,
+          tokenId: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("tokenId")->Belt.Option.flatMap(value => Some(value->Js.Global.decodeURIComponent)),
+          linkBrightID: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("linkBrightID")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
+          dailyQuestion: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("dailyQuestion")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
+          contextId: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("contextId")->Belt.Option.flatMap(value => Some(value->Js.Global.decodeURIComponent)),
+        }
+        prepareProps->unsafe_toPrepareProps
+      }
+      
+        {
+          path: "/raffles",
+          name: routeName,
+          chunk: "Main__Raffles_route_renderer",
+          loadRouteRenderer,
+          preloadCode: (
+            ~environment: RescriptRelay.Environment.t,
+            ~pathParams: Js.Dict.t<string>,
+            ~queryParams: RelayRouter.Bindings.QueryParams.t,
+            ~location: RelayRouter.History.location,
+          ) => preloadCode(
+            ~loadedRouteRenderers,
+            ~routeName,
+            ~loadRouteRenderer,
+            ~environment,
+            ~location,
+            ~makePrepareProps,
+            ~pathParams,
+            ~queryParams,
+          ),
+          prepare: (
+            ~environment: RescriptRelay.Environment.t,
+            ~pathParams: Js.Dict.t<string>,
+            ~queryParams: RelayRouter.Bindings.QueryParams.t,
+            ~location: RelayRouter.History.location,
+            ~intent: RelayRouter.Types.prepareIntent,
+          ) => prepareRoute(
+            ~environment,
+            ~pathParams,
+            ~queryParams,
+            ~location,
+            ~getPrepared,
+            ~loadRouteRenderer,
+            ~makePrepareProps,
+            ~makeRouteKey=(
+        ~pathParams: Js.Dict.t<string>,
+        ~queryParams: RelayRouter.Bindings.QueryParams.t
+      ): string => {
+        ignore(pathParams)
+      
+        "Main__Raffles:"
       
           ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("tokenId")->Belt.Option.getWithDefault("")
           ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("linkBrightID")->Belt.Option.getWithDefault("")

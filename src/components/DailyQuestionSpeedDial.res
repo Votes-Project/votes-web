@@ -14,7 +14,7 @@ let make = () => {
       },
     )
   }
-  <div className="fixed right-6 bottom-6 ">
+  <div className="fixed right-6 bottom-6 z-10">
     <ReactTooltip anchorSelect="#daily-question" content="Today's Question" />
     <button
       id="daily-question"

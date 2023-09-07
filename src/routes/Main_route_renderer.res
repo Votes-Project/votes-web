@@ -1,6 +1,7 @@
 module Main = %relay.deferredComponent(Main.make)
 module DailyQuestion = %relay.deferredComponent(DailyQuestion.make)
 module LinkBrightID = %relay.deferredComponent(LinkBrightID.make)
+// module QuestionQueue = %relay.deferredComponent(QuestionQueue.make)
 
 let renderer = Routes.Main.Route.makeRenderer(
   ~prepareCode=({dailyQuestion, linkBrightID}) =>
@@ -52,20 +53,13 @@ let renderer = Routes.Main.Route.makeRenderer(
   },
   ~render=({childRoutes, dailyQuestion, linkBrightID, contextId, prepared}) => {
     let (dailyQuestionQueryRef, linkBrightIDQueryRef) = prepared
-    let keys = UseKeyPairHook.useKeyPair()
-    switch (keys, contextId) {
-    | (Some(keys), Some(contextId)) =>
-      if keys.contextId == contextId {
-        () // do nothing
-      } else {
-        //invalidate store
-        ()
-      }
-    | _ => ()
-    }
-
     <>
-      <Main> {childRoutes} </Main>
+      <Main>
+        <div className="relative">
+          <DailyQuestionSpeedDial />
+          {childRoutes}
+        </div>
+      </Main>
       <DailyQuestionModal isOpen={dailyQuestion->Option.isSome && linkBrightID->Option.isNone}>
         {switch (dailyQuestion, dailyQuestionQueryRef) {
         | (Some(_), Some(queryRef)) =>
