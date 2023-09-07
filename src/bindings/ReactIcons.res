@@ -80,3 +80,8 @@ module LuListOrdered = {
   @react.component @module("react-icons/lu")
   external make: (~size: string=?, ~color: string=?, ~className: string=?) => t = "LuListOrdered"
 }
+
+module LuAward = {
+  @react.component @module("react-icons/lu")
+  external make: (~size: string=?, ~color: string=?, ~className: string=?) => t = "LuAward"
+}

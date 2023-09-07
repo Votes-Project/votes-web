@@ -140,11 +140,10 @@ module ChoicesPage = {
     let {address} = Wagmi.useAccount()
     let {openConnectModal} = RainbowKit.useConnectModal()
     let {openAccountModal} = RainbowKit.useAccountModal()
-    let {queryParams, setParams} = Routes.Main.Route.useQueryParams()
+    let {setParams} = Routes.Main.Route.useQueryParams()
     let keys = UseKeyPairHook.useKeyPair()
 
     let verificationData = VerificationFragment.use(verification)
-    let {setVerification} = React.useContext(VerificationContext.context)
 
     // React.useEffect2(() => {
     //   switch verificationData {
