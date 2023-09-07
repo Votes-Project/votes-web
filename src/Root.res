@@ -90,11 +90,12 @@ ReactDOMExperimental.renderConcurrentRootAtElementWithId(
       <React.Suspense
         fallback={
           open FramerMotion
+
           <Motion.Div
             layoutId="background-noise"
             layout="opacity"
-            initial={{opacity: 0}}
-            animate={{opacity: 1}}
+            initial={Initial({opacity: 0.})}
+            animate={Animate({opacity: 1.})}
             className="bg-primary noise fixed noise animate-[grain_12s_steps(10)_infinite] w-[300%] h-[300%] left-[-50%] top-[-100%]"
           />
         }>
