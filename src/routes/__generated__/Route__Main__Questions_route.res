@@ -9,6 +9,7 @@ module Internal = {
     linkBrightID: option<int>,
     dailyQuestion: option<int>,
     contextId: option<string>,
+    voteDetails: option<int>,
   }
 
   @live
@@ -21,6 +22,7 @@ module Internal = {
     linkBrightID: option<int>,
     dailyQuestion: option<int>,
     contextId: option<string>,
+    voteDetails: option<int>,
   }
 
   @live
@@ -45,6 +47,7 @@ module Internal = {
       linkBrightID: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("linkBrightID")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
       dailyQuestion: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("dailyQuestion")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
       contextId: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("contextId")->Belt.Option.flatMap(value => Some(value->Js.Global.decodeURIComponent)),
+      voteDetails: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetails")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
     }
   }
 
@@ -55,6 +58,7 @@ type queryParams = {
   linkBrightID: option<int>,
   dailyQuestion: option<int>,
   contextId: option<string>,
+  voteDetails: option<int>,
 }
 
 @live
@@ -70,6 +74,8 @@ let parseQueryParams = (search: string): queryParams => {
 
     contextId: queryParams->QueryParams.getParamByKey("contextId")->Belt.Option.flatMap(value => Some(value->Js.Global.decodeURIComponent)),
 
+    voteDetails: queryParams->QueryParams.getParamByKey("voteDetails")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
+
   }
 }
 
@@ -79,12 +85,14 @@ let makeQueryParams = (
   ~linkBrightID: option<int>=?, 
   ~dailyQuestion: option<int>=?, 
   ~contextId: option<string>=?, 
+  ~voteDetails: option<int>=?, 
   ()
 ) => {
   tokenId: tokenId,
   linkBrightID: linkBrightID,
   dailyQuestion: dailyQuestion,
   contextId: contextId,
+  voteDetails: voteDetails,
 }
 
 @live
@@ -99,6 +107,7 @@ let applyQueryParams = (
   queryParams->QueryParams.setParamOpt(~key="linkBrightID", ~value=newParams.linkBrightID->Belt.Option.map(linkBrightID => Belt.Int.toString(linkBrightID)))
   queryParams->QueryParams.setParamOpt(~key="dailyQuestion", ~value=newParams.dailyQuestion->Belt.Option.map(dailyQuestion => Belt.Int.toString(dailyQuestion)))
   queryParams->QueryParams.setParamOpt(~key="contextId", ~value=newParams.contextId->Belt.Option.map(contextId => contextId->Js.Global.encodeURIComponent))
+  queryParams->QueryParams.setParamOpt(~key="voteDetails", ~value=newParams.voteDetails->Belt.Option.map(voteDetails => Belt.Int.toString(voteDetails)))
 }
 
 @live
@@ -157,7 +166,7 @@ let useQueryParams = (): useQueryParamsReturn => {
 let routePattern = "/questions"
 
 @live
-let makeLink = (~tokenId: option<string>=?, ~linkBrightID: option<int>=?, ~dailyQuestion: option<int>=?, ~contextId: option<string>=?) => {
+let makeLink = (~tokenId: option<string>=?, ~linkBrightID: option<int>=?, ~dailyQuestion: option<int>=?, ~contextId: option<string>=?, ~voteDetails: option<int>=?) => {
   open RelayRouter.Bindings
   let queryParams = QueryParams.make()
   switch tokenId {
@@ -179,11 +188,16 @@ let makeLink = (~tokenId: option<string>=?, ~linkBrightID: option<int>=?, ~daily
     | None => ()
     | Some(contextId) => queryParams->QueryParams.setParam(~key="contextId", ~value=contextId->Js.Global.encodeURIComponent)
   }
+
+  switch voteDetails {
+    | None => ()
+    | Some(voteDetails) => queryParams->QueryParams.setParam(~key="voteDetails", ~value=Belt.Int.toString(voteDetails))
+  }
   RelayRouter.Bindings.generatePath(routePattern, Js.Dict.fromArray([])) ++ queryParams->QueryParams.toString
 }
 @live
 let makeLinkFromQueryParams = (queryParams: queryParams) => {
-  makeLink(~tokenId=?queryParams.tokenId, ~linkBrightID=?queryParams.linkBrightID, ~dailyQuestion=?queryParams.dailyQuestion, ~contextId=?queryParams.contextId, )
+  makeLink(~tokenId=?queryParams.tokenId, ~linkBrightID=?queryParams.linkBrightID, ~dailyQuestion=?queryParams.dailyQuestion, ~contextId=?queryParams.contextId, ~voteDetails=?queryParams.voteDetails, )
 }
 
 @live
