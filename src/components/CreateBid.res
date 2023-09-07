@@ -34,7 +34,7 @@ let make = (~queryRef as auctionCreatedRef, ~isToday) => {
 
   let createBid = Wagmi.useContractWrite({
     ...config,
-    onSettled: (data, error) => {
+    onSettled: (_, _) => {
       //handle transaction
       ()
     },
