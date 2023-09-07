@@ -5,7 +5,7 @@
   "type": "module",
   "packageManager": "yarn@3.2.1",
   "scripts": {
-    "build": "yarn res && vite build",
+    "build": "yarn res && vite build --prod",
     "preview": "vite preview",
     "build:graph": "graphclient build --fileType js",
     "dev": "vite",
