@@ -1,20 +1,4 @@
 module Motion = {
-  type initial = {
-    opacity?: int,
-    x?: int,
-    y?: int,
-    scale?: int,
-    rotate?: int,
-    backgroundColor?: string,
-  }
-  type animate = {
-    opacity?: int,
-    x?: int,
-    y?: int,
-    scale?: int,
-    rotate?: int,
-    backgroundColor?: string,
-  }
   @unboxed
   type ease =
     | @as("easeIn") EaseIn
@@ -31,16 +15,52 @@ module Motion = {
     | Ease(array<string>)
   type transition = {duration?: float, ease?: ease}
 
+  type motionValues = {
+    x?: float,
+    y?: float,
+    scale?: float,
+    rotate?: float,
+    opacity?: float,
+    backgroundColor?: string,
+    width?: string,
+    transition?: transition,
+  }
+
+  @unboxed type initial = Initial(motionValues) | String(string)
+  @unboxed type animate = Animate(motionValues) | String(string)
+  @unboxed type exit = Exit(motionValues) | String(string)
+
+  type variants = {
+    initial?: initial,
+    animate?: animate,
+    transition?: transition,
+    exit?: exit,
+  }
   module Div = {
     @react.component @module("framer-motion") @scope("motion")
     external make: (
       ~layoutId: string=?,
       ~layout: string=?,
+      ~variants: variants=?,
       ~initial: initial=?,
       ~animate: animate=?,
+      ~exit: exit=?,
       ~transition: transition=?,
       ~children: React.element=?,
       ~className: string=?,
+      ~onClick: 'a => unit=?,
     ) => React.element = "div"
   }
+}
+module AnimatePresence = {
+  type mode = | @as("sync") Sync | @as("wait") Wait | @as("popLayout") PopLayout
+
+  @react.component @module("framer-motion")
+  external make: (
+    ~onExitComplete: unit => unit=?,
+    ~initial: bool=?,
+    ~mode: mode=?,
+    ~children: React.element=?,
+    ~className: string=?,
+  ) => React.element = "AnimatePresence"
 }
