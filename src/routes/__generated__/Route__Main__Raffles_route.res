@@ -154,7 +154,7 @@ let useQueryParams = (): useQueryParamsReturn => {
 }
 
 @inline
-let routePattern = "/"
+let routePattern = "/raffles"
 
 @live
 let makeLink = (~tokenId: option<string>=?, ~linkBrightID: option<int>=?, ~dailyQuestion: option<int>=?, ~contextId: option<string>=?) => {
@@ -210,28 +210,6 @@ let isRouteActive = (~exact: bool=false, {pathname}: RelayRouter.History.locatio
 let useIsRouteActive = (~exact=false) => {
   let location = RelayRouter.Utils.useLocation()
   React.useMemo2(() => location->isRouteActive(~exact), (location, exact))
-}
-@live
-type subRoute = [#Auction | #Queue]
-
-@live
-let getActiveSubRoute = (location: RelayRouter.History.location): option<[#Auction | #Queue]> => {
-  let {pathname} = location
-  if RelayRouter.Internal.matchPath("/", pathname)->Belt.Option.isSome {
-      Some(#Auction)
-    } else if RelayRouter.Internal.matchPath("/queue", pathname)->Belt.Option.isSome {
-      Some(#Queue)
-    } else {
-    None
-  }
-}
-
-@live
-let useActiveSubRoute = (): option<[#Auction | #Queue]> => {
-  let location = RelayRouter.Utils.useLocation()
-  React.useMemo1(() => {
-    getActiveSubRoute(location)
-  }, [location])
 }
 
 @obj
