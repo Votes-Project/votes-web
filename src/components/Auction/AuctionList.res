@@ -17,35 +17,60 @@ module AuctionItem = {
     winner
     amount
   }
+  `)
+
+  module VoteTransfersFragment = %relay(`
+  fragment AuctionList_AuctionItem_voteTransfers on VoteTransfer {
+    id
+    tokenId
+  }
+
 `)
 
-  exception PastAuctionDoesNotExist
+  exception AuctionDoesNotExist
   @react.component
   let make = (
-    ~auctionCreated as auctionCreatedRef,
-    ~children,
-    ~isToday=false,
-    ~isSettled=true,
+    ~index,
+    ~auctionCreated as auctionCreatedRef=None,
     ~auctionSettled as auctionSettledRef=None,
+    ~voteTransfer,
     ~setAuctionDate,
+    ~children,
   ) => {
-    let auctionCreated = AuctionCreatedFragment.use(auctionCreatedRef)
+    let {setParams} = Routes.Main.Route.useQueryParams()
+    let auctionCreated =
+      auctionCreatedRef->Option.map(auctionCreatedRef =>
+        AuctionCreatedFragment.use(auctionCreatedRef)
+      )
     let auctionSettled =
       auctionSettledRef->Option.map(auctionSettledRef =>
         AuctionSettledFragment.use(auctionSettledRef)
       )
+    let voteTransfer = VoteTransfersFragment.use(voteTransfer)
     React.useEffect2(() => {
-      setAuctionDate(_ => auctionCreated.startTime->Some)
+      setAuctionDate(_ => auctionCreated->Option.map(({startTime}) => startTime))
       None
     }, (auctionCreated, setAuctionDate))
 
     let {todaysAuction, setTodaysAuction} = React.useContext(TodaysAuctionContext.context)
 
+    let setVoteDetails = voteDetails => {
+      setParams(
+        ~removeNotControlledParams=false,
+        ~navigationMode_=Push,
+        ~shallow=false,
+        ~setter=c => {
+          ...c,
+          voteDetails,
+        },
+      )
+    }
+
     React.useEffect3(() => {
-      let {tokenId, startTime, endTime} = auctionCreated
-      if isToday {
-        open TodaysAuctionContext
-        setTodaysAuction(todaysAuction =>
+      open TodaysAuctionContext
+      switch (index, auctionCreated, voteTransfer) {
+      | (0, Some({tokenId, startTime, endTime}), _) =>
+        setTodaysAuction(_ =>
           todaysAuction->Option.mapWithDefault(
             Some({tokenId, startTime, endTime}),
             todaysAuction => Some({
@@ -56,11 +81,23 @@ module AuctionItem = {
             }),
           )
         )
-      } else {
-        ()
+
+      | (0, None, {tokenId}) =>
+        setTodaysAuction(todaysAuction =>
+          todaysAuction->Option.mapWithDefault(
+            Some({tokenId, startTime: "raffle", endTime: "raffle"}),
+            todaysAuction => Some({
+              ...todaysAuction,
+              tokenId,
+              startTime: "raffle",
+              endTime: "raffle",
+            }),
+          )
+        )
+      | _ => ()
       }
       None
-    }, (auctionCreated, isToday, setTodaysAuction))
+    }, (auctionCreated, index, setTodaysAuction))
 
     let currentBid = switch todaysAuction {
     | Some(todaysAuction) => todaysAuction.currentBid->Option.getWithDefault("0")
@@ -68,55 +105,62 @@ module AuctionItem = {
     | _ => "Bid failed to load"
     }
 
-    switch isToday && auctionSettled->Option.isNone {
-    | true =>
-      <>
-        <h1 className="font-['Fugaz One'] py-9 text-6xl font-bold text-default-darker ">
-          {`VOTE ${auctionCreated.tokenId}`->React.string}
-        </h1>
-        <div className="flex flex-col lg:flex-row gap-5">
-          <div className="flex lg:flex-col items-start justify-between">
-            <p className="font-semibold text-xl lg:text-active text-background-dark">
-              {"Current Bid"->React.string}
-            </p>
-            <p className="font-bold text-xl lg:text-3xl text-default-darker">
-              {"Ξ "->React.string}
-              {currentBid->React.string}
-            </p>
-          </div>
-          <div className="w-0 rounded-lg lg:border-primary border hidden lg:flex" />
-          <AuctionCountdown queryRef={auctionCreated.fragmentRefs} />
-        </div>
-        // <RescriptReactErrorBoundary
-        //   fallback={_ => {<div> {React.string("Bid Component Failed to Insantiate")} </div>}}>
-        <CreateBid queryRef=auctionCreated.fragmentRefs isToday />
-        // </RescriptReactErrorBoundary>
-        <ul className="flex flex-col justify-between py-4"> {children} </ul>
-        <div className="w-full py-2 text-center pb-4">
-          {currentBid == "0"
-            ? React.null
-            : <div
-                className="font-semibold text-background-dark hover:text-default-darker cursor-pointer">
-                {"View All Bids"->React.string}
-              </div>}
-        </div>
-      </>
-    | false =>
-      switch auctionSettled {
-      | None => raise(PastAuctionDoesNotExist)
-      | Some(auctionSettled) =>
+    <>
+      <h1 className="font-['Fugaz One'] py-9 text-6xl font-bold text-default-darker ">
+        {`VOTE ${voteTransfer.tokenId}`->React.string}
+      </h1>
+      {switch (index, auctionCreated, auctionSettled) {
+      | (0, Some(auctionCreated), None) =>
         <>
-          <h1 className="font-['Fugaz One'] py-9 text-6xl font-bold ">
-            {`VOTE ${auctionSettled.tokenId}`->React.string}
-          </h1>
+          <div className="flex flex-col lg:flex-row gap-5">
+            <div className="flex lg:flex-col items-start justify-between">
+              <p className="font-semibold text-xl lg:text-active text-background-dark">
+                {"Current Bid"->React.string}
+              </p>
+              <p className="font-bold text-xl lg:text-3xl text-default-darker">
+                {"Ξ "->React.string}
+                {currentBid->React.string}
+              </p>
+            </div>
+            <div className="w-0 rounded-lg lg:border-primary border hidden lg:flex" />
+            <AuctionCountdown queryRef={auctionCreated.fragmentRefs} />
+          </div>
+          <button
+            className="flex flex-row gap-2 items-center justify-start pt-2"
+            onClick={_ => setVoteDetails(Some(0))}>
+            <ReactIcons.LuInfo size="1.25rem" className="text-default-darker" />
+            <p className="text-md text-default-darker"> {"Ask your own question"->React.string} </p>
+          </button>
+          // <RescriptReactErrorBoundary
+          //   fallback={_ => {<div> {React.string("Bid Component Failed to Insantiate")} </div>}}>
+          <CreateBid queryRef=auctionCreated.fragmentRefs isToday={index == 0} />
+          // </RescriptReactErrorBoundary>
+          <ul className="flex flex-col justify-between py-4"> {children} </ul>
+          <div className="w-full py-2 text-center pb-4">
+            {currentBid == "0"
+              ? React.null
+              : <div
+                  className="font-semibold text-background-dark hover:text-default-darker cursor-pointer">
+                  {"View All Bids"->React.string}
+                </div>}
+          </div>
+        </>
+      | (0, None, None) => <div> {"Active Raffle"->React.string} </div>
+
+      | (_, None, None) => <div> {"Past Raffle"->React.string} </div>
+
+      | (_, _, Some(auctionSettled)) =>
+        <>
           <div>
             {"Winner:"->React.string}
             <ShortAddress address={Some(auctionSettled.winner)} />
           </div>
           <h2> {`Winning Bid: ${auctionSettled.amount} Ξ`->React.string} </h2>
         </>
-      }
-    }
+
+      | _ => raise(AuctionDoesNotExist)
+      }}
+    </>
   }
 }
 
@@ -167,101 +211,150 @@ module AuctionListDisplay = {
   }
   `)
 
+  type auction = {
+    index: int,
+    auctionCreated: option<
+      AuctionListDisplay_auctionCreateds_graphql.Types.fragment_auctionCreateds_edges_node,
+    >,
+    auctionSettled: option<
+      AuctionListDisplay_auctionSettleds_graphql.Types.fragment_auctionSettleds_edges_node,
+    >,
+    voteTransfer: AuctionListDisplay_voteTransfers_graphql.Types.fragment_voteTransfers_edges_node,
+  }
+
+  module VoteTransfersFragment = %relay(`
+  fragment AuctionListDisplay_voteTransfers on Query
+  @argumentDefinitions(
+    first: { type: "Int", defaultValue: 1000 }
+    orderBy: { type: "OrderBy_Transfers", defaultValue: tokenId }
+    orderDirection: { type: "OrderDirection", defaultValue: desc }
+    where: {
+      type: "Where_Transfers"
+      defaultValue: { from: "0x0000000000000000000000000000000000000000" }
+    }
+  ) {
+    voteTransfers(
+      orderBy: $orderBy
+      orderDirection: $orderDirection
+      first: $first
+      where: $where
+    ) @connection(key: "AuctionListDisplay_voteTransfers_voteTransfers") {
+      edges {
+        node {
+          id
+          tokenId
+          ...AuctionList_AuctionItem_voteTransfers
+        }
+      }
+    }
+  }
+  `)
+
+  type auctionType = Auction(auction) | Raffle(auction) | FlashAuction(auction)
+  exception NoData
   @react.component
   let make = (~query, ~children, ~tokenId, ~setAuctionDate) => {
     let {auctionCreateds} = AuctionCreatedsFragment.use(query)
     let {auctionSettleds} = AuctionSettledsFragment.use(query)
+    let {voteTransfers} = VoteTransfersFragment.use(query)
 
-    let isTodaySettled = {
-      let latestAuctionTokenId =
-        auctionCreateds
-        ->AuctionCreatedsFragment.getConnectionNodes
-        ->Array.get(0)
-        ->Option.map(({tokenId}) => tokenId)
-      let latestSettledAuctionTokenId =
-        auctionSettleds
-        ->AuctionSettledsFragment.getConnectionNodes
-        ->Array.get(0)
-        ->Option.map(({tokenId}) => tokenId)
+    let (auctionCreatedNodes, auctionSettledNodes, voteTransferNodes) = (
+      auctionCreateds->AuctionCreatedsFragment.getConnectionNodes,
+      auctionSettleds->AuctionSettledsFragment.getConnectionNodes,
+      voteTransfers->VoteTransfersFragment.getConnectionNodes,
+    )
+    let singleDigitTokenId = tokenId => tokenId->Int.fromString->Option.map(mod(_, 10))
 
-      latestAuctionTokenId->Option.equal(latestSettledAuctionTokenId, (a, b) => a == b)
-    }
-
-    let (todaysAuctionCreatedFragment, todaysAuctionSettledFragment) = isTodaySettled
-      ? (
-          auctionCreateds->AuctionCreatedsFragment.getConnectionNodes->Array.get(0),
-          auctionSettleds->AuctionSettledsFragment.getConnectionNodes->Array.get(0),
-        )
-      : (auctionCreateds->AuctionCreatedsFragment.getConnectionNodes->Array.get(0), None)
-
-    let auctionFragments = {
-      let auctionCreatedNodes = isTodaySettled
-        ? auctionCreateds->AuctionCreatedsFragment.getConnectionNodes
-        : auctionCreateds->AuctionCreatedsFragment.getConnectionNodes->Array.sliceToEnd(~start=1)
-      Belt.Array.zip(
-        auctionCreatedNodes,
-        auctionSettleds->AuctionSettledsFragment.getConnectionNodes,
+    let auction =
+      voteTransferNodes
+      ->Array.mapWithIndex((voteTransfer, i) => (voteTransfer, i))
+      ->Array.find(((voteTransfer, i)) => {
+        tokenId->Option.mapWithDefault(i == 0, tokenId => tokenId == voteTransfer.tokenId)
+      })
+      ->Option.map(((voteTransfer, i)) =>
+        switch (i, singleDigitTokenId(voteTransfer.tokenId)) {
+        | (0, Some(0)) =>
+          FlashAuction({
+            index: i,
+            auctionCreated: auctionCreatedNodes->Array.get(0),
+            auctionSettled: auctionSettledNodes
+            ->Array.get(0)
+            ->Option.filter(auctionSettled => auctionSettled.tokenId == voteTransfer.tokenId),
+            voteTransfer,
+          })
+        | (_, Some(5)) =>
+          FlashAuction({
+            index: i,
+            auctionCreated: auctionCreatedNodes->Array.find(({tokenId}) =>
+              tokenId == voteTransfer.tokenId
+            ),
+            auctionSettled: auctionSettledNodes->Array.find(({tokenId}) =>
+              tokenId == voteTransfer.tokenId
+            ),
+            voteTransfer,
+          })
+        | (_, Some(9)) =>
+          Raffle({
+            index: i,
+            auctionCreated: None,
+            auctionSettled: None,
+            voteTransfer,
+          })
+        | _ =>
+          Auction({
+            index: i,
+            auctionCreated: auctionCreatedNodes->Array.find(({tokenId}) =>
+              tokenId == voteTransfer.tokenId
+            ),
+            auctionSettled: auctionSettledNodes->Array.find(({tokenId}) =>
+              tokenId == voteTransfer.tokenId
+            ),
+            voteTransfer,
+          })
+        }
       )
+
+    switch auction {
+    | Some(Auction(auction)) =>
+      <AuctionItem
+        index=auction.index
+        auctionCreated={auction.auctionCreated->Option.map(auctionCreated =>
+          auctionCreated.fragmentRefs
+        )}
+        auctionSettled={auction.auctionSettled->Option.map(auctionSettled =>
+          auctionSettled.fragmentRefs
+        )}
+        voteTransfer={auction.voteTransfer.fragmentRefs}
+        key=auction.voteTransfer.id
+        setAuctionDate>
+        {children}
+      </AuctionItem>
+    | Some(Raffle(auction)) =>
+      <AuctionItem
+        index=auction.index
+        auctionCreated={None}
+        auctionSettled={None}
+        voteTransfer={auction.voteTransfer.fragmentRefs}
+        key=auction.voteTransfer.id
+        setAuctionDate>
+        {children}
+      </AuctionItem>
+    | Some(FlashAuction(auction)) =>
+      <AuctionItem
+        index=auction.index
+        auctionCreated={auction.auctionCreated->Option.map(auctionCreated =>
+          auctionCreated.fragmentRefs
+        )}
+        auctionSettled={auction.auctionSettled->Option.map(auctionSettled =>
+          auctionSettled.fragmentRefs
+        )}
+        voteTransfer={auction.voteTransfer.fragmentRefs}
+        key=auction.voteTransfer.id
+        setAuctionDate>
+        {children}
+      </AuctionItem>
+    | None => raise(NoData)
     }
-
-    let handleTodaysAuction = (
-      auctionCreatedFragment: option<
-        AuctionListDisplay_auctionCreateds_graphql.Types.fragment_auctionCreateds_edges_node,
-      >,
-      auctionSettledFragment: option<
-        AuctionListDisplay_auctionSettleds_graphql.Types.fragment_auctionSettleds_edges_node,
-      >,
-    ) =>
-      switch (auctionCreatedFragment, auctionSettledFragment) {
-      | (Some(auctionCreated), Some(auctionSettled)) =>
-        <AuctionItem
-          auctionCreated={auctionCreated.fragmentRefs}
-          auctionSettled={auctionSettled.fragmentRefs->Some}
-          key=auctionCreated.id
-          isToday=true
-          setAuctionDate>
-          {children}
-        </AuctionItem>
-      | (Some(auctionCreated), None) =>
-        <AuctionItem
-          auctionCreated={auctionCreated.fragmentRefs}
-          key=auctionCreated.id
-          isToday=true
-          setAuctionDate>
-          {children}
-        </AuctionItem>
-      | _ =>
-        <div className="text-center ">
-          {"Could not load auction data. This is probably a network issue "->React.string}
-        </div>
-      }
-
-    let auctionItems = switch tokenId {
-    | None => handleTodaysAuction(todaysAuctionCreatedFragment, todaysAuctionSettledFragment)
-    | Some(tokenId) =>
-      if (
-        todaysAuctionCreatedFragment
-        ->Option.map(todaysAuction => tokenId == todaysAuction.tokenId)
-        ->Option.equal(Some(true), (a, b) => a == b)
-      ) {
-        handleTodaysAuction(todaysAuctionCreatedFragment, todaysAuctionSettledFragment)
-      } else {
-        auctionFragments
-        ->Array.filter(((auctionCreated, _)) => tokenId == auctionCreated.tokenId)
-        ->Array.map(((auctionCreated, auctionSettled)) => {
-          <AuctionItem
-            auctionCreated={auctionCreated.fragmentRefs}
-            auctionSettled={Some(auctionSettled.fragmentRefs)}
-            key=auctionCreated.id
-            setAuctionDate>
-            {children}
-          </AuctionItem>
-        })
-        ->React.array
-      }
-    }
-
-    auctionItems
   }
 }
 
@@ -269,13 +362,14 @@ module Query = %relay(`
   query AuctionListQuery {
     ...AuctionListDisplay_auctionCreateds
     ...AuctionListDisplay_auctionSettleds
+    ...AuctionListDisplay_voteTransfers
   }
 `)
 
 @module("/assets/RadarChart.png")
 external radarChart: string = "default"
 
-type arrowPress = LeftPress | RightPress | QueuePress
+type arrowPress = LeftPress | RightPress
 @react.component @relay.deferredComponent
 let make = (~queryRef, ~children, ~tokenId) => {
   let {push} = RelayRouter.Utils.useRouter()
@@ -315,31 +409,11 @@ let make = (~queryRef, ~children, ~tokenId) => {
         ->Int.fromString
         ->Option.mapWithDefault("", tokenId => (tokenId + 1)->Int.toString),
       )->push
-    | (QueuePress, _) => Routes.Main.Queue.Route.makeLink()->push
     | _ => ()
     }
   }
-
-  let isToday =
-    todaysAuction
-    ->Option.map(todaysAuction => todaysAuction.tokenId)
-    ->Option.equal(Some(tokenId), (a, b) => a == b)
-
-  let rightArrowOrQueue = isToday => {
-    switch isToday {
-    | false =>
-      <button
-        onClick={_ => handleArrowPress(RightPress, tokenId)}
-        className="flex h-8 w-8 items-center justify-center rounded-full lg:bg-primary-dark bg-background-dark disabled:bg-default-disabled disabled:opacity-50 ">
-        <ReactIcons.LuArrowRight color="white" />
-      </button>
-    | true =>
-      <button
-        onClick={_ => handleArrowPress(QueuePress, tokenId)}
-        className="flex h-8 w-8 items-center justify-center rounded-full lg:bg-primary-dark bg-background-dark disabled:bg-default-disabled disabled:opacity-50 ">
-        <ReactIcons.LuListOrdered color="white" />
-      </button>
-    }
+  let handleQueuePress = () => {
+    Routes.Main.Queue.Route.makeLink()->push
   }
 
   <div className=" w-full pt-4">
@@ -365,7 +439,21 @@ let make = (~queryRef, ~children, ~tokenId) => {
                   className="flex h-8 w-8 items-center justify-center rounded-full bg-background-dark lg:bg-primary-dark disabled:bg-default-disabled ">
                   <ReactIcons.LuArrowLeft color="white" />
                 </button>
-                {rightArrowOrQueue(isToday)}
+                <ReactTooltip anchorSelect="#queue-press" content="Open Question Queue" />
+                <button
+                  id="queue-press"
+                  onClick={_ => handleQueuePress()}
+                  className="flex h-8 w-8 items-center justify-center rounded-full lg:bg-primary-dark bg-background-dark disabled:bg-default-disabled disabled:opacity-50 ">
+                  <ReactIcons.LuListOrdered color="white" />
+                </button>
+                <button
+                  onClick={_ => handleArrowPress(RightPress, tokenId)}
+                  disabled={todaysAuction
+                  ->Option.map(todaysAuction => todaysAuction.tokenId)
+                  ->Option.equal(Some(tokenId), (a, b) => a == b)}
+                  className="flex h-8 w-8 items-center justify-center rounded-full lg:bg-primary-dark bg-background-dark disabled:bg-default-disabled disabled:opacity-50 ">
+                  <ReactIcons.LuArrowRight color="white" />
+                </button>
                 <p className="font-semibold text-background-dark lg:text-active">
                   {auctionDateLocale->Option.getWithDefault("")->React.string}
                 </p>

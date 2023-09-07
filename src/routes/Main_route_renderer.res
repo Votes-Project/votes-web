@@ -51,7 +51,7 @@ let renderer = Routes.Main.Route.makeRenderer(
     | _ => (None, None)
     }
   },
-  ~render=({childRoutes, dailyQuestion, linkBrightID, contextId, prepared}) => {
+  ~render=({childRoutes, dailyQuestion, linkBrightID, contextId, voteDetails, prepared}) => {
     let (dailyQuestionQueryRef, linkBrightIDQueryRef) = prepared
     <>
       <Main>
@@ -84,6 +84,13 @@ let renderer = Routes.Main.Route.makeRenderer(
         | _ => React.null
         }}
       </LinkBrightIDModal>
+      <VoteDetailsSidebar isOpen={voteDetails->Option.isSome}>
+        {switch voteDetails {
+        | Some(voteDetails) => <> </>
+
+        | None => React.null
+        }}
+      </VoteDetailsSidebar>
     </>
   },
 )
