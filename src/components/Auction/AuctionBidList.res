@@ -14,12 +14,12 @@ module AuctionBidItem = {
 `)
   @react.component
   let make = (~auctionBid as auctionBidRef, ~isCurrentBid) => {
-    let {amount, bidder, id} = AuctionBidItemFragment.use(auctionBidRef)
+    let {amount, bidder, id, tokenId} = AuctionBidItemFragment.use(auctionBidRef)
     let amount = amount->BigInt.fromString->Viem.formatUnits(18)
 
     let {setTodaysAuction} = React.useContext(TodaysAuctionContext.context)
 
-    React.useEffect3(() => {
+    React.useEffect4(() => {
       if isCurrentBid {
         open TodaysAuctionContext
         setTodaysAuction(todaysAuction =>
@@ -35,7 +35,7 @@ module AuctionBidItem = {
         ()
       }
       None
-    }, (isCurrentBid, amount, setTodaysAuction))
+    }, (isCurrentBid, tokenId, amount, setTodaysAuction))
 
     <li className="border-b p-3 border-background-dark" key=id>
       <div className=" font-semibold flex items-center justify-between">
@@ -79,6 +79,7 @@ module AuctionBidListDisplay = {
   let make = (~query) => {
     let {queryParams} = Routes.Main.Auction.Bids.Route.useQueryParams()
     let {todaysAuction} = React.useContext(TodaysAuctionContext.context)
+
     let {auctionBids} = AuctionBidsFragment.use(query)
     let environment = RescriptRelay.useEnvironmentFromContext()
 
@@ -155,13 +156,14 @@ module AuctionBidListDisplay = {
     ->Dict.get(tokenId)
     ->Option.mapWithDefault(list{}, sortBids)
     ->List.mapWithIndex((i, auctionBid) => {
-      i == 0
-        ? <AuctionBidItem
-            auctionBid={auctionBid.fragmentRefs} key=auctionBid.id isCurrentBid=true
-          />
-        : <AuctionBidItem
-            auctionBid={auctionBid.fragmentRefs} key=auctionBid.id isCurrentBid=false
-          />
+      <AuctionBidItem
+        auctionBid={auctionBid.fragmentRefs}
+        key=auctionBid.id
+        isCurrentBid={i == 0 &&
+          todaysAuction->Option.mapWithDefault(false, todaysAuction =>
+            todaysAuction.tokenId == Some(auctionBid.tokenId)
+          )}
+      />
     })
     ->List.toArray
     ->Array.slice(~start=0, ~end=3)
