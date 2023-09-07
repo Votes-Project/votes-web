@@ -25,14 +25,14 @@ let make = () => {
     open ReactIcons
 
     [
-      ("Queue", Routes.Main.Queue.Route.makeLink(), <LuListOrdered size="1.5rem" />),
+      ("Raffles", Routes.Main.Raffles.Route.makeLink(), <LuAward size="1.5rem" />),
       ("Votes", Routes.Main.Votes.Route.makeLink(), <LuCheckCircle size="1.5rem" />),
       ("Questions", Routes.Main.Questions.Route.makeLink(), <LuHistory size="1.5rem" />),
     ]
   }
 
   <header className=" flex flex-col justify-center items-center mb-[-8px] w-full">
-    <nav className=" max-w-7xl flex w-full justify-between px-4 pt-2">
+    <nav className=" max-w-7xl flex w-full justify-between px-4 pt-2 flex-1">
       <div className="flex gap-3 justify-center items-center ">
         <RelayRouter.Link
           to_={Routes.Main.Route.makeLink()} className="relative z-2 px-2 py-0 transition-all z-2">
