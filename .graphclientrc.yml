@@ -2,7 +2,7 @@ sources:
   - name: votes-goerli
     handler:
       graphql:
-        endpoint: https://api.studio.thegraph.com/query/9032/votes-goerli/v0.1.1
+        endpoint: https://api.studio.thegraph.com/query/9032/votes-goerli/version/latest
     transforms:
       - autoPagination:
           validateSchema: true
