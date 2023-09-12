@@ -1,6 +1,3 @@
-@val @scope(("import", "meta", "env"))
-external auctionContractAddress: option<string> = "VITE_AUCTION_CONTRACT_ADDRESS"
-@module("/src/abis/Auction.json") external auctionContractAbi: JSON.t = "default"
 module AuctionCreatedFragment = %relay(`
   fragment AuctionCountdown_auctionCreated on AuctionCreated {
     endTime
@@ -26,23 +23,9 @@ let useInterval = (callback: unit => unit, delay) => {
   }, [delay])
 }
 
-exception ContractWriteDoesNotExist
 @react.component
 let make = (~queryRef as auctionCreatedRef) => {
   let auctionCreated = AuctionCreatedFragment.use(auctionCreatedRef)
-  let {config} = Wagmi.usePrepareContractWrite(
-    ~config={
-      address: auctionContractAddress->Belt.Option.getExn,
-      abi: auctionContractAbi,
-      functionName: "settleCurrentAndCreateNewAuction",
-    },
-  )
-  let settleCurrentAndCreateNewAuction = Wagmi.useContractWrite(config)
-  let handleSettleCurrentAndCreateNewAuction = _ =>
-    switch settleCurrentAndCreateNewAuction.write {
-    | Some(createBid) => createBid()
-    | None => raise(ContractWriteDoesNotExist)
-    }
 
   let endTime = auctionCreated.endTime->Float.fromString->Option.getExn
 
@@ -62,23 +45,15 @@ let make = (~queryRef as auctionCreatedRef) => {
   let hours = (totalMinutesRemaining / 60)->Int.toString
 
   <div className="flex lg:flex-col items-start justify-between">
-    {secondsRemaining < 0
-      ? <div className="w-full flex justify-center items-center">
-          <button
-            className="bg-primary-dark text-white font-bold py-2 px-4 rounded"
-            onClick={handleSettleCurrentAndCreateNewAuction}>
-            {"Start Next Auction"->React.string}
-          </button>
-        </div>
-      : <>
-          <p className="font-semibold text-xl text-background-dark lg:text-active">
-            {"Time Left"->React.string}
-          </p>
-          <p className="font-bold text-xl lg:text-3xl text-default-darker">
-            {`${hours}h
+    {<>
+      <p className="font-semibold text-xl text-background-dark lg:text-active">
+        {"Time Left"->React.string}
+      </p>
+      <p className="font-bold text-xl lg:text-3xl text-default-darker">
+        {`${hours}h
       ${minutes}m
       ${seconds}s`->React.string}
-          </p>
-        </>}
+      </p>
+    </>}
   </div>
 }

@@ -64,6 +64,19 @@ type enum_OrderBy_Transfers_input =
 
 
 @live @unboxed
+type enum_OrderBy_Votes = 
+  | @as("id") Id
+  | @as("owner") Owner
+  | FutureAddedValue(string)
+
+
+@live @unboxed
+type enum_OrderBy_Votes_input = 
+  | @as("id") Id
+  | @as("owner") Owner
+
+
+@live @unboxed
 type enum_OrderDirection = 
   | @as("asc") Asc
   | @as("desc") Desc
@@ -140,4 +153,16 @@ and input_Where_Transfers_nullable = {
   id?: Js.Null.t<string>,
   tokenId?: Js.Null.t<string>,
   from?: Js.Null.t<string>,
+}
+
+@live
+and input_Where_Votes = {
+  id?: string,
+  owner?: string,
+}
+
+@live
+and input_Where_Votes_nullable = {
+  id?: Js.Null.t<string>,
+  owner?: Js.Null.t<string>,
 }

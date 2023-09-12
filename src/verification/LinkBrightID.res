@@ -35,7 +35,7 @@ module Query = %relay(`
   }
 `)
 
-@react.component
+@react.component @relay.deferredComponent
 let make = (~queryRef, ~contextId) => {
   let {verification} = Query.usePreloaded(~queryRef)
 
