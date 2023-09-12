@@ -1,0 +1,8 @@
+query GetVoteContract($id: ID!) {
+  voteContract(id: $id) {
+    id
+    name
+    symbol
+    totalSupply
+  }
+}

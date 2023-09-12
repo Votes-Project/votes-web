@@ -2,8 +2,10 @@
 
 import * as Graphql from "graphql";
 import * as Caml_option from "rescript/lib/es6/caml_option.js";
+import * as VoteResolvers from "../VoteResolvers.mjs";
 import * as AuctionBidResolvers from "../AuctionBidResolvers.mjs";
 import * as VerificationResolvers from "../VerificationResolvers.mjs";
+import * as VoteContractResolvers from "../VoteContractResolvers.mjs";
 import * as VoteTransferResolvers from "../VoteTransferResolvers.mjs";
 import * as NodeInterfaceResolvers from "../NodeInterfaceResolvers.mjs";
 import * as AuctionCreatedResolvers from "../AuctionCreatedResolvers.mjs";
@@ -81,6 +83,18 @@ var enum_OrderBy_Transfers = new Graphql.GraphQLEnumType({
         },
         blockNumber: {
           value: "blockNumber"
+        }
+      }
+    });
+
+var enum_OrderBy_Votes = new Graphql.GraphQLEnumType({
+      name: "OrderBy_Votes",
+      values: {
+        id: {
+          value: "id"
+        },
+        owner: {
+          value: "owner"
         }
       }
     });
@@ -177,6 +191,22 @@ var t_VerificationData = {
   contents: null
 };
 
+var t_Vote = {
+  contents: null
+};
+
+var t_VoteConnection = {
+  contents: null
+};
+
+var t_VoteContract = {
+  contents: null
+};
+
+var t_VoteEdge = {
+  contents: null
+};
+
 var t_VoteTransfer = {
   contents: null
 };
@@ -206,6 +236,12 @@ var input_Where_Transfers = {
 };
 
 var input_Where_Transfers_conversionInstructions = [];
+
+var input_Where_Votes = {
+  contents: null
+};
+
+var input_Where_Votes_conversionInstructions = [];
 
 input_Where_AuctionBids_conversionInstructions.push([
       "id",
@@ -276,6 +312,17 @@ input_Where_Transfers_conversionInstructions.push([
         })
     ]);
 
+input_Where_Votes_conversionInstructions.push([
+      "id",
+      (function (v) {
+          if (v == null) {
+            return ;
+          } else {
+            return Caml_option.some(v);
+          }
+        })
+    ]);
+
 var union_Verification = {
   contents: null
 };
@@ -300,6 +347,10 @@ function interface_Node_resolveType(v) {
         return "QuestionSubmitted";
     case "VerificationData" :
         return "VerificationData";
+    case "Vote" :
+        return "Vote";
+    case "VoteContract" :
+        return "VoteContract";
     case "VoteTransfer" :
         return "VoteTransfer";
     
@@ -870,6 +921,30 @@ t_Query.contents = new Graphql.GraphQLObjectType({
                           return VerificationResolvers.verification(src$1, args.contextId, ctx);
                         })
                   },
+                  vote: {
+                    type: t_Vote.contents,
+                    args: {
+                      id: {
+                        type: new Graphql.GraphQLNonNull(Graphql.GraphQLString)
+                      }
+                    },
+                    resolve: Caml_option.some(function (src, args, ctx) {
+                          var src$1 = typeUnwrapper(src);
+                          return VoteResolvers.$$Node.vote(src$1, args.id, ctx);
+                        })
+                  },
+                  voteContract: {
+                    type: t_VoteContract.contents,
+                    args: {
+                      id: {
+                        type: new Graphql.GraphQLNonNull(Graphql.GraphQLString)
+                      }
+                    },
+                    resolve: Caml_option.some(function (src, args, ctx) {
+                          var src$1 = typeUnwrapper(src);
+                          return VoteContractResolvers.voteContract(src$1, args.id, ctx);
+                        })
+                  },
                   voteTransfer: {
                     type: t_VoteTransfer.contents,
                     args: {
@@ -914,6 +989,40 @@ t_Query.contents = new Graphql.GraphQLObjectType({
                           var src$1 = typeUnwrapper(src);
                           var v = args.where;
                           return VoteTransferResolvers.Connection.voteTransfers(src$1, Caml_option.nullable_to_opt(args.skip), Caml_option.nullable_to_opt(args.orderBy), Caml_option.nullable_to_opt(args.orderDirection), !(v == null) ? applyConversionToInputObject(v, input_Where_Transfers_conversionInstructions) : undefined, Caml_option.nullable_to_opt(args.first), Caml_option.nullable_to_opt(args.after), Caml_option.nullable_to_opt(args.before), Caml_option.nullable_to_opt(args.last));
+                        })
+                  },
+                  votes: {
+                    type: t_VoteConnection.contents,
+                    args: {
+                      after: {
+                        type: Graphql.GraphQLString
+                      },
+                      before: {
+                        type: Graphql.GraphQLString
+                      },
+                      first: {
+                        type: Graphql.GraphQLInt
+                      },
+                      last: {
+                        type: Graphql.GraphQLInt
+                      },
+                      orderBy: {
+                        type: enum_OrderBy_Votes
+                      },
+                      orderDirection: {
+                        type: enum_OrderDirection
+                      },
+                      skip: {
+                        type: Graphql.GraphQLInt
+                      },
+                      where: {
+                        type: input_Where_Votes.contents
+                      }
+                    },
+                    resolve: Caml_option.some(function (src, args, ctx) {
+                          var src$1 = typeUnwrapper(src);
+                          var v = args.where;
+                          return VoteResolvers.Connection.votes(src$1, Caml_option.nullable_to_opt(args.skip), Caml_option.nullable_to_opt(args.orderBy), Caml_option.nullable_to_opt(args.orderDirection), !(v == null) ? applyConversionToInputObject(v, input_Where_Votes_conversionInstructions) : undefined, Caml_option.nullable_to_opt(args.first), Caml_option.nullable_to_opt(args.after), Caml_option.nullable_to_opt(args.before), Caml_option.nullable_to_opt(args.last));
                         })
                   }
                 };
@@ -1084,6 +1193,164 @@ t_VerificationData.contents = new Graphql.GraphQLObjectType({
       interfaces: [i_Node.contents]
     });
 
+t_Vote.contents = new Graphql.GraphQLObjectType({
+      name: "Vote",
+      description: "GraphClient: A Vote Token entity",
+      fields: (function () {
+          return {
+                  id: {
+                    type: new Graphql.GraphQLNonNull(Graphql.GraphQLID),
+                    resolve: Caml_option.some(function (src, args, ctx) {
+                          var src$1 = typeUnwrapper(src);
+                          return NodeInterfaceResolvers.id(src$1, "Vote");
+                        })
+                  },
+                  owner: {
+                    type: new Graphql.GraphQLNonNull(Graphql.GraphQLString),
+                    resolve: Caml_option.some(function (src, _args, _ctx) {
+                          return typeUnwrapper(src).owner;
+                        })
+                  },
+                  uri: {
+                    type: new Graphql.GraphQLNonNull(Graphql.GraphQLString),
+                    resolve: Caml_option.some(function (src, _args, _ctx) {
+                          return typeUnwrapper(src).uri;
+                        })
+                  },
+                  voteContract: {
+                    type: t_VoteContract.contents,
+                    args: {
+                      id: {
+                        type: new Graphql.GraphQLNonNull(Graphql.GraphQLString)
+                      }
+                    },
+                    resolve: Caml_option.some(function (src, args, ctx) {
+                          var src$1 = typeUnwrapper(src);
+                          return VoteResolvers.VoteContract.voteContract(src$1, args.id, ctx);
+                        })
+                  }
+                };
+        }),
+      interfaces: [i_Node.contents]
+    });
+
+t_VoteConnection.contents = new Graphql.GraphQLObjectType({
+      name: "VoteConnection",
+      description: "A connection of votes .",
+      fields: (function () {
+          return {
+                  edges: {
+                    type: new Graphql.GraphQLList(t_VoteEdge.contents),
+                    resolve: Caml_option.some(function (src, _args, _ctx) {
+                          return typeUnwrapper(src).edges;
+                        }),
+                    description: "A list of edges."
+                  },
+                  pageInfo: {
+                    type: new Graphql.GraphQLNonNull(t_PageInfo.contents),
+                    resolve: Caml_option.some(function (src, _args, _ctx) {
+                          return typeUnwrapper(src).pageInfo;
+                        }),
+                    description: "Information to aid in pagination."
+                  }
+                };
+        }),
+      interfaces: []
+    });
+
+t_VoteContract.contents = new Graphql.GraphQLObjectType({
+      name: "VoteContract",
+      description: "GraphClient: A Vote Contract entity",
+      fields: (function () {
+          return {
+                  id: {
+                    type: new Graphql.GraphQLNonNull(Graphql.GraphQLID),
+                    resolve: Caml_option.some(function (src, args, ctx) {
+                          var src$1 = typeUnwrapper(src);
+                          return NodeInterfaceResolvers.id(src$1, "VoteContract");
+                        })
+                  },
+                  name: {
+                    type: new Graphql.GraphQLNonNull(Graphql.GraphQLString),
+                    resolve: Caml_option.some(function (src, _args, _ctx) {
+                          return typeUnwrapper(src).name;
+                        })
+                  },
+                  symbol: {
+                    type: new Graphql.GraphQLNonNull(Graphql.GraphQLString),
+                    resolve: Caml_option.some(function (src, _args, _ctx) {
+                          return typeUnwrapper(src).symbol;
+                        })
+                  },
+                  totalSupply: {
+                    type: new Graphql.GraphQLNonNull(Graphql.GraphQLString),
+                    resolve: Caml_option.some(function (src, _args, _ctx) {
+                          return typeUnwrapper(src).totalSupply;
+                        })
+                  },
+                  votes: {
+                    type: t_VoteConnection.contents,
+                    args: {
+                      after: {
+                        type: Graphql.GraphQLString
+                      },
+                      before: {
+                        type: Graphql.GraphQLString
+                      },
+                      first: {
+                        type: Graphql.GraphQLInt
+                      },
+                      last: {
+                        type: Graphql.GraphQLInt
+                      },
+                      orderBy: {
+                        type: enum_OrderBy_Votes
+                      },
+                      orderDirection: {
+                        type: enum_OrderDirection
+                      },
+                      skip: {
+                        type: Graphql.GraphQLInt
+                      },
+                      where: {
+                        type: input_Where_Votes.contents
+                      }
+                    },
+                    resolve: Caml_option.some(function (src, args, ctx) {
+                          var src$1 = typeUnwrapper(src);
+                          var v = args.where;
+                          return VoteContractResolvers.VotesConnection.votes(src$1, Caml_option.nullable_to_opt(args.skip), Caml_option.nullable_to_opt(args.orderBy), Caml_option.nullable_to_opt(args.orderDirection), !(v == null) ? applyConversionToInputObject(v, input_Where_Votes_conversionInstructions) : undefined, Caml_option.nullable_to_opt(args.first), Caml_option.nullable_to_opt(args.after), Caml_option.nullable_to_opt(args.before), Caml_option.nullable_to_opt(args.last));
+                        })
+                  }
+                };
+        }),
+      interfaces: [i_Node.contents]
+    });
+
+t_VoteEdge.contents = new Graphql.GraphQLObjectType({
+      name: "VoteEdge",
+      description: "An edge to a vote entity.",
+      fields: (function () {
+          return {
+                  cursor: {
+                    type: new Graphql.GraphQLNonNull(Graphql.GraphQLString),
+                    resolve: Caml_option.some(function (src, _args, _ctx) {
+                          return typeUnwrapper(src).cursor;
+                        }),
+                    description: "A cursor for use in pagination."
+                  },
+                  node: {
+                    type: t_Vote.contents,
+                    resolve: Caml_option.some(function (src, _args, _ctx) {
+                          return typeUnwrapper(src).node;
+                        }),
+                    description: "The item at the end of the edge."
+                  }
+                };
+        }),
+      interfaces: []
+    });
+
 t_VoteTransfer.contents = new Graphql.GraphQLObjectType({
       name: "VoteTransfer",
       description: "GraphClient: A Transfer Event for a Vote token",
@@ -1212,6 +1479,17 @@ input_Where_Transfers.contents = new Graphql.GraphQLInputObjectType({
                     type: Graphql.GraphQLString
                   },
                   tokenId: {
+                    type: Graphql.GraphQLString
+                  }
+                };
+        })
+    });
+
+input_Where_Votes.contents = new Graphql.GraphQLInputObjectType({
+      name: "Where_Votes",
+      fields: (function () {
+          return {
+                  id: {
                     type: Graphql.GraphQLString
                   }
                 };
