@@ -1,10 +1,11 @@
 module Main = %relay.deferredComponent(Main.make)
 module DailyQuestion = %relay.deferredComponent(DailyQuestion.make)
 module LinkBrightID = %relay.deferredComponent(LinkBrightID.make)
+// module VoteDetails = %relay.deferredComponent(VoteDetails.make)
 // module QuestionQueue = %relay.deferredComponent(QuestionQueue.make)
 
 let renderer = Routes.Main.Route.makeRenderer(
-  ~prepareCode=({dailyQuestion, linkBrightID}) =>
+  ~prepareCode=({dailyQuestion, linkBrightID, voteDetails}) =>
     [
       Some(Main.preload()),
       switch dailyQuestion {
@@ -15,8 +16,19 @@ let renderer = Routes.Main.Route.makeRenderer(
       | None => None
       | Some(_) => Some(LinkBrightID.preload())
       },
+      // switch voteDetails {
+      // | None => None
+      // | Some(_) => Some(VoteDetails.preload())
+      // },
     ]->Array.filterMap(v => v),
-  ~prepare=({environment, dailyQuestion, linkBrightID, contextId}) => {
+  ~prepare=({
+    environment,
+    dailyQuestion,
+    linkBrightID,
+    contextId,
+    voteDetails,
+    voteDetailsToken,
+  }) => {
     switch (dailyQuestion, linkBrightID, contextId) {
     | (Some(_), Some(linkBrightIDKey), Some(contextId)) => (
         DailyQuestionQuery_graphql.load(
@@ -31,6 +43,7 @@ let renderer = Routes.Main.Route.makeRenderer(
           ~fetchKey=linkBrightIDKey->Int.toString,
         )->Some,
       )
+
     | (Some(_), None, Some(contextId)) => (
         DailyQuestionQuery_graphql.load(
           ~environment,
@@ -51,7 +64,15 @@ let renderer = Routes.Main.Route.makeRenderer(
     | _ => (None, None)
     }
   },
-  ~render=({childRoutes, dailyQuestion, linkBrightID, contextId, voteDetails, prepared}) => {
+  ~render=({
+    childRoutes,
+    dailyQuestion,
+    linkBrightID,
+    contextId,
+    voteDetails,
+    voteDetailsToken,
+    prepared,
+  }) => {
     let (dailyQuestionQueryRef, linkBrightIDQueryRef) = prepared
     <>
       <Main>
@@ -85,10 +106,16 @@ let renderer = Routes.Main.Route.makeRenderer(
         }}
       </LinkBrightIDModal>
       <VoteDetailsSidebar isOpen={voteDetails->Option.isSome}>
-        {switch voteDetails {
-        | Some(voteDetails) => <> </>
-
-        | None => React.null
+        {switch (voteDetails, voteDetailsToken, None) {
+        | (Some(_), None, _) =>
+          <React.Suspense fallback={<p> {"Loading"->React.string} </p>}>
+            <OwnedVotesList />
+          </React.Suspense>
+        | (Some(_), Some(token), Some(queryRef)) =>
+          <React.Suspense fallback={<p> {"Loading"->React.string} </p>}>
+            <VoteDetails queryRef />
+          </React.Suspense>
+        | _ => React.null
         }}
       </VoteDetailsSidebar>
     </>

@@ -1,22 +1,21 @@
-/* @sourceLoc Votes.res */
+/* @sourceLoc OwnedVotesList.res */
 /* @generated */
 %%raw("/* @generated */")
 module Types = {
   @@warning("-30")
 
-  type rec fragment_voteTransfers_edges_node = {
+  type rec fragment_votes_edges_node = {
     @live id: string,
-    tokenId: string,
-    fragmentRefs: RescriptRelay.fragmentRefs<[ | #Votes_VoteItem_voteTransfer]>,
+    fragmentRefs: RescriptRelay.fragmentRefs<[ | #OwnedVotesList_OwnedVoteItem_vote]>,
   }
-  and fragment_voteTransfers_edges = {
-    node: option<fragment_voteTransfers_edges_node>,
+  and fragment_votes_edges = {
+    node: option<fragment_votes_edges_node>,
   }
-  and fragment_voteTransfers = {
-    edges: option<array<option<fragment_voteTransfers_edges>>>,
+  and fragment_votes = {
+    edges: option<array<option<fragment_votes_edges>>>,
   }
   type fragment = {
-    voteTransfers: option<fragment_voteTransfers>,
+    votes: option<fragment_votes>,
   }
 }
 
@@ -25,7 +24,7 @@ module Internal = {
   type fragmentRaw
   @live
   let fragmentConverter: Js.Dict.t<Js.Dict.t<Js.Dict.t<string>>> = %raw(
-    json`{"__root":{"voteTransfers_edges_node":{"f":""}}}`
+    json`{"__root":{"votes_edges_node":{"f":""}}}`
   )
   @live
   let fragmentConverterMap = ()
@@ -40,23 +39,22 @@ module Internal = {
 type t
 type fragmentRef
 external getFragmentRef:
-  RescriptRelay.fragmentRefs<[> | #Votes_VoteListDisplay_voteTransfers]> => fragmentRef = "%identity"
+  RescriptRelay.fragmentRefs<[> | #OwnedVotesList_OwnedVotesListDisplay_votes]> => fragmentRef = "%identity"
 
 @live
 @inline
-let connectionKey = "VoteListDisplay_voteTransfers_voteTransfers"
+let connectionKey = "OwnedVotesList_votes_votes"
 
 %%private(
   @live @module("relay-runtime") @scope("ConnectionHandler")
-  external internal_makeConnectionId: (RescriptRelay.dataId, @as("VoteListDisplay_voteTransfers_voteTransfers") _, 'arguments) => RescriptRelay.dataId = "getConnectionID"
+  external internal_makeConnectionId: (RescriptRelay.dataId, @as("OwnedVotesList_votes_votes") _, 'arguments) => RescriptRelay.dataId = "getConnectionID"
 )
 
 @live
-let makeConnectionId = (connectionParentDataId: RescriptRelay.dataId, ~orderBy: RelaySchemaAssets_graphql.enum_OrderBy_Transfers=TokenId, ~orderDirection: RelaySchemaAssets_graphql.enum_OrderDirection=Desc, ~where: RelaySchemaAssets_graphql.input_Where_Transfers=Obj.magic({"from": "0x0000000000000000000000000000000000000000"})) => {
+let makeConnectionId = (connectionParentDataId: RescriptRelay.dataId, ~orderBy: RelaySchemaAssets_graphql.enum_OrderBy_Votes=Id, ~orderDirection: RelaySchemaAssets_graphql.enum_OrderDirection=Asc, ~owner: option<string>=?) => {
   let orderBy = Some(orderBy)
   let orderDirection = Some(orderDirection)
-  let where = Some(where)
-  let args = {"orderBy": orderBy, "orderDirection": orderDirection, "where": where}
+  let args = {"orderBy": orderBy, "orderDirection": orderDirection, "where": {"owner": owner}}
   internal_makeConnectionId(connectionParentDataId, args)
 }
 module Utils = {
@@ -64,7 +62,7 @@ module Utils = {
   open Types
 
   @live
-  let getConnectionNodes: option<Types.fragment_voteTransfers> => array<Types.fragment_voteTransfers_edges_node> = connection => 
+  let getConnectionNodes: option<Types.fragment_votes> => array<Types.fragment_votes_edges_node> = connection => 
     switch connection {
       | None => []
       | Some(connection) => 
@@ -88,26 +86,24 @@ type operationType = RescriptRelay.fragmentNode<relayOperationNode>
 let node: operationType = %raw(json` {
   "argumentDefinitions": [
     {
-      "defaultValue": 100,
+      "defaultValue": 1000,
       "kind": "LocalArgument",
       "name": "first"
     },
     {
-      "defaultValue": "tokenId",
+      "defaultValue": "id",
       "kind": "LocalArgument",
       "name": "orderBy"
     },
     {
-      "defaultValue": "desc",
+      "defaultValue": "asc",
       "kind": "LocalArgument",
       "name": "orderDirection"
     },
     {
-      "defaultValue": {
-        "from": "0x0000000000000000000000000000000000000000"
-      },
+      "defaultValue": null,
       "kind": "LocalArgument",
-      "name": "where"
+      "name": "owner"
     }
   ],
   "kind": "Fragment",
@@ -118,15 +114,15 @@ let node: operationType = %raw(json` {
         "cursor": null,
         "direction": "forward",
         "path": [
-          "voteTransfers"
+          "votes"
         ]
       }
     ]
   },
-  "name": "Votes_VoteListDisplay_voteTransfers",
+  "name": "OwnedVotesList_OwnedVotesListDisplay_votes",
   "selections": [
     {
-      "alias": "voteTransfers",
+      "alias": "votes",
       "args": [
         {
           "kind": "Variable",
@@ -139,20 +135,26 @@ let node: operationType = %raw(json` {
           "variableName": "orderDirection"
         },
         {
-          "kind": "Variable",
-          "name": "where",
-          "variableName": "where"
+          "fields": [
+            {
+              "kind": "Variable",
+              "name": "owner",
+              "variableName": "owner"
+            }
+          ],
+          "kind": "ObjectValue",
+          "name": "where"
         }
       ],
-      "concreteType": "VoteTransferConnection",
+      "concreteType": "VoteConnection",
       "kind": "LinkedField",
-      "name": "__VoteListDisplay_voteTransfers_voteTransfers_connection",
+      "name": "__OwnedVotesList_votes_votes_connection",
       "plural": false,
       "selections": [
         {
           "alias": null,
           "args": null,
-          "concreteType": "VoteTransferEdge",
+          "concreteType": "VoteEdge",
           "kind": "LinkedField",
           "name": "edges",
           "plural": true,
@@ -160,7 +162,7 @@ let node: operationType = %raw(json` {
             {
               "alias": null,
               "args": null,
-              "concreteType": "VoteTransfer",
+              "concreteType": "Vote",
               "kind": "LinkedField",
               "name": "node",
               "plural": false,
@@ -173,16 +175,9 @@ let node: operationType = %raw(json` {
                   "storageKey": null
                 },
                 {
-                  "alias": null,
-                  "args": null,
-                  "kind": "ScalarField",
-                  "name": "tokenId",
-                  "storageKey": null
-                },
-                {
                   "args": null,
                   "kind": "FragmentSpread",
-                  "name": "Votes_VoteItem_voteTransfer"
+                  "name": "OwnedVotesList_OwnedVoteItem_vote"
                 },
                 {
                   "alias": null,

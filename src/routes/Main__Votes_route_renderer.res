@@ -1,9 +1,16 @@
 module Votes = %relay.deferredComponent(Votes.make)
 
+@val @scope(("import", "meta", "env"))
+external votesContractAddress: option<string> = "VITE_VOTES_CONTRACT_ADDRESS"
+
 let renderer = Routes.Main.Votes.Route.makeRenderer(
   ~prepareCode=_ => [Votes.preload()],
   ~prepare=({environment}) => {
-    VotesQuery_graphql.load(~environment, ~variables=(), ~fetchPolicy=StoreOrNetwork)
+    VotesQuery_graphql.load(
+      ~environment,
+      ~variables={votesContractAddress: votesContractAddress->Option.getExn},
+      ~fetchPolicy=StoreOrNetwork,
+    )
   },
   ~render=({prepared: queryRef}) => {
     <Votes queryRef />

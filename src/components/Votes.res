@@ -1,27 +1,43 @@
 module VoteItem = {
   @module("/assets/RadarChart.png")
   external radarChart: string = "default"
-  module VoteTransferFragment = %relay(`
-  fragment Votes_VoteItem_voteTransfer on VoteTransfer {
+  module VoteFragment = %relay(`
+  fragment Votes_VoteItem_vote on Vote {
     id
     tokenId
+    uri
   }
   `)
 
   @react.component
-  let make = (~voteTransfer) => {
-    let voteTransfer = VoteTransferFragment.use(voteTransfer)
+  let make = (~vote) => {
+    let vote = VoteFragment.use(vote)
+    let {setParams} = Routes.Main.Votes.Route.useQueryParams()
+    let handleVoteClick = _ => {
+      setParams(
+        ~removeNotControlledParams=false,
+        ~navigationMode_=Push,
+        ~shallow=false,
+        ~setter=c => {
+          ...c,
+          voteDetails: Some(0),
+          voteDetailsToken: vote.tokenId->Int.fromString,
+        },
+      )
+    }
+
     <li className="rounded-xl flex flex-col justify-center items-center relative transition-all">
       <button
-        className="h-full m-0 border-0 relative aspect-square scroll-m-[1vh] cursor-pointer bg-secondary noise rounded-xl">
+        className="h-full m-0 border-0 relative aspect-square scroll-m-[1vh] cursor-pointer bg-secondary noise rounded-xl"
+        onClick=handleVoteClick>
         <img
           className="rounded-none max-w-none my-0 mx-auto w-full align-middle"
-          src=radarChart
+          src=vote.uri
           alt="Radar Graph"
         />
         <p
-          className="bg-background-light block relative bottom-auto rounded-b-xl font-bold text-lg text-default-dark">
-          {voteTransfer.tokenId->React.string}
+          className="bg-background-light block absolute w-full bottom-0 rounded-b-xl font-bold text-lg text-default-dark">
+          {vote.tokenId->React.string}
         </p>
       </button>
     </li>
@@ -29,47 +45,56 @@ module VoteItem = {
 }
 
 module VoteListDisplay = {
-  module VoteTransfersFragment = %relay(`
-  fragment Votes_VoteListDisplay_voteTransfers on Query
+  module VotesFragment = %relay(`
+  fragment Votes_VoteListDisplay_votes on Query
   @argumentDefinitions(
-    first: { type: "Int", defaultValue: 100 }
-    orderBy: { type: "OrderBy_Transfers", defaultValue: tokenId }
+    first: { type: "Int", defaultValue: 1000 }
+    orderBy: { type: "OrderBy_Votes", defaultValue: id }
     orderDirection: { type: "OrderDirection", defaultValue: desc }
-    where: {
-      type: "Where_Transfers"
-      defaultValue: { from: "0x0000000000000000000000000000000000000000" }
-    }
+    where: { type: "Where_Votes" }
   ) {
-    voteTransfers(
+    votes(
       orderBy: $orderBy
       orderDirection: $orderDirection
       first: $first
       where: $where
-    ) @connection(key: "VoteListDisplay_voteTransfers_voteTransfers") {
+    ) @connection(key: "VoteListDisplay_voteTransfers_votes") {
       edges {
         node {
           id
-          tokenId
-          ...Votes_VoteItem_voteTransfer
+          ...Votes_VoteItem_vote
         }
       }
     }
   }
   `)
 
+  module VoteContractFragment = %relay(`
+  fragment Votes_VoteListDisplay_voteContract on Query
+  @argumentDefinitions(id: { type: "String!" }) {
+    voteContract(id: $id) {
+      totalSupply
+    }
+  }
+  `)
+
   @react.component
   let make = (~query) => {
-    let {voteTransfers} = VoteTransfersFragment.use(query)
+    let {votes} = VotesFragment.use(query)
+    let {voteContract} = VoteContractFragment.use(query)
     let votes =
-      voteTransfers
-      ->VoteTransfersFragment.getConnectionNodes
-      ->Array.map(voteTransfer => {
-        <VoteItem voteTransfer={voteTransfer.fragmentRefs} key=voteTransfer.id />
+      votes
+      ->VotesFragment.getConnectionNodes
+      ->Array.map(vote => {
+        <VoteItem vote={vote.fragmentRefs} key=vote.id />
       })
     <div className="bg-background">
       <nav className=" w-full flex justify-between items-center py-4 px-2">
         <div>
-          <p> {"Explore x Votes"->React.string} </p>
+          {switch voteContract {
+          | Some({totalSupply}) => <p> {`Explore ${totalSupply} Votes`->React.string} </p>
+          | None => <> </>
+          }}
         </div>
         <div>
           <label>
@@ -88,8 +113,9 @@ module VoteListDisplay = {
 }
 
 module Query = %relay(`
-  query VotesQuery {
-    ...Votes_VoteListDisplay_voteTransfers
+  query VotesQuery($votesContractAddress: String!) {
+    ...Votes_VoteListDisplay_votes
+    ...Votes_VoteListDisplay_voteContract @arguments(id: $votesContractAddress)
   }
 `)
 

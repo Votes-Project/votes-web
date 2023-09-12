@@ -7,6 +7,7 @@ module Types = {
   type fragment = {
     @live id: string,
     tokenId: string,
+    uri: string,
   }
 }
 
@@ -30,7 +31,7 @@ module Internal = {
 type t
 type fragmentRef
 external getFragmentRef:
-  RescriptRelay.fragmentRefs<[> | #Votes_VoteItem_voteTransfer]> => fragmentRef = "%identity"
+  RescriptRelay.fragmentRefs<[> | #Votes_VoteItem_vote]> => fragmentRef = "%identity"
 
 module Utils = {
   @@warning("-33")
@@ -45,7 +46,7 @@ let node: operationType = %raw(json` {
   "argumentDefinitions": [],
   "kind": "Fragment",
   "metadata": null,
-  "name": "Votes_VoteItem_voteTransfer",
+  "name": "Votes_VoteItem_vote",
   "selections": [
     {
       "alias": null,
@@ -60,9 +61,16 @@ let node: operationType = %raw(json` {
       "kind": "ScalarField",
       "name": "tokenId",
       "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "uri",
+      "storageKey": null
     }
   ],
-  "type": "VoteTransfer",
+  "type": "Vote",
   "abstractKey": null
 } `)
 

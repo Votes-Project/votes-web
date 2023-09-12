@@ -2,11 +2,6 @@
 
 @module external viteLogo: 'a = "/votesy.svg"
 
-module ConnectButton = {
-  @react.component @module("@rainbow-me/rainbowkit")
-  external make: (~className: string=?, ~showBalance: bool=?) => React.element = "ConnectButton"
-}
-
 type headerItem = {
   name: string,
   link: string,
@@ -17,7 +12,7 @@ type headerItem = {
 let make = () => {
   let (isOpen, setIsOpen) = React.useState(_ => false)
 
-  let handleMenu = () => {
+  let handleMenu = _ => {
     setIsOpen(isOpen => !isOpen)
   }
 
@@ -35,7 +30,9 @@ let make = () => {
     <nav className=" max-w-7xl flex w-full justify-between px-4 pt-2 flex-1">
       <div className="flex gap-3 justify-center items-center ">
         <RelayRouter.Link
-          to_={Routes.Main.Route.makeLink()} className="relative z-2 px-2 py-0 transition-all z-2">
+          to_={Routes.Main.Route.makeLink()}
+          className="relative z-2 px-2 py-0 transition-all z-2"
+          onClick={_ => isOpen ? handleMenu() : ()}>
           <img src={viteLogo["default"]} className="w-24 h-24  " alt="Vite logo" />
         </RelayRouter.Link>
         <div
@@ -59,7 +56,7 @@ let make = () => {
           </RelayRouter.Link>
         })
         ->React.array}
-        <ConnectButton showBalance=false />
+        <RainbowKit.ConnectButton showBalance=false />
       </div>
       <button
         className={`lg:hidden ${isOpen
@@ -77,6 +74,7 @@ let make = () => {
         <RelayRouter.Link
           key={name}
           to_={link}
+          onClick=handleMenu
           className={`hover:bg-secondary hover:text-active lg:hidden justify-center items-center w-[262px] flex px-2 py-3 border border-primary rounded-xl font-bold text-white text-xl gap-2 transition-all ${isOpen
               ? ""
               : "hidden"}`}>
@@ -86,7 +84,7 @@ let make = () => {
       })
       ->React.array}
       <div className={`${isOpen ? "" : "hidden"} lg:hidden`}>
-        <ConnectButton showBalance=false />
+        <RainbowKit.ConnectButton showBalance=false />
       </div>
     </div>
   </header>

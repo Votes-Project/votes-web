@@ -3,8 +3,10 @@
 
 import * as RescriptRelay from "rescript-relay/src/RescriptRelay.mjs";
 
-function makeRefetchVariables() {
-  
+function makeRefetchVariables(votesContractAddress) {
+  return {
+          votesContractAddress: votesContractAddress
+        };
 }
 
 var Types = {
@@ -48,31 +50,45 @@ var Utils = {};
 var node = ((function(){
 var v0 = [
   {
+    "defaultValue": null,
+    "kind": "LocalArgument",
+    "name": "votesContractAddress"
+  }
+],
+v1 = [
+  {
+    "kind": "Variable",
+    "name": "id",
+    "variableName": "votesContractAddress"
+  }
+],
+v2 = [
+  {
     "kind": "Literal",
     "name": "first",
-    "value": 100
+    "value": 1000
   },
   {
     "kind": "Literal",
     "name": "orderBy",
-    "value": "tokenId"
+    "value": "id"
   },
   {
     "kind": "Literal",
     "name": "orderDirection",
     "value": "desc"
-  },
-  {
-    "kind": "Literal",
-    "name": "where",
-    "value": {
-      "from": "0x0000000000000000000000000000000000000000"
-    }
   }
-];
+],
+v3 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "id",
+  "storageKey": null
+};
 return {
   "fragment": {
-    "argumentDefinitions": [],
+    "argumentDefinitions": (v0/*: any*/),
     "kind": "Fragment",
     "metadata": null,
     "name": "VotesQuery",
@@ -80,7 +96,12 @@ return {
       {
         "args": null,
         "kind": "FragmentSpread",
-        "name": "Votes_VoteListDisplay_voteTransfers"
+        "name": "Votes_VoteListDisplay_votes"
+      },
+      {
+        "args": (v1/*: any*/),
+        "kind": "FragmentSpread",
+        "name": "Votes_VoteListDisplay_voteContract"
       }
     ],
     "type": "Query",
@@ -88,22 +109,22 @@ return {
   },
   "kind": "Request",
   "operation": {
-    "argumentDefinitions": [],
+    "argumentDefinitions": (v0/*: any*/),
     "kind": "Operation",
     "name": "VotesQuery",
     "selections": [
       {
         "alias": null,
-        "args": (v0/*: any*/),
-        "concreteType": "VoteTransferConnection",
+        "args": (v2/*: any*/),
+        "concreteType": "VoteConnection",
         "kind": "LinkedField",
-        "name": "voteTransfers",
+        "name": "votes",
         "plural": false,
         "selections": [
           {
             "alias": null,
             "args": null,
-            "concreteType": "VoteTransferEdge",
+            "concreteType": "VoteEdge",
             "kind": "LinkedField",
             "name": "edges",
             "plural": true,
@@ -111,23 +132,24 @@ return {
               {
                 "alias": null,
                 "args": null,
-                "concreteType": "VoteTransfer",
+                "concreteType": "Vote",
                 "kind": "LinkedField",
                 "name": "node",
                 "plural": false,
                 "selections": [
+                  (v3/*: any*/),
                   {
                     "alias": null,
                     "args": null,
                     "kind": "ScalarField",
-                    "name": "id",
+                    "name": "tokenId",
                     "storageKey": null
                   },
                   {
                     "alias": null,
                     "args": null,
                     "kind": "ScalarField",
-                    "name": "tokenId",
+                    "name": "uri",
                     "storageKey": null
                   },
                   {
@@ -176,30 +198,49 @@ return {
             "storageKey": null
           }
         ],
-        "storageKey": "voteTransfers(first:100,orderBy:\"tokenId\",orderDirection:\"desc\",where:{\"from\":\"0x0000000000000000000000000000000000000000\"})"
+        "storageKey": "votes(first:1000,orderBy:\"id\",orderDirection:\"desc\")"
       },
       {
         "alias": null,
-        "args": (v0/*: any*/),
+        "args": (v2/*: any*/),
         "filters": [
           "orderBy",
           "orderDirection",
           "where"
         ],
         "handle": "connection",
-        "key": "VoteListDisplay_voteTransfers_voteTransfers",
+        "key": "VoteListDisplay_voteTransfers_votes",
         "kind": "LinkedHandle",
-        "name": "voteTransfers"
+        "name": "votes"
+      },
+      {
+        "alias": null,
+        "args": (v1/*: any*/),
+        "concreteType": "VoteContract",
+        "kind": "LinkedField",
+        "name": "voteContract",
+        "plural": false,
+        "selections": [
+          {
+            "alias": null,
+            "args": null,
+            "kind": "ScalarField",
+            "name": "totalSupply",
+            "storageKey": null
+          },
+          (v3/*: any*/)
+        ],
+        "storageKey": null
       }
     ]
   },
   "params": {
-    "cacheID": "78e62aa0b2c5854a6a5474f880b0827d",
+    "cacheID": "2f8863e8969906b2c52fcca58f6113d7",
     "id": null,
     "metadata": {},
     "name": "VotesQuery",
     "operationKind": "query",
-    "text": "query VotesQuery {\n  ...Votes_VoteListDisplay_voteTransfers\n}\n\nfragment Votes_VoteItem_voteTransfer on VoteTransfer {\n  id\n  tokenId\n}\n\nfragment Votes_VoteListDisplay_voteTransfers on Query {\n  voteTransfers(orderBy: tokenId, orderDirection: desc, first: 100, where: {from: \"0x0000000000000000000000000000000000000000\"}) {\n    edges {\n      node {\n        id\n        tokenId\n        ...Votes_VoteItem_voteTransfer\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n"
+    "text": "query VotesQuery(\n  $votesContractAddress: String!\n) {\n  ...Votes_VoteListDisplay_votes\n  ...Votes_VoteListDisplay_voteContract_3CfYk7\n}\n\nfragment Votes_VoteItem_vote on Vote {\n  id\n  tokenId\n  uri\n}\n\nfragment Votes_VoteListDisplay_voteContract_3CfYk7 on Query {\n  voteContract(id: $votesContractAddress) {\n    totalSupply\n    id\n  }\n}\n\nfragment Votes_VoteListDisplay_votes on Query {\n  votes(orderBy: id, orderDirection: desc, first: 1000) {\n    edges {\n      node {\n        id\n        ...Votes_VoteItem_vote\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n"
   }
 };
 })());

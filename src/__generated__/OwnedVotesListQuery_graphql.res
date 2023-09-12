@@ -1,26 +1,26 @@
-/* @sourceLoc Votes.res */
+/* @sourceLoc OwnedVotesList.res */
 /* @generated */
 %%raw("/* @generated */")
 module Types = {
   @@warning("-30")
 
   type response = {
-    fragmentRefs: RescriptRelay.fragmentRefs<[ | #Votes_VoteListDisplay_voteContract | #Votes_VoteListDisplay_votes]>,
+    fragmentRefs: RescriptRelay.fragmentRefs<[ | #OwnedVotesList_OwnedVotesListDisplay_votes]>,
   }
   @live
   type rawResponse = response
   @live
   type variables = {
-    votesContractAddress: string,
+    owner: string,
   }
   @live
   type refetchVariables = {
-    votesContractAddress: option<string>,
+    owner: option<string>,
   }
   @live let makeRefetchVariables = (
-    ~votesContractAddress=?,
+    ~owner=?,
   ): refetchVariables => {
-    votesContractAddress: votesContractAddress
+    owner: owner
   }
 
 }
@@ -90,14 +90,14 @@ var v0 = [
   {
     "defaultValue": null,
     "kind": "LocalArgument",
-    "name": "votesContractAddress"
+    "name": "owner"
   }
 ],
 v1 = [
   {
     "kind": "Variable",
-    "name": "id",
-    "variableName": "votesContractAddress"
+    "name": "owner",
+    "variableName": "owner"
   }
 ],
 v2 = [
@@ -114,32 +114,25 @@ v2 = [
   {
     "kind": "Literal",
     "name": "orderDirection",
-    "value": "desc"
+    "value": "asc"
+  },
+  {
+    "fields": (v1/*: any*/),
+    "kind": "ObjectValue",
+    "name": "where"
   }
-],
-v3 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "id",
-  "storageKey": null
-};
+];
 return {
   "fragment": {
     "argumentDefinitions": (v0/*: any*/),
     "kind": "Fragment",
     "metadata": null,
-    "name": "VotesQuery",
+    "name": "OwnedVotesListQuery",
     "selections": [
-      {
-        "args": null,
-        "kind": "FragmentSpread",
-        "name": "Votes_VoteListDisplay_votes"
-      },
       {
         "args": (v1/*: any*/),
         "kind": "FragmentSpread",
-        "name": "Votes_VoteListDisplay_voteContract"
+        "name": "OwnedVotesList_OwnedVotesListDisplay_votes"
       }
     ],
     "type": "Query",
@@ -149,7 +142,7 @@ return {
   "operation": {
     "argumentDefinitions": (v0/*: any*/),
     "kind": "Operation",
-    "name": "VotesQuery",
+    "name": "OwnedVotesListQuery",
     "selections": [
       {
         "alias": null,
@@ -175,7 +168,13 @@ return {
                 "name": "node",
                 "plural": false,
                 "selections": [
-                  (v3/*: any*/),
+                  {
+                    "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
+                    "name": "id",
+                    "storageKey": null
+                  },
                   {
                     "alias": null,
                     "args": null,
@@ -236,7 +235,7 @@ return {
             "storageKey": null
           }
         ],
-        "storageKey": "votes(first:1000,orderBy:\"id\",orderDirection:\"desc\")"
+        "storageKey": null
       },
       {
         "alias": null,
@@ -247,38 +246,19 @@ return {
           "where"
         ],
         "handle": "connection",
-        "key": "VoteListDisplay_voteTransfers_votes",
+        "key": "OwnedVotesList_votes_votes",
         "kind": "LinkedHandle",
         "name": "votes"
-      },
-      {
-        "alias": null,
-        "args": (v1/*: any*/),
-        "concreteType": "VoteContract",
-        "kind": "LinkedField",
-        "name": "voteContract",
-        "plural": false,
-        "selections": [
-          {
-            "alias": null,
-            "args": null,
-            "kind": "ScalarField",
-            "name": "totalSupply",
-            "storageKey": null
-          },
-          (v3/*: any*/)
-        ],
-        "storageKey": null
       }
     ]
   },
   "params": {
-    "cacheID": "2f8863e8969906b2c52fcca58f6113d7",
+    "cacheID": "5cb8e983a3e337aada6f6815a5ff9175",
     "id": null,
     "metadata": {},
-    "name": "VotesQuery",
+    "name": "OwnedVotesListQuery",
     "operationKind": "query",
-    "text": "query VotesQuery(\n  $votesContractAddress: String!\n) {\n  ...Votes_VoteListDisplay_votes\n  ...Votes_VoteListDisplay_voteContract_3CfYk7\n}\n\nfragment Votes_VoteItem_vote on Vote {\n  id\n  tokenId\n  uri\n}\n\nfragment Votes_VoteListDisplay_voteContract_3CfYk7 on Query {\n  voteContract(id: $votesContractAddress) {\n    totalSupply\n    id\n  }\n}\n\nfragment Votes_VoteListDisplay_votes on Query {\n  votes(orderBy: id, orderDirection: desc, first: 1000) {\n    edges {\n      node {\n        id\n        ...Votes_VoteItem_vote\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n"
+    "text": "query OwnedVotesListQuery(\n  $owner: String!\n) {\n  ...OwnedVotesList_OwnedVotesListDisplay_votes_1JS2nm\n}\n\nfragment OwnedVotesList_OwnedVoteItem_vote on Vote {\n  id\n  tokenId\n  uri\n}\n\nfragment OwnedVotesList_OwnedVotesListDisplay_votes_1JS2nm on Query {\n  votes(first: 1000, orderBy: id, orderDirection: asc, where: {owner: $owner}) {\n    edges {\n      node {\n        id\n        ...OwnedVotesList_OwnedVoteItem_vote\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n"
   }
 };
 })() `)
