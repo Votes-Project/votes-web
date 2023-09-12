@@ -1,3 +1,7 @@
+@val @scope(("import", "meta", "env"))
+external auctionContractAddress: option<string> = "VITE_AUCTION_CONTRACT_ADDRESS"
+@module("/src/abis/Auction.json") external auctionContractAbi: JSON.t = "default"
+
 module AuctionItem = {
   module AuctionCreatedFragment = %relay(`
   fragment AuctionList_AuctionItem_auctionCreated on AuctionCreated {
@@ -27,6 +31,7 @@ module AuctionItem = {
 
 `)
 
+  exception ContractWriteDoesNotExist
   exception AuctionDoesNotExist
   @react.component
   let make = (
@@ -47,6 +52,20 @@ module AuctionItem = {
         AuctionSettledFragment.use(auctionSettledRef)
       )
     let voteTransfer = VoteTransfersFragment.use(voteTransfer)
+    let {config} = Wagmi.usePrepareContractWrite(
+      ~config={
+        address: auctionContractAddress->Belt.Option.getExn,
+        abi: auctionContractAbi,
+        functionName: "settleCurrentAndCreateNewAuction",
+      },
+    )
+    let settleCurrentAndCreateNewAuction = Wagmi.useContractWrite(config)
+    let handleSettleCurrentAndCreateNewAuction = _ =>
+      switch settleCurrentAndCreateNewAuction.write {
+      | Some(createBid) => createBid()
+      | None => raise(ContractWriteDoesNotExist)
+      }
+
     React.useEffect2(() => {
       setAuctionDate(_ => auctionCreated->Option.map(({startTime}) => startTime))
       None
@@ -105,12 +124,17 @@ module AuctionItem = {
     | _ => "Bid failed to load"
     }
 
+    let isOver = {
+      let endTime = auctionCreated->Option.flatMap(({endTime}) => endTime->Float.fromString)
+      endTime->Option.map(endTime => endTime *. 1000. < Date.now())->Option.getWithDefault(false)
+    }
+
     <>
       <h1 className="font-['Fugaz One'] py-9 text-6xl font-bold text-default-darker ">
         {`VOTE ${voteTransfer.tokenId}`->React.string}
       </h1>
-      {switch (index, auctionCreated, auctionSettled) {
-      | (0, Some(auctionCreated), None) =>
+      {switch (index, auctionCreated, auctionSettled, isOver) {
+      | (0, Some(auctionCreated), None, false) =>
         <>
           <div className="flex flex-col lg:flex-row gap-5">
             <div className="flex lg:flex-col items-start justify-between">
@@ -145,17 +169,24 @@ module AuctionItem = {
                 </div>}
           </div>
         </>
-      | (0, None, None) => <div> {"Active Raffle"->React.string} </div>
+      | (0, None, None, _) => <div> {"Active Raffle"->React.string} </div>
+      | (_, None, None, _) => <div> {"Past Raffle"->React.string} </div>
 
-      | (_, None, None) => <div> {"Past Raffle"->React.string} </div>
-
-      | (_, _, Some(auctionSettled)) =>
+      | (_, _, Some(auctionSettled), true) =>
         <>
           <div>
             {"Winner:"->React.string}
             <ShortAddress address={Some(auctionSettled.winner)} />
           </div>
           <h2> {`Winning Bid: ${auctionSettled.amount} Ξ`->React.string} </h2>
+        </>
+      | (_, _, None, true) =>
+        <>
+          <button
+            className="bg-primary-dark text-white font-bold py-2 px-4 rounded"
+            onClick={handleSettleCurrentAndCreateNewAuction}>
+            {"Start Next Auction"->React.string}
+          </button>
         </>
 
       | _ => raise(AuctionDoesNotExist)
@@ -313,46 +344,63 @@ module AuctionListDisplay = {
           })
         }
       )
-
     switch auction {
     | Some(Auction(auction)) =>
-      <AuctionItem
-        index=auction.index
-        auctionCreated={auction.auctionCreated->Option.map(auctionCreated =>
-          auctionCreated.fragmentRefs
-        )}
-        auctionSettled={auction.auctionSettled->Option.map(auctionSettled =>
-          auctionSettled.fragmentRefs
-        )}
-        voteTransfer={auction.voteTransfer.fragmentRefs}
-        key=auction.voteTransfer.id
-        setAuctionDate>
-        {children}
-      </AuctionItem>
+      <RescriptReactErrorBoundary
+        fallback={e => {
+          Console.log(e)
+          "Error"->React.string
+        }}>
+        <AuctionItem
+          index=auction.index
+          auctionCreated={auction.auctionCreated->Option.map(auctionCreated =>
+            auctionCreated.fragmentRefs
+          )}
+          auctionSettled={auction.auctionSettled->Option.map(auctionSettled =>
+            auctionSettled.fragmentRefs
+          )}
+          voteTransfer={auction.voteTransfer.fragmentRefs}
+          key=auction.voteTransfer.id
+          setAuctionDate>
+          {children}
+        </AuctionItem>
+      </RescriptReactErrorBoundary>
     | Some(Raffle(auction)) =>
-      <AuctionItem
-        index=auction.index
-        auctionCreated={None}
-        auctionSettled={None}
-        voteTransfer={auction.voteTransfer.fragmentRefs}
-        key=auction.voteTransfer.id
-        setAuctionDate>
-        {children}
-      </AuctionItem>
+      <RescriptReactErrorBoundary
+        fallback={e => {
+          Console.log(e)
+          "Error"->React.string
+        }}>
+        <AuctionItem
+          index=auction.index
+          auctionCreated={None}
+          auctionSettled={None}
+          voteTransfer={auction.voteTransfer.fragmentRefs}
+          key=auction.voteTransfer.id
+          setAuctionDate>
+          {children}
+        </AuctionItem>
+      </RescriptReactErrorBoundary>
     | Some(FlashAuction(auction)) =>
-      <AuctionItem
-        index=auction.index
-        auctionCreated={auction.auctionCreated->Option.map(auctionCreated =>
-          auctionCreated.fragmentRefs
-        )}
-        auctionSettled={auction.auctionSettled->Option.map(auctionSettled =>
-          auctionSettled.fragmentRefs
-        )}
-        voteTransfer={auction.voteTransfer.fragmentRefs}
-        key=auction.voteTransfer.id
-        setAuctionDate>
-        {children}
-      </AuctionItem>
+      <RescriptReactErrorBoundary
+        fallback={e => {
+          Console.log(e)
+          "Error"->React.string
+        }}>
+        <AuctionItem
+          index=auction.index
+          auctionCreated={auction.auctionCreated->Option.map(auctionCreated =>
+            auctionCreated.fragmentRefs
+          )}
+          auctionSettled={auction.auctionSettled->Option.map(auctionSettled =>
+            auctionSettled.fragmentRefs
+          )}
+          voteTransfer={auction.voteTransfer.fragmentRefs}
+          key=auction.voteTransfer.id
+          setAuctionDate>
+          {children}
+        </AuctionItem>
+      </RescriptReactErrorBoundary>
     | None => raise(NoData)
     }
   }

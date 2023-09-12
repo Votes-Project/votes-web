@@ -2,7 +2,7 @@
 let make = (~children) => {
   open FramerMotion
   <>
-    <div className="relative w-full h-full flex flex-col">
+    <div className="relative w-full h-full flex flex-col z-0">
       <Motion.Div
         layoutId="background-noise"
         className="wrapper absolute h-full w-full bg-primary noise flex flex-col z-[-1]"
@@ -12,7 +12,7 @@ let make = (~children) => {
       <DailyQuestionSpeedDial />
     </div>
     <div className="bg-background w-full">
-      <VotesDetails />
+      <VotesInfo />
     </div>
   </>
 }
