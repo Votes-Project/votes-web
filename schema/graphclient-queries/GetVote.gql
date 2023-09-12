@@ -2,6 +2,7 @@ query GetVote($id: ID!) {
   vote(id: $id) {
     id
     owner
+    tokenId
     uri
   }
 }
