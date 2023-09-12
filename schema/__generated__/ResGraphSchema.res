@@ -64,6 +64,14 @@ let enum_OrderBy_Transfers = GraphQLEnumType.make({
     },
   }->makeEnumValues,
 })
+let enum_OrderBy_Votes = GraphQLEnumType.make({
+  name: "OrderBy_Votes",
+  description: ?None,
+  values: {
+    "id": {GraphQLEnumType.value: "id", description: ?None, deprecationReason: ?None},
+    "owner": {GraphQLEnumType.value: "owner", description: ?None, deprecationReason: ?None},
+  }->makeEnumValues,
+})
 let enum_OrderDirection = GraphQLEnumType.make({
   name: "OrderDirection",
   description: ?None,
@@ -114,6 +122,14 @@ let t_QuestionSubmittedEdge: ref<GraphQLObjectType.t> = Obj.magic({"contents": J
 let get_QuestionSubmittedEdge = () => t_QuestionSubmittedEdge.contents
 let t_VerificationData: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
 let get_VerificationData = () => t_VerificationData.contents
+let t_Vote: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
+let get_Vote = () => t_Vote.contents
+let t_VoteConnection: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
+let get_VoteConnection = () => t_VoteConnection.contents
+let t_VoteContract: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
+let get_VoteContract = () => t_VoteContract.contents
+let t_VoteEdge: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
+let get_VoteEdge = () => t_VoteEdge.contents
 let t_VoteTransfer: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
 let get_VoteTransfer = () => t_VoteTransfer.contents
 let t_VoteTransferConnection: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
@@ -129,6 +145,9 @@ let input_Where_AuctionCreateds_conversionInstructions = []
 let input_Where_Transfers: ref<GraphQLInputObjectType.t> = Obj.magic({"contents": Js.null})
 let get_Where_Transfers = () => input_Where_Transfers.contents
 let input_Where_Transfers_conversionInstructions = []
+let input_Where_Votes: ref<GraphQLInputObjectType.t> = Obj.magic({"contents": Js.null})
+let get_Where_Votes = () => input_Where_Votes.contents
+let input_Where_Votes_conversionInstructions = []
 input_Where_AuctionBids_conversionInstructions->Array.pushMany([
   ("id", makeInputObjectFieldConverterFn(v => v->Nullable.toOption)),
   ("tokenId", makeInputObjectFieldConverterFn(v => v->Nullable.toOption)),
@@ -141,6 +160,9 @@ input_Where_Transfers_conversionInstructions->Array.pushMany([
   ("id", makeInputObjectFieldConverterFn(v => v->Nullable.toOption)),
   ("tokenId", makeInputObjectFieldConverterFn(v => v->Nullable.toOption)),
   ("from", makeInputObjectFieldConverterFn(v => v->Nullable.toOption)),
+])
+input_Where_Votes_conversionInstructions->Array.pushMany([
+  ("id", makeInputObjectFieldConverterFn(v => v->Nullable.toOption)),
 ])
 let union_Verification: ref<GraphQLUnionType.t> = Obj.magic({"contents": Js.null})
 let get_Verification = () => union_Verification.contents
@@ -156,8 +178,10 @@ let interface_Node_resolveType = (v: Interface_node.Resolver.t) =>
   | VoteTransfer(_) => "VoteTransfer"
   | AuctionBid(_) => "AuctionBid"
   | AuctionSettled(_) => "AuctionSettled"
+  | VoteContract(_) => "VoteContract"
   | AuctionCreated(_) => "AuctionCreated"
   | QuestionSubmitted(_) => "QuestionSubmitted"
+  | Vote(_) => "Vote"
   | VerificationData(_) => "VerificationData"
   }
 
@@ -766,6 +790,26 @@ t_Query.contents = GraphQLObjectType.make({
           VerificationResolvers.verification(src, ~contextId=args["contextId"], ~ctx)
         }),
       },
+      "vote": {
+        typ: get_Vote()->GraphQLObjectType.toGraphQLType,
+        description: ?None,
+        deprecationReason: ?None,
+        args: {"id": {typ: Scalars.string->Scalars.toGraphQLType->nonNull}}->makeArgs,
+        resolve: makeResolveFn((src, args, ctx) => {
+          let src = typeUnwrapper(src)
+          VoteResolvers.Node.vote(src, ~ctx, ~id=args["id"])
+        }),
+      },
+      "voteContract": {
+        typ: get_VoteContract()->GraphQLObjectType.toGraphQLType,
+        description: ?None,
+        deprecationReason: ?None,
+        args: {"id": {typ: Scalars.string->Scalars.toGraphQLType->nonNull}}->makeArgs,
+        resolve: makeResolveFn((src, args, ctx) => {
+          let src = typeUnwrapper(src)
+          VoteContractResolvers.voteContract(src, ~ctx, ~id=args["id"])
+        }),
+      },
       "voteTransfer": {
         typ: get_VoteTransfer()->GraphQLObjectType.toGraphQLType,
         description: ?None,
@@ -805,6 +849,39 @@ t_Query.contents = GraphQLObjectType.make({
             | None => None
             | Some(v) =>
               v->applyConversionToInputObject(input_Where_Transfers_conversionInstructions)->Some
+            },
+          )
+        }),
+      },
+      "votes": {
+        typ: get_VoteConnection()->GraphQLObjectType.toGraphQLType,
+        description: ?None,
+        deprecationReason: ?None,
+        args: {
+          "after": {typ: Scalars.string->Scalars.toGraphQLType},
+          "before": {typ: Scalars.string->Scalars.toGraphQLType},
+          "first": {typ: Scalars.int->Scalars.toGraphQLType},
+          "last": {typ: Scalars.int->Scalars.toGraphQLType},
+          "orderBy": {typ: enum_OrderBy_Votes->GraphQLEnumType.toGraphQLType},
+          "orderDirection": {typ: enum_OrderDirection->GraphQLEnumType.toGraphQLType},
+          "skip": {typ: Scalars.int->Scalars.toGraphQLType},
+          "where": {typ: get_Where_Votes()->GraphQLInputObjectType.toGraphQLType},
+        }->makeArgs,
+        resolve: makeResolveFn((src, args, ctx) => {
+          let src = typeUnwrapper(src)
+          VoteResolvers.Connection.votes(
+            src,
+            ~after=args["after"]->Nullable.toOption,
+            ~before=args["before"]->Nullable.toOption,
+            ~first=args["first"]->Nullable.toOption,
+            ~last=args["last"]->Nullable.toOption,
+            ~orderBy=args["orderBy"]->Nullable.toOption,
+            ~orderDirection=args["orderDirection"]->Nullable.toOption,
+            ~skip=args["skip"]->Nullable.toOption,
+            ~where=switch args["where"]->Nullable.toOption {
+            | None => None
+            | Some(v) =>
+              v->applyConversionToInputObject(input_Where_Votes_conversionInstructions)->Some
             },
           )
         }),
@@ -1013,6 +1090,182 @@ t_VerificationData.contents = GraphQLObjectType.make({
       },
     }->makeFields,
 })
+t_Vote.contents = GraphQLObjectType.make({
+  name: "Vote",
+  description: "GraphClient: A Vote Token entity",
+  interfaces: [get_Node()],
+  fields: () =>
+    {
+      "id": {
+        typ: Scalars.id->Scalars.toGraphQLType->nonNull,
+        description: ?None,
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, args, ctx) => {
+          let src = typeUnwrapper(src)
+          NodeInterfaceResolvers.id(src, ~typename=Vote)
+        }),
+      },
+      "owner": {
+        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        description: ?None,
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["owner"]
+        }),
+      },
+      "uri": {
+        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        description: ?None,
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["uri"]
+        }),
+      },
+      "voteContract": {
+        typ: get_VoteContract()->GraphQLObjectType.toGraphQLType,
+        description: ?None,
+        deprecationReason: ?None,
+        args: {"id": {typ: Scalars.string->Scalars.toGraphQLType->nonNull}}->makeArgs,
+        resolve: makeResolveFn((src, args, ctx) => {
+          let src = typeUnwrapper(src)
+          VoteResolvers.VoteContract.voteContract(src, ~ctx, ~id=args["id"])
+        }),
+      },
+    }->makeFields,
+})
+t_VoteConnection.contents = GraphQLObjectType.make({
+  name: "VoteConnection",
+  description: "A connection of votes .",
+  interfaces: [],
+  fields: () =>
+    {
+      "edges": {
+        typ: GraphQLListType.make(
+          get_VoteEdge()->GraphQLObjectType.toGraphQLType,
+        )->GraphQLListType.toGraphQLType,
+        description: "A list of edges.",
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["edges"]
+        }),
+      },
+      "pageInfo": {
+        typ: get_PageInfo()->GraphQLObjectType.toGraphQLType->nonNull,
+        description: "Information to aid in pagination.",
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["pageInfo"]
+        }),
+      },
+    }->makeFields,
+})
+t_VoteContract.contents = GraphQLObjectType.make({
+  name: "VoteContract",
+  description: "GraphClient: A Vote Contract entity",
+  interfaces: [get_Node()],
+  fields: () =>
+    {
+      "id": {
+        typ: Scalars.id->Scalars.toGraphQLType->nonNull,
+        description: ?None,
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, args, ctx) => {
+          let src = typeUnwrapper(src)
+          NodeInterfaceResolvers.id(src, ~typename=VoteContract)
+        }),
+      },
+      "name": {
+        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        description: ?None,
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["name"]
+        }),
+      },
+      "symbol": {
+        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        description: ?None,
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["symbol"]
+        }),
+      },
+      "totalSupply": {
+        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        description: ?None,
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["totalSupply"]
+        }),
+      },
+      "votes": {
+        typ: get_VoteConnection()->GraphQLObjectType.toGraphQLType,
+        description: ?None,
+        deprecationReason: ?None,
+        args: {
+          "after": {typ: Scalars.string->Scalars.toGraphQLType},
+          "before": {typ: Scalars.string->Scalars.toGraphQLType},
+          "first": {typ: Scalars.int->Scalars.toGraphQLType},
+          "last": {typ: Scalars.int->Scalars.toGraphQLType},
+          "orderBy": {typ: enum_OrderBy_Votes->GraphQLEnumType.toGraphQLType},
+          "orderDirection": {typ: enum_OrderDirection->GraphQLEnumType.toGraphQLType},
+          "skip": {typ: Scalars.int->Scalars.toGraphQLType},
+          "where": {typ: get_Where_Votes()->GraphQLInputObjectType.toGraphQLType},
+        }->makeArgs,
+        resolve: makeResolveFn((src, args, ctx) => {
+          let src = typeUnwrapper(src)
+          VoteContractResolvers.VotesConnection.votes(
+            src,
+            ~after=args["after"]->Nullable.toOption,
+            ~before=args["before"]->Nullable.toOption,
+            ~first=args["first"]->Nullable.toOption,
+            ~last=args["last"]->Nullable.toOption,
+            ~orderBy=args["orderBy"]->Nullable.toOption,
+            ~orderDirection=args["orderDirection"]->Nullable.toOption,
+            ~skip=args["skip"]->Nullable.toOption,
+            ~where=switch args["where"]->Nullable.toOption {
+            | None => None
+            | Some(v) =>
+              v->applyConversionToInputObject(input_Where_Votes_conversionInstructions)->Some
+            },
+          )
+        }),
+      },
+    }->makeFields,
+})
+t_VoteEdge.contents = GraphQLObjectType.make({
+  name: "VoteEdge",
+  description: "An edge to a vote entity.",
+  interfaces: [],
+  fields: () =>
+    {
+      "cursor": {
+        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        description: "A cursor for use in pagination.",
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["cursor"]
+        }),
+      },
+      "node": {
+        typ: get_Vote()->GraphQLObjectType.toGraphQLType,
+        description: "The item at the end of the edge.",
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["node"]
+        }),
+      },
+    }->makeFields,
+})
 t_VoteTransfer.contents = GraphQLObjectType.make({
   name: "VoteTransfer",
   description: "GraphClient: A Transfer Event for a Vote token",
@@ -1170,6 +1423,18 @@ input_Where_Transfers.contents = GraphQLInputObjectType.make({
         deprecationReason: ?None,
       },
       "tokenId": {
+        GraphQLInputObjectType.typ: Scalars.string->Scalars.toGraphQLType,
+        description: ?None,
+        deprecationReason: ?None,
+      },
+    }->makeFields,
+})
+input_Where_Votes.contents = GraphQLInputObjectType.make({
+  name: "Where_Votes",
+  description: ?None,
+  fields: () =>
+    {
+      "id": {
         GraphQLInputObjectType.typ: Scalars.string->Scalars.toGraphQLType,
         description: ?None,
         deprecationReason: ?None,

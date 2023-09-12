@@ -17,6 +17,10 @@ function decode(str) {
         return "QuestionSubmitted";
     case "VerificationData" :
         return "VerificationData";
+    case "Vote" :
+        return "Vote";
+    case "VoteContract" :
+        return "VoteContract";
     case "VoteTransfer" :
         return "VoteTransfer";
     default:
