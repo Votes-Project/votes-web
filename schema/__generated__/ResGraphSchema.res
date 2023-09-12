@@ -163,6 +163,7 @@ input_Where_Transfers_conversionInstructions->Array.pushMany([
 ])
 input_Where_Votes_conversionInstructions->Array.pushMany([
   ("id", makeInputObjectFieldConverterFn(v => v->Nullable.toOption)),
+  ("owner", makeInputObjectFieldConverterFn(v => v->Nullable.toOption)),
 ])
 let union_Verification: ref<GraphQLUnionType.t> = Obj.magic({"contents": Js.null})
 let get_Verification = () => union_Verification.contents
@@ -1114,6 +1115,15 @@ t_Vote.contents = GraphQLObjectType.make({
           src["owner"]
         }),
       },
+      "tokenId": {
+        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        description: ?None,
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["tokenId"]
+        }),
+      },
       "uri": {
         typ: Scalars.string->Scalars.toGraphQLType->nonNull,
         description: ?None,
@@ -1203,39 +1213,6 @@ t_VoteContract.contents = GraphQLObjectType.make({
         resolve: makeResolveFn((src, _args, _ctx) => {
           let src = typeUnwrapper(src)
           src["totalSupply"]
-        }),
-      },
-      "votes": {
-        typ: get_VoteConnection()->GraphQLObjectType.toGraphQLType,
-        description: ?None,
-        deprecationReason: ?None,
-        args: {
-          "after": {typ: Scalars.string->Scalars.toGraphQLType},
-          "before": {typ: Scalars.string->Scalars.toGraphQLType},
-          "first": {typ: Scalars.int->Scalars.toGraphQLType},
-          "last": {typ: Scalars.int->Scalars.toGraphQLType},
-          "orderBy": {typ: enum_OrderBy_Votes->GraphQLEnumType.toGraphQLType},
-          "orderDirection": {typ: enum_OrderDirection->GraphQLEnumType.toGraphQLType},
-          "skip": {typ: Scalars.int->Scalars.toGraphQLType},
-          "where": {typ: get_Where_Votes()->GraphQLInputObjectType.toGraphQLType},
-        }->makeArgs,
-        resolve: makeResolveFn((src, args, ctx) => {
-          let src = typeUnwrapper(src)
-          VoteContractResolvers.VotesConnection.votes(
-            src,
-            ~after=args["after"]->Nullable.toOption,
-            ~before=args["before"]->Nullable.toOption,
-            ~first=args["first"]->Nullable.toOption,
-            ~last=args["last"]->Nullable.toOption,
-            ~orderBy=args["orderBy"]->Nullable.toOption,
-            ~orderDirection=args["orderDirection"]->Nullable.toOption,
-            ~skip=args["skip"]->Nullable.toOption,
-            ~where=switch args["where"]->Nullable.toOption {
-            | None => None
-            | Some(v) =>
-              v->applyConversionToInputObject(input_Where_Votes_conversionInstructions)->Some
-            },
-          )
         }),
       },
     }->makeFields,
@@ -1435,6 +1412,11 @@ input_Where_Votes.contents = GraphQLInputObjectType.make({
   fields: () =>
     {
       "id": {
+        GraphQLInputObjectType.typ: Scalars.string->Scalars.toGraphQLType,
+        description: ?None,
+        deprecationReason: ?None,
+      },
+      "owner": {
         GraphQLInputObjectType.typ: Scalars.string->Scalars.toGraphQLType,
         description: ?None,
         deprecationReason: ?None,
