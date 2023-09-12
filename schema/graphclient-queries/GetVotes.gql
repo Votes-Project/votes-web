@@ -1,0 +1,7 @@
+query GetVotes($first:Int, $where: Vote_filter, $orderBy: Vote_orderBy, $orderDirection: OrderDirection) {
+  votes(first:$first, where: $where, orderBy:$orderBy, orderDirection:$orderDirection) {
+    id
+    owner
+    uri
+  }
+}
