@@ -5,6 +5,8 @@ type t = {
   auctionBid: AuctionBidDataLoaders.t,
   verification: VerificationDataLoaders.t,
   voteTransfer: VoteTransferDataLoaders.t,
+  vote: VoteDataLoaders.t,
+  voteContract: VoteContractDataLoaders.t,
 }
 
 let make = () => {
@@ -14,4 +16,6 @@ let make = () => {
   auctionBid: AuctionBidDataLoaders.make(),
   verification: VerificationDataLoaders.make(),
   voteTransfer: VoteTransferDataLoaders.make(),
+  vote: VoteDataLoaders.make(),
+  voteContract: VoteContractDataLoaders.make(),
 }

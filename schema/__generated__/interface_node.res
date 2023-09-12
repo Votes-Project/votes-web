@@ -10,6 +10,8 @@ module Resolver = {
     | AuctionSettled(AuctionSettled.auctionSettled)
     | QuestionSubmitted(QuestionSubmitted.questionSubmitted)
     | VerificationData(Verification.verificationData)
+    | Vote(Vote.vote)
+    | VoteContract(VoteContract.voteContract)
     | VoteTransfer(VoteTransfer.voteTransfer)
 }
 
@@ -20,6 +22,8 @@ module ImplementedBy = {
     | AuctionSettled
     | QuestionSubmitted
     | VerificationData
+    | Vote
+    | VoteContract
     | VoteTransfer
 
   let decode = (str: string) =>
@@ -29,6 +33,8 @@ module ImplementedBy = {
     | "AuctionSettled" => Some(AuctionSettled)
     | "QuestionSubmitted" => Some(QuestionSubmitted)
     | "VerificationData" => Some(VerificationData)
+    | "Vote" => Some(Vote)
+    | "VoteContract" => Some(VoteContract)
     | "VoteTransfer" => Some(VoteTransfer)
     | _ => None
     }
@@ -42,6 +48,8 @@ type typeMap<'a> = {
   @as("AuctionSettled") auctionSettled: 'a,
   @as("QuestionSubmitted") questionSubmitted: 'a,
   @as("VerificationData") verificationData: 'a,
+  @as("Vote") vote: 'a,
+  @as("VoteContract") voteContract: 'a,
   @as("VoteTransfer") voteTransfer: 'a,
 }
 
