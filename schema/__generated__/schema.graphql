@@ -61,6 +61,7 @@ input Where_Transfers {
 
 input Where_Votes {
   id: String
+  owner: String
 }
 
 
@@ -309,6 +310,7 @@ type VerificationData implements Node {
 """GraphClient: A Vote Token entity"""
 type Vote implements Node {
   voteContract(id: String!): VoteContract
+  tokenId: String!
   owner: String!
   uri: String!
   id: ID!
@@ -328,7 +330,6 @@ type VoteConnection {
 
 """GraphClient: A Vote Contract entity"""
 type VoteContract implements Node {
-  votes(skip: Int, orderBy: OrderBy_Votes, orderDirection: OrderDirection, where: Where_Votes, first: Int, after: String, before: String, last: Int): VoteConnection
   name: String!
   symbol: String!
   totalSupply: String!

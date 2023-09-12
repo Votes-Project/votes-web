@@ -24,7 +24,10 @@ module Connection = {
     | @as("owner") Owner
 
   @gql.inputObject
-  type where_Votes = {id?: string}
+  type where_Votes = {
+    id?: string,
+    owner?: string,
+  }
 
   @gql.field
   let votes = async (

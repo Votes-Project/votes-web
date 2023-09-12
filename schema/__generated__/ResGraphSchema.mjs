@@ -321,6 +321,15 @@ input_Where_Votes_conversionInstructions.push([
             return Caml_option.some(v);
           }
         })
+    ], [
+      "owner",
+      (function (v) {
+          if (v == null) {
+            return ;
+          } else {
+            return Caml_option.some(v);
+          }
+        })
     ]);
 
 var union_Verification = {
@@ -1211,6 +1220,12 @@ t_Vote.contents = new Graphql.GraphQLObjectType({
                           return typeUnwrapper(src).owner;
                         })
                   },
+                  tokenId: {
+                    type: new Graphql.GraphQLNonNull(Graphql.GraphQLString),
+                    resolve: Caml_option.some(function (src, _args, _ctx) {
+                          return typeUnwrapper(src).tokenId;
+                        })
+                  },
                   uri: {
                     type: new Graphql.GraphQLNonNull(Graphql.GraphQLString),
                     resolve: Caml_option.some(function (src, _args, _ctx) {
@@ -1286,40 +1301,6 @@ t_VoteContract.contents = new Graphql.GraphQLObjectType({
                     type: new Graphql.GraphQLNonNull(Graphql.GraphQLString),
                     resolve: Caml_option.some(function (src, _args, _ctx) {
                           return typeUnwrapper(src).totalSupply;
-                        })
-                  },
-                  votes: {
-                    type: t_VoteConnection.contents,
-                    args: {
-                      after: {
-                        type: Graphql.GraphQLString
-                      },
-                      before: {
-                        type: Graphql.GraphQLString
-                      },
-                      first: {
-                        type: Graphql.GraphQLInt
-                      },
-                      last: {
-                        type: Graphql.GraphQLInt
-                      },
-                      orderBy: {
-                        type: enum_OrderBy_Votes
-                      },
-                      orderDirection: {
-                        type: enum_OrderDirection
-                      },
-                      skip: {
-                        type: Graphql.GraphQLInt
-                      },
-                      where: {
-                        type: input_Where_Votes.contents
-                      }
-                    },
-                    resolve: Caml_option.some(function (src, args, ctx) {
-                          var src$1 = typeUnwrapper(src);
-                          var v = args.where;
-                          return VoteContractResolvers.VotesConnection.votes(src$1, Caml_option.nullable_to_opt(args.skip), Caml_option.nullable_to_opt(args.orderBy), Caml_option.nullable_to_opt(args.orderDirection), !(v == null) ? applyConversionToInputObject(v, input_Where_Votes_conversionInstructions) : undefined, Caml_option.nullable_to_opt(args.first), Caml_option.nullable_to_opt(args.after), Caml_option.nullable_to_opt(args.before), Caml_option.nullable_to_opt(args.last));
                         })
                   }
                 };
@@ -1490,6 +1471,9 @@ input_Where_Votes.contents = new Graphql.GraphQLInputObjectType({
       fields: (function () {
           return {
                   id: {
+                    type: Graphql.GraphQLString
+                  },
+                  owner: {
                     type: Graphql.GraphQLString
                   }
                 };
