@@ -414,9 +414,6 @@ module Query = %relay(`
   }
 `)
 
-@module("/assets/RadarChart.png")
-external radarChart: string = "default"
-
 type arrowPress = LeftPress | RightPress
 @react.component @relay.deferredComponent
 let make = (~queryRef, ~children, ~tokenId) => {
@@ -467,11 +464,10 @@ let make = (~queryRef, ~children, ~tokenId) => {
   <div className=" w-full pt-4">
     <div
       className="lg:flex-[0_0_auto] lg:max-w-6xl m-auto flex flex-col lg:flex-row lg:justify-center lg:items-center flex-shrink-0 max-w-full">
-      <div className="  lg:w-[50%] w-[80%] md:w-[70%] mx-3 md:mx-4 lg:mx-0 flex align-end ">
-        <div className="self-end w-full">
-          <div className="relative h-0 w-full pt-[100%]">
-            <img className="absolute left-0 top-0  w-full align-middle " src={radarChart} />
-          </div>
+      <div
+        className="self-end lg:w-[50%] w-[80%] md:w-[70%] mx-[10%] mt-8 md:mx-[15%] lg:mx-0 flex align-end ">
+        <div className="relative h-0 w-full pt-[100%]">
+          <EmptyVoteChart className="absolute left-0 top-0 w-full align-middle " />
         </div>
       </div>
       <div
