@@ -1,6 +1,4 @@
 module VoteItem = {
-  @module("/assets/RadarChart.png")
-  external radarChart: string = "default"
   module VoteFragment = %relay(`
   fragment Votes_VoteItem_vote on Vote {
     id
@@ -26,14 +24,12 @@ module VoteItem = {
       )
     }
 
-    <li className="rounded-xl flex flex-col justify-center items-center relative transition-all">
+    <li className="rounded-xl flex flex-col  justify-center items-center relative transition-all">
       <button
-        className="h-full m-0 border-0 relative aspect-square scroll-m-[1vh] cursor-pointer bg-secondary noise rounded-xl"
+        className="h-full m-0 border-0 relative scroll-m-[1vh] cursor-pointer bg-secondary noise rounded-xl"
         onClick=handleVoteClick>
-        <img
-          className="rounded-none max-w-none my-0 mx-auto w-full align-middle"
-          src=vote.uri
-          alt="Radar Graph"
+        <EmptyVoteChart
+          className="static rounded-none max-w-none my-0 mx-auto w-full h-full align-middle"
         />
         <p
           className="bg-background-light block absolute w-full bottom-0 rounded-b-xl font-bold text-lg text-default-dark">
