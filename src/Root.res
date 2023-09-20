@@ -99,18 +99,28 @@ ReactDOMExperimental.renderConcurrentRootAtElementWithId(
             className="bg-primary noise fixed noise animate-[grain_12s_steps(10)_infinite] w-[300%] h-[300%] left-[-50%] top-[-100%]"
           />
         }>
-        // <RescriptReactErrorBoundary fallback={_ => {<div> {React.string("Error!")} </div>}}>
-        <Wagmi.WagmiConfig config={%raw("wagmiConfig")}>
-          <RainbowKit.RainbowKitProvider chains={%raw("chains")}>
-            <TodaysAuctionProvider>
-              <RelayRouter.RouteRenderer
-                // This renders all the time, and when there's a pending navigation (pending via React concurrent mode), pending will be `true`
-                renderPending={pending => <PendingIndicatorBar pending />}
-              />
-            </TodaysAuctionProvider>
-          </RainbowKit.RainbowKitProvider>
-        </Wagmi.WagmiConfig>
-        // </RescriptReactErrorBoundary>
+        <ErrorBoundary
+          fallback={({error}) => <>
+            {`Error! \n ${error->Exn.name->Option.getWithDefault("")}: ${error
+              ->Exn.message
+              ->Option.getWithDefault(
+                "Something went wrong connecting to the votes API",
+              )}`->React.string}
+          </>}>
+          <Wagmi.WagmiConfig config={%raw("wagmiConfig")}>
+            <RainbowKit.RainbowKitProvider chains={%raw("chains")}>
+              <TodaysAuctionProvider>
+                <RelayRouter.RouteRenderer
+                  // This renders all the time, and when there"s a pending navigation (pending via React concurrent mode), pending will be `true`
+                  renderPending={pending => <PendingIndicatorBar pending />}
+                />
+                <div className="bg-background w-full">
+                  <VotesInfo />
+                </div>
+              </TodaysAuctionProvider>
+            </RainbowKit.RainbowKitProvider>
+          </Wagmi.WagmiConfig>
+        </ErrorBoundary>
       </React.Suspense>
     </RelayRouter.Provider>
   </RescriptRelay.Context.Provider>,
