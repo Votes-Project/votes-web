@@ -483,7 +483,7 @@ t_Auction.contents = new Graphql.GraphQLObjectType({
                     resolve: Caml_option.some(function (src, args, ctx) {
                           var src$1 = typeUnwrapper(src);
                           var v = args.where;
-                          return AuctionResolvers.BidsConnection.bids(src$1, Caml_option.nullable_to_opt(args.orderBy), Caml_option.nullable_to_opt(args.orderDirection), !(v == null) ? applyConversionToInputObject(v, input_Where_AuctionBids_conversionInstructions) : undefined, Caml_option.nullable_to_opt(args.first), Caml_option.nullable_to_opt(args.after), Caml_option.nullable_to_opt(args.before), Caml_option.nullable_to_opt(args.last));
+                          return AuctionResolvers.bids(src$1, Caml_option.nullable_to_opt(args.orderBy), Caml_option.nullable_to_opt(args.orderDirection), !(v == null) ? applyConversionToInputObject(v, input_Where_AuctionBids_conversionInstructions) : undefined, Caml_option.nullable_to_opt(args.first), Caml_option.nullable_to_opt(args.after), Caml_option.nullable_to_opt(args.before), Caml_option.nullable_to_opt(args.last), ctx);
                         })
                   },
                   endTime: {
@@ -930,7 +930,7 @@ t_Query.contents = new Graphql.GraphQLObjectType({
                     },
                     resolve: Caml_option.some(function (src, args, ctx) {
                           var src$1 = typeUnwrapper(src);
-                          return AuctionResolvers.$$Node.auction(src$1, args.id, ctx);
+                          return AuctionResolvers.auction(src$1, args.id, ctx);
                         })
                   },
                   auctionBid: {
@@ -942,7 +942,7 @@ t_Query.contents = new Graphql.GraphQLObjectType({
                     },
                     resolve: Caml_option.some(function (src, args, ctx) {
                           var src$1 = typeUnwrapper(src);
-                          return AuctionBidResolvers.$$Node.auctionBid(src$1, args.id, ctx);
+                          return AuctionBidResolvers.auctionBid(src$1, args.id, ctx);
                         })
                   },
                   auctionBids: {
@@ -973,7 +973,7 @@ t_Query.contents = new Graphql.GraphQLObjectType({
                     resolve: Caml_option.some(function (src, args, ctx) {
                           var src$1 = typeUnwrapper(src);
                           var v = args.where;
-                          return AuctionBidResolvers.Connection.auctionBids(src$1, Caml_option.nullable_to_opt(args.orderBy), Caml_option.nullable_to_opt(args.orderDirection), !(v == null) ? applyConversionToInputObject(v, input_Where_AuctionBids_conversionInstructions) : undefined, Caml_option.nullable_to_opt(args.first), Caml_option.nullable_to_opt(args.after), Caml_option.nullable_to_opt(args.before), Caml_option.nullable_to_opt(args.last));
+                          return AuctionBidResolvers.auctionBids(src$1, Caml_option.nullable_to_opt(args.orderBy), Caml_option.nullable_to_opt(args.orderDirection), !(v == null) ? applyConversionToInputObject(v, input_Where_AuctionBids_conversionInstructions) : undefined, Caml_option.nullable_to_opt(args.first), Caml_option.nullable_to_opt(args.after), Caml_option.nullable_to_opt(args.before), Caml_option.nullable_to_opt(args.last), ctx);
                         })
                   },
                   auctionCreated: {
@@ -1092,7 +1092,7 @@ t_Query.contents = new Graphql.GraphQLObjectType({
                     resolve: Caml_option.some(function (src, args, ctx) {
                           var src$1 = typeUnwrapper(src);
                           var v = args.where;
-                          return AuctionResolvers.Connection.auctions(src$1, Caml_option.nullable_to_opt(args.orderBy), Caml_option.nullable_to_opt(args.orderDirection), !(v == null) ? applyConversionToInputObject(v, input_Where_Auctions_conversionInstructions) : undefined, Caml_option.nullable_to_opt(args.first), Caml_option.nullable_to_opt(args.after), Caml_option.nullable_to_opt(args.before), Caml_option.nullable_to_opt(args.last));
+                          return AuctionResolvers.auctions(src$1, Caml_option.nullable_to_opt(args.orderBy), Caml_option.nullable_to_opt(args.orderDirection), !(v == null) ? applyConversionToInputObject(v, input_Where_Auctions_conversionInstructions) : undefined, Caml_option.nullable_to_opt(args.first), Caml_option.nullable_to_opt(args.after), Caml_option.nullable_to_opt(args.before), Caml_option.nullable_to_opt(args.last), ctx);
                         })
                   },
                   node: {
@@ -1178,7 +1178,7 @@ t_Query.contents = new Graphql.GraphQLObjectType({
                     },
                     resolve: Caml_option.some(function (src, args, ctx) {
                           var src$1 = typeUnwrapper(src);
-                          return VoteResolvers.$$Node.vote(src$1, args.id, ctx);
+                          return VoteResolvers.vote(src$1, args.id, ctx);
                         })
                   },
                   voteContract: {
@@ -1270,7 +1270,7 @@ t_Query.contents = new Graphql.GraphQLObjectType({
                     resolve: Caml_option.some(function (src, args, ctx) {
                           var src$1 = typeUnwrapper(src);
                           var v = args.where;
-                          return VoteResolvers.Connection.votes(src$1, Caml_option.nullable_to_opt(args.skip), Caml_option.nullable_to_opt(args.orderBy), Caml_option.nullable_to_opt(args.orderDirection), !(v == null) ? applyConversionToInputObject(v, input_Where_Votes_conversionInstructions) : undefined, Caml_option.nullable_to_opt(args.first), Caml_option.nullable_to_opt(args.after), Caml_option.nullable_to_opt(args.before), Caml_option.nullable_to_opt(args.last));
+                          return VoteResolvers.votes(src$1, Caml_option.nullable_to_opt(args.skip), Caml_option.nullable_to_opt(args.orderBy), Caml_option.nullable_to_opt(args.orderDirection), !(v == null) ? applyConversionToInputObject(v, input_Where_Votes_conversionInstructions) : undefined, Caml_option.nullable_to_opt(args.first), Caml_option.nullable_to_opt(args.after), Caml_option.nullable_to_opt(args.before), Caml_option.nullable_to_opt(args.last), ctx);
                         })
                   }
                 };

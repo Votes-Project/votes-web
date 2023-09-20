@@ -8,6 +8,8 @@ module Node = {
   let auctionSettled = async (_: Schema.query, ~id, ~ctx: ResGraphContext.context): option<
     auctionSettled,
   > => {
+    let id =
+      id->ResGraph.Utils.Base64.decode->String.split(":")->Array.get(1)->Option.getWithDefault(id)
     switch await ctx.dataLoaders.auctionSettled.byId->DataLoader.load(id) {
     | None => panic("Did not find auction settled with that ID")
     | Some(auctionSettled) => auctionSettled->Some
