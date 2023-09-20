@@ -6,7 +6,7 @@
       {
         "path": "",
         "name": "Auction",
-        "children": [{ "path": "", "name": "Bids" }]
+        "children": [{ "path": "?allBids=int", "name": "Bids" }]
       },
       {
         "path": "queue",

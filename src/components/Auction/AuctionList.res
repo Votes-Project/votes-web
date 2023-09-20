@@ -129,6 +129,23 @@ module AuctionItem = {
       endTime->Option.map(endTime => endTime *. 1000. < Date.now())->Option.getWithDefault(false)
     }
 
+    let handleAllBids = tokenId => {
+      let tokenId = switch tokenId {
+      | Some(tokenId) => Some(tokenId)
+      | None => todaysAuction->Option.flatMap(todaysAuction => todaysAuction.tokenId)
+      }
+      setBidsParams(
+        ~removeNotControlledParams=false,
+        ~navigationMode_=Push,
+        ~shallow=false,
+        ~setter=c => {
+          ...c,
+          tokenId,
+          allBids: Some(0),
+        },
+      )
+    }
+
     <>
       <h1 className="font-['Fugaz One'] py-9 text-6xl font-bold text-default-darker ">
         {`VOTE ${voteTransfer.tokenId}`->React.string}
@@ -155,15 +172,16 @@ module AuctionItem = {
             <ReactIcons.LuInfo size="1.25rem" className="text-default-darker" />
             <p className="text-md text-default-darker"> {"Ask your own question"->React.string} </p>
           </button>
-          // <RescriptReactErrorBoundary
-          //   fallback={_ => {<div> {React.string("Bid Component Failed to Insantiate")} </div>}}>
+          <ErrorBoundary
+            fallback={_ => {<div> {React.string("Bid Component Failed to Insantiate")} </div>}}>
           <CreateBid queryRef=auctionCreated.fragmentRefs isToday={index == 0} />
-          // </RescriptReactErrorBoundary>
+          </ErrorBoundary>
           <ul className="flex flex-col justify-between py-4"> {children} </ul>
           <div className="w-full py-2 text-center pb-4">
             {currentBid == "0"
               ? React.null
               : <div
+                  onClick={_ => handleAllBids(queryParams.tokenId)}
                   className="font-semibold text-background-dark hover:text-default-darker cursor-pointer">
                   {"View All Bids"->React.string}
                 </div>}
