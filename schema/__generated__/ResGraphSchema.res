@@ -267,10 +267,11 @@ t_Auction.contents = GraphQLObjectType.make({
         }->makeArgs,
         resolve: makeResolveFn((src, args, ctx) => {
           let src = typeUnwrapper(src)
-          AuctionResolvers.BidsConnection.bids(
+          AuctionResolvers.bids(
             src,
             ~after=args["after"]->Nullable.toOption,
             ~before=args["before"]->Nullable.toOption,
+            ~ctx,
             ~first=args["first"]->Nullable.toOption,
             ~last=args["last"]->Nullable.toOption,
             ~orderBy=args["orderBy"]->Nullable.toOption,
@@ -797,7 +798,7 @@ t_Query.contents = GraphQLObjectType.make({
         args: {"id": {typ: Scalars.string->Scalars.toGraphQLType->nonNull}}->makeArgs,
         resolve: makeResolveFn((src, args, ctx) => {
           let src = typeUnwrapper(src)
-          AuctionResolvers.Node.auction(src, ~ctx, ~id=args["id"])
+          AuctionResolvers.auction(src, ~ctx, ~id=args["id"])
         }),
       },
       "auctionBid": {
@@ -807,7 +808,7 @@ t_Query.contents = GraphQLObjectType.make({
         args: {"id": {typ: Scalars.string->Scalars.toGraphQLType->nonNull}}->makeArgs,
         resolve: makeResolveFn((src, args, ctx) => {
           let src = typeUnwrapper(src)
-          AuctionBidResolvers.Node.auctionBid(src, ~ctx, ~id=args["id"])
+          AuctionBidResolvers.auctionBid(src, ~ctx, ~id=args["id"])
         }),
       },
       "auctionBids": {
@@ -825,10 +826,11 @@ t_Query.contents = GraphQLObjectType.make({
         }->makeArgs,
         resolve: makeResolveFn((src, args, ctx) => {
           let src = typeUnwrapper(src)
-          AuctionBidResolvers.Connection.auctionBids(
+          AuctionBidResolvers.auctionBids(
             src,
             ~after=args["after"]->Nullable.toOption,
             ~before=args["before"]->Nullable.toOption,
+            ~ctx,
             ~first=args["first"]->Nullable.toOption,
             ~last=args["last"]->Nullable.toOption,
             ~orderBy=args["orderBy"]->Nullable.toOption,
@@ -938,10 +940,11 @@ t_Query.contents = GraphQLObjectType.make({
         }->makeArgs,
         resolve: makeResolveFn((src, args, ctx) => {
           let src = typeUnwrapper(src)
-          AuctionResolvers.Connection.auctions(
+          AuctionResolvers.auctions(
             src,
             ~after=args["after"]->Nullable.toOption,
             ~before=args["before"]->Nullable.toOption,
+            ~ctx,
             ~first=args["first"]->Nullable.toOption,
             ~last=args["last"]->Nullable.toOption,
             ~orderBy=args["orderBy"]->Nullable.toOption,
@@ -1032,7 +1035,7 @@ t_Query.contents = GraphQLObjectType.make({
         args: {"id": {typ: Scalars.string->Scalars.toGraphQLType->nonNull}}->makeArgs,
         resolve: makeResolveFn((src, args, ctx) => {
           let src = typeUnwrapper(src)
-          VoteResolvers.Node.vote(src, ~ctx, ~id=args["id"])
+          VoteResolvers.vote(src, ~ctx, ~id=args["id"])
         }),
       },
       "voteContract": {
@@ -1104,10 +1107,11 @@ t_Query.contents = GraphQLObjectType.make({
         }->makeArgs,
         resolve: makeResolveFn((src, args, ctx) => {
           let src = typeUnwrapper(src)
-          VoteResolvers.Connection.votes(
+          VoteResolvers.votes(
             src,
             ~after=args["after"]->Nullable.toOption,
             ~before=args["before"]->Nullable.toOption,
+            ~ctx,
             ~first=args["first"]->Nullable.toOption,
             ~last=args["last"]->Nullable.toOption,
             ~orderBy=args["orderBy"]->Nullable.toOption,
