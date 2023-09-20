@@ -3,6 +3,7 @@
 import * as Graphql from "graphql";
 import * as Caml_option from "rescript/lib/es6/caml_option.js";
 import * as VoteResolvers from "../VoteResolvers.mjs";
+import * as AuctionResolvers from "../AuctionResolvers.mjs";
 import * as AuctionBidResolvers from "../AuctionBidResolvers.mjs";
 import * as VerificationResolvers from "../VerificationResolvers.mjs";
 import * as VoteContractResolvers from "../VoteContractResolvers.mjs";
@@ -69,6 +70,24 @@ var enum_OrderBy_AuctionSettleds = new Graphql.GraphQLEnumType({
       }
     });
 
+var enum_OrderBy_Auctions = new Graphql.GraphQLEnumType({
+      name: "OrderBy_Auctions",
+      values: {
+        id: {
+          value: "id"
+        },
+        tokenId: {
+          value: "tokenId"
+        },
+        blockTimestamp: {
+          value: "blockTimestamp"
+        },
+        amount: {
+          value: "amount"
+        }
+      }
+    });
+
 var enum_OrderBy_Transfers = new Graphql.GraphQLEnumType({
       name: "OrderBy_Transfers",
       values: {
@@ -127,6 +146,10 @@ var i_Node = {
   contents: null
 };
 
+var t_Auction = {
+  contents: null
+};
+
 var t_AuctionBid = {
   contents: null
 };
@@ -139,6 +162,10 @@ var t_AuctionBidEdge = {
   contents: null
 };
 
+var t_AuctionConnection = {
+  contents: null
+};
+
 var t_AuctionCreated = {
   contents: null
 };
@@ -148,6 +175,10 @@ var t_AuctionCreatedConnection = {
 };
 
 var t_AuctionCreatedEdge = {
+  contents: null
+};
+
+var t_AuctionEdge = {
   contents: null
 };
 
@@ -231,6 +262,12 @@ var input_Where_AuctionCreateds = {
 
 var input_Where_AuctionCreateds_conversionInstructions = [];
 
+var input_Where_Auctions = {
+  contents: null
+};
+
+var input_Where_Auctions_conversionInstructions = [];
+
 var input_Where_Transfers = {
   contents: null
 };
@@ -264,6 +301,26 @@ input_Where_AuctionBids_conversionInstructions.push([
     ]);
 
 input_Where_AuctionCreateds_conversionInstructions.push([
+      "id",
+      (function (v) {
+          if (v == null) {
+            return ;
+          } else {
+            return Caml_option.some(v);
+          }
+        })
+    ], [
+      "tokenId",
+      (function (v) {
+          if (v == null) {
+            return ;
+          } else {
+            return Caml_option.some(v);
+          }
+        })
+    ]);
+
+input_Where_Auctions_conversionInstructions.push([
       "id",
       (function (v) {
           if (v == null) {
@@ -346,6 +403,8 @@ function union_Verification_resolveType(v) {
 
 function interface_Node_resolveType(v) {
   switch (v.TAG) {
+    case "Auction" :
+        return "Auction";
     case "AuctionBid" :
         return "AuctionBid";
     case "AuctionCreated" :
@@ -378,6 +437,95 @@ i_Node.contents = new Graphql.GraphQLInterfaceType({
         }),
       resolveType: interface_Node_resolveType,
       interfaces: []
+    });
+
+t_Auction.contents = new Graphql.GraphQLObjectType({
+      name: "Auction",
+      fields: (function () {
+          return {
+                  amount: {
+                    type: new Graphql.GraphQLNonNull(Graphql.GraphQLString),
+                    resolve: Caml_option.some(function (src, _args, _ctx) {
+                          return typeUnwrapper(src).amount;
+                        })
+                  },
+                  bidder: {
+                    type: new Graphql.GraphQLNonNull(Graphql.GraphQLString),
+                    resolve: Caml_option.some(function (src, _args, _ctx) {
+                          return typeUnwrapper(src).bidder;
+                        })
+                  },
+                  bids: {
+                    type: t_AuctionBidConnection.contents,
+                    args: {
+                      after: {
+                        type: Graphql.GraphQLString
+                      },
+                      before: {
+                        type: Graphql.GraphQLString
+                      },
+                      first: {
+                        type: Graphql.GraphQLInt
+                      },
+                      last: {
+                        type: Graphql.GraphQLInt
+                      },
+                      orderBy: {
+                        type: enum_OrderBy_AuctionBids
+                      },
+                      orderDirection: {
+                        type: enum_OrderDirection
+                      },
+                      where: {
+                        type: input_Where_AuctionBids.contents
+                      }
+                    },
+                    resolve: Caml_option.some(function (src, args, ctx) {
+                          var src$1 = typeUnwrapper(src);
+                          var v = args.where;
+                          return AuctionResolvers.BidsConnection.bids(src$1, Caml_option.nullable_to_opt(args.orderBy), Caml_option.nullable_to_opt(args.orderDirection), !(v == null) ? applyConversionToInputObject(v, input_Where_AuctionBids_conversionInstructions) : undefined, Caml_option.nullable_to_opt(args.first), Caml_option.nullable_to_opt(args.after), Caml_option.nullable_to_opt(args.before), Caml_option.nullable_to_opt(args.last));
+                        })
+                  },
+                  endTime: {
+                    type: new Graphql.GraphQLNonNull(Graphql.GraphQLString),
+                    resolve: Caml_option.some(function (src, _args, _ctx) {
+                          return typeUnwrapper(src).endTime;
+                        })
+                  },
+                  extended: {
+                    type: new Graphql.GraphQLNonNull(Graphql.GraphQLBoolean),
+                    resolve: Caml_option.some(function (src, _args, _ctx) {
+                          return typeUnwrapper(src).extended;
+                        })
+                  },
+                  id: {
+                    type: new Graphql.GraphQLNonNull(Graphql.GraphQLID),
+                    resolve: Caml_option.some(function (src, args, ctx) {
+                          var src$1 = typeUnwrapper(src);
+                          return NodeInterfaceResolvers.id(src$1, "Auction");
+                        })
+                  },
+                  settled: {
+                    type: new Graphql.GraphQLNonNull(Graphql.GraphQLBoolean),
+                    resolve: Caml_option.some(function (src, _args, _ctx) {
+                          return typeUnwrapper(src).settled;
+                        })
+                  },
+                  startTime: {
+                    type: new Graphql.GraphQLNonNull(Graphql.GraphQLString),
+                    resolve: Caml_option.some(function (src, _args, _ctx) {
+                          return typeUnwrapper(src).startTime;
+                        })
+                  },
+                  tokenId: {
+                    type: new Graphql.GraphQLNonNull(Graphql.GraphQLString),
+                    resolve: Caml_option.some(function (src, _args, _ctx) {
+                          return typeUnwrapper(src).tokenId;
+                        })
+                  }
+                };
+        }),
+      interfaces: [i_Node.contents]
     });
 
 t_AuctionBid.contents = new Graphql.GraphQLObjectType({
@@ -427,7 +575,7 @@ t_AuctionBid.contents = new Graphql.GraphQLObjectType({
 
 t_AuctionBidConnection.contents = new Graphql.GraphQLObjectType({
       name: "AuctionBidConnection",
-      description: "A connection to a todo.",
+      description: "A connection of auction bids.",
       fields: (function () {
           return {
                   edges: {
@@ -467,6 +615,30 @@ t_AuctionBidEdge.contents = new Graphql.GraphQLObjectType({
                           return typeUnwrapper(src).node;
                         }),
                     description: "The item at the end of the edge."
+                  }
+                };
+        }),
+      interfaces: []
+    });
+
+t_AuctionConnection.contents = new Graphql.GraphQLObjectType({
+      name: "AuctionConnection",
+      description: "A connection to an auction.",
+      fields: (function () {
+          return {
+                  edges: {
+                    type: new Graphql.GraphQLList(t_AuctionEdge.contents),
+                    resolve: Caml_option.some(function (src, _args, _ctx) {
+                          return typeUnwrapper(src).edges;
+                        }),
+                    description: "A list of edges."
+                  },
+                  pageInfo: {
+                    type: new Graphql.GraphQLNonNull(t_PageInfo.contents),
+                    resolve: Caml_option.some(function (src, _args, _ctx) {
+                          return typeUnwrapper(src).pageInfo;
+                        }),
+                    description: "Information to aid in pagination."
                   }
                 };
         }),
@@ -549,6 +721,30 @@ t_AuctionCreatedEdge.contents = new Graphql.GraphQLObjectType({
                   },
                   node: {
                     type: t_AuctionCreated.contents,
+                    resolve: Caml_option.some(function (src, _args, _ctx) {
+                          return typeUnwrapper(src).node;
+                        }),
+                    description: "The item at the end of the edge."
+                  }
+                };
+        }),
+      interfaces: []
+    });
+
+t_AuctionEdge.contents = new Graphql.GraphQLObjectType({
+      name: "AuctionEdge",
+      description: "An edge to an auction.",
+      fields: (function () {
+          return {
+                  cursor: {
+                    type: new Graphql.GraphQLNonNull(Graphql.GraphQLString),
+                    resolve: Caml_option.some(function (src, _args, _ctx) {
+                          return typeUnwrapper(src).cursor;
+                        }),
+                    description: "A cursor for use in pagination."
+                  },
+                  node: {
+                    type: t_Auction.contents,
                     resolve: Caml_option.some(function (src, _args, _ctx) {
                           return typeUnwrapper(src).node;
                         }),
@@ -725,6 +921,18 @@ t_Query.contents = new Graphql.GraphQLObjectType({
       name: "Query",
       fields: (function () {
           return {
+                  auction: {
+                    type: t_Auction.contents,
+                    args: {
+                      id: {
+                        type: new Graphql.GraphQLNonNull(Graphql.GraphQLString)
+                      }
+                    },
+                    resolve: Caml_option.some(function (src, args, ctx) {
+                          var src$1 = typeUnwrapper(src);
+                          return AuctionResolvers.$$Node.auction(src$1, args.id, ctx);
+                        })
+                  },
                   auctionBid: {
                     type: t_AuctionBid.contents,
                     args: {
@@ -854,6 +1062,37 @@ t_Query.contents = new Graphql.GraphQLObjectType({
                     resolve: Caml_option.some(function (src, args, ctx) {
                           var src$1 = typeUnwrapper(src);
                           return AuctionSettledResolvers.Connection.auctionSettleds(src$1, Caml_option.nullable_to_opt(args.skip), Caml_option.nullable_to_opt(args.orderBy), Caml_option.nullable_to_opt(args.orderDirection), Caml_option.nullable_to_opt(args.first), Caml_option.nullable_to_opt(args.after), Caml_option.nullable_to_opt(args.before), Caml_option.nullable_to_opt(args.last));
+                        })
+                  },
+                  auctions: {
+                    type: t_AuctionConnection.contents,
+                    args: {
+                      after: {
+                        type: Graphql.GraphQLString
+                      },
+                      before: {
+                        type: Graphql.GraphQLString
+                      },
+                      first: {
+                        type: Graphql.GraphQLInt
+                      },
+                      last: {
+                        type: Graphql.GraphQLInt
+                      },
+                      orderBy: {
+                        type: enum_OrderBy_Auctions
+                      },
+                      orderDirection: {
+                        type: enum_OrderDirection
+                      },
+                      where: {
+                        type: input_Where_Auctions.contents
+                      }
+                    },
+                    resolve: Caml_option.some(function (src, args, ctx) {
+                          var src$1 = typeUnwrapper(src);
+                          var v = args.where;
+                          return AuctionResolvers.Connection.auctions(src$1, Caml_option.nullable_to_opt(args.orderBy), Caml_option.nullable_to_opt(args.orderDirection), !(v == null) ? applyConversionToInputObject(v, input_Where_Auctions_conversionInstructions) : undefined, Caml_option.nullable_to_opt(args.first), Caml_option.nullable_to_opt(args.after), Caml_option.nullable_to_opt(args.before), Caml_option.nullable_to_opt(args.last));
                         })
                   },
                   node: {
@@ -1437,6 +1676,20 @@ input_Where_AuctionBids.contents = new Graphql.GraphQLInputObjectType({
 
 input_Where_AuctionCreateds.contents = new Graphql.GraphQLInputObjectType({
       name: "Where_AuctionCreateds",
+      fields: (function () {
+          return {
+                  id: {
+                    type: Graphql.GraphQLString
+                  },
+                  tokenId: {
+                    type: Graphql.GraphQLString
+                  }
+                };
+        })
+    });
+
+input_Where_Auctions.contents = new Graphql.GraphQLInputObjectType({
+      name: "Where_Auctions",
       fields: (function () {
           return {
                   id: {
