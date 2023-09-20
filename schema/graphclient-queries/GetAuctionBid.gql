@@ -4,5 +4,6 @@ query GetAuctionBid($id: ID!) {
     tokenId
     amount
     bidder
+    blockTimestamp
   }
 }

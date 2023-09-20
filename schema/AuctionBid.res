@@ -20,6 +20,6 @@ type auctionBid = {
 @gql.type
 type auctionBidEdge = ResGraph.Connections.edge<auctionBid>
 
-/** A connection to a todo. */
+/** A connection of auction bids. */
 @gql.type
 type auctionBidConnection = ResGraph.Connections.connection<auctionBidEdge>

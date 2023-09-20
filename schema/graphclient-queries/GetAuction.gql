@@ -1,0 +1,12 @@
+query GetAuction($id: ID!) {
+  auction(id: $id) {
+    id
+    tokenId
+    amount
+    bidder
+    startTime
+    endTime
+    settled
+    extended
+  }
+}

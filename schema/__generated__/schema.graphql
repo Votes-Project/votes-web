@@ -16,6 +16,13 @@ enum OrderBy_AuctionSettleds {
   winner
 }
 
+enum OrderBy_Auctions {
+  id
+  tokenId
+  blockTimestamp
+  amount
+}
+
 enum OrderBy_Transfers {
   id
   tokenId
@@ -53,6 +60,11 @@ input Where_AuctionCreateds {
   tokenId: String
 }
 
+input Where_Auctions {
+  id: String
+  tokenId: String
+}
+
 input Where_Transfers {
   id: String
   tokenId: String
@@ -67,6 +79,18 @@ input Where_Votes {
 
 """An object with an ID."""
 interface Node {
+  id: ID!
+}
+
+type Auction implements Node {
+  bids(orderBy: OrderBy_AuctionBids, orderDirection: OrderDirection, where: Where_AuctionBids, first: Int, after: String, before: String, last: Int): AuctionBidConnection
+  tokenId: String!
+  startTime: String!
+  endTime: String!
+  amount: String!
+  bidder: String!
+  extended: Boolean!
+  settled: Boolean!
   id: ID!
 }
 
@@ -89,7 +113,7 @@ type AuctionBid implements Node {
 }
 
 
-"""A connection to a todo."""
+"""A connection of auction bids."""
 type AuctionBidConnection {
 
   """Information to aid in pagination."""
@@ -108,6 +132,17 @@ type AuctionBidEdge {
 
   """A cursor for use in pagination."""
   cursor: String!
+}
+
+
+"""A connection to an auction."""
+type AuctionConnection {
+
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [AuctionEdge]
 }
 
 
@@ -142,6 +177,17 @@ type AuctionCreatedEdge {
 
   """The item at the end of the edge."""
   node: AuctionCreated
+
+  """A cursor for use in pagination."""
+  cursor: String!
+}
+
+
+"""An edge to an auction."""
+type AuctionEdge {
+
+  """The item at the end of the edge."""
+  node: Auction
 
   """A cursor for use in pagination."""
   cursor: String!
@@ -235,6 +281,8 @@ type Query {
   node(id: ID!): Node
   auctionSettleds(skip: Int, orderBy: OrderBy_AuctionSettleds, orderDirection: OrderDirection, first: Int, after: String, before: String, last: Int): AuctionSettledConnection
   auctionSettled(id: String!): AuctionSettled
+  auctions(orderBy: OrderBy_Auctions, orderDirection: OrderDirection, where: Where_Auctions, first: Int, after: String, before: String, last: Int): AuctionConnection
+  auction(id: String!): Auction
   auctionCreateds(skip: Int, orderBy: OrderBy_AuctionCreateds, orderDirection: OrderDirection, where: Where_AuctionCreateds, first: Int, after: String, before: String, last: Int): AuctionCreatedConnection
   auctionCreated(id: String!): AuctionCreated
   auctionBids(orderBy: OrderBy_AuctionBids, orderDirection: OrderDirection, where: Where_AuctionBids, first: Int, after: String, before: String, last: Int): AuctionBidConnection

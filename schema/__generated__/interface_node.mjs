@@ -7,6 +7,8 @@ var Resolver = {};
 
 function decode(str) {
   switch (str) {
+    case "Auction" :
+        return "Auction";
     case "AuctionBid" :
         return "AuctionBid";
     case "AuctionCreated" :

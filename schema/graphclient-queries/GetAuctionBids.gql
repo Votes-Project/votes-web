@@ -4,5 +4,6 @@ query GetAuctionBids($first:Int, $orderBy:AuctionBid_orderBy, $orderDirection:Or
     tokenId
     amount
     bidder
+    blockTimestamp
   }
 }

@@ -1,4 +1,5 @@
 type t = {
+  auction: AuctionDataLoaders.t,
   auctionSettled: AuctionSettledDataLoaders.t,
   auctionCreated: AuctionCreatedDataLoaders.t,
   questionSubmitted: QuestionSubmittedDataLoaders.t,
@@ -10,6 +11,7 @@ type t = {
 }
 
 let make = () => {
+  auction: AuctionDataLoaders.make(),
   auctionSettled: AuctionSettledDataLoaders.make(),
   auctionCreated: AuctionCreatedDataLoaders.make(),
   questionSubmitted: QuestionSubmittedDataLoaders.make(),

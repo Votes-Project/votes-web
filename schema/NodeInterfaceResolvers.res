@@ -7,6 +7,11 @@ let node = async (_: Schema.query, ~id, ~ctx: ResGraphContext.context): option<
   | [typenameAsString, id] =>
     switch typenameAsString->Interface_node.ImplementedBy.decode {
     | None => None
+    | Some(Auction) =>
+      switch await ctx.dataLoaders.auction.byId->DataLoader.load(id) {
+      | None => panic("Did not find auction with that ID")
+      | Some(auction) => Auction(auction)->Some
+      }
     | Some(AuctionSettled) =>
       switch await ctx.dataLoaders.auctionSettled.byId->DataLoader.load(id) {
       | None => panic("Did not find auction settled with that ID")

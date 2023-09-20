@@ -1,0 +1,12 @@
+query GetAuctions($first: Int, $orderBy: Auction_orderBy, $orderDirection: OrderDirection, $where: Auction_filter){
+  auctions(first: $first, orderBy: $orderBy, orderDirection: $orderDirection, where: $where) {
+    id
+    tokenId
+    startTime
+    endTime
+    amount
+    bidder
+    extended
+    settled
+  }
+}
