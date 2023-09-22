@@ -88,7 +88,7 @@ type Auction implements Node {
   startTime: String!
   endTime: String!
   amount: String!
-  bidder: String!
+  bidder: String
   extended: Boolean!
   settled: Boolean!
   id: ID!

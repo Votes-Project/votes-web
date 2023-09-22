@@ -244,7 +244,7 @@ t_Auction.contents = GraphQLObjectType.make({
         }),
       },
       "bidder": {
-        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        typ: Scalars.string->Scalars.toGraphQLType,
         description: ?None,
         deprecationReason: ?None,
         resolve: makeResolveFn((src, _args, _ctx) => {
