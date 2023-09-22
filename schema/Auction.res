@@ -16,7 +16,7 @@ type auction = {
   amount: string,
   /* Address of highest bidder */
   @gql.field
-  bidder: string,
+  bidder?: string,
   /* True if auction is extended past end time */
   @gql.field
   extended: bool,

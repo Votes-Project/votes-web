@@ -450,7 +450,7 @@ t_Auction.contents = new Graphql.GraphQLObjectType({
                         })
                   },
                   bidder: {
-                    type: new Graphql.GraphQLNonNull(Graphql.GraphQLString),
+                    type: Graphql.GraphQLString,
                     resolve: Caml_option.some(function (src, _args, _ctx) {
                           return typeUnwrapper(src).bidder;
                         })
