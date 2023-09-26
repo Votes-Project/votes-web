@@ -11,6 +11,8 @@ type vote = {
   /* The IPFS uri of the vote token */
   @gql.field
   uri: string,
+  /* The contract of the vote token */
+  contract: VoteContract.voteContract,
 }
 
 /** An edge to a vote entity. */

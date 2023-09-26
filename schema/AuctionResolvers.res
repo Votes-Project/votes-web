@@ -5,8 +5,8 @@ type data = {auction: auction}
 /* takes a Graphclient ID and returns a single Auction Item */
 @gql.field
 let auction = async (_: Schema.query, ~id, ~ctx: ResGraphContext.context): option<auction> => {
-  let id =
-    id->ResGraph.Utils.Base64.decode->String.split(":")->Array.get(1)->Option.getWithDefault(id)
+  open ResGraph.Utils
+  let id = id->Base64.decode->String.split(":")->Array.get(1)->Option.getWithDefault(id)
   switch await ctx.dataLoaders.auction.byId->DataLoader.load(id) {
   | None => panic("Did not find auction settled with that ID")
   | Some(auction) => auction->Some
@@ -27,6 +27,7 @@ let auctions = async (
 ): option<auctionConnection> => {
   let auctions =
     await ctx.dataLoaders.auction.list->DataLoader.load({first, orderBy, orderDirection, where})
+  auctions->Array.forEach(({id}) => Console.log(id))
   auctions->ResGraph.Connections.connectionFromArray(~args={first: None, after, before, last})->Some
 }
 
@@ -46,9 +47,9 @@ let bids = async (
   | Some(where) =>
     {
       ...where,
-      tokenId: auction.tokenId,
+      tokenId: auction.vote.tokenId,
     }->Some
-  | None => {tokenId: auction.tokenId}->Some
+  | None => {tokenId: auction.vote.tokenId}->Some
   }
 
   let bids = await ctx.dataLoaders.auctionBid.list->DataLoader.load({
@@ -59,4 +60,12 @@ let bids = async (
   })
 
   bids->ResGraph.Connections.connectionFromArray(~args={first: None, after, before, last})->Some
+}
+
+@gql.field
+let vote = async (auction: auction, ~ctx: ResGraphContext.context) => {
+  switch await ctx.dataLoaders.vote.byId->DataLoader.load(auction.id) {
+  | None => panic("Did not find auction settled with that ID")
+  | Some(vote) => vote
+  }
 }

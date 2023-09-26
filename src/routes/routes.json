@@ -1,11 +1,11 @@
 [
   {
-    "path": "/?tokenId=string&linkBrightID=int&dailyQuestion=int&contextId=string&voteDetails=int&voteDetailsToken=int",
+    "path": "?linkBrightID=int&dailyQuestion=int&contextId=string&voteDetails=int&voteDetailsToken=int",
     "name": "Main",
     "children": [
       {
-        "path": "",
-        "name": "Auction",
+        "path": ":tokenId",
+        "name": "Vote",
         "children": [{ "path": "?allBids=int", "name": "Bids" }]
       },
       {
@@ -14,17 +14,17 @@
         "children": []
       },
       {
-        "path": "/raffles",
+        "path": "raffles",
         "name": "Raffles",
         "children": []
       },
       {
-        "path": "/votes",
+        "path": "votes",
         "name": "Votes",
         "children": []
       },
       {
-        "path": "/questions",
+        "path": "questions",
         "name": "Questions",
         "children": []
       }

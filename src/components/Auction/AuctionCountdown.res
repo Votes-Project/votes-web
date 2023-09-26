@@ -1,5 +1,5 @@
-module AuctionCreatedFragment = %relay(`
-  fragment AuctionCountdown_auctionCreated on AuctionCreated {
+module Fragment = %relay(`
+  fragment AuctionCountdown_auction on Auction {
     endTime
   }
 `)
@@ -24,10 +24,10 @@ let useInterval = (callback: unit => unit, delay) => {
 }
 
 @react.component
-let make = (~queryRef as auctionCreatedRef) => {
-  let auctionCreated = AuctionCreatedFragment.use(auctionCreatedRef)
+let make = (~auction) => {
+  let auction = Fragment.use(auction)
 
-  let endTime = auctionCreated.endTime->Float.fromString->Option.getExn
+  let endTime = auction.endTime->Float.fromString->Option.getExn
 
   let (secondsRemaining, setSecondsRemaining) = React.useState(_ =>
     (endTime -. Date.now() /. 1000.)->Float.toInt

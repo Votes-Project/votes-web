@@ -10,7 +10,7 @@ external querySelector: (Dom.document, string) => unit = "querySelector"
 ReactModal.setAppElement("#root")
 @react.component
 let make = (~children, ~isOpen) => {
-  let {setParams} = Routes.Main.Auction.Bids.Route.useQueryParams()
+  let {setParams} = Routes.Main.Vote.Bids.Route.useQueryParams()
 
   let handleClose = _ => {
     setParams(

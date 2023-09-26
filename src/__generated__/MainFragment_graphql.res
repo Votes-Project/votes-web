@@ -1,23 +1,27 @@
-/* @sourceLoc AuctionList.res */
+/* @sourceLoc Main.res */
 /* @generated */
 %%raw("/* @generated */")
 module Types = {
   @@warning("-30")
 
-  type rec fragment_auctionCreateds_edges_node = {
-    endTime: string,
+  type rec fragment_votes_edges_node_auction = {
+    fragmentRefs: RescriptRelay.fragmentRefs<[ | #AuctionDisplay_auction]>,
+  }
+  and fragment_votes_edges_node = {
+    auction: option<fragment_votes_edges_node_auction>,
     @live id: string,
+    owner: string,
     tokenId: string,
-    fragmentRefs: RescriptRelay.fragmentRefs<[ | #AuctionList_AuctionItem_auctionCreated]>,
+    fragmentRefs: RescriptRelay.fragmentRefs<[ | #SingleVote_node]>,
   }
-  and fragment_auctionCreateds_edges = {
-    node: option<fragment_auctionCreateds_edges_node>,
+  and fragment_votes_edges = {
+    node: option<fragment_votes_edges_node>,
   }
-  and fragment_auctionCreateds = {
-    edges: option<array<option<fragment_auctionCreateds_edges>>>,
+  and fragment_votes = {
+    edges: option<array<option<fragment_votes_edges>>>,
   }
   type fragment = {
-    auctionCreateds: option<fragment_auctionCreateds>,
+    votes: option<fragment_votes>,
   }
 }
 
@@ -26,7 +30,7 @@ module Internal = {
   type fragmentRaw
   @live
   let fragmentConverter: Js.Dict.t<Js.Dict.t<Js.Dict.t<string>>> = %raw(
-    json`{"__root":{"auctionCreateds_edges_node":{"f":""}}}`
+    json`{"__root":{"votes_edges_node_auction":{"f":""},"votes_edges_node":{"f":""}}}`
   )
   @live
   let fragmentConverterMap = ()
@@ -41,22 +45,20 @@ module Internal = {
 type t
 type fragmentRef
 external getFragmentRef:
-  RescriptRelay.fragmentRefs<[> | #AuctionListDisplay_auctionCreateds]> => fragmentRef = "%identity"
+  RescriptRelay.fragmentRefs<[> | #MainFragment]> => fragmentRef = "%identity"
 
 @live
 @inline
-let connectionKey = "AuctionListDisplay_auctionCreateds_auctionCreateds"
+let connectionKey = "Main_votes_votes"
 
 %%private(
   @live @module("relay-runtime") @scope("ConnectionHandler")
-  external internal_makeConnectionId: (RescriptRelay.dataId, @as("AuctionListDisplay_auctionCreateds_auctionCreateds") _, 'arguments) => RescriptRelay.dataId = "getConnectionID"
+  external internal_makeConnectionId: (RescriptRelay.dataId, @as("Main_votes_votes") _, 'arguments) => RescriptRelay.dataId = "getConnectionID"
 )
 
 @live
-let makeConnectionId = (connectionParentDataId: RescriptRelay.dataId, ~orderBy: RelaySchemaAssets_graphql.enum_OrderBy_AuctionCreateds=TokenId, ~orderDirection: RelaySchemaAssets_graphql.enum_OrderDirection=Desc) => {
-  let orderBy = Some(orderBy)
-  let orderDirection = Some(orderDirection)
-  let args = {"orderBy": orderBy, "orderDirection": orderDirection}
+let makeConnectionId = (connectionParentDataId: RescriptRelay.dataId, ) => {
+  let args = {"orderBy": Some("id"), "orderDirection": Some("desc")}
   internal_makeConnectionId(connectionParentDataId, args)
 }
 module Utils = {
@@ -64,7 +66,7 @@ module Utils = {
   open Types
 
   @live
-  let getConnectionNodes: option<Types.fragment_auctionCreateds> => array<Types.fragment_auctionCreateds_edges_node> = connection => 
+  let getConnectionNodes: option<Types.fragment_votes> => array<Types.fragment_votes_edges_node> = connection => 
     switch connection {
       | None => []
       | Some(connection) => 
@@ -88,59 +90,49 @@ type operationType = RescriptRelay.fragmentNode<relayOperationNode>
 let node: operationType = %raw(json` {
   "argumentDefinitions": [
     {
-      "defaultValue": 5,
+      "defaultValue": null,
       "kind": "LocalArgument",
-      "name": "first"
-    },
-    {
-      "defaultValue": "tokenId",
-      "kind": "LocalArgument",
-      "name": "orderBy"
-    },
-    {
-      "defaultValue": "desc",
-      "kind": "LocalArgument",
-      "name": "orderDirection"
+      "name": "voteContract"
     }
   ],
   "kind": "Fragment",
   "metadata": {
     "connection": [
       {
-        "count": "first",
+        "count": null,
         "cursor": null,
         "direction": "forward",
         "path": [
-          "auctionCreateds"
+          "votes"
         ]
       }
     ]
   },
-  "name": "AuctionListDisplay_auctionCreateds",
+  "name": "MainFragment",
   "selections": [
     {
-      "alias": "auctionCreateds",
+      "alias": "votes",
       "args": [
         {
-          "kind": "Variable",
+          "kind": "Literal",
           "name": "orderBy",
-          "variableName": "orderBy"
+          "value": "id"
         },
         {
-          "kind": "Variable",
+          "kind": "Literal",
           "name": "orderDirection",
-          "variableName": "orderDirection"
+          "value": "desc"
         }
       ],
-      "concreteType": "AuctionCreatedConnection",
+      "concreteType": "VoteConnection",
       "kind": "LinkedField",
-      "name": "__AuctionListDisplay_auctionCreateds_auctionCreateds_connection",
+      "name": "__Main_votes_votes_connection",
       "plural": false,
       "selections": [
         {
           "alias": null,
           "args": null,
-          "concreteType": "AuctionCreatedEdge",
+          "concreteType": "VoteEdge",
           "kind": "LinkedField",
           "name": "edges",
           "plural": true,
@@ -148,7 +140,7 @@ let node: operationType = %raw(json` {
             {
               "alias": null,
               "args": null,
-              "concreteType": "AuctionCreated",
+              "concreteType": "Vote",
               "kind": "LinkedField",
               "name": "node",
               "plural": false,
@@ -171,13 +163,35 @@ let node: operationType = %raw(json` {
                   "alias": null,
                   "args": null,
                   "kind": "ScalarField",
-                  "name": "endTime",
+                  "name": "owner",
                   "storageKey": null
                 },
                 {
+                  "alias": null,
                   "args": null,
+                  "concreteType": "Auction",
+                  "kind": "LinkedField",
+                  "name": "auction",
+                  "plural": false,
+                  "selections": [
+                    {
+                      "args": null,
+                      "kind": "FragmentSpread",
+                      "name": "AuctionDisplay_auction"
+                    }
+                  ],
+                  "storageKey": null
+                },
+                {
+                  "args": [
+                    {
+                      "kind": "Variable",
+                      "name": "voteContractAddress",
+                      "variableName": "voteContract"
+                    }
+                  ],
                   "kind": "FragmentSpread",
-                  "name": "AuctionList_AuctionItem_auctionCreated"
+                  "name": "SingleVote_node"
                 },
                 {
                   "alias": null,
@@ -225,7 +239,7 @@ let node: operationType = %raw(json` {
           "storageKey": null
         }
       ],
-      "storageKey": null
+      "storageKey": "__Main_votes_votes_connection(orderBy:\"id\",orderDirection:\"desc\")"
     }
   ],
   "type": "Query",

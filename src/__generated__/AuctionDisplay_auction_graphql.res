@@ -1,15 +1,21 @@
-/* @sourceLoc AuctionList.res */
+/* @sourceLoc AuctionDisplay.res */
 /* @generated */
 %%raw("/* @generated */")
 module Types = {
   @@warning("-30")
 
+  type rec fragment_vote = {
+    tokenId: string,
+  }
   type fragment = {
+    amount: string,
+    bidder: option<string>,
     endTime: string,
     @live id: string,
+    settled: bool,
     startTime: string,
-    tokenId: string,
-    fragmentRefs: RescriptRelay.fragmentRefs<[ | #AuctionCountdown_auctionCreated | #CreateBid_auctionCreated]>,
+    vote: fragment_vote,
+    fragmentRefs: RescriptRelay.fragmentRefs<[ | #AuctionCountdown_auction | #CreateBid_auction]>,
   }
 }
 
@@ -33,7 +39,7 @@ module Internal = {
 type t
 type fragmentRef
 external getFragmentRef:
-  RescriptRelay.fragmentRefs<[> | #AuctionList_AuctionItem_auctionCreated]> => fragmentRef = "%identity"
+  RescriptRelay.fragmentRefs<[> | #AuctionDisplay_auction]> => fragmentRef = "%identity"
 
 module Utils = {
   @@warning("-33")
@@ -48,20 +54,13 @@ let node: operationType = %raw(json` {
   "argumentDefinitions": [],
   "kind": "Fragment",
   "metadata": null,
-  "name": "AuctionList_AuctionItem_auctionCreated",
+  "name": "AuctionDisplay_auction",
   "selections": [
     {
       "alias": null,
       "args": null,
       "kind": "ScalarField",
       "name": "id",
-      "storageKey": null
-    },
-    {
-      "alias": null,
-      "args": null,
-      "kind": "ScalarField",
-      "name": "tokenId",
       "storageKey": null
     },
     {
@@ -79,17 +78,56 @@ let node: operationType = %raw(json` {
       "storageKey": null
     },
     {
+      "alias": null,
       "args": null,
-      "kind": "FragmentSpread",
-      "name": "CreateBid_auctionCreated"
+      "kind": "ScalarField",
+      "name": "bidder",
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "settled",
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
+      "concreteType": "Vote",
+      "kind": "LinkedField",
+      "name": "vote",
+      "plural": false,
+      "selections": [
+        {
+          "alias": null,
+          "args": null,
+          "kind": "ScalarField",
+          "name": "tokenId",
+          "storageKey": null
+        }
+      ],
+      "storageKey": null
+    },
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "amount",
+      "storageKey": null
     },
     {
       "args": null,
       "kind": "FragmentSpread",
-      "name": "AuctionCountdown_auctionCreated"
+      "name": "CreateBid_auction"
+    },
+    {
+      "args": null,
+      "kind": "FragmentSpread",
+      "name": "AuctionCountdown_auction"
     }
   ],
-  "type": "AuctionCreated",
+  "type": "Auction",
   "abstractKey": null
 } `)
 

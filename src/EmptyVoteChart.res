@@ -15,8 +15,6 @@
 
 open ChartJS
 
-let labels = ["", "", "", "", ""]
-
 let options: RadarChart.options = {
   animations: {
     tension: {
@@ -34,17 +32,13 @@ let options: RadarChart.options = {
 
 @react.component
 let make = (~className) => {
+  let rndInt = (Math.floor(Math.random() *. 6.) +. 3.)->Float.toInt
+  let labels = Array.make(~length=rndInt, "")
   let data = {
     labels,
     datasets: [
       {
-        data: [
-          Math.random() *. 100.,
-          Math.random() *. 100.,
-          Math.random() *. 100.,
-          Math.random() *. 100.,
-          Math.random() *. 100.,
-        ],
+        data: Array.make(~length=rndInt, 0.)->Array.map(_ => Math.random() *. 100.),
         backgroundColor: "rgba(1, 1, 1, 0.2)",
         borderWidth: 0,
       },

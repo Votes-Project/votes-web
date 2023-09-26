@@ -47,6 +47,23 @@ type enum_OrderBy_AuctionSettleds_input =
 
 
 @live @unboxed
+type enum_OrderBy_Auctions = 
+  | @as("id") Id
+  | @as("tokenId") TokenId
+  | @as("blockTimestamp") BlockTimestamp
+  | @as("amount") Amount
+  | FutureAddedValue(string)
+
+
+@live @unboxed
+type enum_OrderBy_Auctions_input = 
+  | @as("id") Id
+  | @as("tokenId") TokenId
+  | @as("blockTimestamp") BlockTimestamp
+  | @as("amount") Amount
+
+
+@live @unboxed
 type enum_OrderBy_Transfers = 
   | @as("id") Id
   | @as("tokenId") TokenId
@@ -137,6 +154,18 @@ and input_Where_AuctionCreateds = {
 
 @live
 and input_Where_AuctionCreateds_nullable = {
+  id?: Js.Null.t<string>,
+  tokenId?: Js.Null.t<string>,
+}
+
+@live
+and input_Where_Auctions = {
+  id?: string,
+  tokenId?: string,
+}
+
+@live
+and input_Where_Auctions_nullable = {
   id?: Js.Null.t<string>,
   tokenId?: Js.Null.t<string>,
 }

@@ -329,13 +329,13 @@ t_Auction.contents = GraphQLObjectType.make({
           src["startTime"]
         }),
       },
-      "tokenId": {
-        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+      "vote": {
+        typ: get_Vote()->GraphQLObjectType.toGraphQLType->nonNull,
         description: ?None,
         deprecationReason: ?None,
-        resolve: makeResolveFn((src, _args, _ctx) => {
+        resolve: makeResolveFn((src, args, ctx) => {
           let src = typeUnwrapper(src)
-          src["tokenId"]
+          AuctionResolvers.vote(src, ~ctx)
         }),
       },
     }->makeFields,
@@ -1112,12 +1112,12 @@ t_Query.contents = GraphQLObjectType.make({
             ~after=args["after"]->Nullable.toOption,
             ~before=args["before"]->Nullable.toOption,
             ~ctx,
-            ~first=args["first"]->Nullable.toOption,
+            ~first=?args["first"]->Nullable.toOption,
             ~last=args["last"]->Nullable.toOption,
-            ~orderBy=args["orderBy"]->Nullable.toOption,
-            ~orderDirection=args["orderDirection"]->Nullable.toOption,
-            ~skip=args["skip"]->Nullable.toOption,
-            ~where=switch args["where"]->Nullable.toOption {
+            ~orderBy=?args["orderBy"]->Nullable.toOption,
+            ~orderDirection=?args["orderDirection"]->Nullable.toOption,
+            ~skip=?args["skip"]->Nullable.toOption,
+            ~where=?switch args["where"]->Nullable.toOption {
             | None => None
             | Some(v) =>
               v->applyConversionToInputObject(input_Where_Votes_conversionInstructions)->Some
@@ -1335,6 +1335,15 @@ t_Vote.contents = GraphQLObjectType.make({
   interfaces: [get_Node()],
   fields: () =>
     {
+      "auction": {
+        typ: get_Auction()->GraphQLObjectType.toGraphQLType,
+        description: ?None,
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, args, ctx) => {
+          let src = typeUnwrapper(src)
+          VoteResolvers.auction(src, ~ctx)
+        }),
+      },
       "id": {
         typ: Scalars.id->Scalars.toGraphQLType->nonNull,
         description: ?None,
@@ -1378,7 +1387,7 @@ t_Vote.contents = GraphQLObjectType.make({
         args: {"id": {typ: Scalars.string->Scalars.toGraphQLType->nonNull}}->makeArgs,
         resolve: makeResolveFn((src, args, ctx) => {
           let src = typeUnwrapper(src)
-          VoteResolvers.VoteContract.voteContract(src, ~ctx, ~id=args["id"])
+          VoteResolvers.voteContract(src, ~ctx, ~id=args["id"])
         }),
       },
     }->makeFields,

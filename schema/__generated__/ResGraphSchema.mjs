@@ -517,10 +517,11 @@ t_Auction.contents = new Graphql.GraphQLObjectType({
                           return typeUnwrapper(src).startTime;
                         })
                   },
-                  tokenId: {
-                    type: new Graphql.GraphQLNonNull(Graphql.GraphQLString),
-                    resolve: Caml_option.some(function (src, _args, _ctx) {
-                          return typeUnwrapper(src).tokenId;
+                  vote: {
+                    type: new Graphql.GraphQLNonNull(t_Vote.contents),
+                    resolve: Caml_option.some(function (src, args, ctx) {
+                          var src$1 = typeUnwrapper(src);
+                          return AuctionResolvers.vote(src$1, ctx);
                         })
                   }
                 };
@@ -1446,6 +1447,13 @@ t_Vote.contents = new Graphql.GraphQLObjectType({
       description: "GraphClient: A Vote Token entity",
       fields: (function () {
           return {
+                  auction: {
+                    type: t_Auction.contents,
+                    resolve: Caml_option.some(function (src, args, ctx) {
+                          var src$1 = typeUnwrapper(src);
+                          return VoteResolvers.auction(src$1, ctx);
+                        })
+                  },
                   id: {
                     type: new Graphql.GraphQLNonNull(Graphql.GraphQLID),
                     resolve: Caml_option.some(function (src, args, ctx) {
@@ -1480,7 +1488,7 @@ t_Vote.contents = new Graphql.GraphQLObjectType({
                     },
                     resolve: Caml_option.some(function (src, args, ctx) {
                           var src$1 = typeUnwrapper(src);
-                          return VoteResolvers.VoteContract.voteContract(src$1, args.id, ctx);
+                          return VoteResolvers.voteContract(src$1, args.id, ctx);
                         })
                   }
                 };

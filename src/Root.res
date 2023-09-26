@@ -11,16 +11,17 @@ if !RelaySSRUtils.ssr {
 }
 
 %%raw(`
+import './polyfills';
 import "./index.css";
 import "@rainbow-me/rainbowkit/styles.css";
 
 import { getDefaultWallets } from "@rainbow-me/rainbowkit";
 import { configureChains, createConfig } from "wagmi";
-import { optimism, goerli } from "wagmi/chains";
+import { mainnet, goerli } from "wagmi/chains";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
 
-const voteChains = import.meta.env.NODE_ENV === "production" ? [optimism] : [goerli];
+const voteChains = import.meta.env.NODE_ENV === "production" ? [mainnet] : [mainnet,goerli];
 
 const { chains, publicClient, webSocketPublicClient } = configureChains(
   voteChains,
@@ -114,9 +115,6 @@ ReactDOMExperimental.renderConcurrentRootAtElementWithId(
                   // This renders all the time, and when there"s a pending navigation (pending via React concurrent mode), pending will be `true`
                   renderPending={pending => <PendingIndicatorBar pending />}
                 />
-                <div className="bg-background w-full">
-                  <VotesInfo />
-                </div>
               </TodaysAuctionProvider>
             </RainbowKit.RainbowKitProvider>
           </Wagmi.WagmiConfig>

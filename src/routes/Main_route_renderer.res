@@ -1,3 +1,11 @@
+@val @scope(("import", "meta", "env"))
+external voteContractAddress: option<string> = "VITE_VOTES_CONTRACT_ADDRESS"
+exception NoVoteContractAddress
+let voteContract = switch voteContractAddress {
+| None => raise(NoVoteContractAddress)
+| Some(address) => address
+}
+
 module Main = %relay.deferredComponent(Main.make)
 module DailyQuestion = %relay.deferredComponent(DailyQuestion.make)
 module LinkBrightID = %relay.deferredComponent(LinkBrightID.make)
@@ -21,16 +29,14 @@ let renderer = Routes.Main.Route.makeRenderer(
       // | Some(_) => Some(VoteDetails.preload())
       // },
     ]->Array.filterMap(v => v),
-  ~prepare=({
-    environment,
-    dailyQuestion,
-    linkBrightID,
-    contextId,
-    voteDetails,
-    voteDetailsToken,
-  }) => {
+  ~prepare=({environment, dailyQuestion, linkBrightID, contextId}) => {
     switch (dailyQuestion, linkBrightID, contextId) {
     | (Some(_), Some(linkBrightIDKey), Some(contextId)) => (
+        MainQuery_graphql.load(
+          ~environment,
+          ~variables={voteContract: voteContract},
+          ~fetchPolicy=StoreOrNetwork,
+        ),
         DailyQuestionQuery_graphql.load(
           ~environment,
           ~variables={contextId: contextId},
@@ -45,6 +51,11 @@ let renderer = Routes.Main.Route.makeRenderer(
       )
 
     | (Some(_), None, Some(contextId)) => (
+        MainQuery_graphql.load(
+          ~environment,
+          ~variables={voteContract: voteContract},
+          ~fetchPolicy=StoreOrNetwork,
+        ),
         DailyQuestionQuery_graphql.load(
           ~environment,
           ~variables={contextId: contextId},
@@ -53,6 +64,11 @@ let renderer = Routes.Main.Route.makeRenderer(
         None,
       )
     | (None, Some(linkBrightIDKey), Some(contextId)) => (
+        MainQuery_graphql.load(
+          ~environment,
+          ~variables={voteContract: voteContract},
+          ~fetchPolicy=StoreOrNetwork,
+        ),
         None,
         LinkBrightIDQuery_graphql.load(
           ~environment,
@@ -61,7 +77,15 @@ let renderer = Routes.Main.Route.makeRenderer(
           ~fetchKey=linkBrightIDKey->Int.toString,
         )->Some,
       )
-    | _ => (None, None)
+    | _ => (
+        MainQuery_graphql.load(
+          ~environment,
+          ~variables={voteContract: voteContract},
+          ~fetchPolicy=StoreOrNetwork,
+        ),
+        None,
+        None,
+      )
     }
   },
   ~render=({
@@ -73,40 +97,37 @@ let renderer = Routes.Main.Route.makeRenderer(
     voteDetailsToken,
     prepared,
   }) => {
-    let (dailyQuestionQueryRef, linkBrightIDQueryRef) = prepared
+    let (queryRef, dailyQuestionQueryRef, linkBrightIDQueryRef) = prepared
+
     <>
-      <Main>
-        <div className="relative">
-          <DailyQuestionSpeedDial />
-          {childRoutes}
-        </div>
+      <Main queryRef>
+        <div className="relative"> {childRoutes} </div>
       </Main>
       <DailyQuestionModal isOpen={dailyQuestion->Option.isSome && linkBrightID->Option.isNone}>
         {switch (dailyQuestion, dailyQuestionQueryRef) {
         | (Some(_), Some(queryRef)) =>
-          // <RescriptReactErrorBoundary fallback={_ => "Error"->React.string}>
-          <React.Suspense
-            fallback={<div className="min-h-[896px]"> {"Loading"->React.string} </div>}>
-            <DailyQuestion queryRef />
-          </React.Suspense>
-
-        // </RescriptReactErrorBoundary>
+          <ErrorBoundary fallback={_ => "Error"->React.string}>
+            <React.Suspense
+              fallback={<div className="min-h-[896px]"> {"Loading"->React.string} </div>}>
+              <DailyQuestion queryRef />
+            </React.Suspense>
+          </ErrorBoundary>
         | _ => React.null
         }}
       </DailyQuestionModal>
       <LinkBrightIDModal isOpen={linkBrightID->Option.isSome}>
         {switch (linkBrightID, linkBrightIDQueryRef, contextId) {
         | (Some(_), Some(queryRef), Some(contextId)) =>
-          // <RescriptReactErrorBoundary fallback={_ => "Error"->React.string}>
-          <React.Suspense fallback={<p> {"Loading"->React.string} </p>}>
-            <LinkBrightID queryRef contextId />
-          </React.Suspense>
-        // </RescriptReactErrorBoundary>
+          <ErrorBoundary fallback={_ => "Error"->React.string}>
+            <React.Suspense fallback={<p> {"Loading"->React.string} </p>}>
+              <LinkBrightID queryRef contextId />
+            </React.Suspense>
+          </ErrorBoundary>
         | _ => React.null
         }}
       </LinkBrightIDModal>
       <VoteDetailsSidebar isOpen={voteDetails->Option.isSome}>
-        {switch (voteDetails, voteDetailsToken, None) {
+        {switch (voteDetails, voteDetailsToken, Some()) {
         | (Some(_), None, _) =>
           <React.Suspense fallback={<p> {"Loading"->React.string} </p>}>
             <OwnedVotesList />

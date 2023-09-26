@@ -1,12 +1,14 @@
-/* @sourceLoc AuctionList.res */
+/* @sourceLoc CreateBid.res */
 /* @generated */
 %%raw("/* @generated */")
 module Types = {
   @@warning("-30")
 
-  type fragment = {
-    @live id: string,
+  type rec fragment_vote = {
     tokenId: string,
+  }
+  type fragment = {
+    vote: fragment_vote,
   }
 }
 
@@ -30,7 +32,7 @@ module Internal = {
 type t
 type fragmentRef
 external getFragmentRef:
-  RescriptRelay.fragmentRefs<[> | #AuctionList_AuctionItem_voteTransfers]> => fragmentRef = "%identity"
+  RescriptRelay.fragmentRefs<[> | #CreateBid_auction]> => fragmentRef = "%identity"
 
 module Utils = {
   @@warning("-33")
@@ -45,24 +47,28 @@ let node: operationType = %raw(json` {
   "argumentDefinitions": [],
   "kind": "Fragment",
   "metadata": null,
-  "name": "AuctionList_AuctionItem_voteTransfers",
+  "name": "CreateBid_auction",
   "selections": [
     {
       "alias": null,
       "args": null,
-      "kind": "ScalarField",
-      "name": "id",
-      "storageKey": null
-    },
-    {
-      "alias": null,
-      "args": null,
-      "kind": "ScalarField",
-      "name": "tokenId",
+      "concreteType": "Vote",
+      "kind": "LinkedField",
+      "name": "vote",
+      "plural": false,
+      "selections": [
+        {
+          "alias": null,
+          "args": null,
+          "kind": "ScalarField",
+          "name": "tokenId",
+          "storageKey": null
+        }
+      ],
       "storageKey": null
     }
   ],
-  "type": "VoteTransfer",
+  "type": "Auction",
   "abstractKey": null
 } `)
 

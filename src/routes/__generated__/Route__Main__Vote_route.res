@@ -5,13 +5,12 @@ module Internal = {
   type prepareProps = {
     environment: RescriptRelay.Environment.t,
     location: RelayRouter.History.location,
-    tokenId: option<string>,
+    tokenId: string,
     linkBrightID: option<int>,
     dailyQuestion: option<int>,
     contextId: option<string>,
     voteDetails: option<int>,
     voteDetailsToken: option<int>,
-    allBids: option<int>,
   }
 
   @live
@@ -20,13 +19,12 @@ module Internal = {
     prepared: 'prepared,
     environment: RescriptRelay.Environment.t,
     location: RelayRouter.History.location,
-    tokenId: option<string>,
+    tokenId: string,
     linkBrightID: option<int>,
     dailyQuestion: option<int>,
     contextId: option<string>,
     voteDetails: option<int>,
     voteDetailsToken: option<int>,
-    allBids: option<int>,
   }
 
   @live
@@ -42,31 +40,27 @@ module Internal = {
     ~queryParams: RelayRouter.Bindings.QueryParams.t,
     ~location: RelayRouter.History.location,
   ): prepareProps => {
-    ignore(pathParams)
     {
       environment: environment,
   
       location: location,
-      tokenId: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("tokenId")->Belt.Option.flatMap(value => Some(value->Js.Global.decodeURIComponent)),
+      tokenId: pathParams->Js.Dict.unsafeGet("tokenId"),
       linkBrightID: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("linkBrightID")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
       dailyQuestion: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("dailyQuestion")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
       contextId: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("contextId")->Belt.Option.flatMap(value => Some(value->Js.Global.decodeURIComponent)),
       voteDetails: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetails")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
       voteDetailsToken: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetailsToken")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
-      allBids: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("allBids")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
     }
   }
 
 }
 
 type queryParams = {
-  tokenId: option<string>,
   linkBrightID: option<int>,
   dailyQuestion: option<int>,
   contextId: option<string>,
   voteDetails: option<int>,
   voteDetailsToken: option<int>,
-  allBids: option<int>,
 }
 
 @live
@@ -74,8 +68,6 @@ let parseQueryParams = (search: string): queryParams => {
   open RelayRouter.Bindings
   let queryParams = QueryParams.parse(search)
   {
-    tokenId: queryParams->QueryParams.getParamByKey("tokenId")->Belt.Option.flatMap(value => Some(value->Js.Global.decodeURIComponent)),
-
     linkBrightID: queryParams->QueryParams.getParamByKey("linkBrightID")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
 
     dailyQuestion: queryParams->QueryParams.getParamByKey("dailyQuestion")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
@@ -86,29 +78,23 @@ let parseQueryParams = (search: string): queryParams => {
 
     voteDetailsToken: queryParams->QueryParams.getParamByKey("voteDetailsToken")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
 
-    allBids: queryParams->QueryParams.getParamByKey("allBids")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
-
   }
 }
 
 @live
 let makeQueryParams = (
-  ~tokenId: option<string>=?, 
   ~linkBrightID: option<int>=?, 
   ~dailyQuestion: option<int>=?, 
   ~contextId: option<string>=?, 
   ~voteDetails: option<int>=?, 
   ~voteDetailsToken: option<int>=?, 
-  ~allBids: option<int>=?, 
   ()
 ) => {
-  tokenId: tokenId,
   linkBrightID: linkBrightID,
   dailyQuestion: dailyQuestion,
   contextId: contextId,
   voteDetails: voteDetails,
   voteDetailsToken: voteDetailsToken,
-  allBids: allBids,
 }
 
 @live
@@ -119,13 +105,11 @@ let applyQueryParams = (
   open RelayRouter__Bindings
 
   
-  queryParams->QueryParams.setParamOpt(~key="tokenId", ~value=newParams.tokenId->Belt.Option.map(tokenId => tokenId->Js.Global.encodeURIComponent))
   queryParams->QueryParams.setParamOpt(~key="linkBrightID", ~value=newParams.linkBrightID->Belt.Option.map(linkBrightID => Belt.Int.toString(linkBrightID)))
   queryParams->QueryParams.setParamOpt(~key="dailyQuestion", ~value=newParams.dailyQuestion->Belt.Option.map(dailyQuestion => Belt.Int.toString(dailyQuestion)))
   queryParams->QueryParams.setParamOpt(~key="contextId", ~value=newParams.contextId->Belt.Option.map(contextId => contextId->Js.Global.encodeURIComponent))
   queryParams->QueryParams.setParamOpt(~key="voteDetails", ~value=newParams.voteDetails->Belt.Option.map(voteDetails => Belt.Int.toString(voteDetails)))
   queryParams->QueryParams.setParamOpt(~key="voteDetailsToken", ~value=newParams.voteDetailsToken->Belt.Option.map(voteDetailsToken => Belt.Int.toString(voteDetailsToken)))
-  queryParams->QueryParams.setParamOpt(~key="allBids", ~value=newParams.allBids->Belt.Option.map(allBids => Belt.Int.toString(allBids)))
 }
 
 @live
@@ -181,17 +165,12 @@ let useQueryParams = (): useQueryParamsReturn => {
 }
 
 @inline
-let routePattern = "/"
+let routePattern = "/:tokenId"
 
 @live
-let makeLink = (~tokenId: option<string>=?, ~linkBrightID: option<int>=?, ~dailyQuestion: option<int>=?, ~contextId: option<string>=?, ~voteDetails: option<int>=?, ~voteDetailsToken: option<int>=?, ~allBids: option<int>=?) => {
+let makeLink = (~tokenId: string, ~linkBrightID: option<int>=?, ~dailyQuestion: option<int>=?, ~contextId: option<string>=?, ~voteDetails: option<int>=?, ~voteDetailsToken: option<int>=?) => {
   open RelayRouter.Bindings
   let queryParams = QueryParams.make()
-  switch tokenId {
-    | None => ()
-    | Some(tokenId) => queryParams->QueryParams.setParam(~key="tokenId", ~value=tokenId->Js.Global.encodeURIComponent)
-  }
-
   switch linkBrightID {
     | None => ()
     | Some(linkBrightID) => queryParams->QueryParams.setParam(~key="linkBrightID", ~value=Belt.Int.toString(linkBrightID))
@@ -216,16 +195,11 @@ let makeLink = (~tokenId: option<string>=?, ~linkBrightID: option<int>=?, ~daily
     | None => ()
     | Some(voteDetailsToken) => queryParams->QueryParams.setParam(~key="voteDetailsToken", ~value=Belt.Int.toString(voteDetailsToken))
   }
-
-  switch allBids {
-    | None => ()
-    | Some(allBids) => queryParams->QueryParams.setParam(~key="allBids", ~value=Belt.Int.toString(allBids))
-  }
-  RelayRouter.Bindings.generatePath(routePattern, Js.Dict.fromArray([])) ++ queryParams->QueryParams.toString
+  RelayRouter.Bindings.generatePath(routePattern, Js.Dict.fromArray([("tokenId", (tokenId :> string)->Js.Global.encodeURIComponent)])) ++ queryParams->QueryParams.toString
 }
 @live
-let makeLinkFromQueryParams = (queryParams: queryParams) => {
-  makeLink(~tokenId=?queryParams.tokenId, ~linkBrightID=?queryParams.linkBrightID, ~dailyQuestion=?queryParams.dailyQuestion, ~contextId=?queryParams.contextId, ~voteDetails=?queryParams.voteDetails, ~voteDetailsToken=?queryParams.voteDetailsToken, ~allBids=?queryParams.allBids, )
+let makeLinkFromQueryParams = (~tokenId: string, queryParams: queryParams) => {
+  makeLink(~tokenId, ~linkBrightID=?queryParams.linkBrightID, ~dailyQuestion=?queryParams.dailyQuestion, ~contextId=?queryParams.contextId, ~voteDetails=?queryParams.voteDetails, ~voteDetailsToken=?queryParams.voteDetailsToken, )
 }
 
 @live
@@ -252,6 +226,26 @@ let isRouteActive = (~exact: bool=false, {pathname}: RelayRouter.History.locatio
 let useIsRouteActive = (~exact=false) => {
   let location = RelayRouter.Utils.useLocation()
   React.useMemo2(() => location->isRouteActive(~exact), (location, exact))
+}
+@live
+type subRoute = [#Bids]
+
+@live
+let getActiveSubRoute = (location: RelayRouter.History.location): option<[#Bids]> => {
+  let {pathname} = location
+  if RelayRouter.Internal.matchPath("/:tokenId", pathname)->Belt.Option.isSome {
+      Some(#Bids)
+    } else {
+    None
+  }
+}
+
+@live
+let useActiveSubRoute = (): option<[#Bids]> => {
+  let location = RelayRouter.Utils.useLocation()
+  React.useMemo1(() => {
+    getActiveSubRoute(location)
+  }, [location])
 }
 
 @obj
