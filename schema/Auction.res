@@ -2,9 +2,6 @@
 @gql.type
 type auction = {
   ...NodeInterface.node,
-  /* Vote token id */
-  @gql.field
-  tokenId: string,
   /* Start time of auction */
   @gql.field
   startTime: string,
@@ -23,6 +20,10 @@ type auction = {
   /* True if auction has ended */
   @gql.field
   settled: bool,
+  /* The vote token in the auction */
+  vote: Vote.vote,
+  /* Connection of auction bids */
+  bids: AuctionBid.auctionBidConnection,
 }
 
 /** An edge to an auction. */

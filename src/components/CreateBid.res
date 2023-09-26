@@ -3,17 +3,19 @@ external auctionContractAddress: option<string> = "VITE_AUCTION_CONTRACT_ADDRESS
 
 @module("/src/abis/Auction.json") external auctionContractAbi: JSON.t = "default"
 
-module AuctionCreatedFragment = %relay(`
-  fragment CreateBid_auctionCreated on AuctionCreated {
-    tokenId
+module Fragment = %relay(`
+  fragment CreateBid_auction on Auction {
+    vote {
+      tokenId
+    }
   }
 `)
 
 exception ContractWriteDoesNotExist
 @react.component
-let make = (~queryRef as auctionCreatedRef, ~isToday) => {
+let make = (~auction, ~isToday) => {
   let (bidAmount, setBidAmount) = React.useState(_ => "")
-  let auctionCreated = AuctionCreatedFragment.use(auctionCreatedRef)
+  let auction = Fragment.use(auction)
 
   let {config} = Wagmi.usePrepareContractWrite(
     ~config={
@@ -21,7 +23,7 @@ let make = (~queryRef as auctionCreatedRef, ~isToday) => {
       abi: auctionContractAbi,
       functionName: "createBid",
       value: bidAmount->Viem.parseEther->Option.getWithDefault(BigInt.fromString("0")),
-      args: [auctionCreated.tokenId->Int.fromString],
+      args: [auction.vote.tokenId],
     },
   )
 
@@ -46,9 +48,10 @@ let make = (~queryRef as auctionCreatedRef, ~isToday) => {
     | None => raise(ContractWriteDoesNotExist)
     }
 
-  <div className="flex flex-col lg:flex-row w-full lg:items-center justify-around gap-2 p-10">
+  <div
+    className="flex flex-col lg:flex-row w-full lg:items-center justify-around gap-2 p-10 lg:p-0">
     <input
-      className="flex-1 rounded-2xl px-2 py-4 placeholder:text-lg placeholder:font-bold
+      className="flex-2 rounded-2xl px-2 py-4 placeholder:text-lg placeholder:font-bold
        bg-background-light border-background-dark
        lg:bg-secondary  focus:outline-none focus:ring-1 [appearance:textfield]
        [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
@@ -59,7 +62,7 @@ let make = (~queryRef as auctionCreatedRef, ~isToday) => {
       onInput={e => onBidChange(e)}
     />
     <button
-      className="flex-2 rounded-lg bg-active px-4 py-3 lg:px-3 lg:py-2 text-center text-white disabled:bg-default-disabled disabled:text-background-light text-xl lg:text-lg"
+      className="flex-1 rounded-lg bg-active px-4 py-3 lg:px-3 lg:py-2 text-center text-white disabled:bg-default-disabled disabled:text-background-light text-xl lg:text-lg"
       disabled={!isToday ||
       bidAmount == "" ||
       bidAmount->Float.fromString->Option.equal(currentBid->Float.fromString, (a, b) => a < b)}

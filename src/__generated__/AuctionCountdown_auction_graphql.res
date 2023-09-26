@@ -29,7 +29,7 @@ module Internal = {
 type t
 type fragmentRef
 external getFragmentRef:
-  RescriptRelay.fragmentRefs<[> | #AuctionCountdown_auctionCreated]> => fragmentRef = "%identity"
+  RescriptRelay.fragmentRefs<[> | #AuctionCountdown_auction]> => fragmentRef = "%identity"
 
 module Utils = {
   @@warning("-33")
@@ -44,7 +44,7 @@ let node: operationType = %raw(json` {
   "argumentDefinitions": [],
   "kind": "Fragment",
   "metadata": null,
-  "name": "AuctionCountdown_auctionCreated",
+  "name": "AuctionCountdown_auction",
   "selections": [
     {
       "alias": null,
@@ -54,7 +54,7 @@ let node: operationType = %raw(json` {
       "storageKey": null
     }
   ],
-  "type": "AuctionCreated",
+  "type": "Auction",
   "abstractKey": null
 } `)
 

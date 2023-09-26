@@ -76,11 +76,11 @@ module AuctionBidListDisplay = {
   }
   `)
   @react.component
-  let make = (~query) => {
-    let {queryParams} = Routes.Main.Auction.Bids.Route.useQueryParams()
+  let make = (~bids) => {
+    let {queryParams} = Routes.Main.Vote.Bids.Route.useQueryParams()
     let {todaysAuction} = React.useContext(TodaysAuctionContext.context)
 
-    let {auctionBids} = AuctionBidsFragment.use(query)
+    let {auctionBids} = AuctionBidsFragment.use(bids)
     let environment = RescriptRelay.useEnvironmentFromContext()
 
     Wagmi.UseContractEvent.make({
@@ -100,7 +100,11 @@ module AuctionBidListDisplay = {
                 open AuctionBidList_AuctionBidItem_auctionBid_graphql.Types
                 open RecordSourceSelectorProxy
                 open RecordProxy
-                let connectionRecord = store->get(~dataId=connectionId)->Option.getExn
+                let connectionRecord = switch store->get(~dataId=connectionId) {
+                | Some(connectionRecord) => connectionRecord
+                | None => store->create(~dataId=connectionId, ~typeName="AuctionBidConnection")
+                }
+
                 let newAuctionBidRecord =
                   store
                   ->create(
@@ -130,44 +134,38 @@ module AuctionBidListDisplay = {
       },
     })
 
-    let tokenId = switch (queryParams.tokenId, todaysAuction) {
-    | (Some(tokenId), _) => tokenId
-    | (None, Some({tokenId})) => tokenId
-    | _ => ""
-    }
+    // let groupedBids = Dict.make()
 
-    let groupedBids = Dict.make()
+    // auctionBids
+    // ->AuctionBidsFragment.getConnectionNodes
+    // ->Array.forEach(auctionBid => {
+    //   let bidsByTokenId = groupedBids->Dict.get(auctionBid.tokenId)->Option.getWithDefault(list{})
+    //   groupedBids->Dict.set(auctionBid.tokenId, list{...bidsByTokenId, auctionBid})
+    // })
 
-    auctionBids
-    ->AuctionBidsFragment.getConnectionNodes
-    ->Array.forEach(auctionBid => {
-      let bidsByTokenId = groupedBids->Dict.get(auctionBid.tokenId)->Option.getWithDefault(list{})
-      groupedBids->Dict.set(auctionBid.tokenId, list{...bidsByTokenId, auctionBid})
-    })
+    // let sortBids = (
+    //   bids: list<AuctionBidListDisplay_auctionBids_graphql.Types.fragment_auctionBids_edges_node>,
+    // ) =>
+    //   bids->List.sort((a, b) => {
+    //     BigInt.fromString(a.amount) > b.amount->BigInt.fromString ? -1.0 : 1.0
+    //   })
 
-    let sortBids = (
-      bids: list<AuctionBidListDisplay_auctionBids_graphql.Types.fragment_auctionBids_edges_node>,
-    ) =>
-      bids->List.sort((a, b) => {
-        BigInt.fromString(a.amount) > b.amount->BigInt.fromString ? -1.0 : 1.0
-      })
-
-    groupedBids
-    ->Dict.get(tokenId)
-    ->Option.mapWithDefault(list{}, sortBids)
-    ->List.mapWithIndex((i, auctionBid) => {
-      <AuctionBidItem
-        auctionBid={auctionBid.fragmentRefs}
-        key=auctionBid.id
-        isCurrentBid={i == 0 &&
-          todaysAuction->Option.mapWithDefault(false, todaysAuction =>
-            todaysAuction.tokenId == Some(auctionBid.tokenId)
-          )}
-      />
-    })
-    ->List.toArray
-    ->Array.slice(~start=0, ~end=3)
-    ->React.array
+    // groupedBids
+    // ->Dict.get(tokenId)
+    // ->Option.mapWithDefault(list{}, sortBids)
+    // ->List.mapWithIndex((i, auctionBid) => {
+    //   <AuctionBidItem
+    //     auctionBid={auctionBid.fragmentRefs}
+    //     key=auctionBid.id
+    //     isCurrentBid={i == 0 &&
+    //       todaysAuction->Option.mapWithDefault(false, todaysAuction =>
+    //         todaysAuction.tokenId == Some(auctionBid.tokenId)
+    //       )}
+    //   />
+    // })
+    // ->List.toArray
+    // ->Array.slice(~start=0, ~end=3)
+    []->React.array
   }
 }
 
@@ -182,6 +180,6 @@ let make = (~queryRef) => {
   let data = Query.usePreloaded(~queryRef)
 
   <React.Suspense fallback={<div> {React.string("Loading Auction Bids...")} </div>}>
-    <AuctionBidListDisplay query={data.fragmentRefs} />
+    <AuctionBidListDisplay bids={data.fragmentRefs} />
   </React.Suspense>
 }

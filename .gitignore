@@ -41,5 +41,6 @@ lib
 !/src/routes/__generated__/*
 
 *.mjs
+!polyfills.mjs
 ```
 .vercel

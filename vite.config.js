@@ -3,6 +3,12 @@ import react from "@vitejs/plugin-react-refresh";
 import { rescriptRelayVitePlugin } from "rescript-relay-router/RescriptRelayVitePlugin.mjs";
 
 export default defineConfig({
+  resolve: {
+    alias: {
+      process: 'process/browser',
+      util: 'util',
+    },
+  },
   plugins: [
     react(),
     rescriptRelayVitePlugin({

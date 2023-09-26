@@ -26,13 +26,13 @@ module VoteItem = {
 
     <li className="rounded-xl flex flex-col  justify-center items-center relative transition-all">
       <button
-        className="h-full m-0 border-0 relative scroll-m-[1vh] cursor-pointer bg-secondary noise rounded-xl"
+        className="h-full m-0 border-0 relative scroll-m-[1vh] cursor-pointer bg-background noise rounded-xl"
         onClick=handleVoteClick>
         <EmptyVoteChart
           className="static rounded-none max-w-none my-0 mx-auto w-full h-full align-middle"
         />
         <p
-          className="bg-background-light block absolute w-full bottom-0 rounded-b-xl font-bold text-lg text-default-dark">
+          className="bg-background-dark block absolute w-full bottom-0 rounded-b-xl font-bold text-lg text-white">
           {vote.tokenId->React.string}
         </p>
       </button>
@@ -84,7 +84,7 @@ module VoteListDisplay = {
       ->Array.map(vote => {
         <VoteItem vote={vote.fragmentRefs} key=vote.id />
       })
-    <div className="bg-background">
+    <div className="bg-white">
       <nav className=" w-full flex justify-between items-center py-4 px-2">
         <div>
           {switch voteContract {

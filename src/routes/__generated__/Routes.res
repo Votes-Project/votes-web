@@ -4,11 +4,11 @@
 module Main = {
   module Route = Route__Main_route
 
-  module Auction = {
-    module Route = Route__Main__Auction_route
+  module Vote = {
+    module Route = Route__Main__Vote_route
 
     module Bids = {
-      module Route = Route__Main__Auction__Bids_route
+      module Route = Route__Main__Vote__Bids_route
 
     }
   }

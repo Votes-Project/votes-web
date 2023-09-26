@@ -83,8 +83,8 @@ interface Node {
 }
 
 type Auction implements Node {
+  vote: Vote!
   bids(orderBy: OrderBy_AuctionBids, orderDirection: OrderDirection, where: Where_AuctionBids, first: Int, after: String, before: String, last: Int): AuctionBidConnection
-  tokenId: String!
   startTime: String!
   endTime: String!
   amount: String!
@@ -357,6 +357,7 @@ type VerificationData implements Node {
 
 """GraphClient: A Vote Token entity"""
 type Vote implements Node {
+  auction: Auction
   voteContract(id: String!): VoteContract
   tokenId: String!
   owner: String!

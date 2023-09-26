@@ -1,13 +1,5 @@
 open GraphClient
 
-type votesArgs<'orderBy, 'where> = {
-  first: option<int>,
-  skip: option<int>,
-  orderBy: 'orderBy,
-  orderDirection: option<orderDirection>,
-  where: 'where,
-}
-
 @gql.enum
 type orderBy_Votes =
   | @as("id") ID
@@ -21,7 +13,7 @@ type where_Votes = {
 
 type t = {
   byId: DataLoader.t<string, option<Vote.vote>>,
-  list: DataLoader.t<votesArgs<option<orderBy_Votes>, option<where_Votes>>, array<Vote.vote>>,
+  list: DataLoader.t<GraphClient.list<orderBy_Votes, where_Votes>, array<Vote.vote>>,
 }
 
 module ById = {
@@ -40,17 +32,8 @@ module List = {
   type data = {votes: array<Vote.vote>}
   @module("../.graphclient/index.js") @val
   external document: GraphClient.document<GraphClient.result<data>> = "GetVotesDocument"
-  let make = DataLoader.makeSingle(async args => {
-    switch await GraphClient.executeWithList(
-      document,
-      {
-        first: args.first->Option.getWithDefault(100),
-        skip: args.skip->Option.getWithDefault(0),
-        orderBy: args.orderBy->Option.getWithDefault(ID),
-        orderDirection: args.orderDirection->Option.getWithDefault(Asc),
-        where: args.where->Option.getWithDefault(({}: where_Votes)),
-      },
-    ) {
+  let make = DataLoader.makeSingle(async variables => {
+    switch await GraphClient.executeWithList(document, variables) {
     | exception _ => []
     | res =>
       res.data->Option.mapWithDefault([], ({votes}) =>

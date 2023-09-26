@@ -13,7 +13,7 @@ let make = (~children, ~isOpen) => {
   let {address} = Wagmi.useAccount()
   let (width, setWidth) = React.useState(_ => window->innerWidth)
   let isNarrow = width <= 991
-  let {setParams} = Routes.Main.Route.useQueryParams()
+  let {setParams, queryParams} = Routes.Main.Route.useQueryParams()
 
   let handleWindowSizeChange = () => {
     setWidth(_ => window->innerWidth)
@@ -69,8 +69,10 @@ let make = (~children, ~isOpen) => {
     }),
   }
 
-  let content = switch address->Nullable.toOption {
-  | None =>
+  let content = switch (address->Nullable.toOption, queryParams.voteDetailsToken) {
+  | (_, Some(_)) => children
+  | (Some(_), None) => children
+  | (None, None) =>
     <div className="h-full w-full flex flex-col justify-around items-center">
       <div className="flex-1 text-center gap-3 flex-col flex justify-center items-center">
         <div> {"Connect an ethereum wallet to submit a vote"->React.string} </div>
@@ -87,7 +89,6 @@ let make = (~children, ~isOpen) => {
         </a>
       </div>
     </div>
-  | Some(_) => children
   }
 
   <AnimatePresence initial=false>
