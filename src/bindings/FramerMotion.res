@@ -23,6 +23,7 @@ module Motion = {
     opacity?: float,
     backgroundColor?: string,
     width?: string,
+    height?: string,
     transition?: transition,
   }
 

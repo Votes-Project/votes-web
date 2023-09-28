@@ -4,9 +4,9 @@
     "name": "Main",
     "children": [
       {
-        "path": ":tokenId",
+        "path": ":tokenId?showAllBids=int",
         "name": "Vote",
-        "children": [{ "path": "?allBids=int", "name": "Bids" }]
+        "children": []
       },
       {
         "path": "queue",

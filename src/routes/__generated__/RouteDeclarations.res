@@ -8,8 +8,6 @@ external unsafe_toPrepareProps: 'any => prepareProps = "%identity"
 
 @val external import__Main__Vote: (@as(json`"@rescriptModule/Main__Vote_route_renderer"`) _, unit) => promise<RouteRenderer.t> = "import"
 
-@val external import__Main__Vote__Bids: (@as(json`"@rescriptModule/Main__Vote__Bids_route_renderer"`) _, unit) => promise<RouteRenderer.t> = "import"
-
 @val external import__Main__Queue: (@as(json`"@rescriptModule/Main__Queue_route_renderer"`) _, unit) => promise<RouteRenderer.t> = "import"
 
 @val external import__Main__Raffles: (@as(json`"@rescriptModule/Main__Raffles_route_renderer"`) _, unit) => promise<RouteRenderer.t> = "import"
@@ -21,7 +19,7 @@ external unsafe_toPrepareProps: 'any => prepareProps = "%identity"
 @val external import__FourOhFour: (@as(json`"@rescriptModule/FourOhFour_route_renderer"`) _, unit) => promise<RouteRenderer.t> = "import"
 
 let loadedRouteRenderers: Belt.HashMap.String.t<loadedRouteRenderer> = Belt.HashMap.String.make(
-  ~hintSize=8,
+  ~hintSize=7,
 )
 
 let make = (~prepareDisposeTimeout=5 * 60 * 1000): array<RelayRouter.Types.route> => {
@@ -123,6 +121,7 @@ let make = (~prepareDisposeTimeout=5 * 60 * 1000): array<RelayRouter.Types.route
           contextId: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("contextId")->Belt.Option.flatMap(value => Some(value->Js.Global.decodeURIComponent)),
           voteDetails: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetails")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
           voteDetailsToken: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetailsToken")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
+          showAllBids: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("showAllBids")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
         }
         prepareProps->unsafe_toPrepareProps
       }
@@ -173,92 +172,14 @@ let make = (~prepareDisposeTimeout=5 * 60 * 1000): array<RelayRouter.Types.route
           ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("contextId")->Belt.Option.getWithDefault("")
           ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetails")->Belt.Option.getWithDefault("")
           ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetailsToken")->Belt.Option.getWithDefault("")
+          ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("showAllBids")->Belt.Option.getWithDefault("")
       }
       
       ,
             ~routeName,
             ~intent
           ),
-          children: [      {
-              let routeName = "Main__Vote__Bids"
-              let loadRouteRenderer = () => import__Main__Vote__Bids->doLoadRouteRenderer(~routeName, ~loadedRouteRenderers)
-              let makePrepareProps = (. 
-              ~environment: RescriptRelay.Environment.t,
-              ~pathParams: Js.Dict.t<string>,
-              ~queryParams: RelayRouter.Bindings.QueryParams.t,
-              ~location: RelayRouter.History.location,
-            ): prepareProps => {
-              let prepareProps: Route__Main__Vote__Bids_route.Internal.prepareProps =   {
-                environment: environment,
-            
-                location: location,
-                tokenId: pathParams->Js.Dict.unsafeGet("tokenId"),
-                linkBrightID: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("linkBrightID")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
-                dailyQuestion: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("dailyQuestion")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
-                contextId: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("contextId")->Belt.Option.flatMap(value => Some(value->Js.Global.decodeURIComponent)),
-                voteDetails: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetails")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
-                voteDetailsToken: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetailsToken")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
-                allBids: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("allBids")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
-              }
-              prepareProps->unsafe_toPrepareProps
-            }
-            
-              {
-                path: "",
-                name: routeName,
-                chunk: "Main__Vote__Bids_route_renderer",
-                loadRouteRenderer,
-                preloadCode: (
-                  ~environment: RescriptRelay.Environment.t,
-                  ~pathParams: Js.Dict.t<string>,
-                  ~queryParams: RelayRouter.Bindings.QueryParams.t,
-                  ~location: RelayRouter.History.location,
-                ) => preloadCode(
-                  ~loadedRouteRenderers,
-                  ~routeName,
-                  ~loadRouteRenderer,
-                  ~environment,
-                  ~location,
-                  ~makePrepareProps,
-                  ~pathParams,
-                  ~queryParams,
-                ),
-                prepare: (
-                  ~environment: RescriptRelay.Environment.t,
-                  ~pathParams: Js.Dict.t<string>,
-                  ~queryParams: RelayRouter.Bindings.QueryParams.t,
-                  ~location: RelayRouter.History.location,
-                  ~intent: RelayRouter.Types.prepareIntent,
-                ) => prepareRoute(
-                  ~environment,
-                  ~pathParams,
-                  ~queryParams,
-                  ~location,
-                  ~getPrepared,
-                  ~loadRouteRenderer,
-                  ~makePrepareProps,
-                  ~makeRouteKey=(
-              ~pathParams: Js.Dict.t<string>,
-              ~queryParams: RelayRouter.Bindings.QueryParams.t
-            ): string => {
-            
-              "Main__Vote__Bids:"
-                ++ pathParams->Js.Dict.get("tokenId")->Belt.Option.getWithDefault("")
-                ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("linkBrightID")->Belt.Option.getWithDefault("")
-                ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("dailyQuestion")->Belt.Option.getWithDefault("")
-                ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("contextId")->Belt.Option.getWithDefault("")
-                ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetails")->Belt.Option.getWithDefault("")
-                ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetailsToken")->Belt.Option.getWithDefault("")
-                ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("allBids")->Belt.Option.getWithDefault("")
-            }
-            
-            ,
-                  ~routeName,
-                  ~intent
-                ),
-                children: [],
-              }
-            }],
+          children: [],
         }
       },
       {

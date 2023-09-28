@@ -15,6 +15,7 @@ module Types = {
     auction: option<fragment_auction>,
     owner: string,
     voteContract: option<fragment_voteContract>,
+    fragmentRefs: RescriptRelay.fragmentRefs<[ | #Raffle_vote]>,
   }
 }
 
@@ -23,7 +24,7 @@ module Internal = {
   type fragmentRaw
   @live
   let fragmentConverter: Js.Dict.t<Js.Dict.t<Js.Dict.t<string>>> = %raw(
-    json`{"__root":{"auction":{"f":""}}}`
+    json`{"__root":{"auction":{"f":""},"":{"f":""}}}`
   )
   @live
   let fragmentConverterMap = ()
@@ -114,6 +115,11 @@ let node: operationType = %raw(json` {
         }
       ],
       "storageKey": null
+    },
+    {
+      "args": null,
+      "kind": "FragmentSpread",
+      "name": "Raffle_vote"
     }
   ],
   "type": "Vote",

@@ -17,6 +17,7 @@ module Fragment = %relay(`
       ...AuctionDisplay_auction
       startTime
     }
+    ...Raffle_vote
   }
 `)
 
@@ -26,25 +27,24 @@ let make = (
   ~queryRef=?,
   ~vote: option<RescriptRelay.fragmentRefs<[#SingleVote_node]>>=?,
   ~tokenId,
-  ~children,
 ) => {
   let data = queryRef->Option.map(queryRef => Query.usePreloaded(~queryRef))
   let newestVote = vote->Option.map(Fragment.use(_))
 
-  let vote =
+  let node =
     data
     ->Option.flatMap(({node}) => node)
     ->Option.map(({fragmentRefs}) => Fragment.use(fragmentRefs))
 
-  let vote = vote->Option.orElse(newestVote)
+  let vote = node->Option.orElse(newestVote)
 
   let auctionType = tokenId->Option.map(Helpers.wrapTokenId)
 
   switch (auctionType, vote) {
-  | (Some(Raffle), Some({voteContract: Some({totalSupply})})) =>
+  | (Some(Raffle), Some({fragmentRefs, voteContract: Some({totalSupply})})) =>
     <ErrorBoundary fallback={_ => "Auction Failed to load"->React.string}>
       <VoteHeader tokenId={tokenId} totalSupply />
-      {"Raffle"->React.string}
+      <Raffle vote=fragmentRefs />
     </ErrorBoundary>
   | (
       Some(Normal),
@@ -53,7 +53,7 @@ let make = (
     <ErrorBoundary fallback={_ => "Auction Failed to load"->React.string}>
       <VoteHeader tokenId={tokenId} totalSupply startTime />
       <React.Suspense fallback={<div />}>
-        <AuctionDisplay owner auction={Some(fragmentRefs)}> {children} </AuctionDisplay>
+        <AuctionDisplay owner auction={Some(fragmentRefs)} />
       </React.Suspense>
     </ErrorBoundary>
   | (
@@ -63,7 +63,7 @@ let make = (
     <ErrorBoundary fallback={_ => "Auction Failed to load"->React.string}>
       <VoteHeader tokenId={tokenId} totalSupply startTime />
       <React.Suspense fallback={<div />}>
-        <AuctionDisplay owner auction={Some(fragmentRefs)}> {children} </AuctionDisplay>
+        <AuctionDisplay owner auction={Some(fragmentRefs)} />
       </React.Suspense>
     </ErrorBoundary>
   | _ => raise(NoVote)

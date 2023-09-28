@@ -26,14 +26,12 @@ module Fragment = %relay(`
 @react.component @relay.deferredComponent
 let make = (~children, ~queryRef) => {
   open FramerMotion
-  let {fragmentRefs} = Query.usePreloaded(~queryRef)
-
   let activeSubRoute = Routes.Main.Route.useActiveSubRoute()
-  Js.log2("activeSubRoute: ", activeSubRoute)
 
+  let {fragmentRefs} = Query.usePreloaded(~queryRef)
   let {votes} = Fragment.use(fragmentRefs)
+
   let newestVote = votes->Fragment.getConnectionNodes->Array.get(0)
-  Js.log2("newestVote: ", newestVote)
 
   let newestTokenId = newestVote->Option.flatMap(({tokenId}) => tokenId->Int.fromString)
 
@@ -60,12 +58,7 @@ let make = (~children, ~queryRef) => {
                 {switch (newestVote, activeSubRoute) {
                 | (_, Some(_)) => children
                 | (Some({fragmentRefs}), None) =>
-                  <>
-                    <SingleVote vote=fragmentRefs tokenId={newestTokenId}>
-                      {React.null}
-                    </SingleVote>
-                    {children}
-                  </>
+                  <SingleVote vote=fragmentRefs tokenId={newestTokenId} />
                 | _ => <div />
                 }}
               </React.Suspense>
