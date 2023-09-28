@@ -42,14 +42,19 @@ let bids = async (
   ~before,
   ~last,
   ~ctx: ResGraphContext.context,
-): option<AuctionBid.auctionBidConnection> => {
+): AuctionBid.auctionBidConnection => {
+  let tokenId = switch auction.id->String.replace("0x", "")->Helpers.i32toInt {
+  | None => panic("Could not parse auction ID")
+  | Some(tokenId) => tokenId->Int.toString
+  }
+
   let where = switch where {
   | Some(where) =>
     {
       ...where,
-      tokenId: auction.vote.tokenId,
+      tokenId,
     }->Some
-  | None => {tokenId: auction.vote.tokenId}->Some
+  | None => {tokenId: tokenId}->Some
   }
 
   let bids = await ctx.dataLoaders.auctionBid.list->DataLoader.load({
@@ -58,8 +63,9 @@ let bids = async (
     orderDirection,
     where,
   })
+  Js.log2("bids: ", bids)
 
-  bids->ResGraph.Connections.connectionFromArray(~args={first: None, after, before, last})->Some
+  bids->ResGraph.Connections.connectionFromArray(~args={first: None, after, before, last})
 }
 
 @gql.field

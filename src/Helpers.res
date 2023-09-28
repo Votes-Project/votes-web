@@ -1,4 +1,4 @@
-let intToI32 = (num: int): string => {
+let intToI32 = num => {
   let hex = Int.toStringWithRadix(num, ~radix=16)
   if num < 16 {
     let hex = String.padStart(hex, 2, "0")
@@ -6,6 +6,11 @@ let intToI32 = (num: int): string => {
   } else {
     String.padEnd(hex, 10 - String.length(hex), "0")
   }
+}
+
+let i32toInt = i32 => {
+  let r = RegExp.fromString("0+$")
+  i32->String.replaceRegExp(r, "")->Int.fromString(~radix=16)
 }
 
 let tokenToSubgraphId = tokenId =>
@@ -21,5 +26,18 @@ let wrapTokenId = tokenId => {
   | 5 => FlashVote
   | 9 => Raffle
   | _ => Normal
+  }
+}
+
+type auctionPhase = Before | During | After
+
+let wrapAuctionPhase = (startTimeMs, endTimeMs) => {
+  let now = Date.now()
+  if startTimeMs < now && endTimeMs > now {
+    During
+  } else if startTimeMs > now {
+    Before
+  } else {
+    After
   }
 }

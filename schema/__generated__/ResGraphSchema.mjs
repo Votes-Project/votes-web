@@ -456,7 +456,7 @@ t_Auction.contents = new Graphql.GraphQLObjectType({
                         })
                   },
                   bids: {
-                    type: t_AuctionBidConnection.contents,
+                    type: new Graphql.GraphQLNonNull(t_AuctionBidConnection.contents),
                     args: {
                       after: {
                         type: Graphql.GraphQLString
