@@ -25,12 +25,12 @@ let renderer = Routes.Main.Vote.Route.makeRenderer(
       )->Some
     }
   },
-  ~render=({childRoutes, tokenId, prepared}) => {
+  ~render=({tokenId, prepared}) => {
     let tokenId = tokenId->Int.fromString
 
     <React.Suspense fallback={<div> {"Loading..."->React.string} </div>}>
       {switch prepared {
-      | Some(queryRef) => <SingleVote queryRef tokenId> {childRoutes} </SingleVote>
+      | Some(queryRef) => <SingleVote queryRef tokenId />
       | None => <div> {"Failed to fetch vote..."->React.string} </div>
       }}
     </React.Suspense>

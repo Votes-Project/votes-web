@@ -15,6 +15,8 @@ module Fragment = %relay(`
     amount
     ...CreateBid_auction
     ...AuctionCountdown_auction
+    ...AuctionBidList_auction
+    ...AllBidsList_auction
   }
   `)
 
@@ -22,15 +24,8 @@ exception ContractWriteDoesNotExist
 exception AuctionDoesNotExist
 type arrowPress = LeftPress | RightPress
 @react.component
-let make = (
-  ~auction: option<RescriptRelay.fragmentRefs<[#AuctionDisplay_auction]>>,
-  ~owner,
-  ~children,
-) => {
-  let {push} = RelayRouter.Utils.useRouter()
-  let (auctionDate, setAuctionDate) = React.useState(() => None)
-  let auction = auction->Option.map(auction => Fragment.use(auction))
-  switch auction {
+let make = (~auction: option<RescriptRelay.fragmentRefs<[#AuctionDisplay_auction]>>, ~owner) => {
+  switch auction->Option.map(auction => Fragment.use(auction)) {
   | None => "Raffle"->React.string
   | Some(auction) =>
     let tokenId = auction.vote.tokenId
@@ -38,10 +33,13 @@ let make = (
       auction.startTime->Float.fromString->Option.mapWithDefault(0., x => x *. 1000.)
     let endTimeMs = auction.endTime->Float.fromString->Option.mapWithDefault(0., x => x *. 1000.)
 
-    let (isToday, _) = React.useState(() => startTimeMs < Date.now() && endTimeMs > Date.now())
+    let (phase, _) = React.useState(() => Helpers.wrapAuctionPhase(startTimeMs, endTimeMs))
 
     let {setParams} = Routes.Main.Route.useQueryParams()
-    let {setParams: setBidsParams} = Routes.Main.Vote.Bids.Route.useQueryParams()
+    let {
+      setParams: setVoteParams,
+      queryParams: {showAllBids},
+    } = Routes.Main.Vote.Route.useQueryParams()
 
     let {config} = Wagmi.usePrepareContractWrite(
       ~config={
@@ -68,25 +66,27 @@ let make = (
         },
       )
     }
-
-    let handleAllBids = _ => {
-      setBidsParams(
+    let handleShowAllBids = _ => {
+      setVoteParams(
         ~removeNotControlledParams=false,
         ~navigationMode_=Push,
-        ~shallow=false,
+        ~shallow=true,
         ~setter=c => {
           ...c,
-          allBids: Some(0),
+          showAllBids: Some(0),
         },
       )
     }
+
+    let formatAmount = amount => amount->BigInt.fromString->Viem.formatEther
 
     <>
       <h1 className="font-['Fugaz One'] py-9 text-6xl font-bold text-default-darker ">
         {`VOTE ${tokenId}`->React.string}
       </h1>
-      {switch (isToday, auction) {
-      | (true, {settled: false, fragmentRefs}) =>
+      {switch (phase, auction) {
+      | (Before, _) => <> {"Auction has not started yet"->React.string} </>
+      | (During, {settled: false, fragmentRefs}) =>
         <>
           <div className="flex flex-col lg:flex-row gap-2 lg:gap-5">
             <div className="flex lg:flex-col items-start justify-between">
@@ -95,7 +95,7 @@ let make = (
               </p>
               <p className="font-bold text-xl lg:text-3xl text-default-darker">
                 {"Ξ "->React.string}
-                {auction.amount->React.string}
+                {auction.amount->formatAmount->React.string}
               </p>
             </div>
             <div className="w-0 rounded-lg lg:border-primary border hidden lg:flex" />
@@ -111,20 +111,25 @@ let make = (
           </button>
           <ErrorBoundary
             fallback={_ => {<div> {React.string("Bid Component Failed to Insantiate")} </div>}}>
-            <CreateBid auction=fragmentRefs isToday />
+            <CreateBid auction=fragmentRefs auctionPhase=phase />
           </ErrorBoundary>
-          <ul className="flex flex-col justify-between py-4"> {children} </ul>
+          <ul className="flex flex-col justify-between py-4">
+            <AuctionBidList bids={auction.fragmentRefs} />
+          </ul>
           <div className="w-full py-2 text-center pb-4">
             {auction.amount == "0"
               ? React.null
               : <div
-                  onClick={handleAllBids}
+                  onClick={handleShowAllBids}
                   className="font-semibold text-background-dark hover:text-default-darker cursor-pointer">
                   {"View All Bids"->React.string}
                 </div>}
           </div>
+          <AllBidsListModal isOpen={showAllBids->Option.isSome}>
+            <AllBidsList bids={auction.fragmentRefs} />
+          </AllBidsListModal>
         </>
-      | (false, {settled: false}) =>
+      | (After, {settled: false}) =>
         <>
           <button
             className="bg-primary-dark text-white font-bold py-2 px-4 rounded"
@@ -133,7 +138,7 @@ let make = (
           </button>
         </>
 
-      | (false, {settled: true, amount, bidder}) =>
+      | (After, {settled: true, amount, bidder}) =>
         <>
           <div className="flex flex-col lg:flex-row lg:gap-5 gap-2">
             <div className="flex lg:flex-col items-start justify-between">
@@ -182,7 +187,7 @@ let make = (
           </div>
           <div className="flex py-4 gap-4">
             <button
-              onClick={handleAllBids}
+              onClick={handleShowAllBids}
               className=" lg:bg-primary font-semibold text-default-darker hover:bg-background-light p-2 bg-background rounded-md transition-colors">
               {"Bid History"->React.string}
             </button>
@@ -191,6 +196,9 @@ let make = (
               {"Etherscan"->React.string}
             </button>
           </div>
+          <AllBidsListModal isOpen={showAllBids->Option.isSome}>
+            <AllBidsList bids={auction.fragmentRefs} />
+          </AllBidsListModal>
         </>
 
       | _ => raise(AuctionDoesNotExist)

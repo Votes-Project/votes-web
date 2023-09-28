@@ -13,7 +13,7 @@ module Fragment = %relay(`
 
 exception ContractWriteDoesNotExist
 @react.component
-let make = (~auction, ~isToday) => {
+let make = (~auction, ~auctionPhase) => {
   let (bidAmount, setBidAmount) = React.useState(_ => "")
   let auction = Fragment.use(auction)
 
@@ -63,7 +63,7 @@ let make = (~auction, ~isToday) => {
     />
     <button
       className="flex-1 rounded-lg bg-active px-4 py-3 lg:px-3 lg:py-2 text-center text-white disabled:bg-default-disabled disabled:text-background-light text-xl lg:text-lg"
-      disabled={!isToday ||
+      disabled={!(auctionPhase == Helpers.During) ||
       bidAmount == "" ||
       bidAmount->Float.fromString->Option.equal(currentBid->Float.fromString, (a, b) => a < b)}
       onClick={_ => handleCreateBid()}>

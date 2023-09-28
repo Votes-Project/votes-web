@@ -15,7 +15,7 @@ module Types = {
     settled: bool,
     startTime: string,
     vote: fragment_vote,
-    fragmentRefs: RescriptRelay.fragmentRefs<[ | #AuctionCountdown_auction | #CreateBid_auction]>,
+    fragmentRefs: RescriptRelay.fragmentRefs<[ | #AllBidsList_auction | #AuctionBidList_auction | #AuctionCountdown_auction | #CreateBid_auction]>,
   }
 }
 
@@ -125,6 +125,16 @@ let node: operationType = %raw(json` {
       "args": null,
       "kind": "FragmentSpread",
       "name": "AuctionCountdown_auction"
+    },
+    {
+      "args": null,
+      "kind": "FragmentSpread",
+      "name": "AuctionBidList_auction"
+    },
+    {
+      "args": null,
+      "kind": "FragmentSpread",
+      "name": "AllBidsList_auction"
     }
   ],
   "type": "Auction",

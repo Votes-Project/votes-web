@@ -4,22 +4,22 @@
 module Types = {
   @@warning("-30")
 
-  type rec fragment_auctionBids_edges_node = {
+  type rec fragment_bids_edges_node = {
     amount: string,
     @live id: string,
     tokenId: string,
     fragmentRefs: RescriptRelay.fragmentRefs<[ | #AllBidsList_BidItem_auctionBid]>,
   }
-  and fragment_auctionBids_edges = {
+  and fragment_bids_edges = {
     @live __id: RescriptRelay.dataId,
-    node: option<fragment_auctionBids_edges_node>,
+    node: option<fragment_bids_edges_node>,
   }
-  and fragment_auctionBids = {
+  and fragment_bids = {
     @live __id: RescriptRelay.dataId,
-    edges: option<array<option<fragment_auctionBids_edges>>>,
+    edges: option<array<option<fragment_bids_edges>>>,
   }
   type fragment = {
-    auctionBids: option<fragment_auctionBids>,
+    bids: fragment_bids,
   }
 }
 
@@ -28,7 +28,7 @@ module Internal = {
   type fragmentRaw
   @live
   let fragmentConverter: Js.Dict.t<Js.Dict.t<Js.Dict.t<string>>> = %raw(
-    json`{"__root":{"auctionBids_edges_node":{"f":""}}}`
+    json`{"__root":{"bids_edges_node":{"f":""}}}`
   )
   @live
   let fragmentConverterMap = ()
@@ -43,19 +43,19 @@ module Internal = {
 type t
 type fragmentRef
 external getFragmentRef:
-  RescriptRelay.fragmentRefs<[> | #AllBidsListDisplay_auctionBids]> => fragmentRef = "%identity"
+  RescriptRelay.fragmentRefs<[> | #AllBidsList_auction]> => fragmentRef = "%identity"
 
 @live
 @inline
-let connectionKey = "AllBidsListDisplay_auctionBids_auctionBids"
+let connectionKey = "AllBidsList_bids_bids"
 
 %%private(
   @live @module("relay-runtime") @scope("ConnectionHandler")
-  external internal_makeConnectionId: (RescriptRelay.dataId, @as("AllBidsListDisplay_auctionBids_auctionBids") _, 'arguments) => RescriptRelay.dataId = "getConnectionID"
+  external internal_makeConnectionId: (RescriptRelay.dataId, @as("AllBidsList_bids_bids") _, 'arguments) => RescriptRelay.dataId = "getConnectionID"
 )
 
 @live
-let makeConnectionId = (connectionParentDataId: RescriptRelay.dataId, ~orderBy: RelaySchemaAssets_graphql.enum_OrderBy_AuctionBids=TokenId, ~orderDirection: RelaySchemaAssets_graphql.enum_OrderDirection=Desc, ~where: option<RelaySchemaAssets_graphql.input_Where_AuctionBids>=?) => {
+let makeConnectionId = (connectionParentDataId: RescriptRelay.dataId, ~orderBy: RelaySchemaAssets_graphql.enum_OrderBy_AuctionBids=BlockTimestamp, ~orderDirection: RelaySchemaAssets_graphql.enum_OrderDirection=Desc, ~where: option<RelaySchemaAssets_graphql.input_Where_AuctionBids>=?) => {
   let orderBy = Some(orderBy)
   let orderDirection = Some(orderDirection)
   let args = {"orderBy": orderBy, "orderDirection": orderDirection, "where": where}
@@ -66,18 +66,14 @@ module Utils = {
   open Types
 
   @live
-  let getConnectionNodes: option<Types.fragment_auctionBids> => array<Types.fragment_auctionBids_edges_node> = connection => 
-    switch connection {
+  let getConnectionNodes: Types.fragment_bids => array<Types.fragment_bids_edges_node> = connection => 
+    switch connection.edges {
       | None => []
-      | Some(connection) => 
-        switch connection.edges {
-          | None => []
-          | Some(edges) => edges
-            ->Belt.Array.keepMap(edge => switch edge {
-              | None => None
-              | Some(edge) => edge.node
-            })
-        }
+      | Some(edges) => edges
+        ->Belt.Array.keepMap(edge => switch edge {
+          | None => None
+          | Some(edge) => edge.node
+        })
     }
 
 
@@ -108,7 +104,7 @@ return {
       "name": "first"
     },
     {
-      "defaultValue": "tokenId",
+      "defaultValue": "blockTimestamp",
       "kind": "LocalArgument",
       "name": "orderBy"
     },
@@ -131,15 +127,15 @@ return {
         "cursor": null,
         "direction": "forward",
         "path": [
-          "auctionBids"
+          "bids"
         ]
       }
     ]
   },
-  "name": "AllBidsListDisplay_auctionBids",
+  "name": "AllBidsList_auction",
   "selections": [
     {
-      "alias": "auctionBids",
+      "alias": "bids",
       "args": [
         {
           "kind": "Variable",
@@ -159,7 +155,7 @@ return {
       ],
       "concreteType": "AuctionBidConnection",
       "kind": "LinkedField",
-      "name": "__AllBidsListDisplay_auctionBids_auctionBids_connection",
+      "name": "__AllBidsList_bids_bids_connection",
       "plural": false,
       "selections": [
         {
@@ -255,7 +251,7 @@ return {
       "storageKey": null
     }
   ],
-  "type": "Query",
+  "type": "Auction",
   "abstractKey": null
 };
 })() `)
