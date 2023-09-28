@@ -253,7 +253,7 @@ t_Auction.contents = GraphQLObjectType.make({
         }),
       },
       "bids": {
-        typ: get_AuctionBidConnection()->GraphQLObjectType.toGraphQLType,
+        typ: get_AuctionBidConnection()->GraphQLObjectType.toGraphQLType->nonNull,
         description: ?None,
         deprecationReason: ?None,
         args: {
