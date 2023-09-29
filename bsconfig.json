@@ -26,9 +26,16 @@
     }
   ],
   "suffix": ".mjs",
-  "ppx-flags": [["rescript-relay/ppx", "-uncurried"]],
+  "ppx-flags": [
+    [
+      "rescript-relay/ppx",
+      "-uncurried"
+    ]
+  ],
   "namespace": false,
-  "bsc-flags": ["-open RescriptCore"],
+  "bsc-flags": [
+    "-open RescriptCore"
+  ],
   "bs-dependencies": [
     "@rescript/react",
     "@rescript/core",
