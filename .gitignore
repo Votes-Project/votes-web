@@ -34,13 +34,14 @@ lib
 !.yarn/sdks
 !.yarn/versions
 
+src/__generated__/**
+!src/__generated__/.gitkeep
 
-**/__generated__/**
-!/schema/__generated__/*
-!/src/__generated__/*
-!/src/routes/__generated__/*
+
+
 
 *.mjs
+!/api/graphql.mjs
 !polyfills.mjs
 ```
 .vercel
