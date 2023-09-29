@@ -44,14 +44,14 @@ let make = (~tokenId, ~totalSupply, ~startTime=?) => {
       <button
         disabled={tokenId == "0"}
         onClick={_ => handleArrowPress(LeftPress, Int.fromString(tokenId))}
-        className="flex h-8 w-8 items-center justify-center rounded-full bg-background-dark lg:bg-primary-dark disabled:bg-default-disabled ">
+        className="flex h-8 w-8 items-center justify-center rounded-full bg-default-dark lg:bg-primary-dark disabled:bg-default-disabled ">
         <ReactIcons.LuArrowLeft color="white" className=" stroke-[4]" />
       </button>
       <ReactTooltip anchorSelect="#queue-press" content="Question Queue" />
       <button
         onClick={_ => handleArrowPress(RightPress, Int.fromString(tokenId))}
         disabled={Some(tokenId) === newestTokenId}
-        className="flex h-8 w-8 items-center justify-center rounded-full lg:bg-primary-dark bg-background-dark disabled:bg-default-disabled disabled:opacity-50 ">
+        className="flex h-8 w-8 items-center justify-center rounded-full lg:bg-primary-dark bg-default-dark disabled:bg-default-disabled disabled:opacity-50 ">
         <ReactIcons.LuArrowRight color="white" className="stroke-[4]" />
       </button>
       <p className="font-semibold text-background-dark lg:text-active">
@@ -62,7 +62,7 @@ let make = (~tokenId, ~totalSupply, ~startTime=?) => {
       <button
         id="queue-press"
         onClick={_ => handleQueuePress()}
-        className=" self-end flex h-10 w-10 items-center justify-center rounded-full lg:bg-primary-dark bg-background-dark disabled:bg-default-disabled disabled:opacity-50 ">
+        className=" self-end flex h-10 w-10 items-center justify-center rounded-full lg:bg-primary-dark bg-default-dark disabled:bg-default-disabled disabled:opacity-50 ">
         <ReactIcons.LuListOrdered color="white" size="1.5rem" />
       </button>
     </div>

@@ -26,13 +26,13 @@ module VoteItem = {
 
     <li className="rounded-xl flex flex-col  justify-center items-center relative transition-all">
       <button
-        className="h-full m-0 border-0 relative scroll-m-[1vh] cursor-pointer bg-background noise rounded-xl"
+        className="h-full m-0 border-0 relative scroll-m-[1vh] cursor-pointer bg-default noise rounded-xl"
         onClick=handleVoteClick>
         <EmptyVoteChart
           className="static rounded-none max-w-none my-0 mx-auto w-full h-full align-middle"
         />
         <p
-          className="bg-background-dark block absolute w-full bottom-0 rounded-b-xl font-bold text-lg text-white">
+          className="bg-default-dark block absolute w-full bottom-0 rounded-b-xl font-bold text-lg text-white">
           {vote.tokenId->React.string}
         </p>
       </button>

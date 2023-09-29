@@ -97,7 +97,7 @@ let make = (~queryRef, ~contextId) => {
     </div>
     <div className="  bg-black/10 p-4 rounded-xl">
       <button
-        className="p-4 bg-background-light rounded-lg font-semibold pointer-events-auto "
+        className="p-4 bg-default-light rounded-lg font-semibold pointer-events-auto "
         onClick={_ =>
           queryParams.linkBrightID->Option.map(linkBrightID => linkBrightID + 1)->setLinkBrightID}>
         {queryParams.linkBrightID->linkText->React.string}

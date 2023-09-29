@@ -231,6 +231,13 @@ module ChoicesPage = {
         ->React.array}
       </div>
       <div className="flex flex-col justify-center items-center mb-6 gap-3">
+        <button
+          className="text-background-dark
+              font-semibold
+              underline
+            ">
+          {"None of the Above"->React.string}
+        </button>
         <div className="flex flex-row w-[80%] items-center justify-around px-10">
           <LinkStatusTooltip verificationData />
           <button
@@ -255,13 +262,6 @@ module ChoicesPage = {
             />
           </button>
         </div>
-        <button
-          className="text-background-dark
-              font-semibold
-              underline
-            ">
-          {"None of the Above"->React.string}
-        </button>
       </div>
     </>
   }

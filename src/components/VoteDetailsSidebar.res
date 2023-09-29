@@ -109,7 +109,7 @@ let make = (~children, ~isOpen) => {
           initial=String("initial")
           animate=String("animate")
           exit=String("exit")
-          className="w-full bg-background  transform-none h-screen fixed top-0 right-0 overflow-y-auto z-50 pb-[15vh] lg:w-1/2 ">
+          className="w-full bg-default  transform-none h-screen fixed top-0 right-0 overflow-y-auto z-50 pb-[15vh] lg:w-1/2 ">
           <Motion.Div
             exit={Exit({
               opacity: !isNarrow ? 0. : 1.,
@@ -117,7 +117,7 @@ let make = (~children, ~isOpen) => {
                 duration: 0.01,
               },
             })}
-            className="bg-background h-full   w-full py-4 px-[2%] overflow-y-scroll flex-flex-col justify-center items-center hide-scrollbar">
+            className="bg-default h-full   w-full py-4 px-[2%] overflow-y-scroll flex-flex-col justify-center items-center hide-scrollbar">
             <button className="fixed top-0 right-0 p-4" onClick={handleExitClick}>
               {"Exit"->React.string}
             </button>

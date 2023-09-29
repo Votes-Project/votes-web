@@ -13,7 +13,7 @@ module LinkBrightID = %relay.deferredComponent(LinkBrightID.make)
 // module QuestionQueue = %relay.deferredComponent(QuestionQueue.make)
 
 let renderer = Routes.Main.Route.makeRenderer(
-  ~prepareCode=({dailyQuestion, linkBrightID, voteDetails}) =>
+  ~prepareCode=({dailyQuestion, linkBrightID}) =>
     [
       Some(Main.preload()),
       switch dailyQuestion {
@@ -132,7 +132,7 @@ let renderer = Routes.Main.Route.makeRenderer(
           <React.Suspense fallback={<p> {"Loading"->React.string} </p>}>
             <OwnedVotesList />
           </React.Suspense>
-        | (Some(_), Some(token), Some(queryRef)) =>
+        | (Some(_), Some(_), Some(queryRef)) =>
           <React.Suspense fallback={<p> {"Loading"->React.string} </p>}>
             <VoteDetails queryRef />
           </React.Suspense>

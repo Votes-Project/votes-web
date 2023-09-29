@@ -2,7 +2,7 @@
 let make = () => {
   open ReactIcons
   <>
-    <div className="w-full py-16 bg-background-light px-3 ">
+    <div className="w-full py-16 bg-default-light px-3 ">
       <section className="p-4 mx-auto space-y-2 max-w-5xl">
         <h1 className="font-bold text-7xl cursor-pointer text-default-darker">
           {"The Daily Vote"->React.string}

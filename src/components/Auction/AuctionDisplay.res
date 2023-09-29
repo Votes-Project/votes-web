@@ -188,11 +188,11 @@ let make = (~auction: option<RescriptRelay.fragmentRefs<[#AuctionDisplay_auction
           <div className="flex py-4 gap-4">
             <button
               onClick={handleShowAllBids}
-              className=" lg:bg-primary font-semibold text-default-darker hover:bg-background-light p-2 bg-background rounded-md transition-colors">
+              className=" lg:bg-primary font-semibold text-default-darker hover:bg-default-light p-2 bg-default rounded-md transition-colors">
               {"Bid History"->React.string}
             </button>
             <button
-              className=" lg:bg-primary font-semibold text-default-darker hover:bg-background-light p-2 bg-background rounded-md transition-colors">
+              className=" lg:bg-primary font-semibold text-default-darker hover:bg-default-light p-2 bg-default rounded-md transition-colors">
               {"Etherscan"->React.string}
             </button>
           </div>

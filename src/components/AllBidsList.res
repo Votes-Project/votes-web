@@ -54,7 +54,7 @@ module Fragment = %relay(`
 @react.component
 let make = (~bids) => {
   let {bids} = Fragment.use(bids)
-  <div className="bg-background-light">
+  <div className="bg-default-light">
     {bids
     ->Fragment.getConnectionNodes
     ->Array.map(({id, fragmentRefs}) => {
