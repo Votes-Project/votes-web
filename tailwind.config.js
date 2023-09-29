@@ -4,15 +4,15 @@ export default {
   theme: {
     extend: {
       colors: {
-        background: "#e4eaec",
-        "background-light": "#ffffff",
-        "background-dark": "#a1c7d3",
+        default: "#e4eaec",
+        "default-light": "#ffffff",
+        "default-dark": "#a1c7d3",
         "default-darker": "#313753",
+        "default-disabled": "#ece6e4",
         primary: "#FFDACC",
         "primary-dark": "#ffae8f",
         secondary: "#fff4f0",
         active: "#FB8A61",
-        "default-disabled": "#ece6e4"
       },
       dropShadow: {
         glow: [

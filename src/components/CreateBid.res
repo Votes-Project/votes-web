@@ -52,7 +52,7 @@ let make = (~auction, ~auctionPhase) => {
     className="flex flex-col lg:flex-row w-full lg:items-center justify-around gap-2 p-10 lg:p-0">
     <input
       className="flex-2 rounded-2xl px-2 py-4 placeholder:text-lg placeholder:font-bold
-       bg-background-light border-background-dark
+       bg-default-light border-background-dark
        lg:bg-secondary  focus:outline-none focus:ring-1 [appearance:textfield]
        [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
       placeholder="Ξ 0.1 or more"

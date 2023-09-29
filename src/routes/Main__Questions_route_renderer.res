@@ -12,7 +12,7 @@ let renderer = Routes.Main.Questions.Route.makeRenderer(
       initial={Initial({height: "-100%"})}
       animate={Animate({height: "100%"})}
       transition={{duration: 2.}}
-      className="bg-background flex flex-col px-4 py-6 shadow-inner">
+      className="bg-default flex flex-col px-4 py-6 shadow-inner">
       <h1 className="text-5xl font-bold text-default-darker pl-4 drop-shadow-xl">
         {"Questions"->React.string}
       </h1>

@@ -67,7 +67,7 @@ let make = (~children, ~queryRef) => {
         </div>
       </main>
       <DailyQuestionSpeedDial />
-      <div className="bg-background w-full relative">
+      <div className="bg-default w-full relative">
         <VotesInfo />
       </div>
     </div>

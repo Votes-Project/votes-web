@@ -24,7 +24,7 @@ module OwnedVoteItem = {
       )
     }
 
-    <button className=" bg-background-light rounded-lg p-6" onClick=handleVoteClick>
+    <button className=" bg-default-light rounded-lg p-6" onClick=handleVoteClick>
       <p> {vote.tokenId->React.string} </p>
     </button>
   }
