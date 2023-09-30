@@ -27,7 +27,7 @@ let auctions = async (
 ): option<auctionConnection> => {
   let auctions =
     await ctx.dataLoaders.auction.list->DataLoader.load({first, orderBy, orderDirection, where})
-  auctions->Array.forEach(({id}) => Console.log(id))
+
   auctions->ResGraph.Connections.connectionFromArray(~args={first: None, after, before, last})->Some
 }
 
@@ -63,7 +63,6 @@ let bids = async (
     orderDirection,
     where,
   })
-  Js.log2("bids: ", bids)
 
   bids->ResGraph.Connections.connectionFromArray(~args={first: None, after, before, last})
 }

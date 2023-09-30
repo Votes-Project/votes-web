@@ -10,7 +10,10 @@ let intToI32 = num => {
 
 let i32toInt = i32 => {
   let r = RegExp.fromString("0+$")
-  i32->String.replaceRegExp(r, "")->Int.fromString(~radix=16)
+  switch i32 {
+  | "00000000" => Some(0)
+  | _ => i32->String.replaceRegExp(r, "")->Int.fromString(~radix=16)
+  }
 }
 
 let tokenToSubgraphId = tokenId =>
