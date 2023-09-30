@@ -1,12 +1,12 @@
 @val @scope(("import", "meta", "env"))
-external publicUrl: option<string> = "VERCEL_URL"
+external publicUrl: option<string> = "VITE_VERCEL_URL"
 
 @val @scope(("import", "meta", "env"))
 external port: option<string> = "PORT"
 
 let localhost = `http://localhost:${port->Option.getWithDefault("3000")}`
 // This is a simple example of how one could leverage `preloadAsset` to preload
-// things from the GraphQL response. This should live inside of the
+// things from the GraphQL response. This should live inside of thes
 // (comprehensive) example application we're going to build eventually.
 @modu
 let preloadFromResponse = (part: Js.Json.t, ~preloadAsset: RelayRouter__Types.preloadAssetFn) => {
@@ -40,9 +40,9 @@ let preloadFromResponse = (part: Js.Json.t, ~preloadAsset: RelayRouter__Types.pr
 let makeFetchQuery = (~preloadAsset) =>
   RelaySSRUtils.makeClientFetchFunction((sink, operation, variables, _cacheConfig, _uploads) => {
     open RelayRouter.NetworkUtils
-    let baseUrl = publicUrl->Option.getWithDefault(localhost)
+    let url = publicUrl->Option.mapWithDefault(localhost, url => "https://" ++ url)
     fetch(
-      `${baseUrl}/api/graphql`,
+      `${url}/api/graphql`,
       {
         "method": "POST",
         "headers": Js.Dict.fromArray([("content-type", "application/json")]),
