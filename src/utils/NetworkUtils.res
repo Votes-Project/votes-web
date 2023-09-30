@@ -1,5 +1,5 @@
 @val @scope(("import", "meta", "env"))
-external publicUrl: option<string> = "VITE_PUBLIC_URL"
+external publicUrl: option<string> = "VERCEL_URL"
 
 @val @scope(("import", "meta", "env"))
 external port: option<string> = "PORT"
