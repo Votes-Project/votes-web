@@ -27,7 +27,7 @@ module QuestionTitle = {
     } else if titleLength <= 150 {
       "text-xl"
     } else if titleLength <= 200 {
-      "text-md"
+      "text-lg"
     } else {
       "text-md"
     }
@@ -36,15 +36,15 @@ module QuestionTitle = {
   let title = longTitle
   @react.component
   let make = () => {
-    <div className="pt-6">
-      <h1
-        className={`font-semibold text-default-darker pl-4 mb-6 ${titleStyle(
-            title->String.length,
-          )}`}>
+    <div>
+      <div
+        className="px-12 w-full h-0 border mb-4 bg-black border-default-darker rounded-md opacity-10"
+      />
+      <h1 className={`font-bold text-default-darker px-4  ${titleStyle(title->String.length)}`}>
         {title->React.string}
       </h1>
       <div
-        className="mx-6 max-w-[180px] h-0 border bg-black  border-default-darker rounded-md opacity-20"
+        className="px-12 w-full h-0 border my-4 bg-black border-default-darker rounded-md opacity-10"
       />
     </div>
   }
@@ -52,7 +52,7 @@ module QuestionTitle = {
 module QuestionHeader = {
   @react.component
   let make = () => {
-    <div className="flex flex-col">
+    <div className="flex flex-col items-center">
       <div
         className="font-semibold flex w-full justify-between items-center py-4 px-4 max-w-2xl text-sm">
         <p className="text-default-darker"> {"shedapp.eth"->React.string} </p>
@@ -214,11 +214,11 @@ module ChoicesPage = {
     }
 
     <>
-      <div className="flex flex-col justify-around items-center my-4 mr-4">
+      <div className="flex flex-col justify-between items-start px-6 mb-4 mr-4">
         {choices
         ->Array.mapWithIndex((option, i) => {
           <button
-            className={`w-full  flex flex-row items-center mx-4 my-2 py-2 px-4 rounded-lg max-w-md min-h-[80px] overflow-hidden ${choiceStyle(
+            className={`w-full  flex flex-row items-center  my-2 first:mb-2 py-2  rounded-lg px-4 min-h-[80px] overflow-hidden ${choiceStyle(
                 i,
               )} transition-all`}
             key={i->Int.toString}

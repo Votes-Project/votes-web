@@ -1,4 +1,4 @@
-@module external reactLogo: 'a = "./assets/react.svg"
+@module external reactLogo: 'a = "/assets/react.svg"
 
 @module external viteLogo: 'a = "/votesy.svg"
 
