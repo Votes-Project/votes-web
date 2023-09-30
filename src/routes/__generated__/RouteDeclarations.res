@@ -3,21 +3,6 @@ open RelayRouter__Internal__DeclarationsSupport
 
 external unsafe_toPrepareProps: 'any => prepareProps = "%identity"
 
-
-@val external import__Main: (@as(json`"@rescriptModule/Main_route_renderer"`) _, unit) => promise<RouteRenderer.t> = "import"
-
-@val external import__Main__Vote: (@as(json`"@rescriptModule/Main__Vote_route_renderer"`) _, unit) => promise<RouteRenderer.t> = "import"
-
-@val external import__Main__Queue: (@as(json`"@rescriptModule/Main__Queue_route_renderer"`) _, unit) => promise<RouteRenderer.t> = "import"
-
-@val external import__Main__Raffles: (@as(json`"@rescriptModule/Main__Raffles_route_renderer"`) _, unit) => promise<RouteRenderer.t> = "import"
-
-@val external import__Main__Votes: (@as(json`"@rescriptModule/Main__Votes_route_renderer"`) _, unit) => promise<RouteRenderer.t> = "import"
-
-@val external import__Main__Questions: (@as(json`"@rescriptModule/Main__Questions_route_renderer"`) _, unit) => promise<RouteRenderer.t> = "import"
-
-@val external import__FourOhFour: (@as(json`"@rescriptModule/FourOhFour_route_renderer"`) _, unit) => promise<RouteRenderer.t> = "import"
-
 let loadedRouteRenderers: Belt.HashMap.String.t<loadedRouteRenderer> = Belt.HashMap.String.make(
   ~hintSize=7,
 )
@@ -28,7 +13,7 @@ let make = (~prepareDisposeTimeout=5 * 60 * 1000): array<RelayRouter.Types.route
   [
       {
     let routeName = "Main"
-    let loadRouteRenderer = () => import__Main->doLoadRouteRenderer(~routeName, ~loadedRouteRenderers)
+    let loadRouteRenderer = () => (() => Js.import(Main_route_renderer.renderer))->Obj.magic->doLoadRouteRenderer(~routeName, ~loadedRouteRenderers)
     let makePrepareProps = (. 
     ~environment: RescriptRelay.Environment.t,
     ~pathParams: Js.Dict.t<string>,
@@ -104,7 +89,7 @@ let make = (~prepareDisposeTimeout=5 * 60 * 1000): array<RelayRouter.Types.route
       ),
       children: [    {
         let routeName = "Main__Vote"
-        let loadRouteRenderer = () => import__Main__Vote->doLoadRouteRenderer(~routeName, ~loadedRouteRenderers)
+        let loadRouteRenderer = () => (() => Js.import(Main__Vote_route_renderer.renderer))->Obj.magic->doLoadRouteRenderer(~routeName, ~loadedRouteRenderers)
         let makePrepareProps = (. 
         ~environment: RescriptRelay.Environment.t,
         ~pathParams: Js.Dict.t<string>,
@@ -184,7 +169,7 @@ let make = (~prepareDisposeTimeout=5 * 60 * 1000): array<RelayRouter.Types.route
       },
       {
         let routeName = "Main__Queue"
-        let loadRouteRenderer = () => import__Main__Queue->doLoadRouteRenderer(~routeName, ~loadedRouteRenderers)
+        let loadRouteRenderer = () => (() => Js.import(Main__Queue_route_renderer.renderer))->Obj.magic->doLoadRouteRenderer(~routeName, ~loadedRouteRenderers)
         let makePrepareProps = (. 
         ~environment: RescriptRelay.Environment.t,
         ~pathParams: Js.Dict.t<string>,
@@ -263,7 +248,7 @@ let make = (~prepareDisposeTimeout=5 * 60 * 1000): array<RelayRouter.Types.route
       },
       {
         let routeName = "Main__Raffles"
-        let loadRouteRenderer = () => import__Main__Raffles->doLoadRouteRenderer(~routeName, ~loadedRouteRenderers)
+        let loadRouteRenderer = () => (() => Js.import(Main__Raffles_route_renderer.renderer))->Obj.magic->doLoadRouteRenderer(~routeName, ~loadedRouteRenderers)
         let makePrepareProps = (. 
         ~environment: RescriptRelay.Environment.t,
         ~pathParams: Js.Dict.t<string>,
@@ -342,7 +327,7 @@ let make = (~prepareDisposeTimeout=5 * 60 * 1000): array<RelayRouter.Types.route
       },
       {
         let routeName = "Main__Votes"
-        let loadRouteRenderer = () => import__Main__Votes->doLoadRouteRenderer(~routeName, ~loadedRouteRenderers)
+        let loadRouteRenderer = () => (() => Js.import(Main__Votes_route_renderer.renderer))->Obj.magic->doLoadRouteRenderer(~routeName, ~loadedRouteRenderers)
         let makePrepareProps = (. 
         ~environment: RescriptRelay.Environment.t,
         ~pathParams: Js.Dict.t<string>,
@@ -421,7 +406,7 @@ let make = (~prepareDisposeTimeout=5 * 60 * 1000): array<RelayRouter.Types.route
       },
       {
         let routeName = "Main__Questions"
-        let loadRouteRenderer = () => import__Main__Questions->doLoadRouteRenderer(~routeName, ~loadedRouteRenderers)
+        let loadRouteRenderer = () => (() => Js.import(Main__Questions_route_renderer.renderer))->Obj.magic->doLoadRouteRenderer(~routeName, ~loadedRouteRenderers)
         let makePrepareProps = (. 
         ~environment: RescriptRelay.Environment.t,
         ~pathParams: Js.Dict.t<string>,
@@ -502,7 +487,7 @@ let make = (~prepareDisposeTimeout=5 * 60 * 1000): array<RelayRouter.Types.route
   },
   {
     let routeName = "FourOhFour"
-    let loadRouteRenderer = () => import__FourOhFour->doLoadRouteRenderer(~routeName, ~loadedRouteRenderers)
+    let loadRouteRenderer = () => (() => Js.import(FourOhFour_route_renderer.renderer))->Obj.magic->doLoadRouteRenderer(~routeName, ~loadedRouteRenderers)
     let makePrepareProps = (. 
     ~environment: RescriptRelay.Environment.t,
     ~pathParams: Js.Dict.t<string>,
