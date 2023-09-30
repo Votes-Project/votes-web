@@ -5,7 +5,7 @@
   "type": "module",
   "packageManager": "yarn@3.2.1",
   "scripts": {
-    "build": "yarn build:graph && yarn build:relay && yarn build:rescript && yarn build:vite",
+    "build": "run-s 'build:*'",
     "build:graph": "graphclient build --fileType js",
     "build:relay": "rescript-relay-compiler",
     "build:rescript": "rescript build -with-deps",
