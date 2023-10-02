@@ -46,11 +46,13 @@ let make = (~verifications) => {
           <img src={viteLogo["default"]} className="w-24 h-24  " alt="Vite logo" />
         </RelayRouter.Link>
         <div
-          className=" border border-primary  hover:bg-secondary  hover:cursor-pointer rounded-xl flex items-center font-semibold mr-4 px-2 h-10 justify-center transition-all">
+          className="   bg-secondary hover:bg-secondary  hover:cursor-pointer rounded-xl flex items-center font-semibold mr-4 px-2 h-10 justify-center transition-all">
           <p className="text-lg text-active  ml-1 mr-3"> {"Voters"->React.string} </p>
           <div className="flex items-center justify-around text-default-darker">
             <ReactIcons.LuVote size="1.5rem" />
-            <p className="text-lg ml-1 mr-2"> {1000->Int.toLocaleString->React.string} </p>
+            <ErrorBoundary fallback={_ => "N/A"->React.string}>
+              <VoterCount verifications={verifications.fragmentRefs} />
+            </ErrorBoundary>
           </div>
         </div>
       </div>
@@ -60,13 +62,13 @@ let make = (~verifications) => {
           <RelayRouter.Link
             key={name}
             to_={link}
-            className="border-[1.5px] border-primary  hover:bg-primary-dark hover:text-white rounded-xl flex items-center font-semibold mr-4 px-3 h-10 justify-center gap-2 transition-all">
+            className="  bg-secondary hover:bg-primary-dark hover:text-white rounded-xl flex items-center font-semibold mr-4 px-3 h-10 justify-center gap-2 transition-all">
             {icon}
             {name->React.string}
           </RelayRouter.Link>
         })
         ->React.array}
-        <RainbowKit.ConnectButton showBalance=false />
+        <RainbowKit.ConnectButton showBalance=false chainStatus=RainbowKit.ConnectButton.Icon />
       </div>
       <button
         className={`lg:hidden ${isOpen
