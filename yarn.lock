@@ -8914,6 +8914,15 @@ react-tooltip@latest:
   languageName: node
   linkType: hard
 
+"rescript-struct@npm:^5.0.1":
+  version: 5.0.1
+  resolution: "rescript-struct@npm:5.0.1"
+  peerDependencies:
+    rescript: 11.0.x || ~11.0.0-rc
+  checksum: 5458388b20a766d2fb51d4ca4b00e1fba5dc5e500dff22010b50e94074b96792c985464b39bdaca3905f64d3d10607c480fef9b74024accc62b44704bcf9002b
+  languageName: node
+  linkType: hard
+
 "rescript@npm:11.0.0-beta.3":
   version: 11.0.0-beta.3
   resolution: "rescript@npm:11.0.0-beta.3"
@@ -10366,6 +10375,7 @@ react-tooltip@latest:
     rescript: 11.0.0-beta.4
     rescript-relay: 3.0.0-alpha.1
     rescript-relay-router: ^1.0.1
+    rescript-struct: ^5.0.1
     resgraph: 0.6.3
     rollup-plugin-visualizer: ^5.9.2
     tailwindcss: ^3.3.2

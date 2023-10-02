@@ -77,7 +77,7 @@ module VerificationFragment = %relay(`
       unique
       contextIds
     }
-    ... on BrightIdError {
+    ... on Error {
       error
     }
   }`)
@@ -95,9 +95,9 @@ module RainbowKit = {
 module LinkStatusTooltip = {
   @react.component
   let make = (~verificationData) => {
-    open DailyQuestion_verification_graphql.Types
+    open DailyQuestion_verification_graphql
     switch verificationData {
-    | BrightIdError(_) =>
+    | Types.Error(_) =>
       <ReactTooltip anchorSelect="#brightid-link-status">
         <div className="flex flex-col justify-center items-center">
           <p className="text-white text-sm font-semibold">
@@ -168,9 +168,9 @@ module ChoicesPage = {
         : "text-default-darker shadow-inner bg-secondary border border-primary "
 
     let brightIDImageStyle = verificationData => {
-      open DailyQuestion_verification_graphql.Types
+      open DailyQuestion_verification_graphql
       switch verificationData {
-      | BrightIdError(_) => "filter grayscale"
+      | Types.Error(_) => "filter grayscale"
       | VerificationData({unique: true}) => ""
       | VerificationData({unique: false}) => "filter grayscale bg-red-500"
       | _ => "filter grayscale"
@@ -204,9 +204,9 @@ module ChoicesPage = {
     }
 
     let handleBrightIDClick = (_, verificationData) => {
-      open DailyQuestion_verification_graphql.Types
+      open DailyQuestion_verification_graphql
       switch verificationData {
-      | BrightIdError(_) => setLinkBrightID(Some(0))
+      | Types.Error(_) => setLinkBrightID(Some(0))
       | VerificationData({unique: true}) => ()
       | VerificationData({unique: false}) => ()
       | _ => setLinkBrightID(Some(0))

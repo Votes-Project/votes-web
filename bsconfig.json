@@ -34,7 +34,8 @@
   ],
   "namespace": false,
   "bsc-flags": [
-    "-open RescriptCore"
+    "-open RescriptCore",
+    "-open RescriptStruct"
   ],
   "bs-dependencies": [
     "@rescript/react",
@@ -42,6 +43,7 @@
     "@glennsl/rescript-fetch",
     "rescript-relay",
     "rescript-relay-router",
-    "resgraph"
+    "resgraph",
+    "rescript-struct"
   ]
 }

@@ -32,15 +32,6 @@ let node = async (_: Schema.query, ~id, ~ctx: ResGraphContext.context): option<
       | None => panic("Did not find auction bid with that ID")
       | Some(auctionBid) => AuctionBid(auctionBid)->Some
       }
-    | Some(VerificationData) =>
-      switch await ctx.dataLoaders.verification.byId->DataLoader.load(id) {
-      | None => panic("Something went wrong querying BrightID nodes")
-      | Some(verification) =>
-        switch verification {
-        | Verification(verificationData) => VerificationData(verificationData)->Some
-        | BrightIdError(e) => panic(e.errorMessage)
-        }
-      }
     | Some(VoteTransfer) =>
       switch await ctx.dataLoaders.voteTransfer.byId->DataLoader.load(id) {
       | None => panic("Something went wrong querying vote transfer nodes")
@@ -55,6 +46,24 @@ let node = async (_: Schema.query, ~id, ~ctx: ResGraphContext.context): option<
       switch await ctx.dataLoaders.voteContract.byId->DataLoader.load(id) {
       | None => panic("Something went wrong querying vote transfer nodes")
       | Some(voteContract) => VoteContract(voteContract)->Some
+      }
+    | Some(VerificationData) =>
+      switch await ctx.dataLoaders.verification.byId->DataLoader.load(id) {
+      | None => panic("Something went wrong querying BrightID nodes")
+      | Some(verification) =>
+        switch verification {
+        | Verification(verificationData) => VerificationData(verificationData)->Some
+        | BrightIdError(e) => panic(e.errorMessage)
+        }
+      }
+    | Some(VerificationsData) =>
+      switch await ctx.dataLoaders.verifications.byId->DataLoader.load(id) {
+      | None => panic("Something went wrong querying BrightID nodes")
+      | Some(verifications) =>
+        switch verifications {
+        | Verifications(verificationsData) => VerificationsData(verificationsData)->Some
+        | BrightIdError(e) => panic(e.errorMessage)
+        }
       }
     }
   | _ => None

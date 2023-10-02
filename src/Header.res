@@ -8,8 +8,18 @@ type headerItem = {
   icon: ReactIcons.t,
 }
 
+module Fragment = %relay(`
+  fragment HeaderFragment on Query
+  @argumentDefinitions(context: { type: "String!", defaultValue: "Votes" }) {
+    verifications(context: $context) {
+      ...VoterCount
+    }
+  }
+`)
+
 @react.component
-let make = () => {
+let make = (~verifications) => {
+  let {verifications} = Fragment.use(verifications)
   let (isOpen, setIsOpen) = React.useState(_ => false)
 
   let handleMenu = _ => {

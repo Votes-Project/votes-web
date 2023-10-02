@@ -47,7 +47,12 @@ enum SubgraphError {
 
 union Verification = 
   | VerificationData
-  | BrightIdError
+  | Error
+
+
+union Verifications = 
+  | VerificationsData
+  | Error
 
 
 input Where_AuctionBids {
@@ -232,7 +237,7 @@ type AuctionSettledEdge {
 
 
 """BrightID Error object"""
-type BrightIdError {
+type Error {
 
   """Returns true if response is an error"""
   error: Boolean!
@@ -270,6 +275,7 @@ type Query {
   votes(skip: Int, orderBy: OrderBy_Votes, orderDirection: OrderDirection, where: Where_Votes, first: Int, after: String, before: String, last: Int): VoteConnection!
   vote(id: String!): Vote
   voteContract(id: String!): VoteContract
+  verifications(context: String!): Verifications!
   verification(contextId: String!): Verification!
   questionSubmitteds(skip: Int, first: Int, after: String, before: String, last: Int): QuestionSubmittedConnection
   questionSubmitted(id: String!): QuestionSubmitted
@@ -351,6 +357,12 @@ type VerificationData implements Node {
 
   """The public key of the verification"""
   publicKey: String
+  id: ID!
+}
+
+type VerificationsData implements Node {
+  contextIds: [String!]!
+  count: Int!
   id: ID!
 }
 

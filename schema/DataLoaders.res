@@ -4,10 +4,11 @@ type t = {
   auctionCreated: AuctionCreatedDataLoaders.t,
   questionSubmitted: QuestionSubmittedDataLoaders.t,
   auctionBid: AuctionBidDataLoaders.t,
-  verification: VerificationDataLoaders.t,
   voteTransfer: VoteTransferDataLoaders.t,
   vote: VoteDataLoaders.t,
   voteContract: VoteContractDataLoaders.t,
+  verification: VerificationDataLoaders.t,
+  verifications: VerificationsDataLoaders.t,
 }
 
 let make = () => {
@@ -16,8 +17,9 @@ let make = () => {
   auctionCreated: AuctionCreatedDataLoaders.make(),
   questionSubmitted: QuestionSubmittedDataLoaders.make(),
   auctionBid: AuctionBidDataLoaders.make(),
-  verification: VerificationDataLoaders.make(),
   voteTransfer: VoteTransferDataLoaders.make(),
   vote: VoteDataLoaders.make(),
   voteContract: VoteContractDataLoaders.make(),
+  verification: VerificationDataLoaders.make(),
+  verifications: VerificationsDataLoaders.make(),
 }
