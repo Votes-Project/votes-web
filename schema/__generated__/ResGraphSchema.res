@@ -128,8 +128,8 @@ let t_AuctionSettledConnection: ref<GraphQLObjectType.t> = Obj.magic({"contents"
 let get_AuctionSettledConnection = () => t_AuctionSettledConnection.contents
 let t_AuctionSettledEdge: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
 let get_AuctionSettledEdge = () => t_AuctionSettledEdge.contents
-let t_BrightIdError: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
-let get_BrightIdError = () => t_BrightIdError.contents
+let t_Error: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
+let get_Error = () => t_Error.contents
 let t_PageInfo: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
 let get_PageInfo = () => t_PageInfo.contents
 let t_Query: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
@@ -142,6 +142,8 @@ let t_QuestionSubmittedEdge: ref<GraphQLObjectType.t> = Obj.magic({"contents": J
 let get_QuestionSubmittedEdge = () => t_QuestionSubmittedEdge.contents
 let t_VerificationData: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
 let get_VerificationData = () => t_VerificationData.contents
+let t_VerificationsData: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
+let get_VerificationsData = () => t_VerificationsData.contents
 let t_Vote: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
 let get_Vote = () => t_Vote.contents
 let t_VoteConnection: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
@@ -194,11 +196,19 @@ input_Where_Votes_conversionInstructions->Array.pushMany([
 ])
 let union_Verification: ref<GraphQLUnionType.t> = Obj.magic({"contents": Js.null})
 let get_Verification = () => union_Verification.contents
+let union_Verifications: ref<GraphQLUnionType.t> = Obj.magic({"contents": Js.null})
+let get_Verifications = () => union_Verifications.contents
 
 let union_Verification_resolveType = (v: Verification.verification) =>
   switch v {
   | Verification(_) => "VerificationData"
-  | BrightIdError(_) => "BrightIdError"
+  | BrightIdError(_) => "Error"
+  }
+
+let union_Verifications_resolveType = (v: Verifications.verifications) =>
+  switch v {
+  | Verifications(_) => "VerificationsData"
+  | BrightIdError(_) => "Error"
   }
 
 let interface_Node_resolveType = (v: Interface_node.Resolver.t) =>
@@ -209,9 +219,10 @@ let interface_Node_resolveType = (v: Interface_node.Resolver.t) =>
   | AuctionSettled(_) => "AuctionSettled"
   | VoteContract(_) => "VoteContract"
   | AuctionCreated(_) => "AuctionCreated"
+  | VerificationData(_) => "VerificationData"
   | QuestionSubmitted(_) => "QuestionSubmitted"
   | Vote(_) => "Vote"
-  | VerificationData(_) => "VerificationData"
+  | VerificationsData(_) => "VerificationsData"
   }
 
 i_Node.contents = GraphQLInterfaceType.make({
@@ -697,8 +708,8 @@ t_AuctionSettledEdge.contents = GraphQLObjectType.make({
       },
     }->makeFields,
 })
-t_BrightIdError.contents = GraphQLObjectType.make({
-  name: "BrightIdError",
+t_Error.contents = GraphQLObjectType.make({
+  name: "Error",
   description: "BrightID Error object",
   interfaces: [],
   fields: () =>
@@ -1028,6 +1039,16 @@ t_Query.contents = GraphQLObjectType.make({
           VerificationResolvers.verification(src, ~contextId=args["contextId"], ~ctx)
         }),
       },
+      "verifications": {
+        typ: get_Verifications()->GraphQLUnionType.toGraphQLType->nonNull,
+        description: ?None,
+        deprecationReason: ?None,
+        args: {"context": {typ: Scalars.string->Scalars.toGraphQLType->nonNull}}->makeArgs,
+        resolve: makeResolveFn((src, args, ctx) => {
+          let src = typeUnwrapper(src)
+          VerificationsResolver.verifications(src, ~context=args["context"], ~ctx)
+        }),
+      },
       "vote": {
         typ: get_Vote()->GraphQLObjectType.toGraphQLType,
         description: ?None,
@@ -1325,6 +1346,43 @@ t_VerificationData.contents = GraphQLObjectType.make({
         resolve: makeResolveFn((src, _args, _ctx) => {
           let src = typeUnwrapper(src)
           src["unique"]
+        }),
+      },
+    }->makeFields,
+})
+t_VerificationsData.contents = GraphQLObjectType.make({
+  name: "VerificationsData",
+  description: ?None,
+  interfaces: [get_Node()],
+  fields: () =>
+    {
+      "contextIds": {
+        typ: GraphQLListType.make(Scalars.string->Scalars.toGraphQLType->nonNull)
+        ->GraphQLListType.toGraphQLType
+        ->nonNull,
+        description: ?None,
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["contextIds"]
+        }),
+      },
+      "count": {
+        typ: Scalars.int->Scalars.toGraphQLType->nonNull,
+        description: ?None,
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["count"]
+        }),
+      },
+      "id": {
+        typ: Scalars.id->Scalars.toGraphQLType->nonNull,
+        description: ?None,
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, args, ctx) => {
+          let src = typeUnwrapper(src)
+          NodeInterfaceResolvers.id(src, ~typename=VerificationsData)
         }),
       },
     }->makeFields,
@@ -1690,8 +1748,14 @@ input_Where_Votes.contents = GraphQLInputObjectType.make({
 union_Verification.contents = GraphQLUnionType.make({
   name: "Verification",
   description: ?None,
-  types: () => [get_BrightIdError(), get_VerificationData()],
+  types: () => [get_Error(), get_VerificationData()],
   resolveType: GraphQLUnionType.makeResolveUnionTypeFn(union_Verification_resolveType),
+})
+union_Verifications.contents = GraphQLUnionType.make({
+  name: "Verifications",
+  description: ?None,
+  types: () => [get_Error(), get_VerificationsData()],
+  resolveType: GraphQLUnionType.makeResolveUnionTypeFn(union_Verifications_resolveType),
 })
 
 let schema = GraphQLSchemaType.make({"query": get_Query()})

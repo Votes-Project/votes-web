@@ -50,6 +50,7 @@
     "rescript": "11.0.0-beta.4",
     "rescript-relay": "3.0.0-alpha.1",
     "rescript-relay-router": "^1.0.1",
+    "rescript-struct": "^5.0.1",
     "resgraph": "0.6.3",
     "util": "^0.12.5",
     "viem": "^1.5.0",

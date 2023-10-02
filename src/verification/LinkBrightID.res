@@ -27,7 +27,7 @@ module Query = %relay(`
         unique
         contextIds
       }
-      ... on BrightIdError {
+      ... on Error {
         error
       }
       ...DailyQuestion_verification
