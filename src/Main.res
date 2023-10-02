@@ -5,6 +5,7 @@ external auctionContractAddress: option<string> = "VITE_AUCTION_CONTRACT_ADDRESS
 module Query = %relay(`
   query MainQuery($voteContract: String!) {
     ...MainFragment @arguments(voteContract: $voteContract)
+    ...HeaderFragment
   }
 `)
 
@@ -92,7 +93,7 @@ let make = (~children, ~queryRef) => {
         layoutId="background-noise"
         className="wrapper absolute h-full w-full bg-primary noise flex flex-col z-[-1]"
       />
-      <Header />
+      <Header verifications=fragmentRefs />
       <main>
         <div className=" w-full pt-4">
           <div
