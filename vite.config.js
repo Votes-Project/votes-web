@@ -23,7 +23,6 @@ export default defineConfig({
     ],
   },
   build: {
-    watch: false,
     sourcemap: true,
     polyfillDynamicImport: false,
     target: "esnext",

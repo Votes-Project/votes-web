@@ -24,11 +24,11 @@ let auctions = async (
   ~before,
   ~last,
   ~ctx: ResGraphContext.context,
-): option<auctionConnection> => {
+): auctionConnection => {
   let auctions =
     await ctx.dataLoaders.auction.list->DataLoader.load({first, orderBy, orderDirection, where})
 
-  auctions->ResGraph.Connections.connectionFromArray(~args={first: None, after, before, last})->Some
+  auctions->ResGraph.Connections.connectionFromArray(~args={first: None, after, before, last})
 }
 
 @gql.field

@@ -24,7 +24,7 @@ let votes = async (
   ~before,
   ~last,
   ~ctx: ResGraphContext.context,
-): option<voteConnection> => {
+): voteConnection => {
   open VoteDataLoaders
   open GraphClient
   let variables = {
@@ -35,7 +35,7 @@ let votes = async (
     where: where->Option.getWithDefault(({}: where_Votes)),
   }
   let votes = await ctx.dataLoaders.vote.list->DataLoader.load(variables)
-  votes->ResGraph.Connections.connectionFromArray(~args={first: None, after, before, last})->Some
+  votes->ResGraph.Connections.connectionFromArray(~args={first: None, after, before, last})
 }
 
 @gql.field

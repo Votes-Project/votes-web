@@ -52,9 +52,9 @@ let make = (
     ) =>
     <ErrorBoundary fallback={_ => "Auction Failed to load"->React.string}>
       <VoteHeader tokenId={tokenId} totalSupply startTime />
-      <React.Suspense fallback={<div />}>
-        <AuctionDisplay owner auction={Some(fragmentRefs)} />
-      </React.Suspense>
+      // <React.Suspense fallback={<div />}>
+      <AuctionDisplay owner auction=fragmentRefs />
+      // </React.Suspense>
     </ErrorBoundary>
   | (
       Some(FlashVote),
@@ -62,9 +62,9 @@ let make = (
     ) =>
     <ErrorBoundary fallback={_ => "Auction Failed to load"->React.string}>
       <VoteHeader tokenId={tokenId} totalSupply startTime />
-      <React.Suspense fallback={<div />}>
-        <AuctionDisplay owner auction={Some(fragmentRefs)} />
-      </React.Suspense>
+      // <React.Suspense fallback={<div />}>
+      <AuctionDisplay owner auction=fragmentRefs />
+      // </React.Suspense>
     </ErrorBoundary>
   | _ => raise(NoVote)
   }

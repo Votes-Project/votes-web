@@ -1,3 +1,7 @@
+@val @scope(("import", "meta", "env"))
+external auctionContractAddress: option<string> = "VITE_AUCTION_CONTRACT_ADDRESS"
+@module("/src/abis/Auction.json") external auctionContractAbi: JSON.t = "default"
+
 module Query = %relay(`
   query MainQuery($voteContract: String!) {
     ...MainFragment @arguments(voteContract: $voteContract)
@@ -9,6 +13,7 @@ module Fragment = %relay(`
   @argumentDefinitions(voteContract: { type: "String!" }) {
     votes(orderBy: id, orderDirection: desc, first: 1000)
       @connection(key: "Main_votes_votes") {
+      __id
       edges {
         node {
           id
@@ -34,6 +39,52 @@ let make = (~children, ~queryRef) => {
   let newestVote = votes->Fragment.getConnectionNodes->Array.get(0)
 
   let newestTokenId = newestVote->Option.flatMap(({tokenId}) => tokenId->Int.fromString)
+  let environment = RescriptRelay.useEnvironmentFromContext()
+  Wagmi.UseContractEvent.make({
+    address: auctionContractAddress->Belt.Option.getExn,
+    abi: auctionContractAbi,
+    eventName: "AuctionCreated",
+    listener: events => {
+      switch events {
+      | [] => ()
+      | events => {
+          let event = events->Array.get(events->Array.length - 1)->Option.getExn
+          let {args} = event
+
+          open RescriptRelay
+          let connectionId = votes.__id
+          commitLocalUpdate(~environment, ~updater=store => {
+            open AuctionCreated
+            open RecordSourceSelectorProxy
+            open RecordProxy
+            let connectionRecord = switch store->get(~dataId=connectionId) {
+            | Some(connectionRecord) => connectionRecord
+            | None => store->create(~dataId=connectionId, ~typeName="VotesConnection")
+            }
+
+            let id = args.tokenId->Helpers.tokenToSubgraphId->Option.getExn
+
+            let newVoteRecord =
+              store
+              ->create(~dataId=`client:new_vote:${id}`->makeDataId, ~typeName="Vote")
+              ->setValueString(~name="id", ~value=id)
+              ->setValueString(~name="tokenId", ~value=args.tokenId)
+              ->setValueString(~name="startTime", ~value=args.startTime)
+              ->setValueString(~name="endTime", ~value=args.endTime)
+
+            let newEdge = ConnectionHandler.createEdge(
+              ~store,
+              ~connection=connectionRecord,
+              ~edgeType="Vote",
+              ~node=newVoteRecord,
+            )
+
+            ConnectionHandler.insertEdgeBefore(~connection=connectionRecord, ~newEdge)
+          })
+        }
+      }
+    },
+  })
 
   <>
     <div className="relative w-full h-full flex flex-col z-0">

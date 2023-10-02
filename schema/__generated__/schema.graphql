@@ -267,7 +267,7 @@ type PageInfo {
 type Query {
   voteTransfers(skip: Int, orderBy: OrderBy_Transfers, orderDirection: OrderDirection, where: Where_Transfers, first: Int, after: String, before: String, last: Int): VoteTransferConnection
   voteTransfer(id: String!): VoteTransfer
-  votes(skip: Int, orderBy: OrderBy_Votes, orderDirection: OrderDirection, where: Where_Votes, first: Int, after: String, before: String, last: Int): VoteConnection
+  votes(skip: Int, orderBy: OrderBy_Votes, orderDirection: OrderDirection, where: Where_Votes, first: Int, after: String, before: String, last: Int): VoteConnection!
   vote(id: String!): Vote
   voteContract(id: String!): VoteContract
   verification(contextId: String!): Verification!
@@ -281,7 +281,7 @@ type Query {
   node(id: ID!): Node
   auctionSettleds(skip: Int, orderBy: OrderBy_AuctionSettleds, orderDirection: OrderDirection, first: Int, after: String, before: String, last: Int): AuctionSettledConnection
   auctionSettled(id: String!): AuctionSettled
-  auctions(orderBy: OrderBy_Auctions, orderDirection: OrderDirection, where: Where_Auctions, first: Int, after: String, before: String, last: Int): AuctionConnection
+  auctions(orderBy: OrderBy_Auctions, orderDirection: OrderDirection, where: Where_Auctions, first: Int, after: String, before: String, last: Int): AuctionConnection!
   auction(id: String!): Auction
   auctionCreateds(skip: Int, orderBy: OrderBy_AuctionCreateds, orderDirection: OrderDirection, where: Where_AuctionCreateds, first: Int, after: String, before: String, last: Int): AuctionCreatedConnection
   auctionCreated(id: String!): AuctionCreated
