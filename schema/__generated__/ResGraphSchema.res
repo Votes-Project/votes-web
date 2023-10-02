@@ -926,7 +926,7 @@ t_Query.contents = GraphQLObjectType.make({
         }),
       },
       "auctions": {
-        typ: get_AuctionConnection()->GraphQLObjectType.toGraphQLType,
+        typ: get_AuctionConnection()->GraphQLObjectType.toGraphQLType->nonNull,
         description: ?None,
         deprecationReason: ?None,
         args: {
@@ -1092,7 +1092,7 @@ t_Query.contents = GraphQLObjectType.make({
         }),
       },
       "votes": {
-        typ: get_VoteConnection()->GraphQLObjectType.toGraphQLType,
+        typ: get_VoteConnection()->GraphQLObjectType.toGraphQLType->nonNull,
         description: ?None,
         deprecationReason: ?None,
         args: {

@@ -32,14 +32,17 @@ let wrapTokenId = tokenId => {
   }
 }
 
-type auctionPhase = Before | During | After
+type auctionPhase = Before | Active | After
 
-let wrapAuctionPhase = (startTimeMs, endTimeMs) => {
+let wrapAuctionPhase = (startTime, endTime) => {
+  let startTimeMs = startTime->Float.fromString->Option.mapWithDefault(0., x => x *. 1000.)
+  let endTimeMs = endTime->Float.fromString->Option.mapWithDefault(0., x => x *. 1000.)
   let now = Date.now()
-  if startTimeMs < now && endTimeMs > now {
-    During
-  } else if startTimeMs > now {
+
+  if startTimeMs > now {
     Before
+  } else if endTimeMs > now {
+    Active
   } else {
     After
   }
