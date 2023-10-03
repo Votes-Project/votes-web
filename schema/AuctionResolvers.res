@@ -70,7 +70,7 @@ let bids = async (
 @gql.field
 let vote = async (auction: auction, ~ctx: ResGraphContext.context) => {
   switch await ctx.dataLoaders.vote.byId->DataLoader.load(auction.id) {
-  | None => panic("Did not find auction settled with that ID")
+  | None => panic("Did not find vote with that ID")
   | Some(vote) => vote
   }
 }

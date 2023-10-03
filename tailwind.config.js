@@ -23,7 +23,13 @@ export default {
       flex: {
         '2': '2 2 0%'
 
-      }
+      },
+      fontFamily: {
+        sans: ["Quicksand", 'sans-serif'],
+        serif: ['Quicksand', 'sans-serif'],
+        mono: ['Quicksand', 'sans-serif'],
+        rakkas: ["Rakkas", "sans-serif"],
+      },
     },
   },
   plugins: [require("@tailwindcss/forms")],

@@ -16,7 +16,8 @@ type verifications = Verifications(verificationsData) | BrightIdError(BrightID_S
 
 let verificationsStruct = {
   open S
-  object(({field}): BrightID.Verifications.t => {
+  open! BrightID.Verifications
+  object(({field}) => {
     contextIds: "contextIds"->field(array(string)),
     count: "count"->field(int),
   })
