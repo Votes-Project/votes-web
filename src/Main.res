@@ -19,7 +19,6 @@ module Fragment = %relay(`
         node {
           id
           tokenId
-          owner
           auction {
             ...AuctionDisplay_auction
           }
@@ -106,14 +105,16 @@ let make = (~children, ~queryRef) => {
             </div>
             <div
               className="pt-[5%] px-[5%] lg:pr-20 lg:pl-0 lg:pt-0 min-h-[558px] lg:flex-[0_0_auto] w-full !self-end bg-white pr-[5%] pb-0 lg:bg-transparent lg:w-[50%]  ">
-              <React.Suspense fallback={<div />}>
-                {switch (newestVote, activeSubRoute) {
-                | (_, Some(_)) => children
-                | (Some({fragmentRefs}), None) =>
-                  <SingleVote vote=fragmentRefs tokenId={newestTokenId} />
-                | _ => <div />
-                }}
-              </React.Suspense>
+              <ErrorBoundary fallback={({error}) => error->React.string}>
+                <React.Suspense fallback={<div />}>
+                  {switch (newestVote, activeSubRoute) {
+                  | (_, Some(_)) => children
+                  | (Some({fragmentRefs}), None) =>
+                    <SingleVote vote=fragmentRefs tokenId={newestTokenId} />
+                  | _ => <div />
+                  }}
+                </React.Suspense>
+              </ErrorBoundary>
             </div>
           </div>
         </div>

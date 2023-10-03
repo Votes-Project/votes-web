@@ -29,7 +29,7 @@ let make = (
   ~tokenId,
 ) => {
   let data = queryRef->Option.map(queryRef => Query.usePreloaded(~queryRef))
-  let newestVote = vote->Option.map(Fragment.use(_))
+  let newestVote = vote->Option.map(vote => Fragment.use(vote))
 
   let node =
     data
@@ -37,7 +37,6 @@ let make = (
     ->Option.map(({fragmentRefs}) => Fragment.use(fragmentRefs))
 
   let vote = node->Option.orElse(newestVote)
-
   let auctionType = tokenId->Option.map(Helpers.wrapTokenId)
 
   switch (auctionType, vote) {
@@ -52,9 +51,9 @@ let make = (
     ) =>
     <ErrorBoundary fallback={_ => "Auction Failed to load"->React.string}>
       <VoteHeader tokenId={tokenId} totalSupply startTime />
-      // <React.Suspense fallback={<div />}>
-      <AuctionDisplay owner auction=fragmentRefs />
-      // </React.Suspense>
+      <React.Suspense fallback={<div />}>
+        <AuctionDisplay owner auction=fragmentRefs />
+      </React.Suspense>
     </ErrorBoundary>
   | (
       Some(FlashVote),

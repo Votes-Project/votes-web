@@ -46,7 +46,7 @@ let make = (~auction) => {
 
   <div className="flex lg:flex-col items-start justify-between">
     {<>
-      <p className="font-semibold text-xl text-background-dark lg:text-active">
+      <p className="font-bold text-xl text-background-dark lg:text-active">
         {"Time Left"->React.string}
       </p>
       <p className="font-bold text-xl lg:text-3xl text-default-darker">

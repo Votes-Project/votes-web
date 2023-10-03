@@ -4,7 +4,7 @@ let make = () => {
   <>
     <div className="w-full py-16 bg-default-light px-3 ">
       <section className="p-4 mx-auto space-y-2 max-w-5xl">
-        <h1 className="font-bold text-7xl cursor-pointer text-default-darker">
+        <h1 className=" text-7xl cursor-pointer text-default-darker">
           {"The Daily Vote"->React.string}
         </h1>
         <p className="text-xl pt-4 text-default-darker">
@@ -14,10 +14,10 @@ let make = () => {
       <div className="w-full flex flex-col justify-center items-center max-w-5xl mx-auto ">
         <section className="w-full mx-auto space-y-2   ">
           <div className="p-4 rounded-lg w-full ">
-            <h1
+            <h2
               className="flex flex-row justify-between items-center w-full text-default-darker font-bold hover:text-active text-3xl px-4 py-2 cursor-pointer [&::-webkit-details-marker]:hidden list-none">
               {"What's the Deal with VOTE tokens?"->React.string}
-            </h1>
+            </h2>
             <ul className="text-lg px-5 py-4">
               <label>
                 {"HODL"->React.string}

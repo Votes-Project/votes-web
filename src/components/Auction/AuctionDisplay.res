@@ -77,16 +77,14 @@ let make = (~auction, ~owner) => {
   let formatAmount = amount => amount->BigInt.fromString->Viem.formatEther
 
   <>
-    <h1 className="font-['Fugaz One'] py-9 text-6xl font-bold text-default-darker ">
-      {`VOTE ${tokenId}`->React.string}
-    </h1>
+    <h1 className=" py-9 text-6xl text-default-darker "> {`VOTE ${tokenId}`->React.string} </h1>
     {switch (phase, auction) {
     | (Before, _) => <> {"Auction has not started yet"->React.string} </>
     | (Active, {settled: false, fragmentRefs}) =>
       <>
         <div className="flex flex-col lg:flex-row gap-2 lg:gap-5">
           <div className="flex lg:flex-col items-start justify-between">
-            <p className="font-semibold text-xl lg:text-active text-background-dark">
+            <p className="font-semibold text-xl lg:text-active text-background-dark ">
               {"Current Bid"->React.string}
             </p>
             <p className="font-bold text-xl lg:text-3xl text-default-darker">

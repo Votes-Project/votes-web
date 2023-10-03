@@ -2,6 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
+
+@font-face {
+  font-family: "Quicksand";
+  src: url("/assets/fonts/Quicksand-VariableFont_wght.ttf");
+}
+
+
+@font-face {
+  font-family: "Rakkas";
+  src: url("/assets/fonts/Rakkas-Regular.ttf");
+}
+
+@font-face {
+  font-family: FugazOne;
+  src: url("/assets/fonts/FugazOne-Regular.ttf");
+}
+
 body,
 html {
   margin: 0;
@@ -11,8 +28,10 @@ html {
 }
 
 a {
-  color: inherit; /* blue colors for links too */
-  text-decoration: inherit; /* no underline */
+  color: inherit;
+  /* blue colors for links too */
+  text-decoration: inherit;
+  /* no underline */
 }
 
 canvas {
@@ -20,37 +39,53 @@ canvas {
 }
 
 @keyframes grain {
+
   0%,
   100% {
     transform: translate(0, 0);
   }
+
   10% {
     transform: translate(-5%, -10%);
   }
+
   20% {
     transform: translate(-15%, 5%);
   }
+
   30% {
     transform: translate(7%, -25%);
   }
+
   40% {
     transform: translate(-5%, 25%);
   }
+
   50% {
     transform: translate(-15%, 10%);
   }
+
   60% {
     transform: translate(15%, 0%);
   }
+
   70% {
     transform: translate(0%, 15%);
   }
+
   80% {
     transform: translate(3%, 35%);
   }
+
   90% {
     transform: translate(-10%, 10%);
   }
+}
+
+h1 {
+  letter-spacing: .1rem;
+  font-weight: semibold;
+  font-family: FugazOne, sans-serif;
 }
 
 .noise {
@@ -66,6 +101,8 @@ canvas {
 
 /* Hide scrollbar for IE, Edge and Firefox */
 .hide-scrollbar {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
 }
