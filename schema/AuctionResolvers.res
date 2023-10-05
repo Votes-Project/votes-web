@@ -71,6 +71,7 @@ let bids = async (
 let vote = async (auction: auction, ~ctx: ResGraphContext.context) => {
   switch await ctx.dataLoaders.vote.byId->DataLoader.load(auction.id) {
   | None => panic("Did not find vote with that ID")
-  | Some(vote) => vote
+  | Some(vote) => // ctx.dataLoaders.vote.byId->DataLoader.prime(Some(vote))
+    vote
   }
 }
