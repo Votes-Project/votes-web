@@ -50,6 +50,7 @@ let voteContract = async (_: vote, ~id, ~ctx: ResGraphContext.context): option<
 
 @gql.field
 let auction = async (vote: vote, ~ctx: ResGraphContext.context) => {
+  Js.log2("vote: ", vote.auction)
   switch vote.auction->Nullable.toOption {
   | Some(auction) => {...auction, id: auction.id}->Some
   | None =>

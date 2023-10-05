@@ -105,7 +105,7 @@ let make = (~children, ~queryRef) => {
             </div>
             <div
               className="pt-[5%] px-[5%] lg:pr-20 lg:pl-0 lg:pt-0 min-h-[558px] lg:flex-[0_0_auto] w-full !self-end bg-white pr-[5%] pb-0 lg:bg-transparent lg:w-[50%]  ">
-              <ErrorBoundary fallback={({error}) => error->React.string}>
+              <ErrorBoundary fallback={({error}) => {error->React.string}}>
                 <React.Suspense fallback={<div />}>
                   {switch (newestVote, activeSubRoute) {
                   | (_, Some(_)) => children
