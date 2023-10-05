@@ -6,7 +6,7 @@ let make = (~tokenId, ~totalSupply, ~startTime=?) => {
   let newestTokenId =
     totalSupply->Int.fromString->Option.map(totalSupply => (totalSupply - 1)->Int.toString)
 
-  let tokenId = switch (tokenId, newestTokenId) {
+  let tokenId = switch (tokenId->Int.fromString, newestTokenId) {
   | (Some(tokenId), _) => tokenId->Int.toString
   | (None, Some(newestTokenId)) => newestTokenId
   | _ => raise(NoTokenId)

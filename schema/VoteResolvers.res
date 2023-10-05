@@ -50,8 +50,12 @@ let voteContract = async (_: vote, ~id, ~ctx: ResGraphContext.context): option<
 
 @gql.field
 let auction = async (vote: vote, ~ctx: ResGraphContext.context) => {
-  switch await ctx.dataLoaders.auction.byId->DataLoader.load(vote.id) {
-  | None => None
-  | Some(vote) => vote->Some
+  switch vote.auction->Nullable.toOption {
+  | Some(auction) => {...auction, id: auction.id}->Some
+  | None =>
+    switch await ctx.dataLoaders.auction.byId->DataLoader.load(vote.id) {
+    | None => None
+    | Some(auction) => auction->Some
+    }
   }
 }

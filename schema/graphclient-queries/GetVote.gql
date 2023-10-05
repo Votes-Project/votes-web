@@ -4,5 +4,15 @@ query GetVote($id: ID!) {
     owner
     tokenId
     uri
+    auction {
+      id
+      tokenId
+      amount
+      bidder
+      startTime
+      endTime
+      settled
+      extended
+    }
   }
 }

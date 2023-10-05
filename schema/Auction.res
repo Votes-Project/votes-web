@@ -5,6 +5,9 @@ type auction = {
   /* Start time of auction */
   @gql.field
   startTime: string,
+  /* Token ID of auction */
+  @gql.field
+  tokenId: string,
   /* End time of auction */
   @gql.field
   endTime: string,
@@ -20,8 +23,6 @@ type auction = {
   /* True if auction has ended */
   @gql.field
   settled: bool,
-  /* The vote token in the auction */
-  vote: Vote.vote,
   /* Connection of auction bids */
   bids: AuctionBid.auctionBidConnection,
 }

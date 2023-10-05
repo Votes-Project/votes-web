@@ -7,5 +7,12 @@ query GetAuctions($first: Int, $orderBy: Auction_orderBy, $orderDirection: Order
     bidder
     extended
     settled
+    tokenId
+    vote {
+      id
+      owner
+      tokenId
+      uri
+    }
   }
 }

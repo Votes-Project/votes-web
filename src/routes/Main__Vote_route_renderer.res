@@ -21,13 +21,11 @@ let renderer = Routes.Main.Vote.Route.makeRenderer(
       SingleVoteQuery_graphql.load(
         ~environment,
         ~variables={id, voteContractAddress},
-        ~fetchPolicy=StoreAndNetwork,
+        ~fetchPolicy=StoreOnly, //@TODO: This should change to fetch from network on first time loading then store after the rest have loaded in
       )->Some
     }
   },
   ~render=({tokenId, prepared}) => {
-    let tokenId = tokenId->Int.fromString
-
     <React.Suspense fallback={<div> {"Loading..."->React.string} </div>}>
       {switch prepared {
       | Some(queryRef) => <SingleVote queryRef tokenId />

@@ -340,6 +340,15 @@ t_Auction.contents = GraphQLObjectType.make({
           src["startTime"]
         }),
       },
+      "tokenId": {
+        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        description: ?None,
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["tokenId"]
+        }),
+      },
       "vote": {
         typ: get_Vote()->GraphQLObjectType.toGraphQLType->nonNull,
         description: ?None,
