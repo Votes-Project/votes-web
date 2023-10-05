@@ -13,6 +13,21 @@ query GetVotes($first:Int, $skip:Int, $where: Vote_filter, $orderBy: Vote_orderB
       endTime
       settled
       extended
+      contract {
+        id
+        treasury
+        duration
+        timeBuffer
+        minBidIncrement
+        launched
+        reservePrice
+        reserveAddress
+        raffleAddress
+        votesURI
+        flashVotesURI
+        paused
+        votesToken
+      }
     }
   }
 }

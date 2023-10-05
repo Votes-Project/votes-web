@@ -56,6 +56,7 @@ module Fragment = %relay(`
     orderBy: { type: "OrderBy_AuctionBids", defaultValue: blockTimestamp }
     orderDirection: { type: "OrderDirection", defaultValue: desc }
   ) {
+    __id
     bids(orderBy: $orderBy, orderDirection: $orderDirection, first: $first)
       @connection(key: "AuctionBidList_bids_bids") {
       __id
@@ -71,9 +72,12 @@ module Fragment = %relay(`
     }
   }
   `)
+
+exception NoAuctionId
 @react.component
 let make = (~bids) => {
-  let {bids} = Fragment.use(bids)
+  let {bids, __id: auctionId} = Fragment.use(bids)
+
   let environment = RescriptRelay.useEnvironmentFromContext()
 
   Wagmi.UseContractEvent.make({
@@ -115,6 +119,15 @@ let make = (~bids) => {
               ~edgeType="AuctionBid",
               ~node=newAuctionBidRecord,
             )
+            let auctionRecord = switch store->get(~dataId=auctionId) {
+            | Some(auctionRecord) => auctionRecord
+            | None => raise(NoAuctionId)
+            }
+
+            let _ =
+              auctionRecord
+              ->setValueString(~name="amount", ~value=args.amount)
+              ->setValueString(~name="bidder", ~value=args.bidder)
 
             ConnectionHandler.insertEdgeBefore(~connection=connectionRecord, ~newEdge)
           })

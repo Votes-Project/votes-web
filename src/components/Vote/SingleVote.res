@@ -23,6 +23,7 @@ module Fragment = %relay(`
 `)
 
 exception NoVote
+exception NoAuction
 @react.component @relay.deferredComponent
 let make = (
   ~queryRef=?,
@@ -76,6 +77,8 @@ let make = (
         <AuctionDisplay owner auction=fragmentRefs tokenId />
       </React.Suspense>
     </ErrorBoundary>
+  | (Some(FlashVote), Some({auction: None})) => raise(NoAuction)
+  | (Some(Normal), Some({auction: None})) => raise(NoAuction)
   | _ => raise(NoVote)
   }
 }

@@ -100,9 +100,11 @@ let renderer = Routes.Main.Route.makeRenderer(
     let (queryRef, dailyQuestionQueryRef, linkBrightIDQueryRef) = prepared
 
     <>
-      <Main queryRef>
-        <div className="relative"> {childRoutes} </div>
-      </Main>
+      <ErrorBoundary fallback={({error}) => error->React.string}>
+        <Main queryRef>
+          <div className="relative"> {childRoutes} </div>
+        </Main>
+      </ErrorBoundary>
       <DailyQuestionModal isOpen={dailyQuestion->Option.isSome && linkBrightID->Option.isNone}>
         {switch (dailyQuestion, dailyQuestionQueryRef) {
         | (Some(_), Some(queryRef)) =>
