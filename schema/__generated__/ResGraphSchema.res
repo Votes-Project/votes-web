@@ -114,6 +114,8 @@ let t_AuctionBidEdge: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null}
 let get_AuctionBidEdge = () => t_AuctionBidEdge.contents
 let t_AuctionConnection: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
 let get_AuctionConnection = () => t_AuctionConnection.contents
+let t_AuctionContract: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
+let get_AuctionContract = () => t_AuctionContract.contents
 let t_AuctionCreated: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
 let get_AuctionCreated = () => t_AuctionCreated.contents
 let t_AuctionCreatedConnection: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
@@ -213,6 +215,7 @@ let union_Verifications_resolveType = (v: Verifications.verifications) =>
 
 let interface_Node_resolveType = (v: Interface_node.Resolver.t) =>
   switch v {
+  | AuctionContract(_) => "AuctionContract"
   | VoteTransfer(_) => "VoteTransfer"
   | AuctionBid(_) => "AuctionBid"
   | Auction(_) => "Auction"
@@ -293,6 +296,15 @@ t_Auction.contents = GraphQLObjectType.make({
               v->applyConversionToInputObject(input_Where_AuctionBids_conversionInstructions)->Some
             },
           )
+        }),
+      },
+      "contract": {
+        typ: get_AuctionContract()->GraphQLObjectType.toGraphQLType->nonNull,
+        description: ?None,
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["contract"]
         }),
       },
       "endTime": {
@@ -491,6 +503,163 @@ t_AuctionConnection.contents = GraphQLObjectType.make({
         resolve: makeResolveFn((src, _args, _ctx) => {
           let src = typeUnwrapper(src)
           src["pageInfo"]
+        }),
+      },
+    }->makeFields,
+})
+t_AuctionContract.contents = GraphQLObjectType.make({
+  name: "AuctionContract",
+  description: ?None,
+  interfaces: [get_Node()],
+  fields: () =>
+    {
+      "auctions": {
+        typ: get_AuctionConnection()->GraphQLObjectType.toGraphQLType->nonNull,
+        description: ?None,
+        deprecationReason: ?None,
+        args: {
+          "after": {typ: Scalars.string->Scalars.toGraphQLType},
+          "before": {typ: Scalars.string->Scalars.toGraphQLType},
+          "first": {typ: Scalars.int->Scalars.toGraphQLType},
+          "last": {typ: Scalars.int->Scalars.toGraphQLType},
+          "orderBy": {typ: enum_OrderBy_Auctions->GraphQLEnumType.toGraphQLType},
+          "orderDirection": {typ: enum_OrderDirection->GraphQLEnumType.toGraphQLType},
+          "where": {typ: get_Where_Auctions()->GraphQLInputObjectType.toGraphQLType},
+        }->makeArgs,
+        resolve: makeResolveFn((src, args, ctx) => {
+          let src = typeUnwrapper(src)
+          AuctionContractResolver.auctions(
+            src,
+            ~after=args["after"]->Nullable.toOption,
+            ~before=args["before"]->Nullable.toOption,
+            ~ctx,
+            ~first=args["first"]->Nullable.toOption,
+            ~last=args["last"]->Nullable.toOption,
+            ~orderBy=args["orderBy"]->Nullable.toOption,
+            ~orderDirection=args["orderDirection"]->Nullable.toOption,
+            ~where=switch args["where"]->Nullable.toOption {
+            | None => None
+            | Some(v) =>
+              v->applyConversionToInputObject(input_Where_Auctions_conversionInstructions)->Some
+            },
+          )
+        }),
+      },
+      "duration": {
+        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        description: ?None,
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["duration"]
+        }),
+      },
+      "flashVotesURI": {
+        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        description: ?None,
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["flashVotesURI"]
+        }),
+      },
+      "id": {
+        typ: Scalars.id->Scalars.toGraphQLType->nonNull,
+        description: ?None,
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, args, ctx) => {
+          let src = typeUnwrapper(src)
+          NodeInterfaceResolvers.id(src, ~typename=AuctionContract)
+        }),
+      },
+      "launched": {
+        typ: Scalars.boolean->Scalars.toGraphQLType->nonNull,
+        description: ?None,
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["launched"]
+        }),
+      },
+      "minBidIncrement": {
+        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        description: ?None,
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["minBidIncrement"]
+        }),
+      },
+      "paused": {
+        typ: Scalars.boolean->Scalars.toGraphQLType->nonNull,
+        description: ?None,
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["paused"]
+        }),
+      },
+      "raffleAddress": {
+        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        description: ?None,
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["raffleAddress"]
+        }),
+      },
+      "reserveAddress": {
+        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        description: ?None,
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["reserveAddress"]
+        }),
+      },
+      "reservePrice": {
+        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        description: ?None,
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["reservePrice"]
+        }),
+      },
+      "timeBuffer": {
+        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        description: ?None,
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["timeBuffer"]
+        }),
+      },
+      "treasury": {
+        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        description: ?None,
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["treasury"]
+        }),
+      },
+      "votesToken": {
+        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        description: ?None,
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["votesToken"]
+        }),
+      },
+      "votesURI": {
+        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        description: ?None,
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["votesURI"]
         }),
       },
     }->makeFields,
@@ -861,6 +1030,16 @@ t_Query.contents = GraphQLObjectType.make({
               v->applyConversionToInputObject(input_Where_AuctionBids_conversionInstructions)->Some
             },
           )
+        }),
+      },
+      "auctionContract": {
+        typ: get_AuctionContract()->GraphQLObjectType.toGraphQLType,
+        description: ?None,
+        deprecationReason: ?None,
+        args: {"id": {typ: Scalars.string->Scalars.toGraphQLType->nonNull}}->makeArgs,
+        resolve: makeResolveFn((src, args, ctx) => {
+          let src = typeUnwrapper(src)
+          AuctionContractResolver.auctionContract(src, ~ctx, ~id=args["id"])
         }),
       },
       "auctionCreated": {

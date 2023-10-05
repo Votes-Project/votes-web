@@ -58,14 +58,20 @@ let node = async (_: Schema.query, ~id, ~ctx: ResGraphContext.context): option<
       }
     | Some(VerificationsData) =>
       switch await ctx.dataLoaders.verifications.byId->DataLoader.load(id) {
-      | None => panic("Something went wrong querying BrightID nodes")
+      | None => panic("Something went wrong querying BrightID node")
       | Some(verifications) =>
         switch verifications {
         | Verifications(verificationsData) => VerificationsData(verificationsData)->Some
         | BrightIdError(e) => panic(e.errorMessage)
         }
       }
+    | Some(AuctionContract) =>
+      switch await ctx.dataLoaders.auctionContract.byId->DataLoader.load(id) {
+      | None => panic("Something went wrong querying auction contract node")
+      | Some(auctionContract) => AuctionContract(auctionContract)->Some
+      }
     }
+
   | _ => None
   }
 }

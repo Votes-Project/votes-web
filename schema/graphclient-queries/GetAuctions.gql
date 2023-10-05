@@ -14,5 +14,20 @@ query GetAuctions($first: Int, $orderBy: Auction_orderBy, $orderDirection: Order
       tokenId
       uri
     }
+    contract {
+      id
+      treasury
+      duration
+      timeBuffer
+      minBidIncrement
+      launched
+      reservePrice
+      reserveAddress
+      raffleAddress
+      votesURI
+      flashVotesURI
+      paused
+      votesToken
+    }
   }
 }

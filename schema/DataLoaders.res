@@ -9,6 +9,7 @@ type t = {
   voteContract: VoteContractDataLoaders.t,
   verification: VerificationDataLoaders.t,
   verifications: VerificationsDataLoaders.t,
+  auctionContract: AuctionContractDataLoaders.t,
 }
 
 let make = () => {
@@ -22,4 +23,5 @@ let make = () => {
   voteContract: VoteContractDataLoaders.make(),
   verification: VerificationDataLoaders.make(),
   verifications: VerificationsDataLoaders.make(),
+  auctionContract: AuctionContractDataLoaders.make(),
 }
