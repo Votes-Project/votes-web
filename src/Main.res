@@ -38,7 +38,7 @@ let make = (~children, ~queryRef) => {
 
   let newestVote = votes->Fragment.getConnectionNodes->Array.get(0)
 
-  let newestTokenId = newestVote->Option.flatMap(({tokenId}) => tokenId->Int.fromString)
+  let newestTokenId = newestVote->Option.map(({tokenId}) => tokenId)->Option.getExn
   let environment = RescriptRelay.useEnvironmentFromContext()
   Wagmi.UseContractEvent.make({
     address: auctionContractAddress->Belt.Option.getExn,

@@ -39,7 +39,7 @@ let node = async (_: Schema.query, ~id, ~ctx: ResGraphContext.context): option<
       }
     | Some(Vote) =>
       switch await ctx.dataLoaders.vote.byId->DataLoader.load(id) {
-      | None => panic("Something went wrong querying vote transfer nodes")
+      | None => panic("Something went wrong querying vote node")
       | Some(vote) => Vote(vote)->Some
       }
     | Some(VoteContract) =>

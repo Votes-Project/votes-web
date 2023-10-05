@@ -91,6 +91,7 @@ type Auction implements Node {
   vote: Vote!
   bids(orderBy: OrderBy_AuctionBids, orderDirection: OrderDirection, where: Where_AuctionBids, first: Int, after: String, before: String, last: Int): AuctionBidConnection!
   startTime: String!
+  tokenId: String!
   endTime: String!
   amount: String!
   bidder: String

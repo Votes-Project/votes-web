@@ -2,6 +2,37 @@
 external auctionContractAddress: option<string> = "VITE_AUCTION_CONTRACT_ADDRESS"
 @module("/src/abis/Auction.json") external auctionContractAbi: JSON.t = "default"
 
+module SettleAuctionButton = {
+  exception SettleAuctionWriteDoesNotExist
+  @react.component
+  let make = (~isSettled) => {
+    let {config} = Wagmi.usePrepareContractWrite(
+      ~config={
+        address: auctionContractAddress->Belt.Option.getExn,
+        abi: auctionContractAbi,
+        functionName: "settleCurrentAndCreateNewAuction",
+      },
+    )
+    let settleCurrentAndCreateNewAuction = Wagmi.useContractWrite(config)
+    let handleSettleCurrentAndCreateNewAuction = _ =>
+      switch settleCurrentAndCreateNewAuction.write {
+      | Some(createBid) => createBid()
+      | None => raise(SettleAuctionWriteDoesNotExist)
+      }
+    switch isSettled {
+    | true => <> </>
+    | false =>
+      <div className="p-4">
+        <button
+          className="bg-default-dark lg:bg-primary-dark text-white font-bold py-2 px-4 rounded w-full"
+          onClick={handleSettleCurrentAndCreateNewAuction}>
+          {"Start Next Auction"->React.string}
+        </button>
+      </div>
+    }
+  }
+}
+
 module Fragment = %relay(`
   fragment AuctionDisplay_auction on Auction {
     id
@@ -9,9 +40,6 @@ module Fragment = %relay(`
     endTime
     bidder
     settled
-    vote {
-      tokenId
-    }
     amount
     ...CreateBid_auction
     ...AuctionCountdown_auction
@@ -20,14 +48,11 @@ module Fragment = %relay(`
   }
   `)
 
-exception ContractWriteDoesNotExist
 exception AuctionDoesNotExist
 type arrowPress = LeftPress | RightPress
 @react.component
-let make = (~auction, ~owner) => {
+let make = (~auction, ~owner, ~tokenId) => {
   let auction = Fragment.use(auction)
-
-  let tokenId = auction.vote.tokenId
 
   let phase = Helpers.wrapAuctionPhase(auction.startTime, auction.endTime)
 
@@ -36,20 +61,6 @@ let make = (~auction, ~owner) => {
     setParams: setVoteParams,
     queryParams: {showAllBids},
   } = Routes.Main.Vote.Route.useQueryParams()
-
-  let {config} = Wagmi.usePrepareContractWrite(
-    ~config={
-      address: auctionContractAddress->Belt.Option.getExn,
-      abi: auctionContractAbi,
-      functionName: "settleCurrentAndCreateNewAuction",
-    },
-  )
-  let settleCurrentAndCreateNewAuction = Wagmi.useContractWrite(config)
-  let handleSettleCurrentAndCreateNewAuction = _ =>
-    switch settleCurrentAndCreateNewAuction.write {
-    | Some(createBid) => createBid()
-    | None => raise(ContractWriteDoesNotExist)
-    }
 
   let setVoteDetails = voteDetails => {
     setParams(
@@ -123,16 +134,8 @@ let make = (~auction, ~owner) => {
           <AllBidsList bids={auction.fragmentRefs} />
         </AllBidsListModal>
       </>
-    | (After, {settled: false}) =>
-      <>
-        <button
-          className="bg-primary-dark text-white font-bold py-2 px-4 rounded"
-          onClick={handleSettleCurrentAndCreateNewAuction}>
-          {"Start Next Auction"->React.string}
-        </button>
-      </>
 
-    | (After, {settled: true, amount, bidder}) =>
+    | (After, {settled, amount, bidder}) =>
       <>
         <div className="flex flex-col lg:flex-row lg:gap-5 gap-2">
           <div className="flex lg:flex-col items-start justify-between">
@@ -146,18 +149,17 @@ let make = (~auction, ~owner) => {
           </div>
           <div className="w-0 rounded-lg lg:border-primary border hidden lg:flex" />
           <div className="flex lg:flex-col items-start justify-between">
-            {<>
-              <p className="font-medium text-xl text-background-dark lg:text-active">
-                {"Held By"->React.string}
-              </p>
-              <p className="font-bold text-xl lg:text-3xl text-default-darker">
-                <ShortAddress address={Some(owner)} />
-              </p>
-            </>}
+            <p className="font-medium text-xl text-background-dark lg:text-active">
+              {"Held By"->React.string}
+            </p>
+            <p className="font-bold text-xl lg:text-3xl text-default-darker">
+              <ShortAddress address={Some(owner)} />
+            </p>
           </div>
         </div>
+        <SettleAuctionButton isSettled=settled />
         <button
-          className="flex flex-row gap-2 items-center justify-start pt-2"
+          className="flex flex-row gap-2 items-center justify-start"
           onClick={_ => setVoteDetails(Some(0))}>
           <ReactIcons.LuInfo size="1.25rem" className="text-default-darker" />
           <p className="text-md text-default-darker py-4">

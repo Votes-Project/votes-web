@@ -4,5 +4,15 @@ query GetVotes($first:Int, $skip:Int, $where: Vote_filter, $orderBy: Vote_orderB
     owner
     tokenId
     uri
+    auction {
+      id
+      tokenId
+      amount
+      bidder
+      startTime
+      endTime
+      settled
+      extended
+    }
   }
 }

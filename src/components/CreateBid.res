@@ -5,9 +5,7 @@ external auctionContractAddress: option<string> = "VITE_AUCTION_CONTRACT_ADDRESS
 
 module Fragment = %relay(`
   fragment CreateBid_auction on Auction {
-    vote {
-      tokenId
-    }
+    tokenId
   }
 `)
 
@@ -24,7 +22,7 @@ let make = (~auction, ~auctionPhase) => {
       abi: auctionContractAbi,
       functionName: "createBid",
       value: bidAmount->Viem.parseEther->Option.getWithDefault(BigInt.fromString("0")),
-      args: [auction.vote.tokenId],
+      args: [auction.tokenId],
     },
   )
 
