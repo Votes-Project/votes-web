@@ -97,6 +97,7 @@ type Auction implements Node {
   bidder: String
   extended: Boolean!
   settled: Boolean!
+  contract: AuctionContract!
   id: ID!
 }
 
@@ -149,6 +150,23 @@ type AuctionConnection {
 
   """A list of edges."""
   edges: [AuctionEdge]
+}
+
+type AuctionContract implements Node {
+  auctions(orderBy: OrderBy_Auctions, orderDirection: OrderDirection, where: Where_Auctions, first: Int, after: String, before: String, last: Int): AuctionConnection!
+  treasury: String!
+  duration: String!
+  timeBuffer: String!
+  minBidIncrement: String!
+  launched: Boolean!
+  reservePrice: String!
+  reserveAddress: String!
+  raffleAddress: String!
+  votesURI: String!
+  flashVotesURI: String!
+  paused: Boolean!
+  votesToken: String!
+  id: ID!
 }
 
 
@@ -292,6 +310,7 @@ type Query {
   auction(id: String!): Auction
   auctionCreateds(skip: Int, orderBy: OrderBy_AuctionCreateds, orderDirection: OrderDirection, where: Where_AuctionCreateds, first: Int, after: String, before: String, last: Int): AuctionCreatedConnection
   auctionCreated(id: String!): AuctionCreated
+  auctionContract(id: String!): AuctionContract
   auctionBids(orderBy: OrderBy_AuctionBids, orderDirection: OrderDirection, where: Where_AuctionBids, first: Int, after: String, before: String, last: Int): AuctionBidConnection
   auctionBid(id: String!): AuctionBid
 }

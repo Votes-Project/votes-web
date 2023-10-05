@@ -7,6 +7,7 @@ module Resolver = {
   type t =
     | Auction(Auction.auction)
     | AuctionBid(AuctionBid.auctionBid)
+    | AuctionContract(AuctionContract.auctionContract)
     | AuctionCreated(AuctionCreated.auctionCreated)
     | AuctionSettled(AuctionSettled.auctionSettled)
     | QuestionSubmitted(QuestionSubmitted.questionSubmitted)
@@ -21,6 +22,7 @@ module ImplementedBy = {
   type t =
     | Auction
     | AuctionBid
+    | AuctionContract
     | AuctionCreated
     | AuctionSettled
     | QuestionSubmitted
@@ -34,6 +36,7 @@ module ImplementedBy = {
     switch str {
     | "Auction" => Some(Auction)
     | "AuctionBid" => Some(AuctionBid)
+    | "AuctionContract" => Some(AuctionContract)
     | "AuctionCreated" => Some(AuctionCreated)
     | "AuctionSettled" => Some(AuctionSettled)
     | "QuestionSubmitted" => Some(QuestionSubmitted)
@@ -51,6 +54,7 @@ module ImplementedBy = {
 type typeMap<'a> = {
   @as("Auction") auction: 'a,
   @as("AuctionBid") auctionBid: 'a,
+  @as("AuctionContract") auctionContract: 'a,
   @as("AuctionCreated") auctionCreated: 'a,
   @as("AuctionSettled") auctionSettled: 'a,
   @as("QuestionSubmitted") questionSubmitted: 'a,
