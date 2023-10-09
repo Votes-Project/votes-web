@@ -36,16 +36,18 @@ module QuestionTitle = {
   let title = longTitle
   @react.component
   let make = () => {
+    open FramerMotion
     <div className="px-12">
       <div
         className="w-full h-0 border mb-4 bg-black border-default-darker rounded-md opacity-10"
       />
-      <h2
+      <Motion.Div
+        layoutId="daily-question-preview"
         className={`font-bold [text-wrap:balance] text-center text-default-darker px-4  ${titleStyle(
             title->String.length,
           )}`}>
         {("\"" ++ title ++ "\"")->React.string}
-      </h2>
+      </Motion.Div>
       <div
         className="w-full h-0 border my-4 bg-black border-default-darker rounded-md opacity-10"
       />
@@ -148,23 +150,14 @@ module ChoicesPage = {
 
     let verificationData = VerificationFragment.use(verification)
 
-    // React.useEffect2(() => {
-    //   switch verificationData {
-    //   | VerificationData(verificationData) => {
-    //       open VerificationContext
-    //       let contextId =
-    //         verificationData.contextIds->Array.get(0)->Option.map(Uint8Array.from)->Option.getExn
-    //       let isVerified = verificationData.unique
-    //       setVerification(_ => Some({contextId, isVerified}))
-    //       None
-    //     }
-    //   | BrightIdError(_) =>
-    //     setVerification(_ => Some({contextId: publicKey, isVerified: false}))
-    //     None
+    React.useEffect0(() => {
+      Dom.Storage2.localStorage->Dom.Storage2.setItem(
+        "votes_question_timestamp",
+        Date.now()->Float.toString,
+      )
+      None
+    })
 
-    //   | _ => None
-    //   }
-    // }, (setVerification, queryParams))
     let choiceStyle = i =>
       checkedIndex == Some(i)
         ? "bg-active text-white shadow border border-active"
