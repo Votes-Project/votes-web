@@ -21,13 +21,3 @@ let tokenToSubgraphId = tokenId =>
 
 let idToGlobalId = (id, typename) =>
   id->Option.map(id => `${typename}:${id}`->ResGraph.Utils.Base64.encode)
-
-type voteType = Normal | Raffle | FlashVote
-let wrapTokenId = tokenId => {
-  switch tokenId->mod(10) {
-  | 0 => FlashVote
-  | 5 => FlashVote
-  | 9 => Raffle
-  | _ => Normal
-  }
-}
