@@ -64,8 +64,6 @@ module Fragment = %relay(`
         __id
         node {
           id
-          tokenId
-          amount
           ...AuctionBidList_AuctionBidItem_auctionBid
         }
       }

@@ -1,3 +1,5 @@
+RescriptRelay.relayFeatureFlags.enableRelayResolvers = true
+
 @val @scope(("import", "meta", "env"))
 external auctionContractAddress: option<string> = "VITE_AUCTION_CONTRACT_ADDRESS"
 @module("/src/abis/Auction.json") external auctionContractAbi: JSON.t = "default"
@@ -53,7 +55,6 @@ type arrowPress = LeftPress | RightPress
 let make = (~auction, ~owner, ~tokenId) => {
   let auction = Fragment.use(auction)
   let phase = auction.phase
-  Js.log2("auction ", auction)
 
   let {setParams} = Routes.Main.Route.useQueryParams()
   let {

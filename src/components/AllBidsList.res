@@ -2,7 +2,6 @@ module BidItem = {
   module Fragment = %relay(`
   fragment AllBidsList_BidItem_auctionBid on AuctionBid {
     id
-    tokenId
     bidder
     amount
   }

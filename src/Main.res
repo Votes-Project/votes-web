@@ -19,9 +19,6 @@ module Fragment = %relay(`
         node {
           id
           tokenId
-          auction {
-            ...AuctionDisplay_auction
-          }
           ...SingleVote_node @arguments(voteContractAddress: $voteContract)
         }
       }

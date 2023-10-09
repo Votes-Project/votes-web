@@ -3,7 +3,6 @@ module OwnedVoteItem = {
   fragment OwnedVotesList_OwnedVoteItem_vote on Vote {
     id
     tokenId
-    uri
   }
   `)
 
