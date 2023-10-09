@@ -1,4 +1,5 @@
 module Motion = {
+  type layout = String(string) | @as(true) True
   @unboxed
   type ease =
     | @as("easeIn") EaseIn
@@ -25,6 +26,7 @@ module Motion = {
     width?: string,
     height?: string,
     transition?: transition,
+    borderRadius?: int,
   }
 
   @unboxed type initial = Initial(motionValues) | String(string)
@@ -41,6 +43,25 @@ module Motion = {
     @react.component @module("framer-motion") @scope("motion")
     external make: (
       ~layoutId: string=?,
+      ~layout: layout=?,
+      ~variants: variants=?,
+      ~initial: initial=?,
+      ~animate: animate=?,
+      ~exit: exit=?,
+      ~transition: transition=?,
+      ~children: React.element=?,
+      ~className: string=?,
+      ~onClick: 'a => unit=?,
+      ~onMouseEnter: 'a => unit=?,
+      ~onMouseLeave: 'a => unit=?,
+      ~ref: ReactDOM.domRef=?,
+    ) => React.element = "div"
+  }
+
+  module Button = {
+    @react.component @module("framer-motion") @scope("motion")
+    external make: (
+      ~layoutId: string=?,
       ~layout: string=?,
       ~variants: variants=?,
       ~initial: initial=?,
@@ -50,9 +71,13 @@ module Motion = {
       ~children: React.element=?,
       ~className: string=?,
       ~onClick: 'a => unit=?,
+      ~onMouseEnter: 'a => unit=?,
+      ~onMouseLeave: 'a => unit=?,
+      ~type_: string=?,
     ) => React.element = "div"
   }
 }
+
 module AnimatePresence = {
   type mode = | @as("sync") Sync | @as("wait") Wait | @as("popLayout") PopLayout
 

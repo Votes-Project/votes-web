@@ -28,6 +28,7 @@ module Fragment = %relay(`
 @react.component @relay.deferredComponent
 let make = (~children, ~queryRef) => {
   open FramerMotion
+
   let activeSubRoute = Routes.Main.Route.useActiveSubRoute()
 
   let {fragmentRefs} = Query.usePreloaded(~queryRef)
@@ -116,7 +117,7 @@ let make = (~children, ~queryRef) => {
           </div>
         </div>
       </main>
-      <DailyQuestionSpeedDial />
+      <DailyQuestionPreview />
       <div className="bg-default w-full relative">
         <VotesInfo />
       </div>

@@ -3,7 +3,7 @@ type choice = {
   correct: bool,
   details: string,
 }
-let longTitle = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec qu"
+let longTitle = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec qu?"
 let choices = [
   {
     value: longTitle,
@@ -36,15 +36,18 @@ module QuestionTitle = {
   let title = longTitle
   @react.component
   let make = () => {
-    <div>
+    <div className="px-12">
       <div
-        className="px-12 w-full h-0 border mb-4 bg-black border-default-darker rounded-md opacity-10"
+        className="w-full h-0 border mb-4 bg-black border-default-darker rounded-md opacity-10"
       />
-      <h1 className={`font-bold text-default-darker px-4  ${titleStyle(title->String.length)}`}>
-        {title->React.string}
-      </h1>
+      <h2
+        className={`font-bold [text-wrap:balance] text-center text-default-darker px-4  ${titleStyle(
+            title->String.length,
+          )}`}>
+        {("\"" ++ title ++ "\"")->React.string}
+      </h2>
       <div
-        className="px-12 w-full h-0 border my-4 bg-black border-default-darker rounded-md opacity-10"
+        className="w-full h-0 border my-4 bg-black border-default-darker rounded-md opacity-10"
       />
     </div>
   }
@@ -55,11 +58,11 @@ module QuestionHeader = {
     <div className="flex flex-col items-center">
       <div
         className="font-semibold flex w-full justify-between items-center py-4 px-4 max-w-2xl text-sm">
-        <p className="text-default-darker"> {"shedapp.eth"->React.string} </p>
+        <p className="text-default-darker"> {"August 5 2023"->React.string} </p>
         <div
           className="mx-3 max-w-[36px] h-0 flex-1 border-2 bg-black  border-default-darker rounded-md"
         />
-        <p className="text-default-darker"> {"August 5 2023"->React.string} </p>
+        <ShortAddress address=Some("0x1234567890123456789012345678901234567890") />
         <div
           className="mx-3 max-w-[36px] h-0 flex-1 border-2 bg-black border-default-darker rounded-md"
         />
