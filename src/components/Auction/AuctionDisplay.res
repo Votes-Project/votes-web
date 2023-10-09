@@ -36,11 +36,10 @@ module SettleAuctionButton = {
 module Fragment = %relay(`
   fragment AuctionDisplay_auction on Auction {
     id
-    startTime
-    endTime
     bidder
     settled
     amount
+    phase
     ...CreateBid_auction
     ...AuctionCountdown_auction
     ...AuctionBidList_auction
@@ -53,8 +52,8 @@ type arrowPress = LeftPress | RightPress
 @react.component
 let make = (~auction, ~owner, ~tokenId) => {
   let auction = Fragment.use(auction)
-
-  let phase = Helpers.wrapAuctionPhase(auction.startTime, auction.endTime)
+  let phase = auction.phase
+  Js.log2("auction ", auction)
 
   let {setParams} = Routes.Main.Route.useQueryParams()
   let {
@@ -90,8 +89,8 @@ let make = (~auction, ~owner, ~tokenId) => {
   <>
     <h1 className=" py-9 text-6xl text-default-darker "> {`VOTE ${tokenId}`->React.string} </h1>
     {switch (phase, auction) {
-    | (Before, _) => <> {"Auction has not started yet"->React.string} </>
-    | (Active, {settled: false, fragmentRefs}) =>
+    | (Some(Before), _) => <> {"Auction has not started yet"->React.string} </>
+    | (Some(Active), {settled: false, fragmentRefs}) =>
       <>
         <div className="flex flex-col lg:flex-row gap-2 lg:gap-5">
           <div className="flex lg:flex-col items-start justify-between">
@@ -116,7 +115,7 @@ let make = (~auction, ~owner, ~tokenId) => {
         </button>
         <ErrorBoundary
           fallback={_ => {<div> {React.string("Bid Component Failed to Insantiate")} </div>}}>
-          <CreateBid auction=fragmentRefs auctionPhase=phase />
+          <CreateBid auction=fragmentRefs />
         </ErrorBoundary>
         <ul className="flex flex-col justify-between py-4">
           <AuctionBidList bids={auction.fragmentRefs} />
@@ -135,7 +134,7 @@ let make = (~auction, ~owner, ~tokenId) => {
         </AllBidsListModal>
       </>
 
-    | (After, {settled, amount, bidder}) =>
+    | (Some(After), {settled, amount, bidder}) =>
       <>
         <div className="flex flex-col lg:flex-row lg:gap-5 gap-2">
           <div className="flex lg:flex-col items-start justify-between">
