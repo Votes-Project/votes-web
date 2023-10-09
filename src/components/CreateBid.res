@@ -8,6 +8,7 @@ module Fragment = %relay(`
     tokenId
     amount
     bidder
+    phase
     contract {
       minBidIncrement
       reservePrice
@@ -17,7 +18,7 @@ module Fragment = %relay(`
 
 exception ContractWriteDoesNotExist
 @react.component
-let make = (~auction, ~auctionPhase) => {
+let make = (~auction) => {
   let {address} = Wagmi.useAccount()
   let (bidAmount, setBidAmount) = React.useState(_ => "")
   let auction = Fragment.use(auction)
@@ -64,7 +65,7 @@ let make = (~auction, ~auctionPhase) => {
 
   let isDisabled =
     address->Nullable.toOption->Option.isNone ||
-    !(auctionPhase == Helpers.Active) ||
+    !(auction.phase == Some(Active)) ||
     bidAmount == "" ||
     bidAmount->Viem.parseEther->Option.getWithDefault(BigInt.fromString("0")) < minBid
 

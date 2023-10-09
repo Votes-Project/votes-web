@@ -1,3 +1,4 @@
+RescriptRelay.relayFeatureFlags.enableRelayResolvers = true
 module Query = %relay(`
   query SingleVoteQuery($id: ID!, $voteContractAddress: String!) {
     node(id: $id) {

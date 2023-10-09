@@ -3,7 +3,6 @@ module VoteItem = {
   fragment Votes_VoteItem_vote on Vote {
     id
     tokenId
-    uri
   }
   `)
 

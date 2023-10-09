@@ -30,7 +30,6 @@ module Query = %relay(`
       ... on Error {
         error
       }
-      ...DailyQuestion_verification
     }
   }
 `)
@@ -61,9 +60,9 @@ let make = (~queryRef, ~contextId) => {
   }
 
   React.useEffect1(() => {
-    switch verification.unique {
-    | None => ()
-    | Some(_) => setLinkBrightID(None)
+    switch verification {
+    | VerificationData({unique: true}) => setLinkBrightID(None)
+    | _ => ()
     }
     None
   }, [verification])
