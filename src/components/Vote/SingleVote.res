@@ -12,6 +12,7 @@ module Fragment = %relay(`
   @argumentDefinitions(voteContractAddress: { type: "String!" }) {
     owner
     tokenId
+    voteType
     voteContract(id: $voteContractAddress) {
       totalSupply
     }
@@ -40,9 +41,9 @@ let make = (
   }
 
   let vote = node->Option.orElse(vote)
-  let auctionType = tokenId->Int.fromString->Option.map(Helpers.wrapTokenId)
+  let voteType = vote->Option.flatMap(vote => vote.voteType)
 
-  switch (auctionType, vote) {
+  switch (voteType, vote) {
   | (Some(Raffle), Some({fragmentRefs, voteContract: Some({totalSupply})})) =>
     <ErrorBoundary fallback={_ => "Auction Failed to load"->React.string}>
       <VoteHeader tokenId={tokenId} totalSupply />
