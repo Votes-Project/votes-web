@@ -19,6 +19,9 @@ module Fragment = %relay(`
         node {
           id
           tokenId
+          auction {
+            startTime
+          }
           ...SingleVote_node @arguments(voteContractAddress: $voteContract)
         }
       }
@@ -28,6 +31,21 @@ module Fragment = %relay(`
 @react.component @relay.deferredComponent
 let make = (~children, ~queryRef) => {
   open FramerMotion
+  let {setParams} = Routes.Main.Route.useQueryParams()
+  let keys = UseKeyPairHook.useKeyPair()
+
+  let setDailyQuestion = dailyQuestion => {
+    setParams(
+      ~removeNotControlledParams=false,
+      ~navigationMode_=Push,
+      ~shallow=false,
+      ~setter=c => {
+        ...c,
+        contextId: keys->Option.map(({contextId}) => contextId),
+        dailyQuestion,
+      },
+    )
+  }
 
   let activeSubRoute = Routes.Main.Route.useActiveSubRoute()
 
@@ -37,6 +55,25 @@ let make = (~children, ~queryRef) => {
   let newestVote = votes->Fragment.getConnectionNodes->Array.get(0)
 
   let newestTokenId = newestVote->Option.map(({tokenId}) => tokenId)->Option.getExn
+
+  React.useEffect1(() => {
+    let timestamp = Dom.Storage2.localStorage->Dom.Storage2.getItem("votes_question_timestamp")
+
+    let wasPreviousVote = switch (newestVote, timestamp->Option.flatMap(Float.fromString)) {
+    | (Some({auction: Some({startTime})}), Some(t)) =>
+      startTime
+      ->Float.fromString
+      ->Option.map(startTime => startTime *. 1000.)
+      ->Option.mapWithDefault(false, startTime => startTime > t)
+    | _ => true
+    }
+    switch wasPreviousVote {
+    | false => ()
+    | true => Some(0)->setDailyQuestion
+    }
+    None
+  }, [keys])
+
   let environment = RescriptRelay.useEnvironmentFromContext()
   Wagmi.UseContractEvent.make({
     address: auctionContractAddress->Belt.Option.getExn,

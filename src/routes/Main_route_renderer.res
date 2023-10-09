@@ -13,7 +13,7 @@ module LinkBrightID = %relay.deferredComponent(LinkBrightID.make)
 // module QuestionQueue = %relay.deferredComponent(QuestionQueue.make)
 
 let renderer = Routes.Main.Route.makeRenderer(
-  ~prepareCode=({dailyQuestion, linkBrightID}) =>
+  ~prepareCode=({dailyQuestion, linkBrightID}) => {
     [
       Some(Main.preload()),
       switch dailyQuestion {
@@ -28,7 +28,8 @@ let renderer = Routes.Main.Route.makeRenderer(
       // | None => None
       // | Some(_) => Some(VoteDetails.preload())
       // },
-    ]->Array.filterMap(v => v),
+    ]->Array.filterMap(v => v)
+  },
   ~prepare=({environment, dailyQuestion, linkBrightID, contextId}) => {
     switch (dailyQuestion, linkBrightID, contextId) {
     | (Some(_), Some(linkBrightIDKey), Some(contextId)) => (

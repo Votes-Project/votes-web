@@ -22,14 +22,14 @@ module QuestionTitle = {
   let title = longTitle
   @react.component
   let make = () => {
-    <div className="px-12">
-      <h2
-        className={`font-bold [text-wrap:balance] text-center text-default-darker px-4  ${titleStyle(
-            title->String.length,
-          )}`}>
-        {("\"" ++ title ++ "\"")->React.string}
-      </h2>
-    </div>
+    open FramerMotion
+    <Motion.Div
+      layoutId="daily-question-preview"
+      className={`font-bold [text-wrap:balance] text-center text-default-darker px-4  ${titleStyle(
+          title->String.length,
+        )}`}>
+      {("\"" ++ title ++ "\"")->React.string}
+    </Motion.Div>
   }
 }
 
@@ -54,11 +54,10 @@ let make = () => {
   }
 
   let className = isOpen
-    ? "flex items-center justify-center text-white bg-secondary rounded-t-xl w-full focus:ring-4 focus:ring-active focus:outline-none shadow-lg px-4 py-4"
+    ? "flex items-center justify-center text-white bg-secondary rounded-t-xl w-full focus:ring-4 focus:ring-active focus:outline-none min-h-[6rem] shadow-lg px-4 py-4"
     : "flex items-center justify-center text-white bg-primary-dark rounded-full w-16 h-16 md:w-20 md:h-20 hover:bg-active  focus:ring-4 focus:ring-active focus:outline-none shadow-lg "
 
-  let handleClick = e => {
-    e->ReactEvent.Mouse.stopPropagation
+  let handleClick = _ => {
     if isOpen {
       setIsOpen(_ => false)
       setDailyQuestion(Some(0))
@@ -68,11 +67,6 @@ let make = () => {
   }
   open FramerMotion
   <>
-    <ReactTooltip
-      anchorSelect="#daily-question-preview"
-      content="Answer the question of the day"
-      closeOnEsc=true
-    />
     <div
       id="daily-question-preview"
       className={`fixed ${isOpen ? "bottom-0" : "right-6 bottom-6"} z-10 cursor-pointer`}
