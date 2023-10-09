@@ -75,6 +75,15 @@ module LuChevronDown = {
     ~className: string=?,
   ) => t = "LuChevronDown"
 }
+module LuChevronUp = {
+  @react.component @module("react-icons/lu")
+  external make: (
+    ~size: string=?,
+    ~color: string=?,
+    ~onClick: unit => unit=?,
+    ~className: string=?,
+  ) => t = "LuChevronUp"
+}
 
 module LuListOrdered = {
   @react.component @module("react-icons/lu")

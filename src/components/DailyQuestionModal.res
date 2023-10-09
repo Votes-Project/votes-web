@@ -41,9 +41,9 @@ let make = (~children, ~isOpen) => {
 
   open ReactModalSheet
   <>
-    <Sheet className="md:hidden flex" isOpen onClose rootId={"root"}>
+    <Sheet className="flex" isOpen onClose rootId={"root"}>
       <Sheet.Container className="lg:min-h-[864px]">
-        <Sheet.Header className="bg-secondary noise flex justify-center ">
+        <Sheet.Header className="bg-secondary noise flex justify-center rounded-t-3xl">
           <DailyQuestion.QuestionHeader />
         </Sheet.Header>
         <Sheet.Scroller
@@ -53,36 +53,5 @@ let make = (~children, ~isOpen) => {
       </Sheet.Container>
       <Sheet.Backdrop onTap={onClose} />
     </Sheet>
-    <ReactModal
-      isOpen
-      onRequestClose={onClose}
-      className="hidden md:flex pointer-events-auto"
-      style={
-        overlay: {
-          backgroundColor: "rgba(0,0,0,0.8)",
-          outline: "none",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        },
-        content: {
-          outline: "none",
-        },
-      }>
-      <div className="justify-center items-center flex inset-0 ">
-        <div className="relative w-auto mx-auto max-w-3xl">
-          <div
-            className="flex flex-col border-0 rounded-3xl shadow-xl relative w-full bg-secondary justify-start items-center min-w-[740px] max-h-[890px] noise overflow-scroll hide-scrollbar">
-            <div className=" w-full px-4 h-full flex flex-col justify-around">
-              <div
-                className="w-full  flex justify-center items-center sticky top-0 bg-secondary noise">
-                <DailyQuestion.QuestionHeader />
-              </div>
-              {children}
-            </div>
-          </div>
-        </div>
-      </div>
-    </ReactModal>
   </>
 }
