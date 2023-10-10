@@ -44,6 +44,7 @@ module Fragment = %relay(`
     phase
     ...CreateBid_auction
     ...AuctionCountdown_auction
+    ...AuctionCurrentBid_auction
     ...AuctionBidList_auction
     ...AllBidsList_auction
   }
@@ -85,8 +86,6 @@ let make = (~auction, ~owner, ~tokenId) => {
     )
   }
 
-  let formatAmount = amount => amount->BigInt.fromString->Viem.formatEther
-
   <>
     <h1 className=" py-9 text-6xl text-default-darker "> {`VOTE ${tokenId}`->React.string} </h1>
     {switch (phase, auction) {
@@ -94,15 +93,7 @@ let make = (~auction, ~owner, ~tokenId) => {
     | (Some(Active), {settled: false, fragmentRefs}) =>
       <>
         <div className="flex flex-col lg:flex-row gap-2 lg:gap-5">
-          <div className="flex lg:flex-col items-start justify-between">
-            <p className="font-semibold text-xl lg:text-active text-background-dark ">
-              {"Current Bid"->React.string}
-            </p>
-            <p className="font-bold text-xl lg:text-3xl text-default-darker">
-              {"Ξ "->React.string}
-              {auction.amount->formatAmount->React.string}
-            </p>
-          </div>
+          <AuctionCurrentBid auction={fragmentRefs} />
           <div className="w-0 rounded-lg lg:border-primary border hidden lg:flex" />
           <AuctionCountdown auction={fragmentRefs} />
         </div>
@@ -122,13 +113,14 @@ let make = (~auction, ~owner, ~tokenId) => {
           <AuctionBidList bids={auction.fragmentRefs} />
         </ul>
         <div className="w-full py-2 text-center pb-4">
-          {auction.amount == "0"
-            ? React.null
-            : <div
-                onClick={handleShowAllBids}
-                className="font-semibold text-background-dark hover:text-default-darker cursor-pointer">
-                {"View All Bids"->React.string}
-              </div>}
+          {auction.bidder->Option.mapWithDefault(React.null, _ =>
+            <button
+              type_="button"
+              onClick={handleShowAllBids}
+              className="font-semibold  hover:text-default-darker cursor-pointer">
+              {"View All Bids"->React.string}
+            </button>
+          )}
         </div>
         <AllBidsListModal isOpen={showAllBids->Option.isSome}>
           <AllBidsList bids={auction.fragmentRefs} />
