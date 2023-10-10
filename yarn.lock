@@ -8934,14 +8934,14 @@ react-tooltip@latest:
   languageName: node
   linkType: hard
 
-"rescript@npm:11.0.0-beta.4":
-  version: 11.0.0-beta.4
-  resolution: "rescript@npm:11.0.0-beta.4"
+"rescript@npm:11.0.0-rc.4":
+  version: 11.0.0-rc.4
+  resolution: "rescript@npm:11.0.0-rc.4"
   bin:
     bsc: bsc
     bstracing: lib/bstracing
     rescript: rescript
-  checksum: cf55a1dd8970595c07d8919341123cbb7f7b278b23153597da00a128d189f4ab54b86a6bd7d88089ee35122389d02a1ae69de74d81f1bc187e06ae6a444356ef
+  checksum: 82b4de80c083d0edd20ec833496756299f7e96fd706936e438a0f6e22c291f23427d6f04f97ea050b9dbd70d62f5d55c9760634d81e018d497ae255191aa2b36
   languageName: node
   linkType: hard
 
@@ -10372,7 +10372,7 @@ react-tooltip@latest:
     react-tooltip: latest
     react-vertical-timeline-component: ^3.6.0
     relay-runtime: ^15.0.0
-    rescript: 11.0.0-beta.4
+    rescript: 11.0.0-rc.4
     rescript-relay: 3.0.0-alpha.1
     rescript-relay-router: ^1.0.1
     rescript-struct: ^5.0.1

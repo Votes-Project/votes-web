@@ -12,7 +12,7 @@ let decodeData = json => {
       dict->Dict.get("publicKey"),
     ) {
     | (
-        Some((True | False) as unique),
+        Some(Boolean(unique)),
         Some(String(app)),
         Some(String(context)),
         Some(Array(contextIdsRaw)),
@@ -21,11 +21,7 @@ let decodeData = json => {
         publicKey,
       ) =>
       Some({
-        unique: switch unique {
-        | True => true
-        | False => false
-        | _ => false
-        },
+        unique,
         app,
         context,
         contextIds: contextIdsRaw->Array.filterMap(contextId =>
@@ -64,17 +60,13 @@ let decodeError = json => {
       dict->Dict.get("code"),
     ) {
     | (
-        Some((True | False) as error),
+        Some(Boolean(error)),
         Some(Number(errorNumRaw)),
         Some(String(errorMessage)),
         Some(Number(codeRaw)),
       ) =>
       Some({
-        error: switch error {
-        | True => true
-        | False => false
-        | _ => false
-        },
+        error,
         errorNum: errorNumRaw->Float.toInt,
         errorMessage,
         code: codeRaw->Float.toInt,

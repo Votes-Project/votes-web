@@ -48,7 +48,7 @@
     "react-tooltip": "latest",
     "react-vertical-timeline-component": "^3.6.0",
     "relay-runtime": "^15.0.0",
-    "rescript": "11.0.0-beta.4",
+    "rescript": "11.0.0-rc.4",
     "rescript-relay": "3.0.0-alpha.1",
     "rescript-relay-router": "^1.0.1",
     "rescript-struct": "^5.0.1",
