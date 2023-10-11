@@ -125,7 +125,7 @@ let make = (~children, ~queryRef) => {
     <div className="relative w-full h-full flex flex-col z-0">
       <Motion.Div
         layoutId="background-noise"
-        className="wrapper absolute h-full w-full bg-primary noise flex flex-col z-[-1]"
+        className="wrapper fixed bg-primary noise animate-[grain_10s_steps(10)_infinite] flex flex-col z-[-1] w-[300%] h-[300%] left-[-50%] top-[-100%] overflow-hidden"
       />
       <Header verifications=fragmentRefs />
       <main>
