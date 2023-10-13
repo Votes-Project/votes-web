@@ -20,6 +20,8 @@ exception ContractWriteDoesNotExist
 @react.component
 let make = (~auction) => {
   let {address} = Wagmi.useAccount()
+  let {data: balance} = Wagmi.useBalance({address: address})
+
   let (bidAmount, setBidAmount) = React.useState(_ => "")
   let auction = Fragment.use(auction)
 
@@ -67,7 +69,12 @@ let make = (~auction) => {
     address->Nullable.toOption->Option.isNone ||
     !(auction.phase == Some(Active)) ||
     bidAmount == "" ||
-    bidAmount->Viem.parseEther->Option.getWithDefault(BigInt.fromString("0")) < minBid
+    bidAmount->Viem.parseEther->Option.getWithDefault(BigInt.fromString("0")) < minBid ||
+    balance->Nullable.toOption->Option.isNone ||
+    balance
+    ->Nullable.toOption
+    ->Option.mapWithDefault(Some(BigInt.fromString("0")), balance => Some(balance.value)) <
+      bidAmount->Viem.parseEther
 
   <div
     className="flex flex-col lg:flex-row w-full lg:items-center justify-around gap-2 p-10 lg:p-0">

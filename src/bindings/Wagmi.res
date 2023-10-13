@@ -121,7 +121,7 @@ type balanceData = {
   decimals: int,
   formatted: string,
   symbol: string,
-  value: string,
+  value: BigInt.t,
 }
 
 module WagmiConfig = {
@@ -139,8 +139,9 @@ type signMessageReturn = {
 @module("wagmi")
 external useSignMessage: 'a => signMessageReturn = "useSignMessage"
 
+type useBalanceInput = {address: Nullable.t<string>, ...queryInput<balanceData>}
 @module("wagmi")
-external useBalance: 'a => queryResult<balanceData> = "useBalance"
+external useBalance: useBalanceInput => queryResult<balanceData> = "useBalance"
 
 type ensNameInput = {address: string, ...queryInput<string>}
 @module("wagmi") external useEnsName: ensNameInput => queryResult<string> = "useEnsName"
