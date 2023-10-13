@@ -69,28 +69,6 @@ let make = (~children, ~isOpen) => {
     }),
   }
 
-  let content = switch (address->Nullable.toOption, queryParams.voteDetailsToken) {
-  | (_, Some(_)) => children
-  | (Some(_), None) => children
-  | (None, None) =>
-    <div className="h-full w-full flex flex-col justify-around items-center">
-      <div className="flex-1 text-center gap-3 flex-col flex justify-center items-center">
-        <div> {"Connect an ethereum wallet to submit a vote"->React.string} </div>
-        <RainbowKit.ConnectButton />
-      </div>
-      <div className="text-center flex-2">
-        <div> {"Ask a community question"->React.string} </div>
-        <a
-          type_="button"
-          className="bg-primary text-white rounded-lg px-4 py-2"
-          href={"https://discord.gg/uwqMn3rxxj"}
-          target="_blank">
-          {"Discord"->React.string}
-        </a>
-      </div>
-    </div>
-  }
-
   <AnimatePresence initial=false>
     {switch isOpen {
     | false => React.null
@@ -109,7 +87,7 @@ let make = (~children, ~isOpen) => {
           initial=String("initial")
           animate=String("animate")
           exit=String("exit")
-          className="w-full bg-default  transform-none h-screen fixed top-0 right-0 overflow-y-auto z-50 pb-[15vh] lg:w-1/2 ">
+          className="w-full transform-none h-full fixed top-0 right-0 z-50 lg:w-1/2 ">
           <Motion.Div
             exit={Exit({
               opacity: !isNarrow ? 0. : 1.,
@@ -117,11 +95,11 @@ let make = (~children, ~isOpen) => {
                 duration: 0.01,
               },
             })}
-            className="bg-default h-full   w-full py-4 px-[2%] overflow-y-scroll flex-flex-col justify-center items-center hide-scrollbar">
-            <button className="fixed top-0 right-0 p-4" onClick={handleExitClick}>
-              {"Exit"->React.string}
-            </button>
-            {content}
+            className="relative bg-transparent h-full w-full overflow-hidden flex flex-col justify-center items-center hide-scrollbar">
+            <div
+              className="absolute w-[300%] h-[300%] bg-default left-[-50%] top-[-100%] noise overflow-hidden animate-[grain_10s_steps(10)_infinite]"
+            />
+            {children}
           </Motion.Div>
         </Motion.Div>
       </>

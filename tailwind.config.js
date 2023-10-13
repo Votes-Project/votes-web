@@ -28,7 +28,7 @@ export default {
         sans: ["Quicksand", 'sans-serif'],
         serif: ['Quicksand', 'sans-serif'],
         mono: ['Quicksand', 'sans-serif'],
-        rakkas: ["Rakkas", "sans-serif"],
+        fugaz: ["FugazOne", "sans-serif"],
       },
     },
   },
