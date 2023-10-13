@@ -31,14 +31,15 @@ let options: RadarChart.options = {
 }
 
 @react.component
-let make = (~className) => {
-  let rndInt = (Math.floor(Math.random() *. 6.) +. 3.)->Float.toInt
-  let labels = Array.make(~length=rndInt, "")
+let make = (~className, ~choiceCount=?) => {
+  let count =
+    choiceCount->Option.getWithDefault((Math.floor(Math.random() *. 6.) +. 3.)->Float.toInt)
+  let labels = Array.make(~length=count, "")
   let data = {
     labels,
     datasets: [
       {
-        data: Array.make(~length=rndInt, 0.)->Array.map(_ => Math.random() *. 100.),
+        data: Array.make(~length=count, 0.)->Array.map(_ => Math.random() *. 100.),
         backgroundColor: "rgba(1, 1, 1, 0.2)",
         borderWidth: 0,
       },

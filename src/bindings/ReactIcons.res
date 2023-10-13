@@ -99,3 +99,14 @@ module LuInfo = {
   @react.component @module("react-icons/lu")
   external make: (~size: string=?, ~color: string=?, ~className: string=?) => t = "LuInfo"
 }
+
+module LuSettings = {
+  @react.component @module("react-icons/lu")
+  external make: (~size: string=?, ~color: string=?, ~className: string=?) => t = "LuSettings"
+}
+
+module LuPanelRightClose = {
+  @react.component @module("react-icons/lu")
+  external make: (~size: string=?, ~color: string=?, ~className: string=?) => t =
+    "LuPanelRightClose"
+}

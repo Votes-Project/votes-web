@@ -133,7 +133,7 @@ let renderer = Routes.Main.Route.makeRenderer(
         {switch (voteDetails, voteDetailsToken, Some()) {
         | (Some(_), None, _) =>
           <React.Suspense fallback={<p> {"Loading"->React.string} </p>}>
-            <OwnedVotesList />
+            <CreateVote />
           </React.Suspense>
         | (Some(_), Some(_), Some(queryRef)) =>
           <React.Suspense fallback={<p> {"Loading"->React.string} </p>}>
