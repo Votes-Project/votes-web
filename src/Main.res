@@ -125,7 +125,7 @@ let make = (~children, ~queryRef) => {
     <div className="relative w-full h-full flex flex-col z-0">
       <Motion.Div
         layoutId="background-noise"
-        className="wrapper fixed bg-primary noise animate-[grain_10s_steps(10)_infinite] flex flex-col z-[-1] w-[300%] h-[300%] left-[-50%] top-[-100%] overflow-hidden"
+        className=" fixed bg-primary noise animate-[grain_10s_steps(10)_infinite] flex flex-col z-[-1] w-[300%] h-[300%] left-[-50%] top-[-100%] overflow-hidden"
       />
       <Header verifications=fragmentRefs />
       <main>
@@ -139,7 +139,7 @@ let make = (~children, ~queryRef) => {
               </div>
             </div>
             <div
-              className="pt-[5%] px-[5%] lg:pr-20 lg:pl-0 lg:pt-0 min-h-[558px] lg:flex-[0_0_auto] w-full !self-end bg-white pr-[5%] pb-0 lg:bg-transparent lg:w-[50%]  ">
+              className="pt-[5%] px-[5%] lg:pr-20 lg:pl-0 lg:pt-0 min-h-[558px] lg:flex-[0_0_auto] w-full !self-start bg-white pr-[5%] pb-0 lg:bg-transparent lg:w-[50%]  ">
               <ErrorBoundary fallback={({error}) => {error->React.string}}>
                 <React.Suspense fallback={<div />}>
                   {switch (newestVote, activeSubRoute) {
