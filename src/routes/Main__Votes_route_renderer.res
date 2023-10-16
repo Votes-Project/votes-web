@@ -13,6 +13,10 @@ let renderer = Routes.Main.Votes.Route.makeRenderer(
     )
   },
   ~render=({prepared: queryRef}) => {
-    <Votes queryRef />
+    <ErrorBoundary fallback={({error}) => JSON.stringifyAny(error)->Option.getExn->React.string}>
+      <React.Suspense fallback={<div> {"Loading..."->React.string} </div>}>
+        <Votes queryRef />
+      </React.Suspense>
+    </ErrorBoundary>
   },
 )
