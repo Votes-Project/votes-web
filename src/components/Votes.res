@@ -126,12 +126,6 @@ module VoteListDisplay = {
       }
     }
 
-    let votes =
-      data.votes
-      ->VotesFragment.getConnectionNodes
-      ->Array.map(vote => {
-        <VoteItem vote={vote.fragmentRefs} key=vote.id />
-      })
     <div className="pb-6">
       <nav className="px-4 w-full flex justify-between items-center pb-4">
         <div>
