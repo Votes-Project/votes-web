@@ -31,7 +31,8 @@ let options: RadarChart.options = {
 }
 
 @react.component
-let make = (~className, ~choiceCount=?) => {
+let make = (~className=?, ~choiceCount=?) => {
+  let className = className->Option.getWithDefault("")
   let count =
     choiceCount->Option.getWithDefault((Math.floor(Math.random() *. 6.) +. 3.)->Float.toInt)
   let labels = Array.make(~length=count, "")

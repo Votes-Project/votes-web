@@ -1,4 +1,8 @@
 type history
+type vercelEnv =
+  | @as("production") Production | @as("development") Development | @as("preview") Preview
+@val @scope(("import", "meta", "env"))
+external vercelEnv: option<vercelEnv> = "VITE_VERCEL_ENV"
 
 @val
 external history: history = "window.history"
@@ -21,7 +25,8 @@ import { mainnet, goerli } from "wagmi/chains";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
 
-const voteChains = import.meta.env.NODE_ENV === "production" ? [mainnet] : [mainnet, goerli];
+// const voteChains = import.meta.env.VITE_VERCEL_ENV === "production" ? [mainnet] : [goerli, mainnet]
+const voteChains = [goerli];
 
 const { chains, publicClient, webSocketPublicClient } = configureChains(
   voteChains,
@@ -60,10 +65,15 @@ module RainbowKit = {
     }
     @module("@rainbow-me/rainbowkit") external darkTheme: themeInput => t = "darkTheme"
   }
-  module RainbowKitProvider = {
+  module Provider = {
+    type initialChain<'chain> = 'chain
     @react.component @module("@rainbow-me/rainbowkit")
-    external make: (~chains: 'a, ~children: React.element, ~theme: Theme.t=?) => React.element =
-      "RainbowKitProvider"
+    external make: (
+      ~chains: 'a,
+      ~children: React.element,
+      ~theme: Theme.t=?,
+      ~initialChain: initialChain<'chain>=?,
+    ) => React.element = "RainbowKitProvider"
   }
 }
 
@@ -113,14 +123,14 @@ ReactDOMExperimental.renderConcurrentRootAtElementWithId(
               )}`->React.string}
           </>}>
           <Wagmi.WagmiConfig config={%raw("wagmiConfig")}>
-            <RainbowKit.RainbowKitProvider chains={%raw("chains")}>
+            <RainbowKit.Provider chains={%raw("chains")} initialChain={%raw("goerli")}>
               <TodaysAuctionProvider>
                 <RelayRouter.RouteRenderer
                   // This renders all the time, and when there"s a pending navigation (pending via React concurrent mode), pending will be `true`
                   renderPending={pending => <PendingIndicatorBar pending />}
                 />
               </TodaysAuctionProvider>
-            </RainbowKit.RainbowKitProvider>
+            </RainbowKit.Provider>
           </Wagmi.WagmiConfig>
         </ErrorBoundary>
       </React.Suspense>
