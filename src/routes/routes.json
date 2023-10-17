@@ -19,7 +19,7 @@
         "children": []
       },
       {
-        "path": "votes",
+        "path": "votes?sortBy=VotesSortBy.t&address=string",
         "name": "Votes",
         "children": []
       },

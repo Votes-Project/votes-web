@@ -42,45 +42,46 @@ let make = (
 
   let vote = node->Option.orElse(vote)
   let voteType = vote->Option.flatMap(vote => vote.voteType)
-
-  switch (voteType, vote) {
-  | (Some(Raffle), Some({fragmentRefs, voteContract: Some({totalSupply})})) =>
-    <ErrorBoundary fallback={_ => "Auction Failed to load"->React.string}>
-      <VoteHeader tokenId={tokenId} totalSupply />
-      <Raffle vote=fragmentRefs />
-    </ErrorBoundary>
-  | (
-      Some(Normal),
-      Some({
-        auction: Some({fragmentRefs, startTime}),
-        voteContract: Some({totalSupply}),
-        owner,
-        tokenId,
-      }),
-    ) =>
-    <ErrorBoundary fallback={_ => "Auction Failed to load"->React.string}>
-      <VoteHeader tokenId={tokenId} totalSupply startTime />
-      <React.Suspense fallback={<div />}>
-        <AuctionDisplay owner auction=fragmentRefs tokenId />
-      </React.Suspense>
-    </ErrorBoundary>
-  | (
-      Some(FlashVote),
-      Some({
-        auction: Some({fragmentRefs, startTime}),
-        voteContract: Some({totalSupply}),
-        owner,
-        tokenId,
-      }),
-    ) =>
-    <ErrorBoundary fallback={_ => "Auction Failed to load"->React.string}>
-      <VoteHeader tokenId={tokenId} totalSupply startTime />
-      <React.Suspense fallback={<div />}>
-        <AuctionDisplay owner auction=fragmentRefs tokenId />
-      </React.Suspense>
-    </ErrorBoundary>
-  | (Some(FlashVote), Some({auction: None})) => raise(NoAuction)
-  | (Some(Normal), Some({auction: None})) => raise(NoAuction)
-  | _ => raise(NoVote)
-  }
+  <div className="pt-[5%] px-[5%]">
+    {switch (voteType, vote) {
+    | (Some(Raffle), Some({fragmentRefs, voteContract: Some({totalSupply})})) =>
+      <ErrorBoundary fallback={_ => "Auction Failed to load"->React.string}>
+        <VoteHeader tokenId={tokenId} totalSupply />
+        <Raffle vote=fragmentRefs />
+      </ErrorBoundary>
+    | (
+        Some(Normal),
+        Some({
+          auction: Some({fragmentRefs, startTime}),
+          voteContract: Some({totalSupply}),
+          owner,
+          tokenId,
+        }),
+      ) =>
+      <ErrorBoundary fallback={_ => "Auction Failed to load"->React.string}>
+        <VoteHeader tokenId={tokenId} totalSupply startTime />
+        <React.Suspense fallback={<div />}>
+          <AuctionDisplay owner auction=fragmentRefs tokenId />
+        </React.Suspense>
+      </ErrorBoundary>
+    | (
+        Some(FlashVote),
+        Some({
+          auction: Some({fragmentRefs, startTime}),
+          voteContract: Some({totalSupply}),
+          owner,
+          tokenId,
+        }),
+      ) =>
+      <ErrorBoundary fallback={_ => "Auction Failed to load"->React.string}>
+        <VoteHeader tokenId={tokenId} totalSupply startTime />
+        <React.Suspense fallback={<div />}>
+          <AuctionDisplay owner auction=fragmentRefs tokenId />
+        </React.Suspense>
+      </ErrorBoundary>
+    | (Some(FlashVote), Some({auction: None})) => raise(NoAuction)
+    | (Some(Normal), Some({auction: None})) => raise(NoAuction)
+    | _ => raise(NoVote)
+    }}
+  </div>
 }

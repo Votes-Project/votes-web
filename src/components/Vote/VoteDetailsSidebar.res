@@ -10,7 +10,7 @@ external removeEventListener: (Dom.window, [#resize], 'a => unit) => unit = "rem
 @react.component
 let make = (~children, ~isOpen) => {
   open FramerMotion
-  let {address} = Wagmi.useAccount()
+  let {address} = Wagmi.UseAccount.make()
   let (width, setWidth) = React.useState(_ => window->innerWidth)
   let isNarrow = width <= 991
   let {setParams, queryParams} = Routes.Main.Route.useQueryParams()
