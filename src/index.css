@@ -9,7 +9,7 @@
 }
 
 @font-face {
-  font-family: FugazOne;
+  font-family: "FugazOne";
   src: url("/assets/fonts/FugazOne-Regular.ttf");
 }
 
@@ -18,9 +18,10 @@ html {
   margin: 0;
   padding: 0;
   width: 100%;
-  height: 100%;
+  height: 100vh;
+  height: 100svh;
   background-image: url(/assets/noise-light.png);
-  color: "#FFDACC";
+  background-color: "#FFDACC";
 
 }
 
@@ -98,4 +99,13 @@ h1 {
   /* IE and Edge */
   scrollbar-width: none;
   /* Firefox */
+}
+
+
+div[editablehasplaceholder="true"]:empty:before {
+  content: attr(placeholder);
+}
+
+div[contenteditable="true"] {
+  outline: none;
 }
