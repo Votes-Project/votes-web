@@ -10,10 +10,9 @@ external removeEventListener: (Dom.window, [#resize], 'a => unit) => unit = "rem
 @react.component
 let make = (~children, ~isOpen) => {
   open FramerMotion
-  let {address} = Wagmi.UseAccount.make()
   let (width, setWidth) = React.useState(_ => window->innerWidth)
   let isNarrow = width <= 991
-  let {setParams, queryParams} = Routes.Main.Route.useQueryParams()
+  let {setParams} = Routes.Main.Route.useQueryParams()
 
   let handleWindowSizeChange = () => {
     setWidth(_ => window->innerWidth)
@@ -38,18 +37,6 @@ let make = (~children, ~isOpen) => {
       },
     )
   }
-
-  let handleExitClick = _ =>
-    setParams(
-      ~removeNotControlledParams=false,
-      ~navigationMode_=Push,
-      ~shallow=false,
-      ~setter=c => {
-        ...c,
-        voteDetails: None,
-        voteDetailsToken: None,
-      },
-    )
 
   let motionVariants: Motion.variants = {
     initial: Initial({

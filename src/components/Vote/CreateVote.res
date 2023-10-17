@@ -57,7 +57,6 @@ let initialState = {
 
 @react.component
 let make = () => {
-  let (showPreview, setShowPreview) = React.useState(_ => true)
   let ({choices, title}, dispatch) = React.useReducer(reducer, initialState)
   let choiceCount = choices->Array.length
 

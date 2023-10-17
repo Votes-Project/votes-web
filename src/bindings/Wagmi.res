@@ -188,3 +188,8 @@ module UseAccount = {
   @module("wagmi") @module("wagmi")
   external make: (~config: useAccountInput=?) => t = "useAccount"
 }
+
+module PublicClient = {
+  type t = Viem.publicClient
+  @module("wagmi") external use: unit => t = "usePublicClient"
+}
