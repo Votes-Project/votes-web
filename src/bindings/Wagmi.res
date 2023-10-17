@@ -33,16 +33,6 @@ type accountStatus =
   | @as("connected") Connected
   | @as("disconnected") Disconnected
 
-type account = {
-  address: Nullable.t<string>,
-  connector: Nullable.t<connector>,
-  isConnecting: bool,
-  isReconnecting: bool,
-  isConnected: bool,
-  isDisconnected: bool,
-  status: accountStatus,
-}
-
 type input = {
   chainId?: int,
   cacheTime?: int,
@@ -129,9 +119,6 @@ module WagmiConfig = {
   external make: (~config: 'a, ~children: React.element) => React.element = "WagmiConfig"
 }
 
-@module("wagmi")
-external useAccount: unit => account = "useAccount"
-
 type signMessageReturn = {
   signMessage: unit => unit,
   ...queryResult<string>,
@@ -183,4 +170,21 @@ module UseContractEvent = {
   }
   @module("wagmi")
   external make: input<'args> => unit = "useContractEvent"
+}
+
+module UseAccount = {
+  type onConnect = {address: string, connector: connector, isReconnected: bool}
+
+  type t = {
+    address: Nullable.t<string>,
+    connector: Nullable.t<connector>,
+    isConnecting: bool,
+    isReconnecting: bool,
+    isConnected: bool,
+    isDisconnected: bool,
+    status: accountStatus,
+  }
+  type useAccountInput = {onConnect?: onConnect => unit, onDisconnect?: unit => unit}
+  @module("wagmi") @module("wagmi")
+  external make: (~config: useAccountInput=?) => t = "useAccount"
 }

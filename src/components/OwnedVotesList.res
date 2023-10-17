@@ -82,7 +82,7 @@ module Query = %relay(`
 
 @react.component @relay.deferredComponent
 let make = () => {
-  let {address} = Wagmi.useAccount()
+  let {address} = Wagmi.UseAccount.make()
   let data = switch address->Nullable.toOption {
   | Some(address) => Query.use(~variables={owner: address}, ~fetchPolicy=StoreAndNetwork)->Some
   | None => None

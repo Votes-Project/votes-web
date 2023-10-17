@@ -142,7 +142,7 @@ module ChoicesPage = {
 
   @react.component
   let make = (~verification, ~checkedIndex, ~handleChecked, ~handleVote) => {
-    let {address} = Wagmi.useAccount()
+    let {address} = Wagmi.UseAccount.make()
     let {openConnectModal} = RainbowKit.useConnectModal()
     let {openAccountModal} = RainbowKit.useAccountModal()
     let {setParams} = Routes.Main.Route.useQueryParams()
