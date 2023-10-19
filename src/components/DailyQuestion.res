@@ -37,7 +37,7 @@ module QuestionTitle = {
   @react.component
   let make = () => {
     open FramerMotion
-    <div className="px-12">
+    <div className="">
       <div
         className="w-full h-0 border mb-4 bg-black border-default-darker rounded-md opacity-10"
       />
@@ -129,9 +129,6 @@ module ChoicesPage = {
 
   @react.component
   let make = (~chosenIndex, ~handleChecked, ~handleVote) => {
-    let {setParams} = Routes.Main.Route.useQueryParams()
-    let keys = UseKeyPairHook.useKeyPair()
-
     React.useEffect0(() => {
       Dom.Storage2.localStorage->Dom.Storage2.setItem(
         "votes_question_timestamp",
@@ -218,12 +215,6 @@ module AnswerPage = {
     let {setParams} = Routes.Main.Route.useQueryParams()
 
     let verificationData = VerificationFragment.use(verification)
-
-    let hasVerification = switch verificationData {
-    | VerificationData({unique: true}) => true
-    | _ => false
-    }
-    let hasAddress = address->Nullable.toOption->Option.isSome
 
     let setLinkBrightID = linkBrightID => {
       setParams(

@@ -4,6 +4,14 @@ external addEventListener: (Dom.document, [#mouseup], 'a => unit) => unit = "add
 external removeEventListener: (Dom.document, [#mouseup], 'a => unit) => unit = "removeEventListener"
 let longTitle = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec qu?"
 
+module Window = {
+  @send
+  external addEventListener: (Dom.window, [#resize], 'a => unit) => unit = "addEventListener"
+  @send
+  external removeEventListener: (Dom.window, [#resize], 'a => unit) => unit = "removeEventListener"
+  @get external innerWidth: Dom.window => int = "innerWidth"
+}
+
 module QuestionTitle = {
   let titleStyle = titleLength => {
     if titleLength <= 50 {
@@ -35,7 +43,24 @@ module QuestionTitle = {
 
 @react.component
 let make = () => {
-  let (isOpen, setIsOpen) = React.useState(_ => false)
+  let (width, setWidth) = React.useState(_ => window->Window.innerWidth)
+  let isNarrow = width <= 1024
+  let (isOpen, setIsOpen) = React.useState(_ => isNarrow ? false : true)
+
+  let handleWindowSizeChange = React.useCallback(() => {
+    setWidth(_ => window->Window.innerWidth)
+    if window->Window.innerWidth <= 1024 {
+      setIsOpen(_ => false)
+    } else {
+      setIsOpen(_ => true)
+    }
+  })
+
+  React.useEffect0(() => {
+    window->Window.addEventListener(#resize, handleWindowSizeChange)
+
+    Some(() => window->Window.removeEventListener(#resize, handleWindowSizeChange))
+  })
 
   let keys = UseKeyPairHook.useKeyPair()
 
@@ -54,8 +79,8 @@ let make = () => {
   }
 
   let className = isOpen
-    ? "flex items-center justify-center text-white bg-secondary rounded-t-xl w-full focus:ring-4 focus:ring-active focus:outline-none min-h-[6rem] shadow-lg px-4 py-4"
-    : "flex items-center justify-center text-white bg-primary-dark rounded-full w-16 h-16 md:w-20 md:h-20 hover:bg-active  focus:ring-4 focus:ring-active focus:outline-none shadow-lg "
+    ? "flex items-center justify-center text-white bg-secondary w-full focus:ring-4 focus:ring-active focus:outline-none min-h-[6rem] shadow-lg px-4 py-4"
+    : "flex items-center justify-center text-white bg-primary-dark  w-16 h-16 md:w-20 md:h-20 hover:bg-active  focus:ring-4 focus:ring-active focus:outline-none shadow-lg "
 
   let handleClick = _ => {
     if isOpen {
@@ -66,23 +91,22 @@ let make = () => {
     }
   }
   open FramerMotion
-  <>
-    <div
-      id="daily-question-preview"
-      className={`fixed ${isOpen ? "bottom-0" : "right-6 bottom-6"} z-10 cursor-pointer`}
-      onClick={handleClick}
-      onMouseEnter={_ => setIsOpen(_ => true)}
-      onMouseLeave={_ => setIsOpen(_ => false)}>
+
+  <div
+    id="daily-question-preview"
+    className={`fixed ${isOpen ? "bottom-0" : "right-6 bottom-6"} z-10 cursor-pointer`}
+    onClick={handleClick}>
+    {isOpen
+      ? <div className="absolute w-screen h-screen z-10" onClick={_ => setIsOpen(_ => false)} />
+      : <> </>}
+    <Motion.Div
+      layout=True
+      initial=Initial({borderRadius: 50})
+      animate={isOpen ? Animate({borderRadius: 0}) : Animate({})}
+      className>
       {isOpen
-        ? <div className="absolute w-screen h-screen z-10" onClick={_ => setIsOpen(_ => false)} />
-        : <> </>}
-      <Motion.Div layout=True initial=Initial({borderRadius: 50}) className>
-        {isOpen
-          ? <QuestionTitle />
-          : <Motion.Div layout=True className="text-4xl font-bold">
-              {"?"->React.string}
-            </Motion.Div>}
-      </Motion.Div>
-    </div>
-  </>
+        ? <QuestionTitle />
+        : <Motion.Div layout=True className="text-4xl font-bold"> {"?"->React.string} </Motion.Div>}
+    </Motion.Div>
+  </div>
 }
