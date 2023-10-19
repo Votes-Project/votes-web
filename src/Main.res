@@ -3,15 +3,14 @@ external auctionContractAddress: option<string> = "VITE_AUCTION_CONTRACT_ADDRESS
 @module("/src/abis/Auction.json") external auctionContractAbi: JSON.t = "default"
 
 module Query = %relay(`
-  query MainQuery($voteContract: String!) {
-    ...MainFragment @arguments(voteContract: $voteContract)
+  query MainQuery {
+    ...MainFragment
     ...HeaderFragment
   }
 `)
 
 module Fragment = %relay(`
-  fragment MainFragment on Query
-  @argumentDefinitions(voteContract: { type: "String!" }) {
+  fragment MainFragment on Query {
     votes(orderBy: id, orderDirection: desc, first: 1000)
       @connection(key: "Main_votes_votes") {
       __id
@@ -22,7 +21,7 @@ module Fragment = %relay(`
           auction {
             startTime
           }
-          ...SingleVote_node @arguments(voteContractAddress: $voteContract)
+          ...SingleVote_node
         }
       }
     }
@@ -31,6 +30,10 @@ module Fragment = %relay(`
 @react.component @relay.deferredComponent
 let make = (~children, ~queryRef) => {
   open FramerMotion
+  let {fragmentRefs} = Query.usePreloaded(~queryRef)
+  let {votes} = Fragment.use(fragmentRefs)
+  Js.log2("votes: ", votes)
+
   let {setParams} = Routes.Main.Route.useQueryParams()
   let keys = UseKeyPairHook.useKeyPair()
 
@@ -48,9 +51,6 @@ let make = (~children, ~queryRef) => {
   }
 
   let activeSubRoute = Routes.Main.Route.useActiveSubRoute()
-
-  let {fragmentRefs} = Query.usePreloaded(~queryRef)
-  let {votes} = Fragment.use(fragmentRefs)
 
   let newestVote = votes->Fragment.getConnectionNodes->Array.get(0)
 
@@ -139,7 +139,7 @@ let make = (~children, ~queryRef) => {
               </div>
             </div>
             <div
-              className="lg:pr-20 lg:pl-0 lg:pt-0 min-h-[558px] lg:flex-[0_0_auto] w-full !self-start bg-white pb-0 lg:bg-transparent lg:w-[50%]">
+              className=" pt-[5%] lg:pr-20 lg:pl-0 lg:pt-0 min-h-[558px] lg:flex-[0_0_auto] w-full !self-start bg-white pb-0 lg:bg-transparent lg:w-[50%]">
               <ErrorBoundary fallback={({error}) => {error->React.string}}>
                 <React.Suspense fallback={<div />}>
                   {switch (newestVote, activeSubRoute) {

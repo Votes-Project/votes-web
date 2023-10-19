@@ -26,7 +26,7 @@ import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
 
 // const voteChains = import.meta.env.VITE_VERCEL_ENV === "production" ? [mainnet] : [goerli, mainnet]
-const voteChains = [goerli];
+const voteChains = [goerli, mainnet];
 
 const { chains, publicClient, webSocketPublicClient } = configureChains(
   voteChains,

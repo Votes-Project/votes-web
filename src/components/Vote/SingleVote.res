@@ -1,19 +1,18 @@
 RescriptRelay.relayFeatureFlags.enableRelayResolvers = true
 module Query = %relay(`
-  query SingleVoteQuery($id: ID!, $voteContractAddress: String!) {
+  query SingleVoteQuery($id: ID!) {
     node(id: $id) {
-      ...SingleVote_node @arguments(voteContractAddress: $voteContractAddress)
+      ...SingleVote_node @arguments
     }
   }
 `)
 
 module Fragment = %relay(`
-  fragment SingleVote_node on Vote
-  @argumentDefinitions(voteContractAddress: { type: "String!" }) {
+  fragment SingleVote_node on Vote {
     owner
     tokenId
     voteType
-    voteContract(id: $voteContractAddress) {
+    contract {
       totalSupply
     }
     auction {
@@ -34,6 +33,7 @@ let make = (
 ) => {
   let data = queryRef->Option.map(queryRef => Query.usePreloaded(~queryRef))
   let vote = vote->Option.map(vote => Fragment.use(vote))
+  Js.log2("vote: ", vote)
 
   let node = switch data {
   | Some({node: Some({fragmentRefs})}) => Some(Fragment.use(fragmentRefs))
@@ -42,21 +42,16 @@ let make = (
 
   let vote = node->Option.orElse(vote)
   let voteType = vote->Option.flatMap(vote => vote.voteType)
-  <div className="pt-[5%] px-[5%]">
+  <div className="px-[5%]">
     {switch (voteType, vote) {
-    | (Some(Raffle), Some({fragmentRefs, voteContract: Some({totalSupply})})) =>
+    | (Some(Raffle), Some({fragmentRefs, contract: {totalSupply}})) =>
       <ErrorBoundary fallback={_ => "Auction Failed to load"->React.string}>
         <VoteHeader tokenId={tokenId} totalSupply />
         <Raffle vote=fragmentRefs />
       </ErrorBoundary>
     | (
         Some(Normal),
-        Some({
-          auction: Some({fragmentRefs, startTime}),
-          voteContract: Some({totalSupply}),
-          owner,
-          tokenId,
-        }),
+        Some({auction: Some({fragmentRefs, startTime}), contract: {totalSupply}, owner, tokenId}),
       ) =>
       <ErrorBoundary fallback={_ => "Auction Failed to load"->React.string}>
         <VoteHeader tokenId={tokenId} totalSupply startTime />
@@ -66,12 +61,7 @@ let make = (
       </ErrorBoundary>
     | (
         Some(FlashVote),
-        Some({
-          auction: Some({fragmentRefs, startTime}),
-          voteContract: Some({totalSupply}),
-          owner,
-          tokenId,
-        }),
+        Some({auction: Some({fragmentRefs, startTime}), contract: {totalSupply}, owner, tokenId}),
       ) =>
       <ErrorBoundary fallback={_ => "Auction Failed to load"->React.string}>
         <VoteHeader tokenId={tokenId} totalSupply startTime />

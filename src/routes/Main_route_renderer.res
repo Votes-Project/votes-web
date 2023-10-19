@@ -1,11 +1,3 @@
-@val @scope(("import", "meta", "env"))
-external voteContractAddress: option<string> = "VITE_VOTES_CONTRACT_ADDRESS"
-exception NoVoteContractAddress
-let voteContract = switch voteContractAddress {
-| None => raise(NoVoteContractAddress)
-| Some(address) => address
-}
-
 module Main = %relay.deferredComponent(Main.make)
 module DailyQuestion = %relay.deferredComponent(DailyQuestion.make)
 module LinkBrightID = %relay.deferredComponent(LinkBrightID.make)
@@ -33,11 +25,7 @@ let renderer = Routes.Main.Route.makeRenderer(
   ~prepare=({environment, dailyQuestion, linkBrightID, contextId}) => {
     switch (dailyQuestion, linkBrightID, contextId) {
     | (Some(_), Some(linkBrightIDKey), Some(contextId)) => (
-        MainQuery_graphql.load(
-          ~environment,
-          ~variables={voteContract: voteContract},
-          ~fetchPolicy=StoreOrNetwork,
-        ),
+        MainQuery_graphql.load(~environment, ~variables=(), ~fetchPolicy=StoreOrNetwork),
         DailyQuestionQuery_graphql.load(
           ~environment,
           ~variables={contextId: contextId},
@@ -52,11 +40,7 @@ let renderer = Routes.Main.Route.makeRenderer(
       )
 
     | (Some(_), None, Some(contextId)) => (
-        MainQuery_graphql.load(
-          ~environment,
-          ~variables={voteContract: voteContract},
-          ~fetchPolicy=StoreOrNetwork,
-        ),
+        MainQuery_graphql.load(~environment, ~variables=(), ~fetchPolicy=StoreOrNetwork),
         DailyQuestionQuery_graphql.load(
           ~environment,
           ~variables={contextId: contextId},
@@ -65,11 +49,7 @@ let renderer = Routes.Main.Route.makeRenderer(
         None,
       )
     | (None, Some(linkBrightIDKey), Some(contextId)) => (
-        MainQuery_graphql.load(
-          ~environment,
-          ~variables={voteContract: voteContract},
-          ~fetchPolicy=StoreOrNetwork,
-        ),
+        MainQuery_graphql.load(~environment, ~variables=(), ~fetchPolicy=StoreOrNetwork),
         None,
         LinkBrightIDQuery_graphql.load(
           ~environment,
@@ -79,11 +59,7 @@ let renderer = Routes.Main.Route.makeRenderer(
         )->Some,
       )
     | _ => (
-        MainQuery_graphql.load(
-          ~environment,
-          ~variables={voteContract: voteContract},
-          ~fetchPolicy=StoreOrNetwork,
-        ),
+        MainQuery_graphql.load(~environment, ~variables=(), ~fetchPolicy=StoreOrNetwork),
         None,
         None,
       )

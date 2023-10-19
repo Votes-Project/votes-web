@@ -4,6 +4,12 @@ query GetVote($id: ID!) {
     owner
     tokenId
     uri
+    contract {
+      id
+      name
+      symbol
+      totalSupply
+    }
     auction {
       id
       tokenId

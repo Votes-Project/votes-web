@@ -1,12 +1,3 @@
-@val @scope(("import", "meta", "env"))
-external voteContractAddress: option<string> = "VITE_VOTES_CONTRACT_ADDRESS"
-
-exception NoVoteContractAddress
-let voteContractAddress = switch voteContractAddress {
-| None => raise(NoVoteContractAddress)
-| Some(address) => address
-}
-
 module SingleVote = %relay.deferredComponent(SingleVote.make)
 
 let renderer = Routes.Main.Vote.Route.makeRenderer(
@@ -20,7 +11,7 @@ let renderer = Routes.Main.Vote.Route.makeRenderer(
     | Some(id) =>
       SingleVoteQuery_graphql.load(
         ~environment,
-        ~variables={id, voteContractAddress},
+        ~variables={id: id},
         ~fetchPolicy=StoreOrNetwork, //@TODO: This should change to fetch from network on first time loading then store after the rest have loaded in
       )->Some
     }
