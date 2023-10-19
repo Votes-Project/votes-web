@@ -1590,6 +1590,15 @@ t_Vote.contents = GraphQLObjectType.make({
           VoteResolvers.auction(src, ~ctx)
         }),
       },
+      "contract": {
+        typ: get_VoteContract()->GraphQLObjectType.toGraphQLType->nonNull,
+        description: ?None,
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["contract"]
+        }),
+      },
       "id": {
         typ: Scalars.id->Scalars.toGraphQLType->nonNull,
         description: ?None,
@@ -1624,16 +1633,6 @@ t_Vote.contents = GraphQLObjectType.make({
         resolve: makeResolveFn((src, _args, _ctx) => {
           let src = typeUnwrapper(src)
           src["uri"]
-        }),
-      },
-      "voteContract": {
-        typ: get_VoteContract()->GraphQLObjectType.toGraphQLType,
-        description: ?None,
-        deprecationReason: ?None,
-        args: {"id": {typ: Scalars.string->Scalars.toGraphQLType->nonNull}}->makeArgs,
-        resolve: makeResolveFn((src, args, ctx) => {
-          let src = typeUnwrapper(src)
-          VoteResolvers.voteContract(src, ~ctx, ~id=args["id"])
         }),
       },
     }->makeFields,

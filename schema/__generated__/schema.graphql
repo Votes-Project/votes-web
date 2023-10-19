@@ -390,10 +390,10 @@ type VerificationsData implements Node {
 """GraphClient: A Vote Token entity"""
 type Vote implements Node {
   auction: Auction
-  voteContract(id: String!): VoteContract
   tokenId: String!
   owner: String!
   uri: String!
+  contract: VoteContract!
   id: ID!
 }
 

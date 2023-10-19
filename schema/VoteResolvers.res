@@ -39,16 +39,6 @@ let votes = async (
 }
 
 @gql.field
-let voteContract = async (_: vote, ~id, ~ctx: ResGraphContext.context): option<
-  VoteContract.voteContract,
-> => {
-  switch await ctx.dataLoaders.voteContract.byId->DataLoader.load(id) {
-  | None => panic("Did not find vote contract with that address")
-  | Some(voteContract) => voteContract->Some
-  }
-}
-
-@gql.field
 let auction = async (vote: vote, ~ctx: ResGraphContext.context) => {
   switch vote.auction->Nullable.toOption {
   | Some(auction) =>

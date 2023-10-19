@@ -11,6 +11,7 @@ type rec vote = {
   /* The IPFS uri of the vote token */
   @gql.field
   uri: string,
+  @gql.field
   /* The contract of the vote token */
   contract: VoteContract.voteContract,
   /* The auction of the vote token */

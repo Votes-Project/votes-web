@@ -4,6 +4,12 @@ query GetVotes($first:Int, $skip:Int, $where: Vote_filter, $orderBy: Vote_orderB
     owner
     tokenId
     uri
+    contract {
+      id
+      name
+      symbol
+      totalSupply
+    }
     auction {
       id
       tokenId
