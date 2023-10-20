@@ -24,6 +24,10 @@ module Main = {
     module Route = Route__Main__Questions_route
 
   }
+  module New = {
+    module Route = Route__Main__New_route
+
+  }
 }
 module FourOhFour = {
   module Route = Route__FourOhFour_route

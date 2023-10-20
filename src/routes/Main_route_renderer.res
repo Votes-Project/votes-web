@@ -78,9 +78,7 @@ let renderer = Routes.Main.Route.makeRenderer(
 
     <>
       <ErrorBoundary fallback={({error}) => error->React.string}>
-        <Main queryRef>
-          <div className="relative"> {childRoutes} </div>
-        </Main>
+        <Main queryRef> {childRoutes} </Main>
       </ErrorBoundary>
       <DailyQuestionModal isOpen={dailyQuestion->Option.isSome && linkBrightID->Option.isNone}>
         {switch (dailyQuestion, dailyQuestionQueryRef) {
@@ -107,10 +105,6 @@ let renderer = Routes.Main.Route.makeRenderer(
       </LinkBrightIDModal>
       <VoteDetailsSidebar isOpen={voteDetails->Option.isSome}>
         {switch (voteDetails, voteDetailsToken, Some()) {
-        | (Some(_), None, _) =>
-          <React.Suspense fallback={<p> {"Loading"->React.string} </p>}>
-            <CreateVote />
-          </React.Suspense>
         | (Some(_), Some(_), Some(queryRef)) =>
           <React.Suspense fallback={<p> {"Loading"->React.string} </p>}>
             <VoteDetails queryRef />

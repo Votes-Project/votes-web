@@ -163,7 +163,7 @@ let useQueryParams = (): useQueryParamsReturn => {
 }
 
 @inline
-let routePattern = "/"
+let routePattern = "/new"
 
 @live
 let makeLink = (~linkBrightID: option<int>=?, ~dailyQuestion: option<int>=?, ~contextId: option<string>=?, ~voteDetails: option<int>=?, ~voteDetailsToken: option<int>=?) => {
@@ -224,36 +224,6 @@ let isRouteActive = (~exact: bool=false, {pathname}: RelayRouter.History.locatio
 let useIsRouteActive = (~exact=false) => {
   let location = RelayRouter.Utils.useLocation()
   React.useMemo2(() => location->isRouteActive(~exact), (location, exact))
-}
-@live
-type subRoute = [#Vote | #Queue | #Raffles | #Votes | #Questions | #New]
-
-@live
-let getActiveSubRoute = (location: RelayRouter.History.location): option<[#Vote | #Queue | #Raffles | #Votes | #Questions | #New]> => {
-  let {pathname} = location
-  if RelayRouter.Internal.matchPath("/:tokenId", pathname)->Belt.Option.isSome {
-      Some(#Vote)
-    } else if RelayRouter.Internal.matchPath("/queue", pathname)->Belt.Option.isSome {
-      Some(#Queue)
-    } else if RelayRouter.Internal.matchPath("/raffles", pathname)->Belt.Option.isSome {
-      Some(#Raffles)
-    } else if RelayRouter.Internal.matchPath("/votes", pathname)->Belt.Option.isSome {
-      Some(#Votes)
-    } else if RelayRouter.Internal.matchPath("/questions", pathname)->Belt.Option.isSome {
-      Some(#Questions)
-    } else if RelayRouter.Internal.matchPath("/new", pathname)->Belt.Option.isSome {
-      Some(#New)
-    } else {
-    None
-  }
-}
-
-@live
-let useActiveSubRoute = (): option<[#Vote | #Queue | #Raffles | #Votes | #Questions | #New]> => {
-  let location = RelayRouter.Utils.useLocation()
-  React.useMemo1(() => {
-    getActiveSubRoute(location)
-  }, [location])
 }
 
 @obj

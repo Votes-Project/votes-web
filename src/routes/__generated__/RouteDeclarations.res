@@ -4,7 +4,7 @@ open RelayRouter__Internal__DeclarationsSupport
 external unsafe_toPrepareProps: 'any => prepareProps = "%identity"
 
 let loadedRouteRenderers: Belt.HashMap.String.t<loadedRouteRenderer> = Belt.HashMap.String.make(
-  ~hintSize=7,
+  ~hintSize=8,
 )
 
 let make = (~prepareDisposeTimeout=5 * 60 * 1000): array<RelayRouter.Types.route> => {
@@ -472,6 +472,85 @@ let make = (~prepareDisposeTimeout=5 * 60 * 1000): array<RelayRouter.Types.route
         ignore(pathParams)
       
         "Main__Questions:"
+      
+          ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("linkBrightID")->Belt.Option.getWithDefault("")
+          ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("dailyQuestion")->Belt.Option.getWithDefault("")
+          ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("contextId")->Belt.Option.getWithDefault("")
+          ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetails")->Belt.Option.getWithDefault("")
+          ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetailsToken")->Belt.Option.getWithDefault("")
+      }
+      
+      ,
+            ~routeName,
+            ~intent
+          ),
+          children: [],
+        }
+      },
+      {
+        let routeName = "Main__New"
+        let loadRouteRenderer = () => (() => Js.import(Main__New_route_renderer.renderer))->Obj.magic->doLoadRouteRenderer(~routeName, ~loadedRouteRenderers)
+        let makePrepareProps = (. 
+        ~environment: RescriptRelay.Environment.t,
+        ~pathParams: Js.Dict.t<string>,
+        ~queryParams: RelayRouter.Bindings.QueryParams.t,
+        ~location: RelayRouter.History.location,
+      ): prepareProps => {
+        ignore(pathParams)
+        let prepareProps: Route__Main__New_route.Internal.prepareProps =   {
+          environment: environment,
+      
+          location: location,
+          linkBrightID: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("linkBrightID")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
+          dailyQuestion: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("dailyQuestion")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
+          contextId: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("contextId")->Belt.Option.flatMap(value => Some(value->Js.Global.decodeURIComponent)),
+          voteDetails: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetails")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
+          voteDetailsToken: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetailsToken")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
+        }
+        prepareProps->unsafe_toPrepareProps
+      }
+      
+        {
+          path: "new",
+          name: routeName,
+          chunk: "Main__New_route_renderer",
+          loadRouteRenderer,
+          preloadCode: (
+            ~environment: RescriptRelay.Environment.t,
+            ~pathParams: Js.Dict.t<string>,
+            ~queryParams: RelayRouter.Bindings.QueryParams.t,
+            ~location: RelayRouter.History.location,
+          ) => preloadCode(
+            ~loadedRouteRenderers,
+            ~routeName,
+            ~loadRouteRenderer,
+            ~environment,
+            ~location,
+            ~makePrepareProps,
+            ~pathParams,
+            ~queryParams,
+          ),
+          prepare: (
+            ~environment: RescriptRelay.Environment.t,
+            ~pathParams: Js.Dict.t<string>,
+            ~queryParams: RelayRouter.Bindings.QueryParams.t,
+            ~location: RelayRouter.History.location,
+            ~intent: RelayRouter.Types.prepareIntent,
+          ) => prepareRoute(
+            ~environment,
+            ~pathParams,
+            ~queryParams,
+            ~location,
+            ~getPrepared,
+            ~loadRouteRenderer,
+            ~makePrepareProps,
+            ~makeRouteKey=(
+        ~pathParams: Js.Dict.t<string>,
+        ~queryParams: RelayRouter.Bindings.QueryParams.t
+      ): string => {
+        ignore(pathParams)
+      
+        "Main__New:"
       
           ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("linkBrightID")->Belt.Option.getWithDefault("")
           ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("dailyQuestion")->Belt.Option.getWithDefault("")

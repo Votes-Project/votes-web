@@ -97,14 +97,14 @@ let make = (~auction, ~owner, ~tokenId) => {
           <div className="w-0 rounded-lg lg:border-primary border hidden lg:flex" />
           <AuctionCountdown auction={fragmentRefs} />
         </div>
-        <button
-          className="flex flex-row gap-2 items-center justify-start pt-2"
-          onClick={_ => setVoteDetails(Some(0))}>
+        <RelayRouter.Link
+          to_={Routes.Main.New.Route.makeLink()}
+          className="flex flex-row gap-2 items-center justify-start pt-2">
           <ReactIcons.LuInfo size="1.25rem" className="text-default-darker" />
           <p className="text-md text-default-darker py-4">
             {"Ask your own question"->React.string}
           </p>
-        </button>
+        </RelayRouter.Link>
         <ErrorBoundary
           fallback={_ => {<div> {React.string("Bid Component Failed to Insantiate")} </div>}}>
           <CreateBid auction=fragmentRefs />
@@ -150,14 +150,14 @@ let make = (~auction, ~owner, ~tokenId) => {
           </div>
         </div>
         <SettleAuctionButton isSettled=settled />
-        <button
-          className="flex flex-row gap-2 items-center justify-start"
-          onClick={_ => setVoteDetails(Some(0))}>
+        <RelayRouter.Link
+          to_={Routes.Main.New.Route.makeLink()}
+          className="flex flex-row gap-2 items-center justify-start">
           <ReactIcons.LuInfo size="1.25rem" className="text-default-darker" />
           <p className="text-md text-default-darker py-4">
             {"Ask your own question"->React.string}
           </p>
-        </button>
+        </RelayRouter.Link>
         <div className="flex pb-4 flex-col gap-2 justify-between text-default-darker">
           <p>
             {`Winner `->React.string}
