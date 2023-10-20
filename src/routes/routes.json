@@ -27,6 +27,11 @@
         "path": "questions",
         "name": "Questions",
         "children": []
+      },
+      {
+        "path":"new",
+        "name":"New",
+        "children":[]
       }
     ]
   },

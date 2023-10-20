@@ -104,6 +104,7 @@ h1 {
 
 div[editablehasplaceholder="true"]:empty:before {
   content: attr(placeholder);
+  opacity: 60%;
 }
 
 div[contenteditable="true"] {

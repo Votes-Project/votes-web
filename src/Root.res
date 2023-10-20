@@ -95,6 +95,15 @@ module RequireVerificationProvider = {
   }
 }
 
+module HeroComponentProvider = {
+  open HeroComponentContext
+  @react.component
+  let make = (~children) => {
+    let (heroComponent, setHeroComponent) = React.useState(_ => React.null)
+    <Provider value={{heroComponent, setHeroComponent}}> {children} </Provider>
+  }
+}
+
 ReactDOMExperimental.renderConcurrentRootAtElementWithId(
   <RescriptRelay.Context.Provider environment={RelayEnv.environment}>
     <RelayRouter.Provider value={Router.routerContext}>
@@ -125,10 +134,12 @@ ReactDOMExperimental.renderConcurrentRootAtElementWithId(
           <Wagmi.WagmiConfig config={%raw("wagmiConfig")}>
             <RainbowKit.Provider chains={%raw("chains")} initialChain={%raw("goerli")}>
               <TodaysAuctionProvider>
-                <RelayRouter.RouteRenderer
-                  // This renders all the time, and when there"s a pending navigation (pending via React concurrent mode), pending will be `true`
-                  renderPending={pending => <PendingIndicatorBar pending />}
-                />
+                <HeroComponentProvider>
+                  <RelayRouter.RouteRenderer
+                    // This renders all the time, and when there"s a pending navigation (pending via React concurrent mode), pending will be `true`
+                    renderPending={pending => <PendingIndicatorBar pending />}
+                  />
+                </HeroComponentProvider>
               </TodaysAuctionProvider>
             </RainbowKit.Provider>
           </Wagmi.WagmiConfig>

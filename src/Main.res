@@ -32,7 +32,7 @@ let make = (~children, ~queryRef) => {
   open FramerMotion
   let {fragmentRefs} = Query.usePreloaded(~queryRef)
   let {votes} = Fragment.use(fragmentRefs)
-  Js.log2("votes: ", votes)
+  let {heroComponent} = React.useContext(HeroComponentContext.context)
 
   let {setParams} = Routes.Main.Route.useQueryParams()
   let keys = UseKeyPairHook.useKeyPair()
@@ -131,15 +131,10 @@ let make = (~children, ~queryRef) => {
       <main>
         <div className="w-full pt-4">
           <div
-            className="lg:flex-[0_0_auto] lg:max-w-6xl m-auto flex flex-col lg:flex-row lg:justify-center lg:items-center flex-shrink-0 max-w-full">
+            className="lg:flex-[0_0_auto] lg:max-w-6xl m-auto flex flex-col lg:flex-row  flex-shrink-0 max-w-full">
+            {heroComponent}
             <div
-              className="self-end lg:w-[50%] w-[80%] md:w-[70%] mx-[10%] mt-8 md:mx-[15%] lg:mx-0 flex align-end ">
-              <div className="relative h-0 w-full pt-[100%]">
-                <EmptyVoteChart className="absolute left-0 top-0 w-full align-middle " />
-              </div>
-            </div>
-            <div
-              className=" pt-[5%] lg:pr-20 lg:pl-0 lg:pt-0 min-h-[558px] lg:flex-[0_0_auto] w-full !self-start bg-white pb-0 lg:bg-transparent lg:w-[50%]">
+              className=" pt-[5%]  lg:pl-0 lg:pt-0 min-h-[558px] lg:flex-[0_0_auto] w-full bg-white pb-0 lg:bg-transparent lg:w-[50%]">
               <ErrorBoundary fallback={({error}) => {error->React.string}}>
                 <React.Suspense fallback={<div />}>
                   {switch (newestVote, activeSubRoute) {
