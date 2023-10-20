@@ -5,11 +5,13 @@ module Internal = {
   type prepareProps = {
     environment: RescriptRelay.Environment.t,
     location: RelayRouter.History.location,
+    tokenId: string,
     linkBrightID: option<int>,
     dailyQuestion: option<int>,
     contextId: option<string>,
     voteDetails: option<int>,
     voteDetailsToken: option<int>,
+    showAllBids: option<int>,
   }
 
   @live
@@ -18,11 +20,13 @@ module Internal = {
     prepared: 'prepared,
     environment: RescriptRelay.Environment.t,
     location: RelayRouter.History.location,
+    tokenId: string,
     linkBrightID: option<int>,
     dailyQuestion: option<int>,
     contextId: option<string>,
     voteDetails: option<int>,
     voteDetailsToken: option<int>,
+    showAllBids: option<int>,
   }
 
   @live
@@ -38,16 +42,17 @@ module Internal = {
     ~queryParams: RelayRouter.Bindings.QueryParams.t,
     ~location: RelayRouter.History.location,
   ): prepareProps => {
-    ignore(pathParams)
     {
       environment: environment,
   
       location: location,
+      tokenId: pathParams->Js.Dict.unsafeGet("tokenId"),
       linkBrightID: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("linkBrightID")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
       dailyQuestion: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("dailyQuestion")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
       contextId: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("contextId")->Belt.Option.flatMap(value => Some(value->Js.Global.decodeURIComponent)),
       voteDetails: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetails")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
       voteDetailsToken: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetailsToken")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
+      showAllBids: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("showAllBids")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
     }
   }
 
@@ -59,6 +64,7 @@ type queryParams = {
   contextId: option<string>,
   voteDetails: option<int>,
   voteDetailsToken: option<int>,
+  showAllBids: option<int>,
 }
 
 @live
@@ -76,6 +82,8 @@ let parseQueryParams = (search: string): queryParams => {
 
     voteDetailsToken: queryParams->QueryParams.getParamByKey("voteDetailsToken")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
 
+    showAllBids: queryParams->QueryParams.getParamByKey("showAllBids")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
+
   }
 }
 
@@ -86,6 +94,7 @@ let makeQueryParams = (
   ~contextId: option<string>=?, 
   ~voteDetails: option<int>=?, 
   ~voteDetailsToken: option<int>=?, 
+  ~showAllBids: option<int>=?, 
   ()
 ) => {
   linkBrightID: linkBrightID,
@@ -93,6 +102,7 @@ let makeQueryParams = (
   contextId: contextId,
   voteDetails: voteDetails,
   voteDetailsToken: voteDetailsToken,
+  showAllBids: showAllBids,
 }
 
 @live
@@ -108,6 +118,7 @@ let applyQueryParams = (
   queryParams->QueryParams.setParamOpt(~key="contextId", ~value=newParams.contextId->Belt.Option.map(contextId => contextId->Js.Global.encodeURIComponent))
   queryParams->QueryParams.setParamOpt(~key="voteDetails", ~value=newParams.voteDetails->Belt.Option.map(voteDetails => Belt.Int.toString(voteDetails)))
   queryParams->QueryParams.setParamOpt(~key="voteDetailsToken", ~value=newParams.voteDetailsToken->Belt.Option.map(voteDetailsToken => Belt.Int.toString(voteDetailsToken)))
+  queryParams->QueryParams.setParamOpt(~key="showAllBids", ~value=newParams.showAllBids->Belt.Option.map(showAllBids => Belt.Int.toString(showAllBids)))
 }
 
 @live
@@ -163,10 +174,10 @@ let useQueryParams = (): useQueryParamsReturn => {
 }
 
 @inline
-let routePattern = "/new"
+let routePattern = "/vote/:tokenId"
 
 @live
-let makeLink = (~linkBrightID: option<int>=?, ~dailyQuestion: option<int>=?, ~contextId: option<string>=?, ~voteDetails: option<int>=?, ~voteDetailsToken: option<int>=?) => {
+let makeLink = (~tokenId: string, ~linkBrightID: option<int>=?, ~dailyQuestion: option<int>=?, ~contextId: option<string>=?, ~voteDetails: option<int>=?, ~voteDetailsToken: option<int>=?, ~showAllBids: option<int>=?) => {
   open RelayRouter.Bindings
   let queryParams = QueryParams.make()
   switch linkBrightID {
@@ -193,11 +204,16 @@ let makeLink = (~linkBrightID: option<int>=?, ~dailyQuestion: option<int>=?, ~co
     | None => ()
     | Some(voteDetailsToken) => queryParams->QueryParams.setParam(~key="voteDetailsToken", ~value=Belt.Int.toString(voteDetailsToken))
   }
-  RelayRouter.Bindings.generatePath(routePattern, Js.Dict.fromArray([])) ++ queryParams->QueryParams.toString
+
+  switch showAllBids {
+    | None => ()
+    | Some(showAllBids) => queryParams->QueryParams.setParam(~key="showAllBids", ~value=Belt.Int.toString(showAllBids))
+  }
+  RelayRouter.Bindings.generatePath(routePattern, Js.Dict.fromArray([("tokenId", (tokenId :> string)->Js.Global.encodeURIComponent)])) ++ queryParams->QueryParams.toString
 }
 @live
-let makeLinkFromQueryParams = (queryParams: queryParams) => {
-  makeLink(~linkBrightID=?queryParams.linkBrightID, ~dailyQuestion=?queryParams.dailyQuestion, ~contextId=?queryParams.contextId, ~voteDetails=?queryParams.voteDetails, ~voteDetailsToken=?queryParams.voteDetailsToken, )
+let makeLinkFromQueryParams = (~tokenId: string, queryParams: queryParams) => {
+  makeLink(~tokenId, ~linkBrightID=?queryParams.linkBrightID, ~dailyQuestion=?queryParams.dailyQuestion, ~contextId=?queryParams.contextId, ~voteDetails=?queryParams.voteDetails, ~voteDetailsToken=?queryParams.voteDetailsToken, ~showAllBids=?queryParams.showAllBids, )
 }
 
 @live

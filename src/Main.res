@@ -54,6 +54,7 @@ let make = (~children, ~queryRef) => {
   }
 
   let activeSubRoute = Routes.Main.Route.useActiveSubRoute()
+  let voteActiveSubRoute = Routes.Main.Vote.Route.useActiveSubRoute()
 
   let newestVote = votes->Fragment.getConnectionNodes->Array.get(0)
 
@@ -177,9 +178,10 @@ let make = (~children, ~queryRef) => {
               className=" pt-[5%]  lg:pl-0 lg:pt-0 min-h-[558px] lg:flex-[0_0_auto] w-full bg-white pb-0 lg:bg-transparent lg:w-[50%]">
               <ErrorBoundary fallback={({error}) => {error->React.string}}>
                 <React.Suspense fallback={<div />}>
-                  {switch (newestVote, activeSubRoute) {
-                  | (_, Some(_)) => children
-                  | (Some({fragmentRefs}), None) =>
+                  {switch (newestVote, activeSubRoute, voteActiveSubRoute) {
+                  | (_, Some(_), _) => children
+                  | (_, _, Some(_)) => children
+                  | (Some({fragmentRefs}), None, None) =>
                     <SingleVote vote=fragmentRefs tokenId={newestTokenId} />
                   | _ => <div />
                   }}

@@ -172,7 +172,7 @@ let useQueryParams = (): useQueryParamsReturn => {
 }
 
 @inline
-let routePattern = "/vote"
+let routePattern = "/vote/new"
 
 @live
 let makeLink = (~linkBrightID: option<int>=?, ~dailyQuestion: option<int>=?, ~contextId: option<string>=?, ~voteDetails: option<int>=?, ~voteDetailsToken: option<int>=?, ~showAllBids: option<int>=?) => {
@@ -238,28 +238,6 @@ let isRouteActive = (~exact: bool=false, {pathname}: RelayRouter.History.locatio
 let useIsRouteActive = (~exact=false) => {
   let location = RelayRouter.Utils.useLocation()
   React.useMemo2(() => location->isRouteActive(~exact), (location, exact))
-}
-@live
-type subRoute = [#New | #Auction]
-
-@live
-let getActiveSubRoute = (location: RelayRouter.History.location): option<[#New | #Auction]> => {
-  let {pathname} = location
-  if RelayRouter.Internal.matchPath("/vote/new", pathname)->Belt.Option.isSome {
-      Some(#New)
-    } else if RelayRouter.Internal.matchPath("/vote/:tokenId", pathname)->Belt.Option.isSome {
-      Some(#Auction)
-    } else {
-    None
-  }
-}
-
-@live
-let useActiveSubRoute = (): option<[#New | #Auction]> => {
-  let location = RelayRouter.Utils.useLocation()
-  React.useMemo1(() => {
-    getActiveSubRoute(location)
-  }, [location])
 }
 
 @obj
