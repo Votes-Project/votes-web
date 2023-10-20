@@ -18,10 +18,10 @@ let make = (~tokenId, ~totalSupply, ~startTime=?) => {
     switch (direction, tokenId) {
     | (LeftPress, Some(tokenId)) =>
       let tokenId = tokenId - 1
-      Routes.Main.Vote.Route.makeLink(~tokenId=tokenId->Int.toString)->push
+      Routes.Main.Vote.Auction.Route.makeLink(~tokenId=tokenId->Int.toString)->push
     | (RightPress, Some(tokenId)) =>
       let tokenId = tokenId + 1
-      Routes.Main.Vote.Route.makeLink(~tokenId=tokenId->Int.toString)->push
+      Routes.Main.Vote.Auction.Route.makeLink(~tokenId=tokenId->Int.toString)->push
     | _ => ()
     }
   }

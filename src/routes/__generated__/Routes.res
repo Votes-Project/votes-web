@@ -7,6 +7,14 @@ module Main = {
   module Vote = {
     module Route = Route__Main__Vote_route
 
+    module New = {
+      module Route = Route__Main__Vote__New_route
+
+    }
+    module Auction = {
+      module Route = Route__Main__Vote__Auction_route
+
+    }
   }
   module Queue = {
     module Route = Route__Main__Queue_route
@@ -22,10 +30,6 @@ module Main = {
   }
   module Questions = {
     module Route = Route__Main__Questions_route
-
-  }
-  module New = {
-    module Route = Route__Main__New_route
 
   }
 }

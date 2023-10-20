@@ -61,7 +61,7 @@ let make = (~auction, ~owner, ~tokenId) => {
   let {
     setParams: setVoteParams,
     queryParams: {showAllBids},
-  } = Routes.Main.Vote.Route.useQueryParams()
+  } = Routes.Main.Vote.Auction.Route.useQueryParams()
 
   let setVoteDetails = voteDetails => {
     setParams(
@@ -98,7 +98,7 @@ let make = (~auction, ~owner, ~tokenId) => {
           <AuctionCountdown auction={fragmentRefs} />
         </div>
         <RelayRouter.Link
-          to_={Routes.Main.New.Route.makeLink()}
+          to_={Routes.Main.Vote.New.Route.makeLink()}
           className="flex flex-row gap-2 items-center justify-start pt-2">
           <ReactIcons.LuInfo size="1.25rem" className="text-default-darker" />
           <p className="text-md text-default-darker py-4">
@@ -151,7 +151,7 @@ let make = (~auction, ~owner, ~tokenId) => {
         </div>
         <SettleAuctionButton isSettled=settled />
         <RelayRouter.Link
-          to_={Routes.Main.New.Route.makeLink()}
+          to_={Routes.Main.Vote.New.Route.makeLink()}
           className="flex flex-row gap-2 items-center justify-start">
           <ReactIcons.LuInfo size="1.25rem" className="text-default-darker" />
           <p className="text-md text-default-darker py-4">
