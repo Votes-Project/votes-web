@@ -1,5 +1,7 @@
 @val @scope(("import", "meta", "env"))
 external auctionContractAddress: option<string> = "VITE_AUCTION_CONTRACT_ADDRESS"
+@val @scope(("import", "meta", "env"))
+external voteContractAddress: option<string> = "VITE_VOTE_CONTRACT_ADDRESS"
 @module("/src/abis/Auction.json") external auctionContractAbi: JSON.t = "default"
 
 module Query = %relay(`
@@ -20,6 +22,7 @@ module Fragment = %relay(`
           tokenId
           auction {
             startTime
+            endTime
           }
           ...SingleVote_node
         }
@@ -75,51 +78,88 @@ let make = (~children, ~queryRef) => {
   }, [keys])
 
   let environment = RescriptRelay.useEnvironmentFromContext()
-  Wagmi.UseContractEvent.make({
-    address: auctionContractAddress->Belt.Option.getExn,
-    abi: auctionContractAbi,
-    eventName: "AuctionCreated",
-    listener: events => {
-      switch events {
-      | [] => ()
-      | events => {
-          let event = events->Array.get(events->Array.length - 1)->Option.getExn
-          let {args} = event
+  switch newestVote {
+  | Some({auction: Some({endTime})}) =>
+    let auctionHasEnded = {
+      open BigInt
+      fromString(endTime)->mul(1000->fromInt) > fromFloat(Date.now())
+    }
 
-          open RescriptRelay
-          let connectionId = votes.__id
-          commitLocalUpdate(~environment, ~updater=store => {
-            open AuctionCreated
-            open RecordSourceSelectorProxy
-            open RecordProxy
-            let connectionRecord = switch store->get(~dataId=connectionId) {
-            | Some(connectionRecord) => connectionRecord
-            | None => store->create(~dataId=connectionId, ~typeName="VotesConnection")
+    if auctionHasEnded {
+      ()
+    } else {
+      Wagmi.UseContractEvent.make({
+        address: auctionContractAddress->Belt.Option.getExn,
+        abi: auctionContractAbi,
+        eventName: "AuctionCreated",
+        listener: events => {
+          switch events {
+          | [] => ()
+          | events => {
+              let event = events->Array.get(events->Array.length - 1)->Option.getExn
+              let {args} = event
+
+              open RescriptRelay
+              let connectionId = votes.__id
+              commitLocalUpdate(~environment, ~updater=store => {
+                open AuctionCreated
+                open RecordSourceSelectorProxy
+                open RecordProxy
+                let connectionRecord = switch store->get(~dataId=connectionId) {
+                | Some(connectionRecord) => connectionRecord
+                | None => store->create(~dataId=connectionId, ~typeName="VotesConnection")
+                }
+
+                let id = args.tokenId->Helpers.tokenToSubgraphId->Option.getExn
+
+                let newAuctionRecord =
+                  store
+                  ->create(~dataId=`client:new_auction:${id}`->makeDataId, ~typeName="Auction")
+                  ->setValueString(~name="id", ~value=id)
+                  ->setValueString(~name="startTime", ~value=args.startTime)
+                  ->setValueString(~name="endTime", ~value=args.endTime)
+
+                let voteContractAddress = voteContractAddress->Option.getWithDefault("0x0")
+                let totalSupply = {
+                  open BigInt
+                  args.tokenId->fromString->add(1->fromInt)->toString
+                }
+
+                let newContractRecord =
+                  store
+                  ->create(
+                    ~dataId=`client:new_contract:${voteContractAddress}`->makeDataId,
+                    ~typeName="VoteContract",
+                  )
+                  ->setValueString(~name="id", ~value=voteContractAddress)
+                  ->setValueString(~name="totalSupply", ~value=totalSupply)
+
+                let newVoteRecord =
+                  store
+                  ->create(~dataId=`client:new_vote:${id}`->makeDataId, ~typeName="Vote")
+                  ->setValueString(~name="id", ~value=id)
+                  ->setValueString(~name="tokenId", ~value=args.tokenId)
+                  ->setValueString(~name="startTime", ~value=args.startTime)
+                  ->setValueString(~name="endTime", ~value=args.endTime)
+                  ->setLinkedRecord(~record=newAuctionRecord, ~name="auction")
+                  ->setLinkedRecord(~record=newContractRecord, ~name="contract")
+
+                let newEdge = ConnectionHandler.createEdge(
+                  ~store,
+                  ~connection=connectionRecord,
+                  ~edgeType="Vote",
+                  ~node=newVoteRecord,
+                )
+
+                ConnectionHandler.insertEdgeBefore(~connection=connectionRecord, ~newEdge)
+              })
             }
-
-            let id = args.tokenId->Helpers.tokenToSubgraphId->Option.getExn
-
-            let newVoteRecord =
-              store
-              ->create(~dataId=`client:new_vote:${id}`->makeDataId, ~typeName="Vote")
-              ->setValueString(~name="id", ~value=id)
-              ->setValueString(~name="tokenId", ~value=args.tokenId)
-              ->setValueString(~name="startTime", ~value=args.startTime)
-              ->setValueString(~name="endTime", ~value=args.endTime)
-
-            let newEdge = ConnectionHandler.createEdge(
-              ~store,
-              ~connection=connectionRecord,
-              ~edgeType="Vote",
-              ~node=newVoteRecord,
-            )
-
-            ConnectionHandler.insertEdgeBefore(~connection=connectionRecord, ~newEdge)
-          })
-        }
-      }
-    },
-  })
+          }
+        },
+      })
+    }
+  | _ => ()
+  }
 
   <>
     <div className="relative w-full h-full flex flex-col z-0">
