@@ -107,6 +107,13 @@ div[editablehasplaceholder="true"]:empty:before {
   opacity: 60%;
 }
 
+div[editablehasplaceholder="true"]:not(:empty):not(:focus) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
 div[contenteditable="true"] {
   outline: none;
 }

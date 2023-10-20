@@ -59,26 +59,31 @@ let maxChoices = 5
 
 @react.component
 let make = () => {
-  let ({choices, title}, dispatch) = React.useReducer(reducer, initialState)
+  let titleRef = React.useRef("")
+  let ({choices}, dispatch) = React.useReducer(reducer, initialState)
+
   let choiceCount = choices->Array.length
   let {setHeroComponent} = React.useContext(HeroComponentContext.context)
 
   let onTitleChange = React.useCallback0(e => {
     open SanitizeHtml
     let sanitizeConfig = {
-      allowedAttributes: (),
-      allowedTags: ["div"],
+      allowedTags: ["b", "i", "em", "strong", "a", "p", "h1"],
+      allowedAttributes: {"a": ["href"]},
     }
-    let sanitizedContent = SanitizeHtml.make((e->ReactEvent.Form.target)["value"], sanitizeConfig)
-    ChangeTitle(sanitizedContent)->dispatch
+
+    titleRef.current = SanitizeHtml.make((e->ReactEvent.Form.target)["value"], sanitizeConfig)
+
+    ChangeTitle(titleRef.current)->dispatch
   })
   let onChoiceChange = (e, i) => {
     open SanitizeHtml
     let sanitizeConfig = {
-      allowedAttributes: (),
-      allowedTags: ["div"],
+      allowedTags: ["b", "i", "em", "strong", "a", "p", "h1"],
+      allowedAttributes: {"a": ["href"]},
     }
     let sanitizedContent = SanitizeHtml.make((e->ReactEvent.Form.target)["value"], sanitizeConfig)
+
     ChangeChoice({index: i, value: sanitizedContent})->dispatch
   }
 
@@ -98,15 +103,15 @@ let make = () => {
 
   React.useEffect1(() => {
     setHeroComponent(_ =>
-      <div className="flex justify-center items-start w-full p-4 min-h-[558px] ">
+      <div className="flex justify-center items-start w-full p-4 h-[558px] min-h-[558px] ">
         <div
           className="h-full flex-1 relative flex pr-1 bg-transparent focus-within:border-2 focus-within:ring-0 focus-within:border-primary backdrop-blur-[2px] rounded-lg transition-all duration-200 ease-linear">
           <ContentEditable
             editablehasplaceholder="true"
             placeholder="Ask a question..."
-            html=title
+            html=titleRef.current
             onChange={onTitleChange}
-            className="w-full p-4 border-none focus:ring-0 break-all  bg-transparent cursor-pointer text-wrap focus:cursor-text focus:text-left text-2xl transition-all duration-300 ease-linear "
+            className="w-full p-4 border-none focus:ring-0 break-word bg-transparent cursor-pointer text-wrap focus:cursor-text focus:text-left text-2xl transition-all duration-300 ease-linear "
           />
         </div>
       </div>
