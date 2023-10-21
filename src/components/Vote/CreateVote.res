@@ -103,7 +103,7 @@ let make = () => {
 
   React.useEffect1(() => {
     setHeroComponent(_ =>
-      <div className="flex justify-center items-start w-full p-4 h-[558px] min-h-[558px] ">
+      <div className="flex justify-center items-start w-full p-4 h-[558px] min-h-[558px]  ">
         <div
           className="h-full flex-1 relative flex pr-1 bg-transparent focus-within:border-2 focus-within:ring-0 focus-within:border-primary backdrop-blur-[2px] rounded-lg transition-all duration-200 ease-linear">
           <ContentEditable
@@ -111,7 +111,7 @@ let make = () => {
             placeholder="Ask a question..."
             html=titleRef.current
             onChange={onTitleChange}
-            className="w-full p-4 border-none focus:ring-0 break-word bg-transparent cursor-pointer text-wrap focus:cursor-text focus:text-left text-2xl transition-all duration-300 ease-linear "
+            className="max-w-[540px] p-4 border-none focus:ring-0 break-words bg-transparent cursor-pointer text-wrap focus:cursor-text focus:text-left text-2xl transition-all duration-300 ease-linear "
           />
         </div>
       </div>

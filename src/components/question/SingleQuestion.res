@@ -58,9 +58,10 @@ module RainbowKit = {
 module LinkStatusTooltip = {
   @react.component
   let make = (~verificationData) => {
-    open DailyQuestion_verification_graphql
+    open Verification
+
     switch verificationData {
-    | Types.Error(_) =>
+    | BrightIdError(_) =>
       <ReactTooltip anchorSelect="#brightid-link-status">
         <div className="flex flex-col justify-center items-center">
           <p className="text-white text-sm font-semibold">
@@ -68,8 +69,8 @@ module LinkStatusTooltip = {
           </p>
         </div>
       </ReactTooltip>
-    | VerificationData({unique: true}) => <> </>
-    | VerificationData({unique: false}) =>
+    | Verification({unique: true}) => <> </>
+    | Verification({unique: false}) =>
       <ReactTooltip
         anchorSelect="#brightid-link-status" openOnClick=true closeOnEsc=true variant={Warning}>
         <div className="flex flex-col justify-center items-center">
@@ -78,14 +79,13 @@ module LinkStatusTooltip = {
           </p>
         </div>
       </ReactTooltip>
-    | _ => React.null
     }
   }
 }
 
 module ChoicesPage = {
   @react.component
-  let make = (~chosenIndex, ~handleChecked, ~handleVote) => {
+  let make = (~chosenIndex, ~handleVote) => {
     React.useEffect0(() => {
       Dom.Storage2.localStorage->Dom.Storage2.setItem(
         "votes_answer_timestamp",
@@ -108,23 +108,13 @@ module ChoicesPage = {
                 i,
               )} transition-all`}
             key={i->Int.toString}
-            onClick={_ => {
-              handleChecked(i)
-            }}>
+            onClick={handleVote(_, i)}>
             <p className={`font-semibold text-left`}> {option.value->React.string} </p>
           </button>
         })
         ->React.array}
       </div>
-      <div className="flex flex-col justify-center items-center mb-6 gap-3">
-        <div className="flex flex-row w-[80%] items-center justify-around px-10">
-          <button
-            className="py-2 px-8 bg-active text-white rounded-lg text-2xl font-bold disabled:bg-default-disabled disabled:opacity-50"
-            onClick={_ => handleVote()}>
-            {{chosenIndex->Option.isSome ? "Vote" : "Other"}->React.string}
-          </button>
-        </div>
-      </div>
+      <div className="flex flex-col justify-center items-center mb-6 gap-3" />
     </>
   }
 }
@@ -196,7 +186,6 @@ module AnswerPage = {
 let make = () => {
   let {setHeroComponent} = React.useContext(HeroComponentContext.context)
   let (chosenIndex, setChosenIndex) = React.useState(_ => None)
-  let (hasAnswered, setHasAnswered) = React.useState(_ => false)
 
   React.useEffect0(() => {
     setHeroComponent(_ =>
@@ -207,18 +196,11 @@ let make = () => {
     None
   })
 
-  let handleChecked = index => {
-    if Some(index) == chosenIndex {
-      setChosenIndex(_ => None)
-    } else {
-      setChosenIndex(_ => Some(index))
-    }
-  }
-  let handleVote = _ => {
-    setHasAnswered(_ => true)
+  let handleVote = (_, i) => {
+    setChosenIndex(_ => Some(i))
   }
 
   {
-    hasAnswered ? <AnswerPage chosenIndex /> : <ChoicesPage chosenIndex handleChecked handleVote />
+    chosenIndex->Option.isSome ? <AnswerPage chosenIndex /> : <ChoicesPage chosenIndex handleVote />
   }
 }

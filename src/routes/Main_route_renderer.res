@@ -1,5 +1,4 @@
 module Main = %relay.deferredComponent(Main.make)
-module DailyQuestion = %relay.deferredComponent(DailyQuestion.make)
 module LinkBrightID = %relay.deferredComponent(LinkBrightID.make)
 // module VoteDetails = %relay.deferredComponent(VoteDetails.make)
 // module QuestionQueue = %relay.deferredComponent(QuestionQueue.make)
@@ -27,13 +26,9 @@ let handleInitialRender = (auction: option<AuctionContext.auction>, isLoading, i
 }
 
 let renderer = Routes.Main.Route.makeRenderer(
-  ~prepareCode=({dailyQuestion, linkBrightID}) => {
+  ~prepareCode=({linkBrightID}) => {
     [
       Some(Main.preload()),
-      switch dailyQuestion {
-      | None => None
-      | Some(_) => Some(DailyQuestion.preload())
-      },
       switch linkBrightID {
       | None => None
       | Some(_) => Some(LinkBrightID.preload())
@@ -44,59 +39,24 @@ let renderer = Routes.Main.Route.makeRenderer(
       // },
     ]->Array.filterMap(v => v)
   },
-  ~prepare=({environment, dailyQuestion, linkBrightID, contextId}) => {
-    switch (dailyQuestion, linkBrightID, contextId) {
-    | (Some(_), Some(linkBrightIDKey), Some(contextId)) => (
-        MainQuery_graphql.load(~environment, ~variables=(), ~fetchPolicy=StoreOrNetwork),
-        DailyQuestionQuery_graphql.load(
-          ~environment,
-          ~variables={contextId: contextId},
-          ~fetchPolicy=StoreOrNetwork,
-        )->Some,
+  ~prepare=({environment, linkBrightID, contextId}) => {
+    (
+      MainQuery_graphql.load(~environment, ~variables=(), ~fetchPolicy=StoreOrNetwork),
+      switch (linkBrightID, contextId) {
+      | (Some(linkBrightIDKey), Some(contextId)) =>
         LinkBrightIDQuery_graphql.load(
           ~environment,
           ~variables={contextId: contextId},
           ~fetchPolicy=NetworkOnly,
           ~fetchKey=linkBrightIDKey->Int.toString,
-        )->Some,
-      )
+        )->Some
 
-    | (Some(_), None, Some(contextId)) => (
-        MainQuery_graphql.load(~environment, ~variables=(), ~fetchPolicy=StoreOrNetwork),
-        DailyQuestionQuery_graphql.load(
-          ~environment,
-          ~variables={contextId: contextId},
-          ~fetchPolicy=StoreOrNetwork,
-        )->Some,
-        None,
-      )
-    | (None, Some(linkBrightIDKey), Some(contextId)) => (
-        MainQuery_graphql.load(~environment, ~variables=(), ~fetchPolicy=StoreOrNetwork),
-        None,
-        LinkBrightIDQuery_graphql.load(
-          ~environment,
-          ~variables={contextId: contextId},
-          ~fetchPolicy=NetworkOnly,
-          ~fetchKey=linkBrightIDKey->Int.toString,
-        )->Some,
-      )
-    | _ => (
-        MainQuery_graphql.load(~environment, ~variables=(), ~fetchPolicy=StoreOrNetwork),
-        None,
-        None,
-      )
-    }
+      | _ => None
+      },
+    )
   },
-  ~render=({
-    childRoutes,
-    dailyQuestion,
-    linkBrightID,
-    contextId,
-    voteDetails,
-    voteDetailsToken,
-    prepared,
-  }) => {
-    let (queryRef, dailyQuestionQueryRef, linkBrightIDQueryRef) = prepared
+  ~render=({childRoutes, linkBrightID, contextId, voteDetails, voteDetailsToken, prepared}) => {
+    let (queryRef, linkBrightIDQueryRef) = prepared
     let {auction, isLoading} = React.useContext(AuctionContext.context)
     let {vote} = React.useContext(VoteContext.context)
 
@@ -121,18 +81,6 @@ let renderer = Routes.Main.Route.makeRenderer(
           </React.Suspense>
         </Main>
       </ErrorBoundary>
-      <DailyQuestionModal isOpen={dailyQuestion->Option.isSome && linkBrightID->Option.isNone}>
-        {switch (dailyQuestion, dailyQuestionQueryRef) {
-        | (Some(_), Some(queryRef)) =>
-          <ErrorBoundary fallback={_ => "Error"->React.string}>
-            <React.Suspense
-              fallback={<div className="min-h-[896px]"> {"Loading"->React.string} </div>}>
-              <DailyQuestion queryRef />
-            </React.Suspense>
-          </ErrorBoundary>
-        | _ => React.null
-        }}
-      </DailyQuestionModal>
       <LinkBrightIDModal isOpen={linkBrightID->Option.isSome}>
         {switch (linkBrightID, linkBrightIDQueryRef, contextId) {
         | (Some(_), Some(queryRef), Some(contextId)) =>

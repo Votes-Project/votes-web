@@ -40,22 +40,6 @@ let make = (~children, ~queryRef) => {
   let {setAuction, setIsLoading: setIsAuctionLoading} = React.useContext(AuctionContext.context)
   let {setVote} = React.useContext(VoteContext.context)
 
-  let {setParams} = Routes.Main.Route.useQueryParams()
-  let keys = UseKeyPairHook.useKeyPair()
-
-  let setDailyQuestion = dailyQuestion => {
-    setParams(
-      ~removeNotControlledParams=false,
-      ~navigationMode_=Push,
-      ~shallow=false,
-      ~setter=c => {
-        ...c,
-        contextId: keys->Option.map(({contextId}) => contextId),
-        dailyQuestion,
-      },
-    )
-  }
-
   let newestVote = votes->Fragment.getConnectionNodes->Array.get(0)
 
   React.useEffect0(() => {
@@ -69,24 +53,6 @@ let make = (~children, ~queryRef) => {
     }
     None
   })
-
-  React.useEffect1(() => {
-    let timestamp = Dom.Storage2.localStorage->Dom.Storage2.getItem("votes_answer_timestamp")
-
-    let wasPreviousVote = switch (newestVote, timestamp->Option.flatMap(Float.fromString)) {
-    | (Some({auction: Some({startTime})}), Some(t)) =>
-      startTime
-      ->Float.fromString
-      ->Option.map(startTime => startTime *. 1000.)
-      ->Option.mapWithDefault(false, startTime => startTime > t)
-    | _ => true
-    }
-    switch wasPreviousVote {
-    | false => ()
-    | true => Some(0)->setDailyQuestion
-    }
-    None
-  }, [keys])
 
   let environment = RescriptRelay.useEnvironmentFromContext()
   switch newestVote {
