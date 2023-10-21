@@ -44,17 +44,19 @@ module QuestionTitle = {
 
 @react.component
 let make = () => {
-  let {push} = RelayRouter.Utils.useRouter()
   let (width, setWidth) = React.useState(_ => window->Window.innerWidth)
-  let isNarrow = width <= 1024
-  let location = RelayRouter.Utils.useLocation()
+  let (isOpen, setIsOpen) = React.useState(_ => false)
+
   let {auction} = React.useContext(AuctionContext.context)
+  let {push} = RelayRouter.Utils.useRouter()
+  let location = RelayRouter.Utils.useLocation()
+
   let isCurrentQuestionRouteActive = Routes.Main.Question.Current.Route.isRouteActive(
     location,
     ~exact=true,
   )
 
-  let (isOpen, setIsOpen) = React.useState(_ => !isNarrow || !isCurrentQuestionRouteActive)
+  let isNarrow = width <= 1024
 
   let handleWindowSizeChange = React.useCallback(() => {
     setWidth(_ => window->Window.innerWidth)
@@ -81,45 +83,44 @@ let make = () => {
   }, [isCurrentQuestionRouteActive])
 
   let className = isOpen
-    ? "flex items-center justify-center text-white bg-secondary w-full focus:ring-4 focus:ring-active focus:outline-none min-h-[6rem] shadow-lg px-4 py-4"
-    : "flex items-center justify-center text-white bg-primary-dark  w-16 h-16 md:w-20 md:h-20 hover:bg-active  focus:ring-4 focus:ring-active focus:outline-none shadow-lg "
+    ? "flex items-center justify-center text-white bg-primary noise hover:bg-primary w-full focus:ring-4 focus:ring-active focus:outline-none min-h-[6rem] shadow-lg p-4"
+    : "flex items-center justify-center text-white bg-primary-dark px-8 py-4 hover:bg-active focus:ring-4 focus:ring-active focus:outline-none shadow-lg w-32 "
 
   let handleClick = _ => {
-    switch (isOpen, isCurrentQuestionRouteActive) {
-    | (_, true) =>
+    switch isCurrentQuestionRouteActive {
+    | true =>
       let tokenId = auction->Option.map(auction => auction.tokenId)->Option.getExn
       Routes.Main.Vote.Auction.Route.makeLink(~tokenId)->push
       setIsOpen(_ => false)
-    | (true, _) =>
+    | false =>
       setIsOpen(_ => false)
       Routes.Main.Question.Current.Route.makeLink()->push
-    | (false, _) => setIsOpen(_ => true)
     }
   }
   open FramerMotion
 
   <div
     id="daily-question-title"
-    className={`fixed ${isOpen ? "bottom-0" : "right-6 bottom-6"} z-10 cursor-pointer`}
+    className={`fixed ${isOpen
+        ? "bottom-0 hover:scale-105 transition-transform duration-200 ease-in-out"
+        : "right-6 bottom-6"} z-10 cursor-pointer `}
     onClick={handleClick}>
     {isOpen
       ? <div className="absolute w-screen h-screen z-10" onClick={_ => setIsOpen(_ => false)} />
       : <> </>}
     <Motion.Div
       layout=True
-      initial=Initial({borderRadius: 50})
+      initial=Initial({borderRadius: 20})
       animate={isOpen ? Animate({borderRadius: 0}) : Animate({})}
       className>
       {switch (isOpen, isCurrentQuestionRouteActive) {
-      | (true, _) => <QuestionTitle />
-      | (false, false) =>
-        <Motion.Div layout=True className="text-4xl font-bold">
+      | (true, _) =>
+        <div className="flex flex-row items-center justify-between">
           <ReactIcons.LuVote />
-        </Motion.Div>
-      | (false, true) =>
-        <Motion.Div layout=True className="text-4xl font-bold">
-          <ReactIcons.LuCheckCircle />
-        </Motion.Div>
+          <QuestionTitle />
+        </div>
+      | (false, false) => <div className="text-2xl font-bold"> {"Vote"->React.string} </div>
+      | (false, true) => <div className="text-2xl font-bold"> {"Auction"->React.string} </div>
       }}
     </Motion.Div>
   </div>

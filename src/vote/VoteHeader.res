@@ -25,9 +25,6 @@ let make = (~tokenId, ~totalSupply, ~startTime=?) => {
     | _ => ()
     }
   }
-  let handleQueuePress = () => {
-    Routes.Main.Queue.Route.makeLink()->push
-  }
 
   let auctionDateLocale =
     startTime
@@ -57,14 +54,6 @@ let make = (~tokenId, ~totalSupply, ~startTime=?) => {
       <p className="font-semibold text-background-dark lg:text-active">
         {auctionDateLocale->Option.getWithDefault("")->React.string}
       </p>
-    </div>
-    <div className="flex flex-1 justify-end">
-      <button
-        id="queue-press"
-        onClick={_ => handleQueuePress()}
-        className=" self-end flex h-10 w-10 items-center justify-center rounded-full lg:bg-primary-dark bg-default-dark disabled:bg-default-disabled disabled:opacity-50 ">
-        <ReactIcons.LuListOrdered color="white" size="1.5rem" />
-      </button>
     </div>
   </div>
 }
