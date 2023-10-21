@@ -29,11 +29,12 @@ exception NoAuction
 let make = (
   ~queryRef=?,
   ~vote: option<RescriptRelay.fragmentRefs<[#SingleVote_node]>>=?,
-  ~tokenId: string,
+  ~tokenId,
 ) => {
   let data = queryRef->Option.map(queryRef => Query.usePreloaded(~queryRef))
   let vote = vote->Option.map(vote => Fragment.use(vote))
   let {setHeroComponent} = React.useContext(HeroComponentContext.context)
+  let tokenId = tokenId->Option.getExn
 
   React.useEffect1(() => {
     setHeroComponent(_ =>

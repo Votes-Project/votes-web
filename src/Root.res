@@ -77,12 +77,22 @@ module RainbowKit = {
   }
 }
 
-module TodaysAuctionProvider = {
-  open TodaysAuctionContext
+module AuctionProvider = {
+  open AuctionContext
   @react.component
   let make = (~children) => {
-    let (todaysAuction, setTodaysAuction) = React.useState(_ => None)
-    <Provider value={{todaysAuction, setTodaysAuction}}> {children} </Provider>
+    let (auction, setAuction) = React.useState(_ => None)
+    let (isLoading, setIsLoading) = React.useState(_ => true)
+    <Provider value={{auction, setAuction, isLoading, setIsLoading}}> {children} </Provider>
+  }
+}
+module VoteProvider = {
+  open VoteContext
+  @react.component
+  let make = (~children) => {
+    let (vote, setVote) = React.useState(_ => None)
+
+    <Provider value={{vote, setVote}}> {children} </Provider>
   }
 }
 
@@ -112,7 +122,7 @@ ReactDOMExperimental.renderConcurrentRootAtElementWithId(
           open FramerMotion
           <>
             <div className="text-center w-screen h-screen flex items-center justify-center">
-              <DailyQuestionPreview.QuestionTitle />
+              <QuestionPreview.QuestionTitle />
             </div>
             <Motion.Div
               layoutId="background-noise"
@@ -133,14 +143,16 @@ ReactDOMExperimental.renderConcurrentRootAtElementWithId(
           </>}>
           <Wagmi.WagmiConfig config={%raw("wagmiConfig")}>
             <RainbowKit.Provider chains={%raw("chains")} initialChain={%raw("goerli")}>
-              <TodaysAuctionProvider>
-                <HeroComponentProvider>
-                  <RelayRouter.RouteRenderer
-                    // This renders all the time, and when there"s a pending navigation (pending via React concurrent mode), pending will be `true`
-                    renderPending={pending => <PendingIndicatorBar pending />}
-                  />
-                </HeroComponentProvider>
-              </TodaysAuctionProvider>
+              <VoteProvider>
+                <AuctionProvider>
+                  <HeroComponentProvider>
+                    <RelayRouter.RouteRenderer
+                      // This renders all the time, and when there"s a pending navigation (pending via React concurrent mode), pending will be `true`
+                      renderPending={pending => <PendingIndicatorBar pending />}
+                    />
+                  </HeroComponentProvider>
+                </AuctionProvider>
+              </VoteProvider>
             </RainbowKit.Provider>
           </Wagmi.WagmiConfig>
         </ErrorBoundary>

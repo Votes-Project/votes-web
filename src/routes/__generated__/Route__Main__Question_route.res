@@ -172,7 +172,7 @@ let useQueryParams = (): useQueryParamsReturn => {
 }
 
 @inline
-let routePattern = "/"
+let routePattern = "/question"
 
 @live
 let makeLink = (~linkBrightID: option<int>=?, ~dailyQuestion: option<int>=?, ~contextId: option<string>=?, ~voteDetails: option<int>=?, ~voteDetailsToken: option<int>=?, ~showAllBids: option<int>=?) => {
@@ -240,30 +240,22 @@ let useIsRouteActive = (~exact=false) => {
   React.useMemo2(() => location->isRouteActive(~exact), (location, exact))
 }
 @live
-type subRoute = [#Vote | #Question | #Queue | #Raffles | #Votes | #Questions]
+type subRoute = [#Current | #Past]
 
 @live
-let getActiveSubRoute = (location: RelayRouter.History.location): option<[#Vote | #Question | #Queue | #Raffles | #Votes | #Questions]> => {
+let getActiveSubRoute = (location: RelayRouter.History.location): option<[#Current | #Past]> => {
   let {pathname} = location
-  if RelayRouter.Internal.matchPath("/vote", pathname)->Belt.Option.isSome {
-      Some(#Vote)
-    } else if RelayRouter.Internal.matchPath("/question", pathname)->Belt.Option.isSome {
-      Some(#Question)
-    } else if RelayRouter.Internal.matchPath("/queue", pathname)->Belt.Option.isSome {
-      Some(#Queue)
-    } else if RelayRouter.Internal.matchPath("/raffles", pathname)->Belt.Option.isSome {
-      Some(#Raffles)
-    } else if RelayRouter.Internal.matchPath("/votes", pathname)->Belt.Option.isSome {
-      Some(#Votes)
-    } else if RelayRouter.Internal.matchPath("/questions", pathname)->Belt.Option.isSome {
-      Some(#Questions)
+  if RelayRouter.Internal.matchPath("/question", pathname)->Belt.Option.isSome {
+      Some(#Current)
+    } else if RelayRouter.Internal.matchPath("/question/:questionId", pathname)->Belt.Option.isSome {
+      Some(#Past)
     } else {
     None
   }
 }
 
 @live
-let useActiveSubRoute = (): option<[#Vote | #Question | #Queue | #Raffles | #Votes | #Questions]> => {
+let useActiveSubRoute = (): option<[#Current | #Past]> => {
   let location = RelayRouter.Utils.useLocation()
   React.useMemo1(() => {
     getActiveSubRoute(location)

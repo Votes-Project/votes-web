@@ -189,5 +189,17 @@ module Query = %relay(`
 @react.component @relay.deferredComponent
 let make = (~queryRef) => {
   let data = Query.usePreloaded(~queryRef)
+  let {setHeroComponent} = React.useContext(HeroComponentContext.context)
+  React.useEffect0(() => {
+    setHeroComponent(_ =>
+      <div
+        className=" lg:w-[50%] w-[80%] md:w-[70%] mx-[10%] mt-8 md:mx-[15%] lg:mx-0 flex align-end lg:pr-20">
+        <div className="relative h-0 w-full pt-[100%]">
+          <EmptyVoteChart className="absolute left-0 top-0 w-full align-middle " />
+        </div>
+      </div>
+    )
+    None
+  })
   <VoteListDisplay query={data.fragmentRefs} />
 }

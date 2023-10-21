@@ -131,7 +131,7 @@ module ChoicesPage = {
   let make = (~chosenIndex, ~handleChecked, ~handleVote) => {
     React.useEffect0(() => {
       Dom.Storage2.localStorage->Dom.Storage2.setItem(
-        "votes_question_timestamp",
+        "votes_answer_timestamp",
         Date.now()->Float.toString,
       )
       None

@@ -21,6 +21,7 @@ module Fragment = %relay(`
           id
           tokenId
           auction {
+            tokenId
             startTime
             endTime
           }
@@ -36,6 +37,8 @@ let make = (~children, ~queryRef) => {
   let {fragmentRefs} = Query.usePreloaded(~queryRef)
   let {votes} = Fragment.use(fragmentRefs)
   let {heroComponent} = React.useContext(HeroComponentContext.context)
+  let {setAuction, setIsLoading: setIsAuctionLoading} = React.useContext(AuctionContext.context)
+  let {setVote} = React.useContext(VoteContext.context)
 
   let {setParams} = Routes.Main.Route.useQueryParams()
   let keys = UseKeyPairHook.useKeyPair()
@@ -53,15 +56,22 @@ let make = (~children, ~queryRef) => {
     )
   }
 
-  let activeSubRoute = Routes.Main.Route.useActiveSubRoute()
-  let voteActiveSubRoute = Routes.Main.Vote.Route.useActiveSubRoute()
-
   let newestVote = votes->Fragment.getConnectionNodes->Array.get(0)
 
-  let newestTokenId = newestVote->Option.map(({tokenId}) => tokenId)->Option.getExn
+  React.useEffect0(() => {
+    switch newestVote {
+    | Some(vote) => {
+        setAuction(_ => vote.auction)
+        setIsAuctionLoading(_ => false)
+        setVote(_ => Some(vote.fragmentRefs))
+      }
+    | _ => ()
+    }
+    None
+  })
 
   React.useEffect1(() => {
-    let timestamp = Dom.Storage2.localStorage->Dom.Storage2.getItem("votes_question_timestamp")
+    let timestamp = Dom.Storage2.localStorage->Dom.Storage2.getItem("votes_answer_timestamp")
 
     let wasPreviousVote = switch (newestVote, timestamp->Option.flatMap(Float.fromString)) {
     | (Some({auction: Some({startTime})}), Some(t)) =>
@@ -177,21 +187,13 @@ let make = (~children, ~queryRef) => {
             <div
               className=" pt-[5%]  lg:pl-0 lg:pt-0 min-h-[558px] lg:flex-[0_0_auto] w-full bg-white pb-0 lg:bg-transparent lg:w-[50%]">
               <ErrorBoundary fallback={({error}) => {error->React.string}}>
-                <React.Suspense fallback={<div />}>
-                  {switch (newestVote, activeSubRoute, voteActiveSubRoute) {
-                  | (_, Some(_), _) => children
-                  | (_, _, Some(_)) => children
-                  | (Some({fragmentRefs}), None, None) =>
-                    <SingleVote vote=fragmentRefs tokenId={newestTokenId} />
-                  | _ => <div />
-                  }}
-                </React.Suspense>
+                <React.Suspense fallback={<div />}> {children} </React.Suspense>
               </ErrorBoundary>
             </div>
           </div>
         </div>
       </main>
-      <DailyQuestionPreview />
+      <QuestionPreview />
       <div className="bg-default w-full relative">
         <VotesInfo />
       </div>

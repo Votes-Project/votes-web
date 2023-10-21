@@ -4,6 +4,28 @@ module LinkBrightID = %relay.deferredComponent(LinkBrightID.make)
 // module VoteDetails = %relay.deferredComponent(VoteDetails.make)
 // module QuestionQueue = %relay.deferredComponent(QuestionQueue.make)
 
+type initialRender = Loading | CurrentVote | CurrentQuestion | ChildRoutes
+let handleInitialRender = (auction: option<AuctionContext.auction>, isLoading, isSubroute) => {
+  let hasAnsweredQuestion = {
+    open Dom.Storage2
+    open BigInt
+    let timestamp = localStorage->getItem("votes_answer_timestamp")->Option.getWithDefault("0")
+
+    let auctionStartTime =
+      auction->Option.map(auction => auction.startTime)->Option.getWithDefault("0")
+
+    fromString(auctionStartTime)->mul(1000->fromInt) < timestamp->fromString
+  }
+
+  switch (auction, hasAnsweredQuestion, isSubroute, isLoading) {
+  | (_, _, true, _) => ChildRoutes
+  | (_, _, _, true) => Loading
+  | (Some(_), true, _, _) => CurrentVote
+  | (Some(_), false, _, _) => CurrentQuestion
+  | _ => ChildRoutes
+  }
+}
+
 let renderer = Routes.Main.Route.makeRenderer(
   ~prepareCode=({dailyQuestion, linkBrightID}) => {
     [
@@ -75,10 +97,29 @@ let renderer = Routes.Main.Route.makeRenderer(
     prepared,
   }) => {
     let (queryRef, dailyQuestionQueryRef, linkBrightIDQueryRef) = prepared
+    let {auction, isLoading} = React.useContext(AuctionContext.context)
+    let {vote} = React.useContext(VoteContext.context)
+
+    let mainSubroute = Routes.Main.Route.useActiveSubRoute()
+    let voteSubroute = Routes.Main.Vote.Route.useActiveSubRoute()
+
+    let isSubroute = mainSubroute->Option.isSome || voteSubroute->Option.isSome
 
     <>
       <ErrorBoundary fallback={({error}) => error->React.string}>
-        <Main queryRef> {childRoutes} </Main>
+        <Main queryRef>
+          <React.Suspense fallback={<p> {"Loading"->React.string} </p>}>
+            {switch handleInitialRender(auction, isLoading, isSubroute) {
+            | Loading => "Loading"->React.string
+            | CurrentVote =>
+              <SingleVote
+                vote={vote->Option.getExn} tokenId={auction->Option.map(auction => auction.tokenId)}
+              />
+            | CurrentQuestion => <SingleQuestion />
+            | ChildRoutes => childRoutes
+            }}
+          </React.Suspense>
+        </Main>
       </ErrorBoundary>
       <DailyQuestionModal isOpen={dailyQuestion->Option.isSome && linkBrightID->Option.isNone}>
         {switch (dailyQuestion, dailyQuestionQueryRef) {

@@ -40,7 +40,7 @@ let make = (~verifications) => {
     <nav className=" max-w-7xl flex w-full justify-between px-4 pt-2 flex-1">
       <div className="flex gap-3 justify-center items-center ">
         <RelayRouter.Link
-          to_={Routes.Main.Route.makeLink()}
+          to_={Routes.Main.Question.Current.Route.makeLink()}
           className="relative z-2 px-2 py-0 transition-all z-2"
           onClick={_ => isOpen ? handleMenu() : ()}>
           <img src={viteLogo["default"]} className="w-24 h-24  " alt="Vite logo" />
