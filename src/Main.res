@@ -19,11 +19,9 @@ module Fragment = %relay(`
       edges {
         node {
           id
-          tokenId
           auction {
             tokenId
             startTime
-            endTime
           }
           ...SingleVote_node
         }
