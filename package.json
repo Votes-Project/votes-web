@@ -20,7 +20,7 @@
     "res:watch": "rescript build -w",
     "resgraph:watch": "resgraph watch",
     "format": "rescript-relay-cli format-all-graphql",
-    "unused-fields": "rescript-relay-cli remove-unused-fields"
+    "rm-unused-fields": "rescript-relay-cli remove-unused-fields"
   },
   "dependencies": {
     "@glennsl/rescript-fetch": "^0.2.0",

@@ -2,8 +2,12 @@ type client
 type connector
 type abi = JSON.t
 type value = BigInt.t
+
+module BlockExplorer = {
+  type t = {name: string, url: string}
+}
 module Chain = {
-  type blockExplorers
+  type blockExplorers = Dict.t<BlockExplorer.t>
   type contracts
   type rpcUrls
 
@@ -15,6 +19,7 @@ module Chain = {
     testnet: bool,
     rpcUrls: rpcUrls,
   }
+  type unsupportedChain = {unsupported: bool, ...t}
 }
 
 type transactionResponse = {hash: string}
@@ -142,11 +147,6 @@ external usePrepareContractWrite: (
 @module("wagmi")
 external useContractWrite: contractConfig<'args> => mutationReturn<'args> = "useContractWrite"
 
-type unsupportedChain = {unsupported: bool, ...Chain.t}
-type useNetworkReturn = {chain?: unsupportedChain, chains: array<Chain.t>}
-@module("wagmi")
-external useNetwork: unit => useNetworkReturn = "useNetwork"
-
 module UseContractEvent = {
   type eventLog<'args> = {
     address: string,
@@ -187,6 +187,15 @@ module UseAccount = {
   type useAccountInput = {onConnect?: onConnect => unit, onDisconnect?: unit => unit}
   @module("wagmi") @module("wagmi")
   external make: (~config: useAccountInput=?) => t = "useAccount"
+}
+
+module Network = {
+  type useNetworkReturn = {
+    chains: array<Chain.t>,
+    chain: Nullable.t<Chain.unsupportedChain>,
+  }
+  @module("wagmi")
+  external use: unit => useNetworkReturn = "useNetwork"
 }
 
 module PublicClient = {

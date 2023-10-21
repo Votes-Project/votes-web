@@ -35,6 +35,37 @@ module SettleAuctionButton = {
   }
 }
 
+module BlockExplorerButton = {
+  module Fragment = %relay(`
+  fragment AuctionDisplay_BlockExplorerButton_auction on Auction {
+    id
+    tokenId
+    contract {
+      votesToken
+    }
+  }
+  `)
+  @react.component
+  let make = (~auction) => {
+    let auction = Fragment.use(auction)
+    let {chain} = Wagmi.Network.use()
+    let chainBlockExplorer = switch chain->Nullable.toOption {
+    | None => None
+    | Some({blockExplorers}) => blockExplorers->Dict.get("default")
+    }
+    switch chainBlockExplorer {
+    | Some({name, url}) =>
+      <a href={url ++ `/token/${auction.contract.votesToken}?a=${auction.tokenId}`}>
+        <button
+          className=" lg:bg-primary font-semibold text-default-darker hover:bg-default-light p-2 bg-default rounded-md transition-colors">
+          {name->React.string}
+        </button>
+      </a>
+    | None => <> </>
+    }
+  }
+}
+
 module Fragment = %relay(`
   fragment AuctionDisplay_auction on Auction {
     id
@@ -47,6 +78,7 @@ module Fragment = %relay(`
     ...AuctionCurrentBid_auction
     ...AuctionBidList_auction
     ...AllBidsList_auction
+    ...AuctionDisplay_BlockExplorerButton_auction
   }
   `)
 
@@ -167,10 +199,7 @@ let make = (~auction, ~owner, ~tokenId) => {
             className=" lg:bg-primary font-semibold text-default-darker hover:bg-default-light p-2 bg-default rounded-md transition-colors">
             {"Bid History"->React.string}
           </button>
-          <button
-            className=" lg:bg-primary font-semibold text-default-darker hover:bg-default-light p-2 bg-default rounded-md transition-colors">
-            {"Etherscan"->React.string}
-          </button>
+          <BlockExplorerButton auction={auction.fragmentRefs} />
         </div>
         <AllBidsListModal isOpen={showAllBids->Option.isSome}>
           <AllBidsList bids={auction.fragmentRefs} />
