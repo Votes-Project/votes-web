@@ -85,7 +85,7 @@ module LinkStatusTooltip = {
 
 module ChoicesPage = {
   @react.component
-  let make = (~chosenIndex, ~handleVote) => {
+  let make = (~handleVote) => {
     React.useEffect0(() => {
       Dom.Storage2.localStorage->Dom.Storage2.setItem(
         "votes_answer_timestamp",
@@ -94,60 +94,39 @@ module ChoicesPage = {
       None
     })
 
-    let choiceStyle = i =>
-      chosenIndex == Some(i)
-        ? "bg-default-dark lg:bg-active text-white shadow"
-        : "text-default-darker shadow-inner bg-default lg:bg-secondary border border-default lg:border-primary "
-
     <>
-      <div className="flex flex-col justify-between items-start px-6 mb-4 mr-4">
+      <h1 className="text-2xl px-4 pt-2 text-default-dark lg:text-primary-dark text-center">
+        {"Pick an answer"->React.string}
+      </h1>
+      <ul className="flex flex-col justify-between items-start lg:px-6 mb-4 lg:mr-4">
         {choices
         ->Array.mapWithIndex((option, i) => {
-          <button
-            className={`w-full  flex flex-row items-center  my-2 first:mb-2 py-2  rounded-lg px-4 min-h-[80px] overflow-hidden ${choiceStyle(
-                i,
-              )} transition-all`}
-            key={i->Int.toString}
-            onClick={handleVote(_, i)}>
-            <p className={`font-semibold text-left`}> {option.value->React.string} </p>
-          </button>
+          <li
+            className={`font-semibold text-sm my-3 pl-2 w-full flex items-center text-left backdrop-blur-md transition-all duration-200 ease-linear lg:rounded-xl text-default-darker shadow-lg bg-default lg:bg-secondary`}
+            key={i->Int.toString}>
+            <div
+              className="w-9 flex flex-1 items-center justify-center relative font-bold text-3xl h-full text-default-dark lg:text-primary-dark px-3 rounded-l-lg overflow-hidden">
+              {(i + 65)->String.fromCharCode->React.string}
+            </div>
+            <button
+              className={`w-full  flex flex-row items-center  my-4 lg:my-2 first:mb-2 py-2   px-2 min-h-[80px] overflow-hidden  transition-all`}
+              key={i->Int.toString}
+              onClick={handleVote(_, i)}>
+              {option.value->React.string}
+            </button>
+          </li>
         })
         ->React.array}
-      </div>
+      </ul>
       <div className="flex flex-col justify-center items-center mb-6 gap-3" />
     </>
   }
 }
 
-type answerStatus = Ethereum | BrightID | EthereumBrightID
-
-type answerStatusOption<'a> = {
-  status: option<answerStatus>,
-  text: string,
-  action: 'a => unit,
-}
-
 module AnswerPage = {
-  let answerStatuses = [
-    {status: None, text: "Answer without Credentials", action: () => ()},
-    {status: Some(Ethereum), text: "Minted", action: () => ()},
-    {status: Some(BrightID), text: "Verified", action: () => ()},
-    {
-      status: Some(EthereumBrightID),
-      text: "Minted and Verified",
-      action: () => (),
-    },
-  ]
-
   @react.component
   let make = (~chosenIndex) => {
     let selectedChoice = chosenIndex->Option.flatMap(i => choices->Array.get(i))
-    let (answerChoiceIndex, setAnswerChoiceIndex) = React.useState(_ => None)
-
-    let choiceStyle = i =>
-      answerChoiceIndex == Some(i)
-        ? "bg-active text-white shadow border border-active"
-        : "text-default-darker shadow-inner bg-secondary border border-primary "
 
     <div className="flex flex-col max-h-full w-full">
       <div className="w-full flex flex-col justify-center items-center h-1/2">
@@ -163,20 +142,13 @@ module AnswerPage = {
         </div>
       </div>
       <div className="flex flex-col justify-between items-start px-6 ">
-        {answerStatuses
-        ->Array.mapWithIndex((option, i) => {
-          <button
-            className={`w-full  flex flex-row items-center  my-2 first:mb-2 py-2  rounded-lg px-4 min-h-[80px] overflow-hidden ${choiceStyle(
-                i,
-              )} transition-all`}
-            key={i->Int.toString}
-            onClick={_ => {
-              setAnswerChoiceIndex(_ => Some(i))
-            }}>
-            <p className={`font-semibold text-left`}> {option.text->React.string} </p>
-          </button>
-        })
-        ->React.array}
+        <button
+          className={`w-full  flex flex-row items-center  my-2 first:mb-2 py-2  rounded-lg px-4 min-h-[80px] overflow-hidden transition-all`}
+          onClick={_ => {
+            ()
+          }}>
+          <p className={`font-semibold text-left`}> {"Confirm"->React.string} </p>
+        </button>
       </div>
     </div>
   }
@@ -201,6 +173,6 @@ let make = () => {
   }
 
   {
-    chosenIndex->Option.isSome ? <AnswerPage chosenIndex /> : <ChoicesPage chosenIndex handleVote />
+    chosenIndex->Option.isSome ? <AnswerPage chosenIndex /> : <ChoicesPage handleVote />
   }
 }

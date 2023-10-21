@@ -73,6 +73,10 @@ module Fragment = %relay(`
     settled
     amount
     phase
+    tokenId
+    contract {
+      votesToken
+    }
     ...CreateBid_auction
     ...AuctionCountdown_auction
     ...AuctionCurrentBid_auction
@@ -117,14 +121,16 @@ let make = (~auction, ~owner, ~tokenId) => {
           <div className="w-0 rounded-lg lg:border-primary border hidden lg:flex" />
           <AuctionCountdown auction={fragmentRefs} />
         </div>
-        <RelayRouter.Link
-          to_={Routes.Main.Vote.New.Route.makeLink()}
-          className="flex flex-row gap-2 items-center justify-start pt-2">
-          <ReactIcons.LuInfo size="1.25rem" className="text-default-darker" />
-          <p className="text-md text-default-darker py-4">
-            {"Ask your own question"->React.string}
-          </p>
-        </RelayRouter.Link>
+        <div className="flex w-full">
+          <RelayRouter.Link
+            to_={Routes.Main.Vote.New.Route.makeLink()}
+            className="flex flex-row gap-2 items-center justify-start pt-2">
+            <ReactIcons.LuInfo size="1.25rem" className="text-default-darker" />
+            <p className="text-md text-default-darker py-4">
+              {"Ask your own question"->React.string}
+            </p>
+          </RelayRouter.Link>
+        </div>
         <ErrorBoundary
           fallback={_ => {<div> {React.string("Bid Component Failed to Insantiate")} </div>}}>
           <CreateBid auction=fragmentRefs />
@@ -170,23 +176,28 @@ let make = (~auction, ~owner, ~tokenId) => {
           </div>
         </div>
         <SettleAuctionButton isSettled=settled />
-        <RelayRouter.Link
-          to_={Routes.Main.Vote.New.Route.makeLink()}
-          className="flex flex-row gap-2 items-center justify-start">
-          <ReactIcons.LuInfo size="1.25rem" className="text-default-darker" />
-          <p className="text-md text-default-darker py-4">
-            {"Ask your own question"->React.string}
-          </p>
-        </RelayRouter.Link>
+        <div className="flex w-full">
+          <RelayRouter.Link
+            to_={Routes.Main.Vote.New.Route.makeLink()}
+            className="flex flex-row gap-2 items-center justify-start">
+            <ReactIcons.LuInfo size="1.25rem" className="text-default-darker" />
+            <p className="text-md text-default-darker py-4">
+              {"Ask your own question"->React.string}
+            </p>
+          </RelayRouter.Link>
+        </div>
         <div className="flex pb-4 flex-col gap-2 justify-between text-default-darker">
-          <p>
-            {`Winner `->React.string}
-            <React.Suspense fallback={<> </>}>
-              <a href="">
-                <ShortAddress address={bidder} />
-              </a>
-            </React.Suspense>
-          </p>
+          <div className="flex flex-row gap-2 items-center justify-start pt-2 font-semibold">
+            <ReactIcons.LuHeart />
+            <p className="">
+              {`Winner `->React.string}
+              <React.Suspense fallback={<> </>}>
+                <a href="">
+                  <ShortAddress address={bidder} />
+                </a>
+              </React.Suspense>
+            </p>
+          </div>
           <p> {`Question Not Used`->React.string} </p>
           <p>
             {`Asker `->React.string}
@@ -199,6 +210,16 @@ let make = (~auction, ~owner, ~tokenId) => {
             className=" lg:bg-primary font-semibold text-default-darker hover:bg-default-light p-2 bg-default rounded-md transition-colors">
             {"Bid History"->React.string}
           </button>
+          {switch chainBlockExplorer {
+          | Some({name, url}) =>
+            <a href={url ++ `/token/${auction.contract.votesToken}?a=${auction.tokenId}`}>
+              <button
+                className=" lg:bg-primary font-semibold text-default-darker hover:bg-default-light p-2 bg-default rounded-md transition-colors">
+                {name->React.string}
+              </button>
+            </a>
+          | None => <> </>
+          }}
           <BlockExplorerButton auction={auction.fragmentRefs} />
         </div>
         <AllBidsListModal isOpen={showAllBids->Option.isSome}>

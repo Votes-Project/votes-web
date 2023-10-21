@@ -151,6 +151,7 @@ let make = (~children, ~queryRef) => {
       <div className="bg-default w-full relative">
         <VotesInfo />
       </div>
+      <footer className="flex h-10  p-10 w-full bg-default" />
     </div>
   </>
 }

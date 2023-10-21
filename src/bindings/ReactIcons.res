@@ -110,3 +110,8 @@ module LuPanelRightClose = {
   external make: (~size: string=?, ~color: string=?, ~className: string=?) => t =
     "LuPanelRightClose"
 }
+
+module LuHeart = {
+  @react.component @module("react-icons/lu")
+  external make: (~size: string=?, ~color: string=?, ~className: string=?) => t = "LuHeart"
+}
