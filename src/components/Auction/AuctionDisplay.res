@@ -57,25 +57,13 @@ let make = (~auction, ~owner, ~tokenId) => {
   let auction = Fragment.use(auction)
   let phase = auction.phase
 
-  let {setParams} = Routes.Main.Route.useQueryParams()
   let {
-    setParams: setVoteParams,
+    setParams: setAuctionParams,
     queryParams: {showAllBids},
   } = Routes.Main.Vote.Auction.Route.useQueryParams()
 
-  let setVoteDetails = voteDetails => {
-    setParams(
-      ~removeNotControlledParams=false,
-      ~navigationMode_=Push,
-      ~shallow=false,
-      ~setter=c => {
-        ...c,
-        voteDetails,
-      },
-    )
-  }
   let handleShowAllBids = _ => {
-    setVoteParams(
+    setAuctionParams(
       ~removeNotControlledParams=false,
       ~navigationMode_=Push,
       ~shallow=true,

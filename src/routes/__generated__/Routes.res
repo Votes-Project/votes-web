@@ -16,6 +16,18 @@ module Main = {
 
     }
   }
+  module Question = {
+    module Route = Route__Main__Question_route
+
+    module Current = {
+      module Route = Route__Main__Question__Current_route
+
+    }
+    module Past = {
+      module Route = Route__Main__Question__Past_route
+
+    }
+  }
   module Queue = {
     module Route = Route__Main__Queue_route
 

@@ -20,6 +20,22 @@
         ]
       },
       {
+        "path": "question",
+        "name": "Question",
+        "children": [
+          {
+            "path": "",
+            "name": "Current",
+            "children": []
+          },
+          {
+          "path": ":questionId",
+          "name": "Past",
+          "children": []
+        }
+      ]
+      },
+      {
         "path": "queue",
         "name": "Queue",
         "children": []

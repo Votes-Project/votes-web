@@ -13,29 +13,9 @@ module AuctionBidItem = {
   }
 `)
   @react.component
-  let make = (~bid, ~isCurrentBid) => {
-    let {amount, bidder, id, tokenId} = Fragment.use(bid)
+  let make = (~bid) => {
+    let {amount, bidder, id} = Fragment.use(bid)
     let amount = amount->BigInt.fromString->Viem.formatUnits(18)
-
-    let {setTodaysAuction} = React.useContext(TodaysAuctionContext.context)
-
-    React.useEffect4(() => {
-      if isCurrentBid {
-        open TodaysAuctionContext
-        setTodaysAuction(todaysAuction =>
-          todaysAuction->Option.mapWithDefault(
-            Some({currentBid: amount}),
-            todaysAuction => Some({
-              ...todaysAuction,
-              currentBid: amount,
-            }),
-          )
-        )
-      } else {
-        ()
-      }
-      None
-    }, (isCurrentBid, tokenId, amount, setTodaysAuction))
 
     <li className="border-b p-3 border-background-dark" key=id>
       <div className=" font-semibold flex items-center justify-between">
@@ -136,8 +116,8 @@ let make = (~bids) => {
 
   bids
   ->Fragment.getConnectionNodes
-  ->Array.mapWithIndex(({id, fragmentRefs}, i) => {
-    <AuctionBidItem bid=fragmentRefs key=id isCurrentBid={i == 0} />
+  ->Array.map(({id, fragmentRefs}) => {
+    <AuctionBidItem bid=fragmentRefs key=id />
   })
   ->Array.slice(~start=0, ~end=3)
   ->React.array
