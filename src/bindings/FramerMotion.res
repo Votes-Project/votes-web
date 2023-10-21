@@ -1,5 +1,5 @@
 module Motion = {
-  type layout = String(string) | @as(true) True
+  type layout = | @as("position") Position | @as(true) True | String(string)
   @unboxed
   type ease =
     | @as("easeIn") EaseIn
