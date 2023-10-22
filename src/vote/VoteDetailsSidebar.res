@@ -1,9 +1,5 @@
 @module("/assets/RadarChart.png")
 external radarChart: string = "default"
-@send
-external addEventListener: (Dom.window, [#resize], 'a => unit) => unit = "addEventListener"
-@send
-external removeEventListener: (Dom.window, [#resize], 'a => unit) => unit = "removeEventListener"
 
 @get external innerWidth: Dom.window => int = "innerWidth"
 
@@ -19,9 +15,9 @@ let make = (~children, ~isOpen) => {
   }
 
   React.useEffect0(() => {
-    window->addEventListener(#resize, handleWindowSizeChange)
+    window->Window.addEventListener(#resize, handleWindowSizeChange)
 
-    Some(() => window->removeEventListener(#resize, handleWindowSizeChange))
+    Some(() => window->Window.removeEventListener(#resize, handleWindowSizeChange))
   })
 
   let handleBackdropClick = e => {
