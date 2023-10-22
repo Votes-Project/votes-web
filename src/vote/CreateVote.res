@@ -37,6 +37,18 @@ type action =
 
 type state = {title: string, choices: array<string>}
 
+let makeDiscordCommand = (title, choices) => {
+  let command = "/poll"
+
+  let question = `question:${title}`
+
+  let answers = choices->Array.mapWithIndex((choice, i) => {
+    `answer${i->Int.toString}:${choice}`
+  })
+
+  command ++ " " ++ question ++ " " ++ answers->Array.joinWith(" ")
+}
+
 let reducer = (state, action) => {
   switch action {
   | AddChoice => {
@@ -48,8 +60,11 @@ let reducer = (state, action) => {
       choices: state.choices->Array.filterWithIndex((_, i) => indexToRemove !== i),
     }
   | ChangeChoice({index, value}) =>
-    state.choices->Array.set(index, value)
-    state
+    let choices = state.choices->Array.mapWithIndex((choice, i) => {
+      i === index ? value : choice
+    })
+    {...state, choices}
+
   | MaxChoicesReached => state
   | ChangeTitle(value) => {...state, title: value}
   }
@@ -62,15 +77,20 @@ let initialState = {
 
 let maxChoices = 5
 
-@react.component
-let make = () => {
+@react.component @relay.deferredComponent
+let make = (~children) => {
   let titleRef = React.useRef("")
-  let ({choices}, dispatch) = React.useReducer(reducer, initialState)
+  let ({choices, title}, dispatch) = React.useReducer(reducer, initialState)
 
   let choiceCount = choices->Array.length
   let {setHeroComponent} = React.useContext(HeroComponentContext.context)
 
-  let onTitleChange = React.useCallback0(e => {
+  React.useEffect0(() => {
+    window->Window.ScrollTo.makeWithOptions({top: 0, behavior: Smooth})
+    None
+  })
+
+  let onTitleChange = e => {
     open SanitizeHtml
     let sanitizeConfig = {
       allowedTags: ["b", "i", "em", "strong", "a", "p", "h1"],
@@ -80,7 +100,7 @@ let make = () => {
     titleRef.current = SanitizeHtml.make((e->ReactEvent.Form.target)["value"], sanitizeConfig)
 
     ChangeTitle(titleRef.current)->dispatch
-  })
+  }
   let onChoiceChange = (e, i) => {
     open SanitizeHtml
     let sanitizeConfig = {
@@ -106,17 +126,26 @@ let make = () => {
     }
   }
 
+  let saveCommandToClipboard = () => {
+    makeDiscordCommand(titleRef.current, choices)->Clipboard.writeText
+  }
+
+  let canSubmit =
+    choiceCount >= 2 &&
+    !(title->String.trim->String.equal("")) &&
+    choices->Array.every(choice => !(choice->String.trim->String.equal("")))
+
   React.useEffect1(() => {
     setHeroComponent(_ =>
       <div className="flex justify-center items-start w-full p-4 h-[558px] min-h-[558px]  ">
         <div
-          className="h-full flex-1 relative flex pr-1 bg-transparent focus-within:border-2 focus-within:ring-0 focus-within:border-primary backdrop-blur-[2px] rounded-lg transition-all duration-200 ease-linear">
+          className="h-full flex-1 relative flex  bg-transparent focus-within:border-2 focus-within:ring-0 focus-within:border-primary backdrop-blur-[2px] rounded-lg transition-all duration-200 ease-linear">
           <ContentEditable
             editablehasplaceholder="true"
             placeholder="Ask a question..."
             html=titleRef.current
             onChange={onTitleChange}
-            className="max-w-[540px] p-4 border-none focus:ring-0 break-words bg-transparent cursor-pointer text-wrap focus:cursor-text focus:text-left text-2xl transition-all duration-300 ease-linear "
+            className="w-[90vw] lg:w-auto max-w-lg lg:p-4 p-2 border-none focus:ring-0 break-words bg-transparent cursor-pointer text-wrap focus:cursor-text focus:text-left text-2xl transition-all duration-300 ease-linear "
           />
         </div>
       </div>
@@ -126,11 +155,11 @@ let make = () => {
 
   let onSubmit = e => {
     e->ReactEvent.Form.preventDefault
-    ()
+    saveCommandToClipboard()
   }
   <div className="h-full p-4 ">
     <div
-      className="relative p-4 w-full h-full  flex flex-col justify-around items-center lg:border-2 lg:border-primary rounded-xl ">
+      className="relative lg:p-4 w-full h-full  flex flex-col justify-around items-center lg:border-2 lg:border-primary rounded-xl ">
       <div className="flex flex-row justify-between items-center w-full">
         <ReactTooltip
           className="z-50 h-fit-content max-w-xs"
@@ -177,7 +206,7 @@ let make = () => {
             })
             ->React.array}
           </ol>
-          <div className="text-center px-4 flex flex-col-reverse">
+          <div className="text-center pl-4 flex flex-col-reverse">
             <button
               className="w-4 font-bold font-fugaz text-4xl pb-5 hover:scale-125 transition-all duration-300 ease-linear"
               type_="button"
@@ -186,12 +215,31 @@ let make = () => {
             </button>
           </div>
         </div>
+        <ReactTooltip
+          anchorSelect="#copy-discord-command"
+          openOnClick=true
+          clickable=true
+          style={{
+            backgroundColor: "transparent",
+          }}>
+          <a href="https://discord.gg/uwqMn3rxxj" target="_blank" rel="noopener">
+            <div
+              className="bg-default-dark p-4 rounded-lg flex flex-col gap-2 items-center font-bold backdrop-opacity-20 backdrop-blur-sm">
+              <p className="text-center text-md text-semibold text-default-darker">
+                {"Question saved to clipboard ✔︎"->React.string}
+              </p>
+            </div>
+          </a>
+        </ReactTooltip>
         <button
           type_="submit"
-          className=" bg-default-light rounded-xl p-4 max-w-xs self-center font-semibold hover:bg-transparent hover:border-2 border-default-dark lg:border-primary transition-all ease-linear hover:scale-110 hover:backdrop-blur-sm ">
-          {"Copy as Discord Command"->React.string}
+          id="copy-discord-command"
+          disabled={!canSubmit}
+          className=" disabled:bg-default-disabled disabled:scale-100 disabled:border-none rounded-xl p-4 max-w-xs self-center font-semibold hover:border-2 border-default-dark bg-default-dark text-white lg:border-primary transition-all ease-linear hover:scale-105 hover:backdrop-blur-sm ">
+          {"Generate Discord Command"->React.string}
         </button>
       </form>
+      {children}
     </div>
   </div>
 }

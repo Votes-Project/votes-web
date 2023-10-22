@@ -105,7 +105,6 @@ div[editablehasplaceholder="true"]:empty:before {
   opacity: 60%;
 }
 
-/* div[editablehasplaceholder="true"]:not(:empty):not(:focus) {} */
 
 div[contenteditable="true"] {
   outline: none;
