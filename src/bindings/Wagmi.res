@@ -172,7 +172,7 @@ module UseContractEvent = {
   external make: input<'args> => unit = "useContractEvent"
 }
 
-module UseAccount = {
+module Account = {
   type onConnect = {address: string, connector: connector, isReconnected: bool}
 
   type t = {
@@ -186,7 +186,7 @@ module UseAccount = {
   }
   type useAccountInput = {onConnect?: onConnect => unit, onDisconnect?: unit => unit}
   @module("wagmi") @module("wagmi")
-  external make: (~config: useAccountInput=?) => t = "useAccount"
+  external use: (~config: useAccountInput=?) => t = "useAccount"
 }
 
 module Network = {

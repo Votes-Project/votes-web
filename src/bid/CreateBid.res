@@ -19,7 +19,7 @@ module Fragment = %relay(`
 exception ContractWriteDoesNotExist
 @react.component
 let make = (~auction) => {
-  let {address} = Wagmi.UseAccount.make()
+  let {address} = Wagmi.Account.use()
   let {data: balance} = Wagmi.useBalance({address: address})
 
   let (bidAmount, setBidAmount) = React.useState(_ => "")
