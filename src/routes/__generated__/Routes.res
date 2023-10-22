@@ -10,6 +10,10 @@ module Main = {
     module New = {
       module Route = Route__Main__Vote__New_route
 
+      module UseVote = {
+        module Route = Route__Main__Vote__New__UseVote_route
+
+      }
     }
     module Auction = {
       module Route = Route__Main__Vote__Auction_route

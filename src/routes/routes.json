@@ -8,9 +8,13 @@
         "name": "Vote",
         "children": [
           {
-            "path": "new",
+            "path": "new/?owner=string",
             "name": "New",
-            "children": []
+            "children": [{
+              "path": "",
+              "name": "UseVote",
+              "children": []
+            }]
           },
           {
             "path": ":tokenId",
@@ -46,7 +50,7 @@
         "children": []
       },
       {
-        "path": "votes?sortBy=VotesSortBy.t&address=string",
+        "path": "votes?sortBy=VotesSortBy.t",
         "name": "Votes",
         "children": []
       },

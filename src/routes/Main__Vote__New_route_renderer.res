@@ -1,8 +1,9 @@
+module CreateVote = %relay.deferredComponent(CreateVote.make)
+
 let renderer = Routes.Main.Vote.New.Route.makeRenderer(
+  ~prepareCode=_ => [CreateVote.preload()],
   ~prepare=_ => (),
-  ~render=_ => {
-    <React.Suspense fallback={<p> {"Loading"->React.string} </p>}>
-      <CreateVote />
-    </React.Suspense>
+  ~render=({childRoutes}) => {
+    <CreateVote> {childRoutes} </CreateVote>
   },
 )
