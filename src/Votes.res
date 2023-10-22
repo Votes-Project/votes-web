@@ -92,7 +92,7 @@ module VoteListDisplay = {
         ~onAfterParamsSet=_ =>
           refetch(~variables=VotesFragment.makeRefetchVariables(~owner=Some(address)))->ignore,
       )
-    let _ = Wagmi.UseAccount.make(
+    let _ = Wagmi.Account.use(
       ~config={
         onConnect: ({address}) => {
           switch queryParams.sortBy {
