@@ -16,4 +16,5 @@ external make: (
   ~closeOnEsc: bool=?,
   ~variant: variant=?,
   ~className: string=?,
+  ~style: ReactDOM.Style.t=?,
 ) => React.element = "Tooltip"
