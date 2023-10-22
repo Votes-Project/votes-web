@@ -1,13 +1,16 @@
 @val @scope(("import", "meta", "env"))
 external auctionContractAddress: option<string> = "VITE_AUCTION_CONTRACT_ADDRESS"
 @val @scope(("import", "meta", "env"))
-external voteContractAddress: option<string> = "VITE_VOTE_CONTRACT_ADDRESS"
+external voteContractAddress: option<string> = "VITE_VOTES_CONTRACT_ADDRESS"
 @module("/src/abis/Auction.json") external auctionContractAbi: JSON.t = "default"
 
 module Query = %relay(`
-  query MainQuery {
+  query MainQuery($voteContractAddress: String!) {
     ...MainFragment
     ...HeaderFragment
+    voteContract(id: $voteContractAddress) {
+      ...QuestionPreview_voteContract
+    }
   }
 `)
 
@@ -32,7 +35,7 @@ module Fragment = %relay(`
 @react.component @relay.deferredComponent
 let make = (~children, ~queryRef) => {
   open FramerMotion
-  let {fragmentRefs} = Query.usePreloaded(~queryRef)
+  let {fragmentRefs, voteContract} = Query.usePreloaded(~queryRef)
   let {votes} = Fragment.use(fragmentRefs)
   let {heroComponent} = React.useContext(HeroComponentContext.context)
   let {setAuction, setIsLoading: setIsAuctionLoading} = React.useContext(AuctionContext.context)
@@ -145,7 +148,13 @@ let make = (~children, ~queryRef) => {
           </div>
         </div>
       </main>
-      <QuestionPreview />
+      <ErrorBoundary fallback={({error}) => error->JSON.stringifyAny->Option.getExn->React.string}>
+        <React.Suspense fallback={<div />}>
+          <QuestionPreview
+            voteContract={voteContract->Option.map(({fragmentRefs}) => fragmentRefs)}
+          />
+        </React.Suspense>
+      </ErrorBoundary>
       <div className="bg-default w-full relative">
         <VotesInfo />
       </div>

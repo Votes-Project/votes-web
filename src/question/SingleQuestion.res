@@ -86,14 +86,6 @@ module LinkStatusTooltip = {
 module ChoicesPage = {
   @react.component
   let make = (~handleVote) => {
-    React.useEffect0(() => {
-      Dom.Storage2.localStorage->Dom.Storage2.setItem(
-        "votes_answer_timestamp",
-        Date.now()->Float.toString,
-      )
-      None
-    })
-
     <>
       <h1 className="text-2xl px-4 pt-2 text-default-dark lg:text-primary-dark text-center">
         {"Pick an answer"->React.string}
@@ -170,6 +162,10 @@ let make = () => {
 
   let handleVote = (_, i) => {
     setChosenIndex(_ => Some(i))
+    Dom.Storage2.localStorage->Dom.Storage2.setItem(
+      "votes_answer_timestamp",
+      Date.now()->Float.toString,
+    )
   }
 
   {
