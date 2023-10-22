@@ -4,14 +4,6 @@ external addEventListener: (Dom.document, [#mouseup], 'a => unit) => unit = "add
 external removeEventListener: (Dom.document, [#mouseup], 'a => unit) => unit = "removeEventListener"
 let longTitle = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec qu?"
 
-module Window = {
-  @send
-  external addEventListener: (Dom.window, [#resize], 'a => unit) => unit = "addEventListener"
-  @send
-  external removeEventListener: (Dom.window, [#resize], 'a => unit) => unit = "removeEventListener"
-  @get external innerWidth: Dom.window => int = "innerWidth"
-}
-
 module QuestionTitle = {
   let titleStyle = titleLength => {
     if titleLength <= 50 {

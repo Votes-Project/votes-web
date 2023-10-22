@@ -12,6 +12,11 @@ module ContentEditable = {
   ) => React.element = "default"
 }
 
+module Clipboard = {
+  @scope(("navigator", "clipboard"))
+  external writeText: string => unit = "writeText"
+}
+
 module SanitizeHtml = {
   type config<'a> = {
     allowedAttributes: 'a,
