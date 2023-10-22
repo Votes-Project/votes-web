@@ -3,9 +3,7 @@ let renderer = Routes.Main.Vote.Route.makeRenderer(
   ~prepare=_ => (),
   ~render=({childRoutes}) => {
     <ErrorBoundary fallback={({error}) => JSON.stringifyAny(error)->Option.getExn->React.string}>
-      <React.Suspense fallback={<div> {"Loading..."->React.string} </div>}>
-        {childRoutes}
-      </React.Suspense>
+      <React.Suspense fallback={<div> {""->React.string} </div>}> {childRoutes} </React.Suspense>
     </ErrorBoundary>
   },
 )

@@ -55,7 +55,10 @@ module BlockExplorerButton = {
     }
     switch chainBlockExplorer {
     | Some({name, url}) =>
-      <a href={url ++ `/token/${auction.contract.votesToken}?a=${auction.tokenId}`}>
+      <a
+        href={url ++ `/token/${auction.contract.votesToken}?a=${auction.tokenId}`}
+        target="_blank"
+        rel="noopener noreferrer">
         <button
           className=" lg:bg-primary font-semibold text-default-darker hover:bg-default-light p-2 bg-default rounded-md transition-colors">
           {name->React.string}
@@ -81,6 +84,17 @@ module Fragment = %relay(`
     ...AuctionDisplay_BlockExplorerButton_auction
   }
   `)
+
+module NewVoteLink = {
+  @react.component
+  let make = (~children) => {
+    let {address} = Wagmi.Account.use()
+    let owner = address->Nullable.toOption->Option.getWithDefault("")
+    <RelayRouter.Link to_={Routes.Main.Vote.New.Route.makeLink(~owner)}>
+      {children}
+    </RelayRouter.Link>
+  }
+}
 
 exception AuctionDoesNotExist
 type arrowPress = LeftPress | RightPress
@@ -118,14 +132,14 @@ let make = (~auction, ~owner, ~tokenId) => {
           <AuctionCountdown auction={fragmentRefs} />
         </div>
         <div className="flex w-full">
-          <RelayRouter.Link
-            to_={Routes.Main.Vote.New.Route.makeLink()}
-            className="flex flex-row gap-2 items-center justify-start pt-2">
-            <ReactIcons.LuInfo size="1.25rem" className="text-default-darker" />
-            <p className="text-md text-default-darker py-4">
-              {"Ask your own question"->React.string}
-            </p>
-          </RelayRouter.Link>
+          <NewVoteLink>
+            <div className="flex flex-row gap-2 items-center justify-start">
+              <ReactIcons.LuInfo size="1.25rem" className="text-default-darker" />
+              <p className="text-md text-default-darker py-4">
+                {"Ask your own question"->React.string}
+              </p>
+            </div>
+          </NewVoteLink>
         </div>
         <ErrorBoundary
           fallback={_ => {<div> {React.string("Bid Component Failed to Insantiate")} </div>}}>
@@ -173,14 +187,14 @@ let make = (~auction, ~owner, ~tokenId) => {
         </div>
         <SettleAuctionButton isSettled=settled />
         <div className="flex w-full">
-          <RelayRouter.Link
-            to_={Routes.Main.Vote.New.Route.makeLink()}
-            className="flex flex-row gap-2 items-center justify-start">
-            <ReactIcons.LuInfo size="1.25rem" className="text-default-darker" />
-            <p className="text-md text-default-darker py-4">
-              {"Ask your own question"->React.string}
-            </p>
-          </RelayRouter.Link>
+          <NewVoteLink>
+            <div className="flex flex-row gap-2 items-center justify-start">
+              <ReactIcons.LuInfo size="1.25rem" className="text-default-darker" />
+              <p className="text-md text-default-darker py-4">
+                {"Ask your own question"->React.string}
+              </p>
+            </div>
+          </NewVoteLink>
         </div>
         <div className="flex pb-4 flex-col gap-2 justify-between text-default-darker">
           <div className="flex flex-row gap-2 items-center justify-start pt-2 font-semibold">
