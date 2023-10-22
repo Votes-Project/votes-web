@@ -1,3 +1,7 @@
+@val @scope(("import", "meta", "env"))
+external voteContractAddress: option<string> = "VITE_VOTES_CONTRACT_ADDRESS"
+@module("/src/abis/Auction.json") external auctionContractAbi: JSON.t = "default"
+
 module Main = %relay.deferredComponent(Main.make)
 module LinkBrightID = %relay.deferredComponent(LinkBrightID.make)
 // module VoteDetails = %relay.deferredComponent(VoteDetails.make)
@@ -41,7 +45,11 @@ let renderer = Routes.Main.Route.makeRenderer(
   },
   ~prepare=({environment, linkBrightID, contextId}) => {
     (
-      MainQuery_graphql.load(~environment, ~variables=(), ~fetchPolicy=StoreOrNetwork),
+      MainQuery_graphql.load(
+        ~environment,
+        ~variables={voteContractAddress: voteContractAddress->Option.getExn},
+        ~fetchPolicy=StoreOrNetwork,
+      ),
       switch (linkBrightID, contextId) {
       | (Some(linkBrightIDKey), Some(contextId)) =>
         LinkBrightIDQuery_graphql.load(

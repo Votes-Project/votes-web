@@ -34,13 +34,28 @@ module QuestionTitle = {
   }
 }
 
+module Fragment = %relay(`
+  fragment QuestionPreview_voteContract on VoteContract {
+    totalSupply
+  }
+`)
+
 @react.component
-let make = () => {
+let make = (~voteContract) => {
+  let {auction} = React.useContext(AuctionContext.context)
+
   let (width, setWidth) = React.useState(_ => window->Window.innerWidth)
   let (isOpen, setIsOpen) = React.useState(_ => false)
 
-  let {auction} = React.useContext(AuctionContext.context)
-  let {push} = RelayRouter.Utils.useRouter()
+  let hasAnswered = {
+    open BigInt
+    open Dom.Storage2
+    let timestamp = localStorage->getItem("votes_answer_timestamp")->Option.getWithDefault("0")
+
+    let auctionStartTime = auction->Option.mapWithDefault("0", auction => auction.startTime)
+    fromString(auctionStartTime)->mul(1000->fromInt) < timestamp->fromString
+  }
+
   let location = RelayRouter.Utils.useLocation()
 
   let isCurrentQuestionRouteActive = Routes.Main.Question.Current.Route.isRouteActive(
@@ -48,15 +63,28 @@ let make = () => {
     ~exact=true,
   )
 
-  let isNarrow = width <= 1024
+  let isMainRouteActive = Routes.Main.Route.isRouteActive(location, ~exact=true)
+
+  let isShowingQuestion = isCurrentQuestionRouteActive || (!hasAnswered && isMainRouteActive)
+
+  let isOpenHandler = (isShowingQuestion, width) => {
+    switch (isShowingQuestion, width > 1024) {
+    | (true, _) => false
+    | (false, true) => true
+    | _ => false
+    }
+  }
+
+  let {totalSupply} = Fragment.use(voteContract->Option.getExn)
+
+  let newestTokenId = {
+    open BigInt
+    fromString(totalSupply)->sub(1->fromInt)->toString
+  }
 
   let handleWindowSizeChange = React.useCallback(() => {
     setWidth(_ => window->Window.innerWidth)
-    if window->Window.innerWidth <= 1024 {
-      setIsOpen(_ => false)
-    } else {
-      setIsOpen(_ => true)
-    }
+    setIsOpen(_ => isOpenHandler(isShowingQuestion, window->Window.innerWidth))
   })
 
   React.useEffect0(() => {
@@ -65,55 +93,48 @@ let make = () => {
     Some(() => window->Window.removeEventListener(#resize, handleWindowSizeChange))
   })
 
-  React.useEffect1(() => {
-    if isCurrentQuestionRouteActive {
-      setIsOpen(_ => false)
-    } else {
-      setIsOpen(_ => !isNarrow)
-    }
+  React.useEffect2(() => {
+    setIsOpen(_ => isOpenHandler(isShowingQuestion, width))
     None
-  }, [isCurrentQuestionRouteActive])
+  }, (isShowingQuestion, width))
 
   let className = isOpen
-    ? "flex items-center justify-center text-white bg-primary noise hover:bg-primary w-full focus:ring-4 focus:ring-active focus:outline-none min-h-[6rem] shadow-lg p-4"
-    : "flex items-center justify-center text-white bg-primary-dark px-8 py-4 hover:bg-active focus:ring-4 focus:ring-active focus:outline-none shadow-lg w-32 "
+    ? "flex items-center justify-center text-white bg-primary noise  w-full focus:ring-4 focus:ring-active focus:outline-none min-h-[6rem] shadow-lg p-4"
+    : "flex items-center justify-center text-white bg-primary-dark px-8 py-4 hover:scale-105 focus:ring-4 focus:ring-active focus:outline-none shadow-lg w-32 "
 
-  let handleClick = _ => {
-    switch isCurrentQuestionRouteActive {
-    | true =>
-      let tokenId = auction->Option.map(auction => auction.tokenId)->Option.getExn
-      Routes.Main.Vote.Auction.Route.makeLink(~tokenId)->push
-      setIsOpen(_ => false)
-    | false =>
-      setIsOpen(_ => false)
-      Routes.Main.Question.Current.Route.makeLink()->push
-    }
+  let linkLocation = switch isShowingQuestion {
+  | false => Routes.Main.Question.Current.Route.makeLink()
+  | true => Routes.Main.Vote.Auction.Route.makeLink(~tokenId=newestTokenId)
   }
-  open FramerMotion
 
-  <div
-    id="daily-question-title"
-    className={`fixed ${isOpen
-        ? "bottom-0 hover:scale-105 transition-transform duration-200 ease-in-out"
-        : "right-6 bottom-6"} z-10 cursor-pointer `}
-    onClick={handleClick}>
-    {isOpen
-      ? <div className="absolute w-screen h-screen z-10" onClick={_ => setIsOpen(_ => false)} />
-      : <> </>}
-    <Motion.Div
-      layout=True
-      initial=Initial({borderRadius: 20})
-      animate={isOpen ? Animate({borderRadius: 0}) : Animate({})}
-      className>
-      {switch (isOpen, isCurrentQuestionRouteActive) {
-      | (true, _) =>
-        <div className="flex flex-row items-center justify-between">
-          <ReactIcons.LuVote />
-          <QuestionTitle />
-        </div>
-      | (false, false) => <div className="text-2xl font-bold"> {"Vote"->React.string} </div>
-      | (false, true) => <div className="text-2xl font-bold"> {"Auction"->React.string} </div>
-      }}
-    </Motion.Div>
-  </div>
+  open FramerMotion
+  <RelayRouter.Link to_=linkLocation>
+    <div
+      id="daily-question-title"
+      className={`fixed ${isOpen
+          ? "bottom-0 hover:scale-105 transition-transform duration-200 ease-in-out"
+          : "right-6 bottom-6"} z-10 cursor-pointer `}>
+      <Motion.Div
+        layout=True
+        initial=Initial({borderRadius: 20})
+        animate={isOpen ? Animate({borderRadius: 0}) : Animate({})}
+        className>
+        {switch (isOpen, isShowingQuestion) {
+        | (true, _) =>
+          <div className="flex flex-row items-center justify-between">
+            <QuestionTitle />
+            <ReactIcons.LuVote />
+          </div>
+        | (false, false) =>
+          <Motion.Div layout=True className="text-2xl font-bold">
+            {"Vote"->React.string}
+          </Motion.Div>
+        | (false, true) =>
+          <Motion.Div layout=True className="text-2xl font-bold">
+            {"Auction"->React.string}
+          </Motion.Div>
+        }}
+      </Motion.Div>
+    </div>
+  </RelayRouter.Link>
 }
