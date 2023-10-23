@@ -43,7 +43,7 @@ let makeDiscordCommand = (title, choices) => {
   let question = `question:${title}`
 
   let answers = choices->Array.mapWithIndex((choice, i) => {
-    `answer${i->Int.toString}:${choice}`
+    `answer${(i + 1)->Int.toString}:${choice}`
   })
 
   command ++ " " ++ question ++ " " ++ answers->Array.joinWith(" ")
@@ -184,9 +184,9 @@ let make = (~children) => {
             ->Array.mapWithIndex((_, index) => {
               <li
                 key={Int.toString(index)}
-                className="pr-10 my-3 w-full flex items-center border-2 text-left lg:border-primary border-default backdrop-blur-md transition-all duration-200 ease-linear rounded-xl">
+                className="relative pr-10 my-3 w-full flex items-center border-2 text-left lg:border-primary border-default backdrop-blur-md transition-all duration-200 ease-linear rounded-xl">
                 <div
-                  className=" w-9 flex items-center justify-center relative font-bold text-2xl h-full text-default-dark lg:text-primary-dark bg-default lg:bg-primary px-3 rounded-l-lg border-default-dark lg:border-primary border-r-2 overflow-hidden ">
+                  className="w-9 flex items-center justify-center relative font-bold text-2xl h-full text-default-dark lg:text-primary-dark bg-default lg:bg-primary px-3 rounded-l-lg border-default-dark lg:border-primary border-r-2 overflow-hidden ">
                   <p className="z-10 "> {(index + 65)->String.fromCharCode->React.string} </p>
                 </div>
                 <ContentEditable
@@ -199,7 +199,7 @@ let make = (~children) => {
                 <button
                   type_="button"
                   onClick={handleRemoveChoice(_, index)}
-                  className="absolute flex right-0  items-center justify-center text-default-dark font-bold text-3xl h-10 w-10 hover:scale-125 hover:default transition-all duration-200 ease-linear">
+                  className=" absolute flex right-0  items-center justify-center text-default-dark font-bold text-3xl h-10 w-10 hover:scale-125 hover:default transition-all duration-200 ease-linear">
                   <ReactIcons.LuSettings size="1.5rem" className="text-default-darker  " />
                 </button>
               </li>
@@ -235,7 +235,7 @@ let make = (~children) => {
           type_="submit"
           id="copy-discord-command"
           disabled={!canSubmit}
-          className=" disabled:bg-default-disabled disabled:scale-100 disabled:border-none rounded-xl p-4 max-w-xs self-center font-semibold hover:border-2 border-default-dark bg-default-dark text-white lg:border-primary transition-all ease-linear hover:scale-105 hover:backdrop-blur-sm ">
+          className="m-auto disabled:bg-default-disabled disabled:text-default-darker/50 disabled:scale-100 disabled:border-none rounded-xl p-4 max-w-xs self-center font-semibold hover:border-2 border-default-dark bg-default-dark text-white lg:border-primary transition-all ease-linear hover:scale-105 hover:backdrop-blur-sm ">
           {"Generate Discord Command"->React.string}
         </button>
       </form>
