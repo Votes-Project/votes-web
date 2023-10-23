@@ -108,33 +108,30 @@ let make = (~voteContract) => {
   }
 
   open FramerMotion
-  <RelayRouter.Link to_=linkLocation>
-    <div
-      id="daily-question-title"
-      className={`fixed ${isOpen
-          ? "bottom-0 hover:scale-105 transition-transform duration-200 ease-in-out"
-          : "right-6 bottom-6"} z-10 cursor-pointer `}>
-      <Motion.Div
-        layout=True
-        initial=Initial({borderRadius: 20})
-        animate={isOpen ? Animate({borderRadius: 0}) : Animate({})}
-        className>
-        {switch (isOpen, isShowingQuestion) {
-        | (true, _) =>
-          <div className="flex flex-row items-center justify-between">
-            <QuestionTitle />
-            <ReactIcons.LuVote />
-          </div>
-        | (false, false) =>
-          <Motion.Div layout=True className="text-2xl font-bold">
-            {"Vote"->React.string}
-          </Motion.Div>
-        | (false, true) =>
-          <Motion.Div layout=True className="text-2xl font-bold">
-            {"Auction"->React.string}
-          </Motion.Div>
-        }}
-      </Motion.Div>
-    </div>
+  <RelayRouter.Link
+    to_=linkLocation
+    id="daily-question-title"
+    className={`cursor-pointer fixed ${isOpen
+        ? "bottom-0 hover:scale-105 transition-transform duration-200 ease-in-out"
+        : "right-6 bottom-6"} z-10 `}>
+    <Motion.Div
+      layout=True
+      initial=Initial({borderRadius: 20})
+      animate={isOpen ? Animate({borderRadius: 0}) : Animate({})}
+      className>
+      {switch (isOpen, isShowingQuestion) {
+      | (true, _) =>
+        <div className="flex flex-row items-center justify-between">
+          <QuestionTitle />
+          <ReactIcons.LuVote />
+        </div>
+      | (false, false) =>
+        <Motion.Div layout=True className="text-2xl font-bold"> {"Vote"->React.string} </Motion.Div>
+      | (false, true) =>
+        <Motion.Div layout=True className="text-2xl font-bold">
+          {"Auction"->React.string}
+        </Motion.Div>
+      }}
+    </Motion.Div>
   </RelayRouter.Link>
 }
