@@ -25,7 +25,7 @@ module VoteOptionInput = {
       onFocus=handleFocus
       className="flex items-center pl-4 w-[90%] max-w-full break-all border-none focus:ring-0 bg-transparent cursor-pointer h-full placeholder:text-center focus:cursor-text min-h-[3.5rem]">
       {isOpen
-        ? <div className="h-40 w-full bg-red-400" />
+        ? <div className="h-40 w-full bg-red-400" onClick={_ => RemoveOption(index)->dispatch} />
         : <ContentEditable
             editablehasplaceholder="true"
             placeholder="Option..."

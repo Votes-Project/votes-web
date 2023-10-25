@@ -15,7 +15,42 @@ let makeDiscordCommand = (title, options) => {
   command ++ " " ++ question ++ " " ++ answers->Array.joinWith(" ")
 }
 
-let maxOptions = 5
+module ChooseSubmitVote = {
+  type choose = Yes | No
+  @react.component
+  let make = (~children, ~canSubmit) => {
+    let {address} = Wagmi.Account.use()
+    let (toggleUseVote, setToggleUseVote) = React.useState(() => None)
+
+    switch (address->Nullable.toOption, toggleUseVote) {
+    | (Some(_), Some(Yes)) => children
+    | (Some(_), None) =>
+      <div className="flex flex-col items-center justify-center w-full ">
+        {"Would you like to use a VOTE token?"->React.string}
+        <div className="flex flex-row p-4 justify-between w-32">
+          <button
+            className="flex items-center justify-center w-10 h-10 rounded-full bg-default-dark text-white hover:bg-default-darker lg:bg-primary-dark  transition-all duration-200 ease-linear"
+            onClick={_ => setToggleUseVote(_ => Some(Yes))}>
+            {"Yes"->React.string}
+          </button>
+          <button
+            className="flex items-center justify-center w-10 h-10 rounded-full bg-default-dark text-white hover:bg-default-darker lg:bg-primary-dark transition-all duration-200 ease-linear"
+            onClick={_ => setToggleUseVote(_ => Some(No))}>
+            {"No"->React.string}
+          </button>
+        </div>
+      </div>
+    | _ =>
+      <button
+        type_="submit"
+        id="copy-discord-command"
+        disabled={!canSubmit}
+        className="m-auto disabled:bg-default-disabled disabled:text-default-darker disabled:opacity-50 disabled:scale-100 disabled:border-none rounded-xl p-4 max-w-xs self-center font-semibold hover:border-2 border-default-dark bg-default-dark text-white lg:border-primary transition-all ease-linear hover:scale-105 hover:backdrop-blur-sm ">
+        {"Generate Community Question"->React.string}
+      </button>
+    }
+  }
+}
 
 @react.component @relay.deferredComponent
 let make = (~children) => {
@@ -117,7 +152,7 @@ let make = (~children) => {
                 className="w-4 font-bold font-fugaz text-4xl pb-5 hover:scale-125 transition-all duration-300 ease-linear"
                 type_="button"
                 onClick={handleAddOption}>
-                {{Array.length(options) < maxOptions ? "+" : ""}->React.string}
+                {{Array.length(options) < CreateVoteContext.maxOptions ? "+" : ""}->React.string}
               </button>
             </div>
           </div>
@@ -137,15 +172,8 @@ let make = (~children) => {
               </div>
             </a>
           </ReactTooltip>
-          <button
-            type_="submit"
-            id="copy-discord-command"
-            disabled={!canSubmit}
-            className="m-auto disabled:bg-default-disabled disabled:text-default-darker disabled:opacity-50 disabled:scale-100 disabled:border-none rounded-xl p-4 max-w-xs self-center font-semibold hover:border-2 border-default-dark bg-default-dark text-white lg:border-primary transition-all ease-linear hover:scale-105 hover:backdrop-blur-sm ">
-            {"Generate Discord Command"->React.string}
-          </button>
+          <ChooseSubmitVote canSubmit> {children} </ChooseSubmitVote>
         </form>
-        {children}
       </div>
     </div>
   </CreateVoteContext.Provider>

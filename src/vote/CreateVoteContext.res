@@ -10,15 +10,22 @@ type action =
 
 type state = {title: string, options: array<string>}
 
+let maxOptions = 5
+let minOptions = 2
+
 let reducer = (state, action) => {
   switch action {
   | AddOption => {
       ...state,
       options: state.options->Array.concat([""]),
     }
-  | RemoveOption(indexToRemove) => {
-      ...state,
-      options: state.options->Array.filterWithIndex((_, i) => indexToRemove !== i),
+  | RemoveOption(indexToRemove) =>
+    switch state.options->Array.length {
+    | count if count <= minOptions => state
+    | _ => {
+        ...state,
+        options: state.options->Array.filterWithIndex((_, i) => indexToRemove !== i),
+      }
     }
   | ChangeOption({index, value}) =>
     let options = state.options->Array.mapWithIndex((option, i) => {

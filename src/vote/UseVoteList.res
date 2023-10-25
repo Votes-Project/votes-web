@@ -19,7 +19,7 @@ module UseVoteDisplay = {
     first: { type: "Int", defaultValue: 1000 }
     after: { type: "String", defaultValue: "" }
     orderBy: { type: "OrderBy_Votes", defaultValue: id }
-    orderDirection: { type: "OrderDirection", defaultValue: desc }
+    orderDirection: { type: "OrderDirection", defaultValue: asc }
     owner: { type: "String" }
   )
   @refetchable(queryName: "UseVoteListVotesQuery") {
@@ -34,6 +34,7 @@ module UseVoteDisplay = {
       edges {
         node {
           id
+          tokenId
         }
       }
     }
@@ -42,11 +43,11 @@ module UseVoteDisplay = {
   @react.component
   let make = (~votes) => {
     let {setParams} = Routes.Main.Vote.New.Route.useQueryParams()
-    let (_, refetch) = Fragment.useRefetchable(votes)
+    let (data, refetch) = Fragment.useRefetchable(votes)
 
     let _ = Wagmi.Account.use(
       ~config={
-        onConnect: ({address}) =>
+        onConnect: ({address, isReconnected}) => {
           setParams(
             ~removeNotControlledParams=false,
             ~navigationMode_=Replace,
@@ -54,11 +55,16 @@ module UseVoteDisplay = {
               ...c,
               owner: Some(address),
             },
-            ~onAfterParamsSet=({owner}) => {
-              let _ = Fragment.makeRefetchVariables(~owner)->(refetch(~variables=_))
-            },
-          ),
-        onDisconnect: _ =>
+            ~onAfterParamsSet=({owner}) =>
+              isReconnected
+                ? ()
+                : refetch(
+                    ~variables=Fragment.makeRefetchVariables(~owner),
+                    ~fetchPolicy=StoreOrNetwork,
+                  )->ignore,
+          )
+        },
+        onDisconnect: () =>
           setParams(
             ~removeNotControlledParams=false,
             ~navigationMode_=Replace,
@@ -66,13 +72,35 @@ module UseVoteDisplay = {
               ...c,
               owner: None,
             },
-            ~onAfterParamsSet=({owner}) => {
-              let _ = Fragment.makeRefetchVariables(~owner)->(refetch(~variables=_))
-            },
+            ~onAfterParamsSet=({owner}) =>
+              refetch(
+                ~variables=Fragment.makeRefetchVariables(~owner),
+                ~fetchPolicy=StoreOrNetwork,
+              )->ignore,
           ),
       },
     )
-    React.null
+    <div className="flex flex-col justify-center items-center">
+      {"Choose A Vote"->React.string}
+      <ul className="flex flex-row justify-center items-center w-full flex-wrap hide-scrollbar">
+        {switch data.votes->Fragment.getConnectionNodes {
+        | [] => <div> {"No VOTE Tokens"->React.string} </div>
+        | votes =>
+          votes
+          ->Array.map(vote =>
+            <li
+              key={vote.id}
+              className="flex flex-col justify-center items-center mx-2  my-4 shadow-md">
+              <button
+                className="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded items-center justify-center ">
+                <p className="font-fugaz"> {vote.tokenId->React.string} </p>
+              </button>
+            </li>
+          )
+          ->React.array
+        }}
+      </ul>
+    </div>
   }
 }
 

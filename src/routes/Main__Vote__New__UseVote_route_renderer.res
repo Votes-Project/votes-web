@@ -11,7 +11,7 @@ let renderer = Routes.Main.Vote.New.UseVote.Route.makeRenderer(
     )
   },
   ~render=({prepared}) => {
-    <React.Suspense fallback={<div> {"Loading your VOTE tokens..."->React.string} </div>}>
+    <React.Suspense fallback={<div> {""->React.string} </div>}>
       {switch prepared {
       | None => React.null
       | Some(queryRef) => <UseVoteList queryRef />
