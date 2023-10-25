@@ -42,7 +42,7 @@ module UseVoteDisplay = {
   @react.component
   let make = (~votes) => {
     let {setParams} = Routes.Main.Vote.New.Route.useQueryParams()
-    let (data, refetch) = Fragment.useRefetchable(votes)
+    let (_, refetch) = Fragment.useRefetchable(votes)
 
     let _ = Wagmi.Account.use(
       ~config={
