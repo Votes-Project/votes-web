@@ -15,6 +15,7 @@ module Motion = {
     | @as("linear") Linear
     | Ease(array<string>)
   type transition = {duration?: float, ease?: ease}
+  @unboxed type borderRadius = Pixel(int) | Percentage(string)
 
   type motionValues = {
     x?: float,
@@ -26,7 +27,7 @@ module Motion = {
     width?: string,
     height?: string,
     transition?: transition,
-    borderRadius?: int,
+    borderRadius?: borderRadius,
   }
 
   @unboxed type initial = Initial(motionValues) | String(string)
@@ -74,7 +75,7 @@ module Motion = {
       ~onMouseEnter: 'a => unit=?,
       ~onMouseLeave: 'a => unit=?,
       ~type_: string=?,
-    ) => React.element = "div"
+    ) => React.element = "button"
   }
 
   module Li = {
@@ -94,7 +95,25 @@ module Motion = {
       ~onMouseLeave: 'a => unit=?,
       ~ref: ReactDOM.domRef=?,
       ~key: string=?,
-    ) => React.element = "div"
+    ) => React.element = "li"
+  }
+  module Nav = {
+    @react.component @module("framer-motion") @scope("motion")
+    external make: (
+      ~layoutId: string=?,
+      ~layout: layout=?,
+      ~variants: variants=?,
+      ~initial: initial=?,
+      ~animate: animate=?,
+      ~exit: exit=?,
+      ~transition: transition=?,
+      ~children: React.element=?,
+      ~className: string=?,
+      ~onClick: 'a => unit=?,
+      ~onMouseEnter: 'a => unit=?,
+      ~onMouseLeave: 'a => unit=?,
+      ~ref: ReactDOM.domRef=?,
+    ) => React.element = "nav"
   }
 }
 

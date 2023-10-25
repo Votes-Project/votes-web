@@ -15,9 +15,9 @@ let make = (~children, ~isOpen) => {
   }
 
   React.useEffect0(() => {
-    window->Window.addEventListener(#resize, handleWindowSizeChange)
+    window->Window.addEventListener(Resize, handleWindowSizeChange)
 
-    Some(() => window->Window.removeEventListener(#resize, handleWindowSizeChange))
+    Some(() => window->Window.removeEventListener(Resize, handleWindowSizeChange))
   })
 
   let handleBackdropClick = e => {

@@ -16,8 +16,15 @@ module ScrollTo = {
   @send external makeWithOptions: (t, options) => unit = "scrollTo"
 }
 
-@send
-external addEventListener: (Dom.window, [#resize], 'a => unit) => unit = "addEventListener"
-@send
-external removeEventListener: (Dom.window, [#resize], 'a => unit) => unit = "removeEventListener"
+module EventListener = {
+  type type_ = | @as("resize") Resize | @as("scroll") Scroll
+
+  @private @send external make: (Dom.window, type_, 'a => unit) => unit = "addEventListener"
+  @private @send external remove: (Dom.window, type_, 'a => unit) => unit = "removeEventListener"
+}
+
+let addEventListener = EventListener.make
+let removeEventListener = EventListener.remove
+
 @get external innerWidth: Dom.window => int = "innerWidth"
+@get external scrollY: Dom.window => int = "scrollY"

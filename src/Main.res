@@ -35,7 +35,7 @@ module Fragment = %relay(`
 @react.component @relay.deferredComponent
 let make = (~children, ~queryRef) => {
   open FramerMotion
-  let {fragmentRefs, voteContract} = Query.usePreloaded(~queryRef)
+  let {fragmentRefs, _} = Query.usePreloaded(~queryRef)
   let {votes} = Fragment.use(fragmentRefs)
   let {heroComponent} = React.useContext(HeroComponentContext.context)
   let {setAuction, setIsLoading: setIsAuctionLoading} = React.useContext(AuctionContext.context)
@@ -150,9 +150,7 @@ let make = (~children, ~queryRef) => {
       </main>
       <ErrorBoundary fallback={({error}) => error->JSON.stringifyAny->Option.getExn->React.string}>
         <React.Suspense fallback={<div />}>
-          <QuestionPreview
-            voteContract={voteContract->Option.map(({fragmentRefs}) => fragmentRefs)}
-          />
+          <BottomNav />
         </React.Suspense>
       </ErrorBoundary>
       <div className="bg-default w-full relative">
