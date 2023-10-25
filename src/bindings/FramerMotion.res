@@ -76,6 +76,26 @@ module Motion = {
       ~type_: string=?,
     ) => React.element = "div"
   }
+
+  module Li = {
+    @react.component @module("framer-motion") @scope("motion")
+    external make: (
+      ~layoutId: string=?,
+      ~layout: layout=?,
+      ~variants: variants=?,
+      ~initial: initial=?,
+      ~animate: animate=?,
+      ~exit: exit=?,
+      ~transition: transition=?,
+      ~children: React.element=?,
+      ~className: string=?,
+      ~onClick: 'a => unit=?,
+      ~onMouseEnter: 'a => unit=?,
+      ~onMouseLeave: 'a => unit=?,
+      ~ref: ReactDOM.domRef=?,
+      ~key: string=?,
+    ) => React.element = "div"
+  }
 }
 
 module AnimatePresence = {
