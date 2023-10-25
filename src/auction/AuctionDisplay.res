@@ -90,6 +90,7 @@ module NewVoteLink = {
   let make = (~children) => {
     let {address} = Wagmi.Account.use()
     let owner = address->Nullable.toOption->Option.getWithDefault("")
+
     <RelayRouter.Link to_={Routes.Main.Vote.New.Route.makeLink(~owner)}>
       {children}
     </RelayRouter.Link>
