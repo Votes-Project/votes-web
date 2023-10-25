@@ -88,9 +88,9 @@ let make = (~voteContract) => {
   })
 
   React.useEffect0(() => {
-    window->Window.addEventListener(#resize, handleWindowSizeChange)
+    window->Window.addEventListener(Resize, handleWindowSizeChange)
 
-    Some(() => window->Window.removeEventListener(#resize, handleWindowSizeChange))
+    Some(() => window->Window.removeEventListener(Resize, handleWindowSizeChange))
   })
 
   React.useEffect2(() => {
@@ -116,8 +116,8 @@ let make = (~voteContract) => {
         : "right-6 bottom-6"} z-10 `}>
     <Motion.Div
       layout=True
-      initial=Initial({borderRadius: 20})
-      animate={isOpen ? Animate({borderRadius: 0}) : Animate({})}
+      initial=Initial({borderRadius: Pixel(20)})
+      animate={isOpen ? Animate({borderRadius: Pixel(0)}) : Animate({})}
       className>
       {switch (isOpen, isShowingQuestion) {
       | (true, _) =>
