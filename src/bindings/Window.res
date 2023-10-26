@@ -28,3 +28,5 @@ let removeEventListener = EventListener.remove
 
 @get external innerWidth: Dom.window => int = "innerWidth"
 @get external scrollY: Dom.window => int = "scrollY"
+
+@send external clearTimeout: (t, timeoutId) => unit = "clearTimeout"

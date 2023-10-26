@@ -1,31 +1,41 @@
-let tap = x => {
-  Console.log(x)
-  x
-}
-
-// Fixed Bottom navigation bar that hides on scrolldown and appears on scroll up styled with tailwind. Bar contains 3 Items [New, Vote, Auction]
 @react.component
 let make = () => {
-  let (scrollY, setScrollY) = React.useState(_ => window->Window.scrollY)
+  let (scrollId, setScrollId) = React.useState(_ => None)
+  let (_, setScrollY) = React.useState(_ => window->Window.scrollY)
+
   let (isHidden, setIsHidden) = React.useState(_ => false)
+
   let (width, setWidth) = React.useState(_ => window->Window.innerWidth)
   let isNarrow = width <= 991
 
-  let handleIsHidden = (prev, curr) =>
-    switch curr {
-    | curr if curr <= 0 => setIsHidden(_ => false)
-    | curr if prev < curr => setIsHidden(_ => true)
-    | _ => setIsHidden(_ => false)
-    }
-
-  let handleScroll = React.useCallback(e => {
+  let handleScroll = e => {
     let y = (e->ReactEvent.UI.currentTarget)["scrollY"]
 
-    setScrollY(prevY => {
-      handleIsHidden(prevY, y)
-      y
+    let id = setTimeout(() => setScrollId(_ => None), 10)
+
+    setScrollId(prevId => {
+      prevId->Option.mapWithDefault((), prevId => window->Window.clearTimeout(prevId))
+      setScrollY(prevY =>
+        switch prevY {
+        | prevY if prevY < y =>
+          setIsHidden(_ => true)
+          y
+        | _ =>
+          setIsHidden(_ => false)
+          y
+        }
+      )
+      Some(id)
     })
-  })
+  }
+
+  React.useEffect2(() => {
+    switch scrollId {
+    | None => setIsHidden(_ => false)
+    | Some(_) => setIsHidden(_ => true)
+    }
+    None
+  }, (scrollId, setIsHidden))
 
   let handleWindowSizeChange = React.useCallback(() => {
     setWidth(_ => window->Window.innerWidth)
@@ -48,12 +58,12 @@ let make = () => {
     initial: Initial({
       height: isNarrow ? "3rem" : "4rem",
       width: isNarrow ? "90%" : "36rem",
-      // opacity: isHidden ? 0. : 1.,
+      opacity: isHidden ? 0. : 1.,
     }),
     animate: Animate({
       height: isNarrow ? "3rem" : "4rem",
       width: isNarrow ? "90%" : "36rem",
-      // opacity: isHidden ? 0. : 1.,
+      opacity: isHidden ? 0.1 : 1.,
     }),
   }
 
