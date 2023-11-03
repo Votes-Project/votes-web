@@ -1,30 +1,17 @@
 @react.component
 let make = () => {
   let (scrollId, setScrollId) = React.useState(_ => None)
-  let (_, setScrollY) = React.useState(_ => window->Window.scrollY)
-
   let (isHidden, setIsHidden) = React.useState(_ => false)
 
   let (width, setWidth) = React.useState(_ => window->Window.innerWidth)
   let isNarrow = width <= 991
 
   let handleScroll = e => {
-    let y = (e->ReactEvent.UI.currentTarget)["scrollY"]
-
     let id = setTimeout(() => setScrollId(_ => None), 10)
 
     setScrollId(prevId => {
       prevId->Option.mapWithDefault((), prevId => window->Window.clearTimeout(prevId))
-      setScrollY(prevY =>
-        switch prevY {
-        | prevY if prevY < y =>
-          setIsHidden(_ => true)
-          y
-        | _ =>
-          setIsHidden(_ => false)
-          y
-        }
-      )
+      setIsHidden(_ => true)
       Some(id)
     })
   }
@@ -56,25 +43,24 @@ let make = () => {
   open FramerMotion
   let motionVariants: Motion.variants = {
     initial: Initial({
-      height: isNarrow ? "3rem" : "4rem",
-      width: isNarrow ? "90%" : "36rem",
+      width: isNarrow ? "40%" : "24rem",
       opacity: isHidden ? 0. : 1.,
     }),
     animate: Animate({
-      height: isNarrow ? "3rem" : "4rem",
-      width: isNarrow ? "90%" : "36rem",
-      opacity: isHidden ? 0.1 : 1.,
+      width: isNarrow ? "40%" : "24rem",
+      opacity: isHidden ? 0. : 1.,
+      transition: {duration: 0.1, ease: EaseInOut},
     }),
   }
 
   <AnimatePresence>
     <div className="fixed bottom-8 w-full flex justify-center items-center z-50 ">
       <Motion.Nav
-        className="w-full h-full bg-default-light/80 shadow-xl backdrop-blur-md rounded-full "
+        className="w-full h-full text-white bg-default-dark shadow-xl backdrop-blur-md rounded-full "
         variants=motionVariants
         initial=String("initial")
         animate=String("animate")>
-        <div className="flex justify-evenly items-center h-full text:md lg:text-lg font-semibold">
+        <div className="flex py-2 justify-evenly items-center h-full text:md lg:text-lg font-bold">
           <RelayRouter.Link
             to_={Routes.Main.Vote.New.Route.makeLink()}
             className="inline-flex items-center px-1 pt-1 ">

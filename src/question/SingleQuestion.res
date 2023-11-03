@@ -94,7 +94,7 @@ module ChoicesPage = {
         {choices
         ->Array.mapWithIndex((option, i) => {
           <li
-            className={`font-semibold text-sm my-3 pl-2 w-full flex items-center text-left backdrop-blur-md transition-all duration-200 ease-linear lg:rounded-xl text-default-darker shadow-lg bg-default lg:bg-secondary hover:translate-x-5 `}
+            className={`font-semibold text-sm my-3 pl-2 w-full flex items-center text-left backdrop-blur-md transition-all duration-200 ease-linear lg:rounded-xl text-default-darker shadow-lg bg-default lg:bg-secondary hover:lg:translate-x-5 `}
             key={i->Int.toString}>
             <div
               className="w-9 flex flex-1 items-center justify-center relative font-bold text-3xl h-full text-default-dark lg:text-primary-dark px-3 rounded-l-lg overflow-hidden">
@@ -151,10 +151,18 @@ let make = () => {
   let {setHeroComponent} = React.useContext(HeroComponentContext.context)
   let (chosenIndex, setChosenIndex) = React.useState(_ => None)
 
+  let asker = "0xf4bb53eFcFd49Fe036FdCc8F46D981203ae3BAB8"
+
   React.useEffect0(() => {
     setHeroComponent(_ =>
-      <div className="flex justify-center items-center w-full p-4 h-[558px] min-h-[558px] ">
+      <div
+        className="flex flex-col justify-center items-center w-full p-4 h-[558px] min-h-[558px] ">
         <QuestionTitle />
+        <div
+          className=" flex justify-around w-full text-xl font-semibold text-default-darker pt-10 text-center">
+          <div />
+          <ShortAddress address=Some(asker) avatar=true />
+        </div>
       </div>
     )
     None

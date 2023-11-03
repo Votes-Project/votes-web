@@ -141,7 +141,10 @@ let make = (~children, ~queryRef) => {
             {heroComponent}
             <div
               className=" pt-[5%]  lg:pl-0 lg:pt-0 min-h-[558px] lg:flex-[0_0_auto] w-full bg-white pb-0 lg:bg-transparent lg:w-[50%]">
-              <ErrorBoundary fallback={({error}) => {error->React.string}}>
+              <ErrorBoundary
+                fallback={({error}) => {
+                  error->JSON.stringifyAny->Option.getWithDefault("")->React.string
+                }}>
                 <React.Suspense fallback={<div />}> {children} </React.Suspense>
               </ErrorBoundary>
             </div>
