@@ -8,7 +8,7 @@ var $$default = GraphqlYoga.createYoga({
       schema: ResGraphSchema.schema,
       context: (async function (param) {
           return {
-                  dataLoaders: DataLoaders.make(undefined)
+                  dataLoaders: DataLoaders.make()
                 };
         }),
       graphqlEndpoint: "/api/graphql"

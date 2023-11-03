@@ -135,9 +135,6 @@ type useBalanceInput = {address: Nullable.t<string>, ...queryInput<balanceData>}
 @module("wagmi")
 external useBalance: useBalanceInput => queryResult<balanceData> = "useBalance"
 
-type ensNameInput = {address: string, ...queryInput<string>}
-@module("wagmi") external useEnsName: ensNameInput => queryResult<string> = "useEnsName"
-
 type usePrepareContractWriteReturn<'args> = {config: contractConfig<'args>}
 @module("wagmi")
 external usePrepareContractWrite: (
@@ -201,4 +198,15 @@ module Network = {
 module PublicClient = {
   type t = Viem.publicClient
   @module("wagmi") external use: unit => t = "usePublicClient"
+}
+
+module ENS = {
+  module Name = {
+    type input = {address: string, ...queryInput<string>}
+    @module("wagmi") external use: input => queryResult<string> = "useEnsName"
+  }
+  module Avatar = {
+    type input = {name: string, ...queryInput<string>}
+    @module("wagmi") external use: input => queryResult<string> = "useEnsAvatar"
+  }
 }
