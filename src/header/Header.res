@@ -43,7 +43,12 @@ let make = (~verifications) => {
           to_={Routes.Main.Question.Current.Route.makeLink()}
           className="relative z-2 px-2 py-0 transition-all z-2"
           onClick={_ => isOpen ? handleMenu() : ()}>
-          <img src={viteLogo["default"]} className="w-24 h-24  " alt="Vite logo" />
+          <div className="relative w-24 h-24">
+            <div className="fixed z-50">
+              <img src={viteLogo["default"]} className="w-24 h-24  " alt="Vite logo" />
+              <VotesySpeak />
+            </div>
+          </div>
         </RelayRouter.Link>
         <div
           className="   bg-secondary hover:bg-secondary  hover:cursor-pointer rounded-xl flex items-center font-semibold mr-4 px-2 h-10 justify-center transition-all">

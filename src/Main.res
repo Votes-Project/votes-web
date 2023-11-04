@@ -155,11 +155,7 @@ let make = (~children, ~queryRef) => {
       </main>
       <ErrorBoundary fallback={({error}) => error->JSON.stringifyAny->Option.getExn->React.string}>
         <React.Suspense fallback={<div />}>
-          <BottomNav
-            voteContract={voteContract
-            ->Option.map(voteContract => voteContract.fragmentRefs)
-            ->Option.getExn}
-          />
+          <BottomNav voteContract={voteContract->Option.map(contract => contract.fragmentRefs)} />
         </React.Suspense>
       </ErrorBoundary>
       <div className="bg-default w-full relative">

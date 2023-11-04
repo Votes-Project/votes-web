@@ -170,6 +170,7 @@ let make = () => {
   let {queryParams} = Routes.Main.Question.Route.useQueryParams()
 
   let {setHeroComponent} = React.useContext(HeroComponentContext.context)
+  let votesy = React.useContext(VotesySpeakContext.context)
 
   let asker = "0xf4bb53eFcFd49Fe036FdCc8F46D981203ae3BAB8"
 
@@ -187,6 +188,8 @@ let make = () => {
         </div>
       </div>
     )
+    votesy.setContent(_ => "It's your first vote! Pick an answer and start your streak!")
+
     None
   })
 

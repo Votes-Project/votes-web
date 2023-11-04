@@ -30,7 +30,19 @@ export default {
         mono: ['Quicksand', 'sans-serif'],
         fugaz: ["FugazOne", "sans-serif"],
       },
+      animation: {
+        typewriter: "typewriter 1s steps(11) forwards"
+      },
+      keyframes: {
+        typewriter: {
+          to: {
+            left: "100%"
+          }
+        }
+      }
     },
   },
-  plugins: [require("@tailwindcss/forms")],
+  plugins: [
+    require("@tailwindcss/forms"),
+  ],
 };
