@@ -24,7 +24,7 @@
         ]
       },
       {
-        "path": "question",
+        "path": "question?answer=int",
         "name": "Question",
         "children": [
           {

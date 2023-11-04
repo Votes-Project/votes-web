@@ -11,6 +11,7 @@ module Internal = {
     voteDetails: option<int>,
     voteDetailsToken: option<int>,
     showAllBids: option<int>,
+    answer: option<int>,
   }
 
   @live
@@ -25,6 +26,7 @@ module Internal = {
     voteDetails: option<int>,
     voteDetailsToken: option<int>,
     showAllBids: option<int>,
+    answer: option<int>,
   }
 
   @live
@@ -50,6 +52,7 @@ module Internal = {
       voteDetails: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetails")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
       voteDetailsToken: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetailsToken")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
       showAllBids: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("showAllBids")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
+      answer: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("answer")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
     }
   }
 
@@ -61,6 +64,7 @@ type queryParams = {
   voteDetails: option<int>,
   voteDetailsToken: option<int>,
   showAllBids: option<int>,
+  answer: option<int>,
 }
 
 @live
@@ -78,6 +82,8 @@ let parseQueryParams = (search: string): queryParams => {
 
     showAllBids: queryParams->QueryParams.getParamByKey("showAllBids")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
 
+    answer: queryParams->QueryParams.getParamByKey("answer")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
+
   }
 }
 
@@ -88,6 +94,7 @@ let makeQueryParams = (
   ~voteDetails: option<int>=?, 
   ~voteDetailsToken: option<int>=?, 
   ~showAllBids: option<int>=?, 
+  ~answer: option<int>=?, 
   ()
 ) => {
   linkBrightID: linkBrightID,
@@ -95,6 +102,7 @@ let makeQueryParams = (
   voteDetails: voteDetails,
   voteDetailsToken: voteDetailsToken,
   showAllBids: showAllBids,
+  answer: answer,
 }
 
 @live
@@ -110,6 +118,7 @@ let applyQueryParams = (
   queryParams->QueryParams.setParamOpt(~key="voteDetails", ~value=newParams.voteDetails->Belt.Option.map(voteDetails => Belt.Int.toString(voteDetails)))
   queryParams->QueryParams.setParamOpt(~key="voteDetailsToken", ~value=newParams.voteDetailsToken->Belt.Option.map(voteDetailsToken => Belt.Int.toString(voteDetailsToken)))
   queryParams->QueryParams.setParamOpt(~key="showAllBids", ~value=newParams.showAllBids->Belt.Option.map(showAllBids => Belt.Int.toString(showAllBids)))
+  queryParams->QueryParams.setParamOpt(~key="answer", ~value=newParams.answer->Belt.Option.map(answer => Belt.Int.toString(answer)))
 }
 
 @live
@@ -168,7 +177,7 @@ let useQueryParams = (): useQueryParamsReturn => {
 let routePattern = "/question/:questionId"
 
 @live
-let makeLink = (~questionId: string, ~linkBrightID: option<int>=?, ~contextId: option<string>=?, ~voteDetails: option<int>=?, ~voteDetailsToken: option<int>=?, ~showAllBids: option<int>=?) => {
+let makeLink = (~questionId: string, ~linkBrightID: option<int>=?, ~contextId: option<string>=?, ~voteDetails: option<int>=?, ~voteDetailsToken: option<int>=?, ~showAllBids: option<int>=?, ~answer: option<int>=?) => {
   open RelayRouter.Bindings
   let queryParams = QueryParams.make()
   switch linkBrightID {
@@ -195,11 +204,16 @@ let makeLink = (~questionId: string, ~linkBrightID: option<int>=?, ~contextId: o
     | None => ()
     | Some(showAllBids) => queryParams->QueryParams.setParam(~key="showAllBids", ~value=Belt.Int.toString(showAllBids))
   }
+
+  switch answer {
+    | None => ()
+    | Some(answer) => queryParams->QueryParams.setParam(~key="answer", ~value=Belt.Int.toString(answer))
+  }
   RelayRouter.Bindings.generatePath(routePattern, Js.Dict.fromArray([("questionId", (questionId :> string)->Js.Global.encodeURIComponent)])) ++ queryParams->QueryParams.toString
 }
 @live
 let makeLinkFromQueryParams = (~questionId: string, queryParams: queryParams) => {
-  makeLink(~questionId, ~linkBrightID=?queryParams.linkBrightID, ~contextId=?queryParams.contextId, ~voteDetails=?queryParams.voteDetails, ~voteDetailsToken=?queryParams.voteDetailsToken, ~showAllBids=?queryParams.showAllBids, )
+  makeLink(~questionId, ~linkBrightID=?queryParams.linkBrightID, ~contextId=?queryParams.contextId, ~voteDetails=?queryParams.voteDetails, ~voteDetailsToken=?queryParams.voteDetailsToken, ~showAllBids=?queryParams.showAllBids, ~answer=?queryParams.answer, )
 }
 
 @live

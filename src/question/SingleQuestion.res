@@ -1,10 +1,10 @@
-type choice = {
+type option = {
   value: string,
   correct: bool,
   details: string,
 }
 let longTitle = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec qu?"
-let choices = [
+let options = [
   {
     value: longTitle,
     correct: true,
@@ -83,15 +83,27 @@ module LinkStatusTooltip = {
   }
 }
 
-module ChoicesPage = {
+module OptionsPage = {
   @react.component
-  let make = (~handleVote) => {
+  let make = () => {
+    let {setParams} = Routes.Main.Question.Route.useQueryParams()
+    let handleVote = (_, i) => {
+      setParams(~navigationMode_=Push, ~removeNotControlledParams=false, ~setter=c => {
+        ...c,
+        answer: Some(i),
+      })
+      Dom.Storage2.localStorage->Dom.Storage2.setItem(
+        "votes_answer_timestamp",
+        Date.now()->Float.toString,
+      )
+    }
+
     <>
       <h1 className="text-2xl px-4 pt-2 text-default-dark lg:text-primary-dark text-center">
         {"Pick an answer"->React.string}
       </h1>
       <ul className="flex flex-col justify-between items-start lg:px-6 mb-4 lg:mr-4">
-        {choices
+        {options
         ->Array.mapWithIndex((option, i) => {
           <li
             className={`font-semibold text-sm my-3 pl-2 w-full flex items-center text-left backdrop-blur-md transition-all duration-200 ease-linear lg:rounded-xl text-default-darker shadow-lg bg-default lg:bg-secondary hover:lg:translate-x-5 `}
@@ -115,32 +127,39 @@ module ChoicesPage = {
   }
 }
 
-module AnswerPage = {
-  @react.component
-  let make = (~chosenIndex) => {
-    let selectedChoice = chosenIndex->Option.flatMap(i => choices->Array.get(i))
+module AnswerPage = {}
 
-    <div className="flex flex-col max-h-full w-full">
-      <div className="w-full flex flex-col justify-center items-center h-1/2">
-        <div className="w-full text-center"> {"Preview"->React.string} </div>
-        <EmptyVoteChart className="" />
+module AnswerPreviewPage = {
+  @react.component
+  let make = () => {
+    let {queryParams: {answer}} = Routes.Main.Question.Current.Route.useQueryParams()
+    let answer = answer->Option.flatMap(i => options->Array.get(i))
+
+    <div className="flex flex-1 flex-col h-full w-full min-h-[558px]" id="answer-preview">
+      <div className="flex-1 w-full h-full flex flex-col justify-center items-center ">
         <div
-          className={`w-full flex flex-row items-centerpy-8 px-4 rounded-lg max-w-md bg-active text-white`}>
-          <label className="font-semibold">
-            {selectedChoice
-            ->Option.mapWithDefault("Other", selectedChoice => selectedChoice.value)
-            ->React.string}
-          </label>
+          className="flex  items-center justify-around w-full text-center text-2xl font-bold font-fugaz pb-3">
+          <div className="pl-4 text-left flex-1 font-sans text-2xl font-semibold">
+            {"←"->React.string}
+          </div>
+          <div className=""> {"Confirm"->React.string} </div>
+          <div className="relative flex-1 text-sm font-sans font-normal py-5">
+            <div className="align-middle"> {"🔥 10 day streak"->React.string} </div>
+            <div className="absolute bottom-0 right-5 text-right">
+              {"+ 1 Point"->React.string}
+            </div>
+          </div>
         </div>
-      </div>
-      <div className="flex flex-col justify-between items-start px-6 ">
-        <button
-          className={`w-full  flex flex-row items-center  my-2 first:mb-2 py-2  rounded-lg px-4 min-h-[80px] overflow-hidden transition-all`}
-          onClick={_ => {
-            ()
-          }}>
-          <p className={`font-semibold text-left`}> {"Confirm"->React.string} </p>
-        </button>
+        <div className="flex flex-col justify-between items-center flex-1 ">
+          <div
+            className={`w-full flex flex-row items-center p-4 rounded-lg max-w-md bg-default text-default-darker`}>
+            <label className="font-semibold">
+              {answer
+              ->Option.mapWithDefault("Other", answer => answer.value)
+              ->React.string}
+            </label>
+          </div>
+        </div>
       </div>
     </div>
   }
@@ -148,8 +167,9 @@ module AnswerPage = {
 
 @react.component @relay.deferredComponent
 let make = () => {
+  let {queryParams} = Routes.Main.Question.Route.useQueryParams()
+
   let {setHeroComponent} = React.useContext(HeroComponentContext.context)
-  let (chosenIndex, setChosenIndex) = React.useState(_ => None)
 
   let asker = "0xf4bb53eFcFd49Fe036FdCc8F46D981203ae3BAB8"
 
@@ -161,22 +181,17 @@ let make = () => {
         <div
           className=" flex justify-around w-full text-xl font-semibold text-default-darker pt-10 text-center">
           <div />
-          <ShortAddress address=Some(asker) avatar=true />
+          <React.Suspense fallback={<div />}>
+            <ShortAddress address=Some(asker) avatar=true />
+          </React.Suspense>
         </div>
       </div>
     )
     None
   })
 
-  let handleVote = (_, i) => {
-    setChosenIndex(_ => Some(i))
-    Dom.Storage2.localStorage->Dom.Storage2.setItem(
-      "votes_answer_timestamp",
-      Date.now()->Float.toString,
-    )
-  }
-
-  {
-    chosenIndex->Option.isSome ? <AnswerPage chosenIndex /> : <ChoicesPage handleVote />
+  switch queryParams {
+  | {answer: Some(_)} => <AnswerPreviewPage />
+  | _ => <OptionsPage />
   }
 }
