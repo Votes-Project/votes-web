@@ -1,10 +1,12 @@
 module Fragment = %relay(`
   fragment BottomNav_voteContract on VoteContract {
-totalSupply  }
+    totalSupply
+     }
 `)
+
 @react.component
 let make = (~voteContract) => {
-  let {totalSupply} = voteContract->Fragment.use
+  let contract = voteContract->Fragment.useOpt
 
   let (scrollId, setScrollId) = React.useState(_ => None)
   let (isHidden, setIsHidden) = React.useState(_ => false)
@@ -14,7 +16,9 @@ let make = (~voteContract) => {
 
   let newestTokenId = {
     open BigInt
-    totalSupply->fromString->sub(fromInt(1))->toString
+    contract
+    ->Option.map(({totalSupply}) => totalSupply->fromString->sub(fromInt(1))->toString)
+    ->Option.getExn
   }
 
   let handleScroll = _ => {
