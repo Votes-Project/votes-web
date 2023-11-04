@@ -114,6 +114,15 @@ module HeroComponentProvider = {
   }
 }
 
+module VotesySpeakProvider = {
+  open VotesySpeakContext
+  @react.component
+  let make = (~children) => {
+    let (content, setContent) = React.useState(_ => "")
+    <Provider value={{content, setContent}}> {children} </Provider>
+  }
+}
+
 ReactDOMExperimental.renderConcurrentRootAtElementWithId(
   <RescriptRelay.Context.Provider environment={RelayEnv.environment}>
     <RelayRouter.Provider value={Router.routerContext}>
@@ -146,10 +155,12 @@ ReactDOMExperimental.renderConcurrentRootAtElementWithId(
               <VoteProvider>
                 <AuctionProvider>
                   <HeroComponentProvider>
-                    <RelayRouter.RouteRenderer
-                      // This renders all the time, and when there"s a pending navigation (pending via React concurrent mode), pending will be `true`
-                      renderPending={pending => <PendingIndicatorBar pending />}
-                    />
+                    <VotesySpeakProvider>
+                      <RelayRouter.RouteRenderer
+                        // This renders all the time, and when there"s a pending navigation (pending via React concurrent mode), pending will be `true`
+                        renderPending={pending => <PendingIndicatorBar pending />}
+                      />
+                    </VotesySpeakProvider>
                   </HeroComponentProvider>
                 </AuctionProvider>
               </VoteProvider>
