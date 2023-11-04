@@ -202,11 +202,11 @@ module PublicClient = {
 
 module ENS = {
   module Name = {
-    type input = {address: string, ...queryInput<string>}
+    type input = {address: option<string>, ...queryInput<string>}
     @module("wagmi") external use: input => queryResult<string> = "useEnsName"
   }
   module Avatar = {
-    type input = {name: string, ...queryInput<string>}
+    type input = {name: option<string>, ...queryInput<string>}
     @module("wagmi") external use: input => queryResult<string> = "useEnsAvatar"
   }
 }
