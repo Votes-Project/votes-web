@@ -10,6 +10,7 @@ module Query = %relay(`
     ...HeaderFragment
     voteContract(id: $voteContractAddress) {
       ...QuestionPreview_voteContract
+      ...BottomNav_voteContract
     }
   }
 `)
@@ -35,7 +36,7 @@ module Fragment = %relay(`
 @react.component @relay.deferredComponent
 let make = (~children, ~queryRef) => {
   open FramerMotion
-  let {fragmentRefs, _} = Query.usePreloaded(~queryRef)
+  let {fragmentRefs, voteContract} = Query.usePreloaded(~queryRef)
   let {votes} = Fragment.use(fragmentRefs)
   let {heroComponent} = React.useContext(HeroComponentContext.context)
   let {setAuction, setIsLoading: setIsAuctionLoading} = React.useContext(AuctionContext.context)
@@ -57,75 +58,76 @@ let make = (~children, ~queryRef) => {
 
   let environment = RescriptRelay.useEnvironmentFromContext()
 
-  Wagmi.UseContractEvent.make({
-    address: auctionContractAddress->Belt.Option.getExn,
-    abi: auctionContractAbi,
-    eventName: "AuctionCreated",
-    listener: events => {
-      switch events {
-      | [] => ()
-      | events => {
-          let event = events->Array.get(events->Array.length - 1)->Option.getExn
-          let {args} = event
+  // Might cost too much money
+  // Wagmi.UseContractEvent.make({
+  //   address: auctionContractAddress->Belt.Option.getExn,
+  //   abi: auctionContractAbi,
+  //   eventName: "AuctionCreated",
+  //   listener: events => {
+  //     switch events {
+  //     | [] => ()
+  //     | events => {
+  //         let event = events->Array.get(events->Array.length - 1)->Option.getExn
+  //         let {args} = event
 
-          open RescriptRelay
-          let connectionId = votes.__id
-          commitLocalUpdate(~environment, ~updater=store => {
-            open AuctionCreated
-            open RecordSourceSelectorProxy
-            open RecordProxy
-            let connectionRecord = switch store->get(~dataId=connectionId) {
-            | Some(connectionRecord) => connectionRecord
-            | None => store->create(~dataId=connectionId, ~typeName="VotesConnection")
-            }
+  //         open RescriptRelay
+  //         let connectionId = votes.__id
+  //         commitLocalUpdate(~environment, ~updater=store => {
+  //           open AuctionCreated
+  //           open RecordSourceSelectorProxy
+  //           open RecordProxy
+  //           let connectionRecord = switch store->get(~dataId=connectionId) {
+  //           | Some(connectionRecord) => connectionRecord
+  //           | None => store->create(~dataId=connectionId, ~typeName="VotesConnection")
+  //           }
 
-            let id = args.tokenId->Helpers.tokenToSubgraphId->Option.getExn
+  //           let id = args.tokenId->Helpers.tokenToSubgraphId->Option.getExn
 
-            let newAuctionRecord =
-              store
-              ->create(~dataId=`client:new_auction:${id}`->makeDataId, ~typeName="Auction")
-              ->setValueString(~name="id", ~value=id)
-              ->setValueString(~name="startTime", ~value=args.startTime)
-              ->setValueString(~name="endTime", ~value=args.endTime)
+  //           let newAuctionRecord =
+  //             store
+  //             ->create(~dataId=`client:new_auction:${id}`->makeDataId, ~typeName="Auction")
+  //             ->setValueString(~name="id", ~value=id)
+  //             ->setValueString(~name="startTime", ~value=args.startTime)
+  //             ->setValueString(~name="endTime", ~value=args.endTime)
 
-            let voteContractAddress = voteContractAddress->Option.getWithDefault("0x0")
-            let totalSupply = {
-              open BigInt
-              args.tokenId->fromString->add(1->fromInt)->toString
-            }
+  //           let voteContractAddress = voteContractAddress->Option.getWithDefault("0x0")
+  //           let totalSupply = {
+  //             open BigInt
+  //             args.tokenId->fromString->add(1->fromInt)->toString
+  //           }
 
-            let newContractRecord =
-              store
-              ->create(
-                ~dataId=`client:new_contract:${voteContractAddress}`->makeDataId,
-                ~typeName="VoteContract",
-              )
-              ->setValueString(~name="id", ~value=voteContractAddress)
-              ->setValueString(~name="totalSupply", ~value=totalSupply)
+  //           let newContractRecord =
+  //             store
+  //             ->create(
+  //               ~dataId=`client:new_contract:${voteContractAddress}`->makeDataId,
+  //               ~typeName="VoteContract",
+  //             )
+  //             ->setValueString(~name="id", ~value=voteContractAddress)
+  //             ->setValueString(~name="totalSupply", ~value=totalSupply)
 
-            let newVoteRecord =
-              store
-              ->create(~dataId=`client:new_vote:${id}`->makeDataId, ~typeName="Vote")
-              ->setValueString(~name="id", ~value=id)
-              ->setValueString(~name="tokenId", ~value=args.tokenId)
-              ->setValueString(~name="startTime", ~value=args.startTime)
-              ->setValueString(~name="endTime", ~value=args.endTime)
-              ->setLinkedRecord(~record=newAuctionRecord, ~name="auction")
-              ->setLinkedRecord(~record=newContractRecord, ~name="contract")
+  //           let newVoteRecord =
+  //             store
+  //             ->create(~dataId=`client:new_vote:${id}`->makeDataId, ~typeName="Vote")
+  //             ->setValueString(~name="id", ~value=id)
+  //             ->setValueString(~name="tokenId", ~value=args.tokenId)
+  //             ->setValueString(~name="startTime", ~value=args.startTime)
+  //             ->setValueString(~name="endTime", ~value=args.endTime)
+  //             ->setLinkedRecord(~record=newAuctionRecord, ~name="auction")
+  //             ->setLinkedRecord(~record=newContractRecord, ~name="contract")
 
-            let newEdge = ConnectionHandler.createEdge(
-              ~store,
-              ~connection=connectionRecord,
-              ~edgeType="Vote",
-              ~node=newVoteRecord,
-            )
+  //           let newEdge = ConnectionHandler.createEdge(
+  //             ~store,
+  //             ~connection=connectionRecord,
+  //             ~edgeType="Vote",
+  //             ~node=newVoteRecord,
+  //           )
 
-            ConnectionHandler.insertEdgeBefore(~connection=connectionRecord, ~newEdge)
-          })
-        }
-      }
-    },
-  })
+  //           ConnectionHandler.insertEdgeBefore(~connection=connectionRecord, ~newEdge)
+  //         })
+  //       }
+  //     }
+  //   },
+  // })
 
   <>
     <div className="relative w-full h-full flex flex-col z-0">
@@ -153,7 +155,11 @@ let make = (~children, ~queryRef) => {
       </main>
       <ErrorBoundary fallback={({error}) => error->JSON.stringifyAny->Option.getExn->React.string}>
         <React.Suspense fallback={<div />}>
-          <BottomNav />
+          <BottomNav
+            voteContract={voteContract
+            ->Option.map(voteContract => voteContract.fragmentRefs)
+            ->Option.getExn}
+          />
         </React.Suspense>
       </ErrorBoundary>
       <div className="bg-default w-full relative">

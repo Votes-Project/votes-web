@@ -1,12 +1,23 @@
+module Fragment = %relay(`
+  fragment BottomNav_voteContract on VoteContract {
+totalSupply  }
+`)
 @react.component
-let make = () => {
+let make = (~voteContract) => {
+  let {totalSupply} = voteContract->Fragment.use
+
   let (scrollId, setScrollId) = React.useState(_ => None)
   let (isHidden, setIsHidden) = React.useState(_ => false)
 
   let (width, setWidth) = React.useState(_ => window->Window.innerWidth)
   let isNarrow = width <= 991
 
-  let handleScroll = e => {
+  let newestTokenId = {
+    open BigInt
+    totalSupply->fromString->sub(fromInt(1))->toString
+  }
+
+  let handleScroll = _ => {
     let id = setTimeout(() => setScrollId(_ => None), 10)
 
     setScrollId(prevId => {
@@ -43,12 +54,12 @@ let make = () => {
   open FramerMotion
   let motionVariants: Motion.variants = {
     initial: Initial({
-      width: isNarrow ? "40%" : "24rem",
+      width: isNarrow ? "65%" : "24rem",
       opacity: isHidden ? 0. : 1.,
     }),
     animate: Animate({
-      width: isNarrow ? "40%" : "24rem",
-      opacity: isHidden ? 0. : 1.,
+      width: isNarrow ? "65%" : "24rem",
+      opacity: isHidden ? 0.1 : 1.,
       transition: {duration: 0.1, ease: EaseInOut},
     }),
   }
@@ -56,7 +67,7 @@ let make = () => {
   <AnimatePresence>
     <div className="fixed bottom-8 w-full flex justify-center items-center z-50 ">
       <Motion.Nav
-        className="w-full h-full text-white bg-default-dark shadow-xl backdrop-blur-md rounded-full "
+        className="w-full h-full text-default bg-default-darker shadow-xl backdrop-blur-md rounded-full max-w-sm"
         variants=motionVariants
         initial=String("initial")
         animate=String("animate")>
@@ -72,7 +83,7 @@ let make = () => {
             {"Answer"->React.string}
           </RelayRouter.Link>
           <RelayRouter.Link
-            to_={Routes.Main.Vote.Auction.Route.makeLink(~tokenId="0")}
+            to_={Routes.Main.Vote.Auction.Route.makeLink(~tokenId=newestTokenId)}
             className="inline-flex items-center px-1 pt-1">
             {"Auction"->React.string}
           </RelayRouter.Link>
