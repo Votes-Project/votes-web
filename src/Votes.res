@@ -156,7 +156,7 @@ module VoteListDisplay = {
         </div>
       | _ =>
         <ul
-          className="px-4 flex flex-col lg:flex-row flex-wrap max-h-[576px] overflow-auto gap-y-4 gap-x-4 hide-scrollbar justify-center items-center">
+          className="px-4 flex flex-row flex-wrap max-h-[576px] overflow-auto gap-y-4 gap-x-4 hide-scrollbar justify-center items-center">
           {data.votes
           ->VotesFragment.getConnectionNodes
           ->Array.map(vote => {
