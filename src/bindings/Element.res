@@ -1,3 +1,4 @@
+type t = Dom.element
 module Scroll = {
   type behavior =
     | @as("smooth") Smooth
@@ -19,9 +20,10 @@ module Scroll = {
   type intoViewOptions = {behavior?: behavior, block?: block, inline?: inline}
 
   @send
-  external intoView: (Dom.element, ~alignToTop: bool=?) => unit = "scrollIntoView"
+  external intoView: (t, ~alignToTop: bool=?) => unit = "scrollIntoView"
 
   @send
-  external intoViewWithOptions: (Dom.element, ~options: intoViewOptions=?) => unit =
-    "scrollIntoView"
+  external intoViewWithOptions: (t, ~options: intoViewOptions=?) => unit = "scrollIntoView"
 }
+
+@get external offsetWidth: t => float = "offsetWidth"

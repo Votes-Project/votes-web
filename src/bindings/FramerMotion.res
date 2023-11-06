@@ -1,3 +1,13 @@
+type line = {x: float, y: float}
+type boundingBox2D = {top?: int, left?: int, right?: int, bottom?: int}
+
+module Drag = {
+  type t = Boolean | @as("x") X | @as("y") Y
+
+  type info = {point: line, delta: line, offset: line, velocity: line}
+
+  @unboxed type dragConstraints = False | Ref(React.ref<Nullable.t<Dom.element>>)
+}
 module Motion = {
   type layout = | @as("position") Position | @as(true) True | String(string)
   @unboxed
@@ -40,6 +50,7 @@ module Motion = {
     transition?: transition,
     exit?: exit,
   }
+
   module Div = {
     @react.component @module("framer-motion") @scope("motion")
     external make: (
@@ -56,6 +67,14 @@ module Motion = {
       ~onMouseEnter: 'a => unit=?,
       ~onMouseLeave: 'a => unit=?,
       ~ref: ReactDOM.domRef=?,
+      ~drag: Drag.t=?,
+      ~whileDrag: variants=?,
+      ~dragSnapToOrigin: bool=?,
+      ~dragConstraints: Drag.dragConstraints=?,
+      ~dragMomentum: bool=?,
+      ~onDrag: ('a, Drag.info) => unit=?,
+      ~onDragStart: ('a, Drag.info) => unit=?,
+      ~onDragEnd: ('a, Drag.info) => unit=?,
     ) => React.element = "div"
   }
 

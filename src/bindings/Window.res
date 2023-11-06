@@ -16,6 +16,9 @@ module ScrollTo = {
   @send external makeWithOptions: (t, options) => unit = "scrollTo"
 }
 
+@send
+external alert: (t, string) => unit = "alert"
+
 module EventListener = {
   type type_ = | @as("resize") Resize | @as("scroll") Scroll
 
@@ -27,6 +30,6 @@ let addEventListener = EventListener.make
 let removeEventListener = EventListener.remove
 
 @get external innerWidth: Dom.window => int = "innerWidth"
-@get external scrollY: Dom.window => int = "scrollY"
+@get external scrollY: Dom.window => float = "scrollY"
 
 @send external clearTimeout: (t, timeoutId) => unit = "clearTimeout"
