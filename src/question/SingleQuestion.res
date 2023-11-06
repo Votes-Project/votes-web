@@ -83,19 +83,106 @@ module LinkStatusTooltip = {
   }
 }
 
+module OptionItem = {
+  @react.component
+  let make = (~option, ~index, ~handleVote) => {
+    let {queryParams, setParams} = Routes.Main.Question.Route.useQueryParams()
+
+    let ref = React.useRef(Nullable.null)
+
+    let handleSelect = _ => {
+      setParams(~navigationMode_=Push, ~removeNotControlledParams=false, ~setter=c => {
+        ...c,
+        answer: Some(index),
+      })
+    }
+
+    open FramerMotion
+    let onDragEnd = (e, info: Drag.info) => {
+      switch ref.current->Nullable.toOption {
+      | Some(current) if info.offset.x > 0.8 *. current->Element.offsetWidth => handleVote(e, index)
+      | _ => ()
+      }
+    }
+
+    {
+      switch queryParams.answer {
+      | Some(answer) if answer == index =>
+        <li
+          className={`relative font-semibold text-sm my-3 w-full flex items-center text-left backdrop-blur-md bg-black/10 duration-200 ease-linear lg:rounded-xl text-default-darker shadow-lg  lg:scale-105 border-4 border-default-darker lg:border-active rounded-xl `}
+          key={index->Int.toString}
+          ref={ReactDOM.Ref.domRef(ref)}
+          onClick=handleSelect>
+          <Motion.Div
+            drag=X
+            dragConstraints=Ref(ref)
+            dragSnapToOrigin=true
+            dragMomentum=true
+            onDragEnd
+            className=" self-stretch flex flex-1 items-center justify-center relative font-bold text-3xl text-default lg:text-secondary bg-default-darker lg:bg-active px-6 rounded-lg overflow-hidden">
+            {"→"->React.string}
+          </Motion.Div>
+          <button
+            className={`relative w-full flex flex-row items-center  lg:my-2 first:mb-2 py-2 px-2 min-h-[80px] overflow-hidden transition-all  `}
+            key={index->Int.toString}>
+            <div
+              className="absolute w-full h-full flex items-center justify-center animate-pulse text-default-darker font-bold text-3xl duration-300">
+              {"Swipe to Confirm"->React.string}
+            </div>
+            <p className="opacity-20"> {option.value->React.string} </p>
+          </button>
+        </li>
+      | Some(_) =>
+        <li
+          className={`relative font-semibold text-sm my-3 pl-2 w-full flex items-center text-left backdrop-blur-md transition-all duration-200 ease-linear lg:rounded-xl text-default-darker shadow-lg bg-default/80 lg:bg-secondary/80 hover:lg:scale-105 focus:lg:scale-105`}
+          key={index->Int.toString}
+          ref={ReactDOM.Ref.domRef(ref)}
+          onClick=handleSelect>
+          <div
+            className="w-9 flex flex-1 items-center justify-center relative font-bold text-3xl h-full text-default-dark lg:text-primary-dark px-3 rounded-l-lg overflow-hidden">
+            {(index + 65)->String.fromCharCode->React.string}
+          </div>
+          <button
+            className={`w-full  flex flex-row items-center lg:my-2 first:mb-2 py-2  px-2 min-h-[80px] overflow-hidden  transition-all`}
+            key={index->Int.toString}>
+            {option.value->React.string}
+          </button>
+        </li>
+      | _ =>
+        <li
+          className={`relative font-semibold text-sm my-3 pl-2 w-full flex items-center text-left backdrop-blur-md transition-all duration-200 ease-linear lg:rounded-xl text-default-darker shadow-lg bg-default lg:bg-secondary hover:lg:scale-105 focus:lg:scale-105`}
+          key={index->Int.toString}
+          ref={ReactDOM.Ref.domRef(ref)}
+          onClick=handleSelect>
+          <div
+            className="w-9 flex flex-1 items-center justify-center relative font-bold text-3xl h-full text-default-dark lg:text-primary-dark px-3 rounded-l-lg overflow-hidden">
+            {(index + 65)->String.fromCharCode->React.string}
+          </div>
+          <button
+            className={`w-full  flex flex-row items-center lg:my-2 first:mb-2 py-2   px-2 min-h-[80px] overflow-hidden  transition-all`}
+            key={index->Int.toString}>
+            {option.value->React.string}
+          </button>
+        </li>
+      }
+    }
+  }
+}
+
 module OptionsPage = {
   @react.component
   let make = () => {
     let {setParams} = Routes.Main.Question.Route.useQueryParams()
-    let handleVote = (_, i) => {
-      setParams(~navigationMode_=Push, ~removeNotControlledParams=false, ~setter=c => {
-        ...c,
-        answer: Some(i),
-      })
+    let handleVote = (_, _) => {
       Dom.Storage2.localStorage->Dom.Storage2.setItem(
         "votes_answer_timestamp",
         Date.now()->Float.toString,
       )
+      window->Window.alert("Answered")
+      setParams(~navigationMode_=Push, ~removeNotControlledParams=false, ~setter=c => {
+        ...c,
+        answer: None,
+      })
     }
 
     <>
@@ -104,22 +191,9 @@ module OptionsPage = {
       </h1>
       <ul className="flex flex-col justify-between items-start lg:px-6 mb-4 lg:mr-4">
         {options
-        ->Array.mapWithIndex((option, i) => {
-          <li
-            className={`font-semibold text-sm my-3 pl-2 w-full flex items-center text-left backdrop-blur-md transition-all duration-200 ease-linear lg:rounded-xl text-default-darker shadow-lg bg-default lg:bg-secondary hover:lg:translate-x-5 `}
-            key={i->Int.toString}>
-            <div
-              className="w-9 flex flex-1 items-center justify-center relative font-bold text-3xl h-full text-default-dark lg:text-primary-dark px-3 rounded-l-lg overflow-hidden">
-              {(i + 65)->String.fromCharCode->React.string}
-            </div>
-            <button
-              className={`w-full  flex flex-row items-center  my-4 lg:my-2 first:mb-2 py-2   px-2 min-h-[80px] overflow-hidden  transition-all`}
-              key={i->Int.toString}
-              onClick={handleVote(_, i)}>
-              {option.value->React.string}
-            </button>
-          </li>
-        })
+        ->Array.mapWithIndex((option, index) =>
+          <OptionItem key={index->Int.toString} option index handleVote />
+        )
         ->React.array}
       </ul>
       <div className="flex flex-col justify-center items-center mb-6 gap-3" />
@@ -167,8 +241,6 @@ module AnswerPreviewPage = {
 
 @react.component @relay.deferredComponent
 let make = () => {
-  let {queryParams} = Routes.Main.Question.Route.useQueryParams()
-
   let {setHeroComponent} = React.useContext(HeroComponentContext.context)
   let votesy = React.useContext(VotesySpeakContext.context)
 
@@ -193,8 +265,5 @@ let make = () => {
     None
   })
 
-  switch queryParams {
-  | {answer: Some(_)} => <AnswerPreviewPage />
-  | _ => <OptionsPage />
-  }
+  <OptionsPage />
 }
