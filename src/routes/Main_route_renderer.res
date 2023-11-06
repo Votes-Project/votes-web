@@ -4,7 +4,6 @@ external voteContractAddress: option<string> = "VITE_VOTES_CONTRACT_ADDRESS"
 
 module Main = %relay.deferredComponent(Main.make)
 module LinkBrightID = %relay.deferredComponent(LinkBrightID.make)
-// module VoteDetails = %relay.deferredComponent(VoteDetails.make)
 // module QuestionQueue = %relay.deferredComponent(QuestionQueue.make)
 
 type initialRender = Loading | CurrentVote | CurrentQuestion | ChildRoutes
@@ -37,10 +36,6 @@ let renderer = Routes.Main.Route.makeRenderer(
       | None => None
       | Some(_) => Some(LinkBrightID.preload())
       },
-      // switch voteDetails {
-      // | None => None
-      // | Some(_) => Some(VoteDetails.preload())
-      // },
     ]->Array.filterMap(v => v)
   },
   ~prepare=({environment, linkBrightID, contextId}) => {
@@ -63,7 +58,7 @@ let renderer = Routes.Main.Route.makeRenderer(
       },
     )
   },
-  ~render=({childRoutes, linkBrightID, contextId, voteDetails, voteDetailsToken, prepared}) => {
+  ~render=({childRoutes, linkBrightID, contextId, prepared}) => {
     let (queryRef, linkBrightIDQueryRef) = prepared
     let {auction, isLoading} = React.useContext(AuctionContext.context)
     let {vote} = React.useContext(VoteContext.context)
@@ -100,15 +95,6 @@ let renderer = Routes.Main.Route.makeRenderer(
         | _ => React.null
         }}
       </LinkBrightIDModal>
-      <VoteDetailsSidebar isOpen={voteDetails->Option.isSome}>
-        {switch (voteDetails, voteDetailsToken, Some()) {
-        | (Some(_), Some(_), Some(queryRef)) =>
-          <React.Suspense fallback={<p> {"Loading"->React.string} </p>}>
-            <VoteDetails queryRef />
-          </React.Suspense>
-        | _ => React.null
-        }}
-      </VoteDetailsSidebar>
     </>
   },
 )

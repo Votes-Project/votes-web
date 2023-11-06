@@ -1,15 +1,15 @@
 module Fragment = %relay(`
   fragment BottomNav_voteContract on VoteContract {
     totalSupply
-     }
+  }
 `)
 
 @react.component
 let make = (~voteContract) => {
   let contract = voteContract->Fragment.useOpt
+  let (_, setScrollY) = React.useState(_ => window->Window.scrollY)
 
-  let (scrollId, setScrollId) = React.useState(_ => None)
-  let (isHidden, setIsHidden) = React.useState(_ => false)
+  let (disabled, setDisabled) = React.useState(_ => false)
 
   let (width, setWidth) = React.useState(_ => window->Window.innerWidth)
   let isNarrow = width <= 991
@@ -21,23 +21,16 @@ let make = (~voteContract) => {
     ->Option.getExn
   }
 
-  let handleScroll = _ => {
-    let id = setTimeout(() => setScrollId(_ => None), 10)
-
-    setScrollId(prevId => {
-      prevId->Option.mapWithDefault((), prevId => window->Window.clearTimeout(prevId))
-      setIsHidden(_ => true)
-      Some(id)
+  let handleScroll = React.useCallback2(_ => {
+    let curr = window->Window.scrollY
+    setScrollY(prev => {
+      let _ = switch prev {
+      | prev if prev > 1. && prev <= curr => setDisabled(_ => true)
+      | _ => setDisabled(_ => false)
+      }
+      curr
     })
-  }
-
-  React.useEffect2(() => {
-    switch scrollId {
-    | None => setIsHidden(_ => false)
-    | Some(_) => setIsHidden(_ => true)
-    }
-    None
-  }, (scrollId, setIsHidden))
+  }, (setDisabled, setScrollY))
 
   let handleWindowSizeChange = React.useCallback(() => {
     setWidth(_ => window->Window.innerWidth)
@@ -59,12 +52,12 @@ let make = (~voteContract) => {
   let motionVariants: Motion.variants = {
     initial: Initial({
       width: isNarrow ? "65%" : "24rem",
-      opacity: isHidden ? 0. : 1.,
+      opacity: disabled ? 0. : 1.,
     }),
     animate: Animate({
       width: isNarrow ? "65%" : "24rem",
-      opacity: isHidden ? 0.1 : 1.,
-      transition: {duration: 0.1, ease: EaseInOut},
+      opacity: disabled ? 0.1 : 1.,
+      transition: {duration: 0.2, ease: EaseInOut},
     }),
   }
 
@@ -79,17 +72,17 @@ let make = (~voteContract) => {
           <RelayRouter.Link
             to_={Routes.Main.Vote.New.Route.makeLink()}
             className="inline-flex items-center px-1 pt-1 ">
-            {"Ask"->React.string}
+            <button type_="button" disabled> {"Ask"->React.string} </button>
           </RelayRouter.Link>
           <RelayRouter.Link
             to_={Routes.Main.Question.Current.Route.makeLink()}
             className="inline-flex items-center px-1 pt-1">
-            {"Answer"->React.string}
+            <button type_="button" disabled> {"Answer"->React.string} </button>
           </RelayRouter.Link>
           <RelayRouter.Link
             to_={Routes.Main.Vote.Auction.Route.makeLink(~tokenId=newestTokenId)}
             className="inline-flex items-center px-1 pt-1">
-            {"Auction"->React.string}
+            <button type_="button" disabled> {"Auction"->React.string} </button>
           </RelayRouter.Link>
         </div>
       </Motion.Nav>

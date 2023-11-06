@@ -56,7 +56,7 @@ let make = (~children, ~queryRef) => {
     None
   })
 
-  let environment = RescriptRelay.useEnvironmentFromContext()
+  // let environment = RescriptRelay.useEnvironmentFromContext()
 
   // Might cost too much money
   // Wagmi.UseContractEvent.make({
