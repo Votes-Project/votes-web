@@ -31,16 +31,25 @@ module Fragment = %relay(`
         }
       }
     }
+    randomQuestion {
+      id
+      question
+      options
+      ...SingleQuestion_node
+      ...BottomNav_question
+    }
   }`)
 
 @react.component @relay.deferredComponent
 let make = (~children, ~queryRef) => {
   open FramerMotion
   let {fragmentRefs, voteContract} = Query.usePreloaded(~queryRef)
-  let {votes} = Fragment.use(fragmentRefs)
+  let {votes, randomQuestion} = Fragment.use(fragmentRefs)
+
   let {heroComponent} = React.useContext(HeroComponentContext.context)
   let {setAuction, setIsLoading: setIsAuctionLoading} = React.useContext(AuctionContext.context)
   let {setVote} = React.useContext(VoteContext.context)
+  let {setQuestion} = React.useContext(QuestionContext.context)
 
   let newestVote = votes->Fragment.getConnectionNodes->Array.get(0)
 
@@ -50,6 +59,7 @@ let make = (~children, ~queryRef) => {
         setAuction(_ => vote.auction)
         setIsAuctionLoading(_ => false)
         setVote(_ => Some(vote.fragmentRefs))
+        setQuestion(_ => randomQuestion->Option.map(q => q.fragmentRefs))
       }
     | _ => ()
     }
@@ -155,7 +165,10 @@ let make = (~children, ~queryRef) => {
       </main>
       <ErrorBoundary fallback={({error}) => error->JSON.stringifyAny->Option.getExn->React.string}>
         <React.Suspense fallback={<div />}>
-          <BottomNav voteContract={voteContract->Option.map(contract => contract.fragmentRefs)} />
+          <BottomNav
+            voteContract={voteContract->Option.map(c => c.fragmentRefs)}
+            question={randomQuestion->Option.map(q => q.fragmentRefs)}
+          />
         </React.Suspense>
       </ErrorBoundary>
       <div className="bg-default w-full relative">

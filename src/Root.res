@@ -123,6 +123,16 @@ module VotesySpeakProvider = {
   }
 }
 
+module QuestionProvider = {
+  open QuestionContext
+  @react.component
+  let make = (~children) => {
+    let (question, setQuestion) = React.useState(_ => None)
+
+    <Provider value={{question, setQuestion}}> {children} </Provider>
+  }
+}
+
 ReactDOMExperimental.renderConcurrentRootAtElementWithId(
   <RescriptRelay.Context.Provider environment={RelayEnv.environment}>
     <RelayRouter.Provider value={Router.routerContext}>
@@ -154,14 +164,16 @@ ReactDOMExperimental.renderConcurrentRootAtElementWithId(
             <RainbowKit.Provider chains={%raw("chains")} initialChain={%raw("goerli")}>
               <VoteProvider>
                 <AuctionProvider>
-                  <HeroComponentProvider>
-                    <VotesySpeakProvider>
-                      <RelayRouter.RouteRenderer
-                        // This renders all the time, and when there"s a pending navigation (pending via React concurrent mode), pending will be `true`
-                        renderPending={pending => <PendingIndicatorBar pending />}
-                      />
-                    </VotesySpeakProvider>
-                  </HeroComponentProvider>
+                  <QuestionProvider>
+                    <HeroComponentProvider>
+                      <VotesySpeakProvider>
+                        <RelayRouter.RouteRenderer
+                          // This renders all the time, and when there"s a pending navigation (pending via React concurrent mode), pending will be `true`
+                          renderPending={pending => <PendingIndicatorBar pending />}
+                        />
+                      </VotesySpeakProvider>
+                    </HeroComponentProvider>
+                  </QuestionProvider>
                 </AuctionProvider>
               </VoteProvider>
             </RainbowKit.Provider>

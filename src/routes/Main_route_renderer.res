@@ -60,8 +60,10 @@ let renderer = Routes.Main.Route.makeRenderer(
   },
   ~render=({childRoutes, linkBrightID, contextId, prepared}) => {
     let (queryRef, linkBrightIDQueryRef) = prepared
+
     let {auction, isLoading} = React.useContext(AuctionContext.context)
     let {vote} = React.useContext(VoteContext.context)
+    let {question} = React.useContext(QuestionContext.context)
 
     let mainSubroute = Routes.Main.Route.useActiveSubRoute()
     let voteSubroute = Routes.Main.Vote.Route.useActiveSubRoute()
@@ -78,7 +80,7 @@ let renderer = Routes.Main.Route.makeRenderer(
               <SingleVote
                 vote={vote->Option.getExn} tokenId={auction->Option.map(auction => auction.tokenId)}
               />
-            | CurrentQuestion => <SingleQuestion />
+            | CurrentQuestion => <SingleQuestion question={question->Option.getExn} />
             | ChildRoutes => childRoutes
             }}
           </React.Suspense>

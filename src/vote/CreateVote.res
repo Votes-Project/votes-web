@@ -19,6 +19,13 @@ let maxOptions = 5
 
 @react.component @relay.deferredComponent
 let make = (~children) => {
+  let askRef = React.useCallback0(element => {
+    switch element->Nullable.toOption {
+    | Some(element) =>
+      element->Element.Scroll.intoViewWithOptions(~options={behavior: Smooth, block: End})
+    | None => ()
+    }
+  })
   let titleRef = React.useRef("")
   let (state, dispatch) = React.useReducer(
     CreateVoteContext.reducer,
@@ -65,7 +72,9 @@ let make = (~children) => {
 
   React.useEffect1(() => {
     setHeroComponent(_ =>
-      <div className="flex justify-center items-start w-full p-4 h-[558px] min-h-[558px]  ">
+      <div
+        className="flex justify-center items-start w-full p-4 h-[558px] min-h-[558px]   "
+        ref={ReactDOM.Ref.callbackDomRef(askRef)}>
         <div
           className="h-full flex-1 relative flex  bg-transparent focus-within:border-2 focus-within:ring-0 focus-within:border-primary backdrop-blur-[2px] rounded-lg transition-all duration-200 ease-linear">
           <ContentEditable
