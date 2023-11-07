@@ -8,3 +8,11 @@ module ConnectButton = {
     ~chainStatus: chainStatus=?,
   ) => React.element = "ConnectButton"
 }
+
+type useConnectModal = {openConnectModal: unit => unit}
+type useAccountModal = {openAccountModal: unit => unit}
+
+@module("@rainbow-me/rainbowkit")
+external useConnectModal: unit => useConnectModal = "useConnectModal"
+@module("@rainbow-me/rainbowkit")
+external useAccountModal: unit => useAccountModal = "useAccountModal"
