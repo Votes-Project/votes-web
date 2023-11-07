@@ -28,7 +28,7 @@
         "name": "Question",
         "children": [
           {
-            "path": "",
+            "path": "?id=string",
             "name": "Current",
             "children": []
           },

@@ -1,8 +1,23 @@
+module SingleQuestion = %relay.deferredComponent(SingleQuestion.make)
 let renderer = Routes.Main.Question.Current.Route.makeRenderer(
-  ~prepare=_ => {
-    ()
+  ~prepareCode=_ => [SingleQuestion.preload()],
+  ~prepare=({environment, id}) => {
+    switch id {
+    | None => None
+    | Some(id) =>
+      Some(
+        SingleQuestionQuery_graphql.load(
+          ~environment,
+          ~variables={id: id},
+          ~fetchPolicy=StoreOrNetwork,
+        ),
+      )
+    }
   },
-  ~render=_ => {
-    <SingleQuestion />
+  ~render=({prepared}) => {
+    switch prepared {
+    | None => <> </>
+    | Some(queryRef) => <SingleQuestion queryRef />
+    }
   },
 )

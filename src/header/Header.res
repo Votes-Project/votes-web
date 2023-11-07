@@ -14,12 +14,15 @@ module Fragment = %relay(`
     verifications(context: $context) {
       ...VoterCount
     }
+    randomQuestion {
+      id
+    }
   }
 `)
 
 @react.component
 let make = (~verifications) => {
-  let {verifications} = Fragment.use(verifications)
+  let {verifications, randomQuestion} = Fragment.use(verifications)
   let (isOpen, setIsOpen) = React.useState(_ => false)
 
   let handleMenu = _ => {
@@ -40,7 +43,9 @@ let make = (~verifications) => {
     <nav className=" max-w-7xl flex w-full justify-between px-4 pt-2 flex-1">
       <div className="flex gap-3 justify-center items-center ">
         <RelayRouter.Link
-          to_={Routes.Main.Question.Current.Route.makeLink()}
+          to_={Routes.Main.Question.Current.Route.makeLink(
+            ~id=randomQuestion->Option.map(q => q.id)->Option.getExn,
+          )}
           className="relative z-2 px-2 py-0 transition-all z-2"
           onClick={_ => isOpen ? handleMenu() : ()}>
           <div className="relative w-24 h-24">
