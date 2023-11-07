@@ -2,7 +2,7 @@ RescriptRelay.relayFeatureFlags.enableRelayResolvers = true
 module Query = %relay(`
   query SingleVoteQuery($id: ID!) {
     node(id: $id) {
-      ...SingleVote_node @arguments
+      ...SingleVote_node
     }
   }
 `)
@@ -32,14 +32,23 @@ let make = (
   ~tokenId,
 ) => {
   let data = queryRef->Option.map(queryRef => Query.usePreloaded(~queryRef))
-  let vote = vote->Option.map(vote => Fragment.use(vote))
+  let vote = Fragment.useOpt(vote)
   let {setHeroComponent} = React.useContext(HeroComponentContext.context)
   let tokenId = tokenId->Option.getExn
+
+  let auctionRef = React.useCallback0(element => {
+    switch element->Nullable.toOption {
+    | Some(element) =>
+      element->Element.Scroll.intoViewWithOptions(~options={behavior: Smooth, block: End})
+    | None => ()
+    }
+  })
 
   React.useEffect1(() => {
     setHeroComponent(_ =>
       <div
-        className=" lg:w-[50%] w-[80%] md:w-[70%] mx-[10%] mt-8 md:mx-[15%] lg:mx-0 flex align-end lg:pr-20">
+        className=" lg:w-[50%] w-[80%] md:w-[70%] mx-[10%] mt-8 md:mx-[15%] lg:mx-0 flex align-end lg:pr-20"
+        ref={ReactDOM.Ref.callbackDomRef(auctionRef)}>
         <div className="relative h-0 w-full pt-[100%]">
           <EmptyVoteChart className="absolute left-0 top-0 w-full align-middle " />
         </div>

@@ -1,12 +1,21 @@
-module Fragment = %relay(`
+module VoteContractFragment = %relay(`
   fragment BottomNav_voteContract on VoteContract {
     totalSupply
   }
 `)
+module QuestionFragment = %relay(`
+  fragment BottomNav_question on Question {
+    id
+  }
+`)
 
 @react.component
-let make = (~voteContract) => {
-  let contract = voteContract->Fragment.useOpt
+let make = (~voteContract, ~question) => {
+  let {
+    queryParams: currentQuestionQueryParams,
+  } = Routes.Main.Question.Current.Route.useQueryParams()
+  let contract = voteContract->VoteContractFragment.useOpt
+  let question = question->QuestionFragment.useOpt
   let (_, setScrollY) = React.useState(_ => window->Window.scrollY)
 
   let (disabled, setDisabled) = React.useState(_ => false)
@@ -75,7 +84,10 @@ let make = (~voteContract) => {
             <button type_="button" disabled> {"Ask"->React.string} </button>
           </RelayRouter.Link>
           <RelayRouter.Link
-            to_={Routes.Main.Question.Current.Route.makeLink()}
+            to_={Routes.Main.Question.Current.Route.makeLinkFromQueryParams({
+              ...currentQuestionQueryParams,
+              id: question->Option.map(({id}) => id),
+            })}
             className="inline-flex items-center px-1 pt-1">
             <button type_="button" disabled> {"Answer"->React.string} </button>
           </RelayRouter.Link>
