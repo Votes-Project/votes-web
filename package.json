@@ -19,7 +19,7 @@
     "watch:relay": "rescript-relay-compiler --watch",
     "watch:res": "rescript build -w",
     "watch:vite": "vite --port $PORT",
-    "resgraph:watch": "resgraph watch",
+    "watch:resgraph": "resgraph watch",
     "format": "rescript-relay-cli format-all-graphql",
     "rm-unused-fields": "rescript-relay-cli remove-unused-fields"
   },
