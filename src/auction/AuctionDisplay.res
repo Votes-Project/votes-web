@@ -144,7 +144,9 @@ let make = (~auction, ~owner, ~tokenId) => {
         </div>
         <ErrorBoundary
           fallback={_ => {<div> {React.string("Bid Component Failed to Insantiate")} </div>}}>
-          <CreateBid auction=fragmentRefs />
+          <OpenConnectModalWrapper>
+            <CreateBid auction=fragmentRefs />
+          </OpenConnectModalWrapper>
         </ErrorBoundary>
         <ul className="flex flex-col justify-between py-4">
           <AuctionBidList bids={auction.fragmentRefs} />
@@ -186,7 +188,9 @@ let make = (~auction, ~owner, ~tokenId) => {
             </p>
           </div>
         </div>
-        <SettleAuctionButton isSettled=settled />
+        <OpenConnectModalWrapper>
+          <SettleAuctionButton isSettled=settled />
+        </OpenConnectModalWrapper>
         <div className="flex w-full">
           <NewVoteLink>
             <div className="flex flex-row gap-2 items-center justify-start">

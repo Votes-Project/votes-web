@@ -36,15 +36,6 @@ module QuestionTitle = {
   }
 }
 
-module RainbowKit = {
-  type useConnectModal = {openConnectModal: unit => unit}
-  type useAccountModal = {openAccountModal: unit => unit}
-
-  @module("@rainbow-me/rainbowkit")
-  external useConnectModal: unit => useConnectModal = "useConnectModal"
-  @module("@rainbow-me/rainbowkit")
-  external useAccountModal: unit => useAccountModal = "useAccountModal"
-}
 module LinkStatusTooltip = {
   @react.component
   let make = (~verificationData) => {
