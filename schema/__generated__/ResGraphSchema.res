@@ -136,6 +136,12 @@ let t_PageInfo: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
 let get_PageInfo = () => t_PageInfo.contents
 let t_Query: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
 let get_Query = () => t_Query.contents
+let t_Question: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
+let get_Question = () => t_Question.contents
+let t_QuestionConnection: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
+let get_QuestionConnection = () => t_QuestionConnection.contents
+let t_QuestionEdge: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
+let get_QuestionEdge = () => t_QuestionEdge.contents
 let t_QuestionSubmitted: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
 let get_QuestionSubmitted = () => t_QuestionSubmitted.contents
 let t_QuestionSubmittedConnection: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
@@ -224,6 +230,7 @@ let interface_Node_resolveType = (v: Interface_node.Resolver.t) =>
   | AuctionCreated(_) => "AuctionCreated"
   | VerificationData(_) => "VerificationData"
   | QuestionSubmitted(_) => "QuestionSubmitted"
+  | Question(_) => "Question"
   | Vote(_) => "Vote"
   | VerificationsData(_) => "VerificationsData"
   }
@@ -1184,6 +1191,16 @@ t_Query.contents = GraphQLObjectType.make({
           NodeInterfaceResolvers.nodes(src, ~ctx, ~ids=args["ids"])
         }),
       },
+      "questionById": {
+        typ: get_Question()->GraphQLObjectType.toGraphQLType,
+        description: ?None,
+        deprecationReason: ?None,
+        args: {"id": {typ: Scalars.string->Scalars.toGraphQLType->nonNull}}->makeArgs,
+        resolve: makeResolveFn((src, args, ctx) => {
+          let src = typeUnwrapper(src)
+          QuestionResolvers.questionById(src, ~ctx, ~id=args["id"])
+        }),
+      },
       "questionSubmitted": {
         typ: get_QuestionSubmitted()->GraphQLObjectType.toGraphQLType,
         description: ?None,
@@ -1214,6 +1231,39 @@ t_Query.contents = GraphQLObjectType.make({
             ~first=args["first"]->Nullable.toOption,
             ~last=args["last"]->Nullable.toOption,
             ~skip=args["skip"]->Nullable.toOption,
+          )
+        }),
+      },
+      "randomQuestion": {
+        typ: get_Question()->GraphQLObjectType.toGraphQLType,
+        description: ?None,
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, args, ctx) => {
+          let src = typeUnwrapper(src)
+          QuestionResolvers.randomQuestion(src, ~ctx)
+        }),
+      },
+      "randomQuestions": {
+        typ: get_QuestionConnection()->GraphQLObjectType.toGraphQLType->nonNull,
+        description: ?None,
+        deprecationReason: ?None,
+        args: {
+          "after": {typ: Scalars.string->Scalars.toGraphQLType},
+          "before": {typ: Scalars.string->Scalars.toGraphQLType},
+          "first": {typ: Scalars.int->Scalars.toGraphQLType},
+          "last": {typ: Scalars.int->Scalars.toGraphQLType},
+          "limit": {typ: Scalars.int->Scalars.toGraphQLType->nonNull},
+        }->makeArgs,
+        resolve: makeResolveFn((src, args, ctx) => {
+          let src = typeUnwrapper(src)
+          QuestionResolvers.randomQuestions(
+            src,
+            ~after=?args["after"]->Nullable.toOption,
+            ~before=?args["before"]->Nullable.toOption,
+            ~ctx,
+            ~first=?args["first"]->Nullable.toOption,
+            ~last=?args["last"]->Nullable.toOption,
+            ~limit=args["limit"],
           )
         }),
       },
@@ -1332,6 +1382,97 @@ t_Query.contents = GraphQLObjectType.make({
               v->applyConversionToInputObject(input_Where_Votes_conversionInstructions)->Some
             },
           )
+        }),
+      },
+    }->makeFields,
+})
+t_Question.contents = GraphQLObjectType.make({
+  name: "Question",
+  description: ?None,
+  interfaces: [get_Node()],
+  fields: () =>
+    {
+      "id": {
+        typ: Scalars.id->Scalars.toGraphQLType->nonNull,
+        description: ?None,
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, args, ctx) => {
+          let src = typeUnwrapper(src)
+          NodeInterfaceResolvers.id(src, ~typename=Question)
+        }),
+      },
+      "options": {
+        typ: GraphQLListType.make(Scalars.string->Scalars.toGraphQLType->nonNull)
+        ->GraphQLListType.toGraphQLType
+        ->nonNull,
+        description: ?None,
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, args, ctx) => {
+          let src = typeUnwrapper(src)
+          QuestionResolvers.options(src, ~ctx)
+        }),
+      },
+      "question": {
+        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        description: ?None,
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, args, ctx) => {
+          let src = typeUnwrapper(src)
+          QuestionResolvers.question(src, ~ctx)
+        }),
+      },
+    }->makeFields,
+})
+t_QuestionConnection.contents = GraphQLObjectType.make({
+  name: "QuestionConnection",
+  description: "A connection of questions.",
+  interfaces: [],
+  fields: () =>
+    {
+      "edges": {
+        typ: GraphQLListType.make(
+          get_QuestionEdge()->GraphQLObjectType.toGraphQLType,
+        )->GraphQLListType.toGraphQLType,
+        description: "A list of edges.",
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["edges"]
+        }),
+      },
+      "pageInfo": {
+        typ: get_PageInfo()->GraphQLObjectType.toGraphQLType->nonNull,
+        description: "Information to aid in pagination.",
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["pageInfo"]
+        }),
+      },
+    }->makeFields,
+})
+t_QuestionEdge.contents = GraphQLObjectType.make({
+  name: "QuestionEdge",
+  description: "An edge to a question.",
+  interfaces: [],
+  fields: () =>
+    {
+      "cursor": {
+        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        description: "A cursor for use in pagination.",
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["cursor"]
+        }),
+      },
+      "node": {
+        typ: get_Question()->GraphQLObjectType.toGraphQLType,
+        description: "The item at the end of the edge.",
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["node"]
         }),
       },
     }->makeFields,
