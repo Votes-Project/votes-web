@@ -10,6 +10,7 @@ type t = {
   verification: VerificationDataLoaders.t,
   verifications: VerificationsDataLoaders.t,
   auctionContract: AuctionContractDataLoaders.t,
+  question: QuestionDataLoaders.t,
 }
 
 let make = () => {
@@ -24,4 +25,5 @@ let make = () => {
   verification: VerificationDataLoaders.make(),
   verifications: VerificationsDataLoaders.make(),
   auctionContract: AuctionContractDataLoaders.make(),
+  question: QuestionDataLoaders.make(),
 }

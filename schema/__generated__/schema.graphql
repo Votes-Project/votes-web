@@ -298,6 +298,9 @@ type Query {
   verification(contextId: String!): Verification!
   questionSubmitteds(skip: Int, first: Int, after: String, before: String, last: Int): QuestionSubmittedConnection
   questionSubmitted(id: String!): QuestionSubmitted
+  randomQuestions(limit: Int!, first: Int, after: String, before: String, last: Int): QuestionConnection!
+  randomQuestion: Question
+  questionById(id: String!): Question
 
   """Fetches objects given their IDs."""
   nodes(ids: [ID!]!): [Node]!
@@ -313,6 +316,34 @@ type Query {
   auctionContract(id: String!): AuctionContract
   auctionBids(orderBy: OrderBy_AuctionBids, orderDirection: OrderDirection, where: Where_AuctionBids, first: Int, after: String, before: String, last: Int): AuctionBidConnection
   auctionBid(id: String!): AuctionBid
+}
+
+type Question implements Node {
+  options: [String!]!
+  question: String!
+  id: ID!
+}
+
+
+"""A connection of questions."""
+type QuestionConnection {
+
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [QuestionEdge]
+}
+
+
+"""An edge to a question."""
+type QuestionEdge {
+
+  """The item at the end of the edge."""
+  node: Question
+
+  """A cursor for use in pagination."""
+  cursor: String!
 }
 
 type QuestionSubmitted implements Node {
