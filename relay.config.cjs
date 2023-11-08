@@ -7,4 +7,8 @@ module.exports = {
   featureFlags: {
     enable_relay_resolver_transform: true,
   },
+  customScalars: {
+    Timestamp: "Scalars.Timestamp",
+    BigInt: "Scalars.BigInt",
+  },
 };

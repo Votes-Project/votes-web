@@ -56,11 +56,11 @@ let make = (~auction) => {
   let minBid = {
     open BigInt
     switch auction.bidder {
-    | None => auction.contract.reservePrice->fromString
+    | None => auction.contract.reservePrice
     | Some(_) =>
-      let current = auction.amount->fromString
-      let minIncrementPercent = auction.contract.minBidIncrement->fromString
-      let percentIncrement = current->mul(minIncrementPercent)->div(BigInt.fromString("100"))
+      let current = auction.amount
+      let minIncrementPercent = auction.contract.minBidIncrement
+      let percentIncrement = current->mul(minIncrementPercent)->div(fromString("100"))
       current->add(percentIncrement)
     }
   }

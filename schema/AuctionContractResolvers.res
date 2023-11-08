@@ -28,3 +28,14 @@ let auctions = async (
 
   auctions->ResGraph.Connections.connectionFromArray(~args={first: None, after, before, last})
 }
+
+/* Auction Minimum Bid Increment */
+@gql.field
+let minBidIncrement = async (auctionContract: auctionContract): Schema.BigInt.t => {
+  auctionContract.minBidIncrement->BigInt.fromString
+}
+/* Auction Reserve Price */
+@gql.field
+let reservePrice = async (auctionContract: auctionContract): Schema.BigInt.t => {
+  auctionContract.reservePrice->BigInt.fromString
+}

@@ -56,7 +56,7 @@ module BlockExplorerButton = {
     switch chainBlockExplorer {
     | Some({name, url}) =>
       <a
-        href={url ++ `/token/${auction.contract.votesToken}?a=${auction.tokenId}`}
+        href={url ++ `/token/${auction.contract.votesToken}?a=${auction.tokenId->BigInt.toString}`}
         target="_blank"
         rel="noopener noreferrer">
         <button
@@ -72,6 +72,7 @@ module BlockExplorerButton = {
 module Fragment = %relay(`
   fragment AuctionDisplay_auction on Auction {
     id
+    tokenId
     bidder
     settled
     amount
@@ -100,7 +101,7 @@ module NewVoteLink = {
 exception AuctionDoesNotExist
 type arrowPress = LeftPress | RightPress
 @react.component
-let make = (~auction, ~owner, ~tokenId) => {
+let make = (~auction, ~owner) => {
   let auction = Fragment.use(auction)
   let phase = auction.phase
 
@@ -122,7 +123,9 @@ let make = (~auction, ~owner, ~tokenId) => {
   }
 
   <>
-    <h1 className=" py-9 text-6xl text-default-darker "> {`VOTE ${tokenId}`->React.string} </h1>
+    <h1 className=" py-9 text-6xl text-default-darker ">
+      {`VOTE ${auction.tokenId->BigInt.toString}`->React.string}
+    </h1>
     {switch (phase, auction) {
     | (Some(Before), _) => <> {"Auction has not started yet"->React.string} </>
     | (Some(Active), {settled: false, fragmentRefs}) =>
@@ -175,7 +178,7 @@ let make = (~auction, ~owner, ~tokenId) => {
             </p>
             <p className="font-bold text-xl lg:text-3xl text-default-darker">
               {"Ξ "->React.string}
-              {amount->BigInt.fromString->Viem.formatUnits(18)->React.string}
+              {amount->Viem.formatUnits(18)->React.string}
             </p>
           </div>
           <div className="w-0 rounded-lg lg:border-primary border hidden lg:flex" />

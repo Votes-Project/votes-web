@@ -1,3 +1,8 @@
+let tap = x => {
+  Js.log(x)
+  x
+}
+
 @val @scope(("import", "meta", "env"))
 external voteContractAddress: option<string> = "VITE_VOTES_CONTRACT_ADDRESS"
 @module("/src/abis/Auction.json") external auctionContractAbi: JSON.t = "default"
@@ -10,13 +15,13 @@ type initialRender = Loading | CurrentVote | CurrentQuestion | ChildRoutes
 let handleInitialRender = (auction: option<AuctionContext.auction>, isLoading, isSubroute) => {
   let hasAnsweredQuestion = {
     open Dom.Storage2
-    open BigInt
-    let timestamp = localStorage->getItem("votes_answer_timestamp")->Option.getWithDefault("0")
+    let timestamp = localStorage->getItem("votes_answer_timestamp")->Option.map(BigInt.fromString)
 
-    let auctionStartTime =
-      auction->Option.map(auction => auction.startTime)->Option.getWithDefault("0")
-
-    fromString(auctionStartTime)->mul(1000->fromInt) < timestamp->fromString
+    auction
+    ->Option.map(auction => auction.startTime)
+    ->Option.map(Date.getTime)
+    ->Option.map(BigInt.fromFloat)
+    ->(Option.equal(_, timestamp, (startTime, lastVoteTimestamp) => startTime < lastVoteTimestamp))
   }
 
   switch (auction, hasAnsweredQuestion, isSubroute, isLoading) {

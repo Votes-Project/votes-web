@@ -19,6 +19,24 @@ let applyConversionToInputObject: (
       return newObj;
     }`)
 
+let scalar_BigInt = GraphQLScalar.make({
+  let config: GraphQLScalar.config<Schema.BigInt.t> = {
+    name: "BigInt",
+    description: "A number with arbitrary precision",
+    parseValue: Schema.BigInt.parseValue,
+    serialize: Schema.BigInt.serialize,
+  }
+  config
+})
+let scalar_Timestamp = GraphQLScalar.make({
+  let config: GraphQLScalar.config<Schema.Timestamp.t> = {
+    name: "Timestamp",
+    description: "A timestamp.",
+    parseValue: Schema.Timestamp.parseValue,
+    serialize: Schema.Timestamp.serialize,
+  }
+  config
+})
 let enum_OrderBy_AuctionBids = GraphQLEnumType.make({
   name: "OrderBy_AuctionBids",
   description: ?None,
@@ -256,12 +274,12 @@ t_Auction.contents = GraphQLObjectType.make({
   fields: () =>
     {
       "amount": {
-        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        typ: scalar_BigInt->GraphQLScalar.toGraphQLType->nonNull,
         description: ?None,
         deprecationReason: ?None,
-        resolve: makeResolveFn((src, _args, _ctx) => {
+        resolve: makeResolveFn((src, args, ctx) => {
           let src = typeUnwrapper(src)
-          src["amount"]
+          AuctionResolvers.amount(src)
         }),
       },
       "bidder": {
@@ -315,12 +333,12 @@ t_Auction.contents = GraphQLObjectType.make({
         }),
       },
       "endTime": {
-        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        typ: scalar_Timestamp->GraphQLScalar.toGraphQLType->nonNull,
         description: ?None,
         deprecationReason: ?None,
-        resolve: makeResolveFn((src, _args, _ctx) => {
+        resolve: makeResolveFn((src, args, ctx) => {
           let src = typeUnwrapper(src)
-          src["endTime"]
+          AuctionResolvers.endTime(src)
         }),
       },
       "extended": {
@@ -351,21 +369,21 @@ t_Auction.contents = GraphQLObjectType.make({
         }),
       },
       "startTime": {
-        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        typ: scalar_Timestamp->GraphQLScalar.toGraphQLType->nonNull,
         description: ?None,
         deprecationReason: ?None,
-        resolve: makeResolveFn((src, _args, _ctx) => {
+        resolve: makeResolveFn((src, args, ctx) => {
           let src = typeUnwrapper(src)
-          src["startTime"]
+          AuctionResolvers.startTime(src)
         }),
       },
       "tokenId": {
-        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        typ: scalar_BigInt->GraphQLScalar.toGraphQLType->nonNull,
         description: ?None,
         deprecationReason: ?None,
-        resolve: makeResolveFn((src, _args, _ctx) => {
+        resolve: makeResolveFn((src, args, ctx) => {
           let src = typeUnwrapper(src)
-          src["tokenId"]
+          AuctionResolvers.tokenId(src)
         }),
       },
       "vote": {
@@ -386,12 +404,12 @@ t_AuctionBid.contents = GraphQLObjectType.make({
   fields: () =>
     {
       "amount": {
-        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        typ: scalar_BigInt->GraphQLScalar.toGraphQLType->nonNull,
         description: "The amount of the bid",
         deprecationReason: ?None,
-        resolve: makeResolveFn((src, _args, _ctx) => {
+        resolve: makeResolveFn((src, args, ctx) => {
           let src = typeUnwrapper(src)
-          src["amount"]
+          AuctionBidResolvers.amount(src)
         }),
       },
       "bidder": {
@@ -422,12 +440,12 @@ t_AuctionBid.contents = GraphQLObjectType.make({
         }),
       },
       "tokenId": {
-        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        typ: scalar_BigInt->GraphQLScalar.toGraphQLType->nonNull,
         description: "The ID of the Vote Token",
         deprecationReason: ?None,
-        resolve: makeResolveFn((src, _args, _ctx) => {
+        resolve: makeResolveFn((src, args, ctx) => {
           let src = typeUnwrapper(src)
-          src["tokenId"]
+          AuctionBidResolvers.tokenId(src)
         }),
       },
     }->makeFields,
@@ -535,7 +553,7 @@ t_AuctionContract.contents = GraphQLObjectType.make({
         }->makeArgs,
         resolve: makeResolveFn((src, args, ctx) => {
           let src = typeUnwrapper(src)
-          AuctionContractResolver.auctions(
+          AuctionContractResolvers.auctions(
             src,
             ~after=args["after"]->Nullable.toOption,
             ~before=args["before"]->Nullable.toOption,
@@ -589,12 +607,12 @@ t_AuctionContract.contents = GraphQLObjectType.make({
         }),
       },
       "minBidIncrement": {
-        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        typ: scalar_BigInt->GraphQLScalar.toGraphQLType->nonNull,
         description: ?None,
         deprecationReason: ?None,
-        resolve: makeResolveFn((src, _args, _ctx) => {
+        resolve: makeResolveFn((src, args, ctx) => {
           let src = typeUnwrapper(src)
-          src["minBidIncrement"]
+          AuctionContractResolvers.minBidIncrement(src)
         }),
       },
       "paused": {
@@ -625,12 +643,12 @@ t_AuctionContract.contents = GraphQLObjectType.make({
         }),
       },
       "reservePrice": {
-        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        typ: scalar_BigInt->GraphQLScalar.toGraphQLType->nonNull,
         description: ?None,
         deprecationReason: ?None,
-        resolve: makeResolveFn((src, _args, _ctx) => {
+        resolve: makeResolveFn((src, args, ctx) => {
           let src = typeUnwrapper(src)
-          src["reservePrice"]
+          AuctionContractResolvers.reservePrice(src)
         }),
       },
       "timeBuffer": {
@@ -1046,7 +1064,7 @@ t_Query.contents = GraphQLObjectType.make({
         args: {"id": {typ: Scalars.string->Scalars.toGraphQLType->nonNull}}->makeArgs,
         resolve: makeResolveFn((src, args, ctx) => {
           let src = typeUnwrapper(src)
-          AuctionContractResolver.auctionContract(src, ~ctx, ~id=args["id"])
+          AuctionContractResolvers.auctionContract(src, ~ctx, ~id=args["id"])
         }),
       },
       "auctionCreated": {
@@ -1759,12 +1777,12 @@ t_Vote.contents = GraphQLObjectType.make({
         }),
       },
       "tokenId": {
-        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        typ: scalar_BigInt->GraphQLScalar.toGraphQLType->nonNull,
         description: ?None,
         deprecationReason: ?None,
-        resolve: makeResolveFn((src, _args, _ctx) => {
+        resolve: makeResolveFn((src, args, ctx) => {
           let src = typeUnwrapper(src)
-          src["tokenId"]
+          VoteResolvers.tokenId(src)
         }),
       },
       "uri": {
@@ -1840,12 +1858,12 @@ t_VoteContract.contents = GraphQLObjectType.make({
         }),
       },
       "totalSupply": {
-        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        typ: scalar_BigInt->GraphQLScalar.toGraphQLType->nonNull,
         description: ?None,
         deprecationReason: ?None,
-        resolve: makeResolveFn((src, _args, _ctx) => {
+        resolve: makeResolveFn((src, args, ctx) => {
           let src = typeUnwrapper(src)
-          src["totalSupply"]
+          VoteContractResolvers.totalSupply(src)
         }),
       },
     }->makeFields,

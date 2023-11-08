@@ -10,7 +10,9 @@ module Fragment = %relay(`
 let make = (~vote) => {
   let vote = Fragment.use(vote)
   <>
-    <h1 className="py-9 text-6xl text-default-darker "> {`VOTE ${vote.tokenId}`->React.string} </h1>
+    <h1 className="py-9 text-6xl text-default-darker ">
+      {`VOTE ${vote.tokenId->BigInt.toString}`->React.string}
+    </h1>
     {"Raffle"->React.string}
   </>
 }

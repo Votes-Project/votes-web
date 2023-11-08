@@ -1,3 +1,11 @@
+
+"""A number with arbitrary precision"""
+scalar BigInt
+
+
+"""A timestamp."""
+scalar Timestamp
+
 enum OrderBy_AuctionBids {
   id
   tokenId
@@ -88,12 +96,12 @@ interface Node {
 }
 
 type Auction implements Node {
+  amount: BigInt!
+  tokenId: BigInt!
+  endTime: Timestamp!
+  startTime: Timestamp!
   vote: Vote!
   bids(orderBy: OrderBy_AuctionBids, orderDirection: OrderDirection, where: Where_AuctionBids, first: Int, after: String, before: String, last: Int): AuctionBidConnection!
-  startTime: String!
-  tokenId: String!
-  endTime: String!
-  amount: String!
   bidder: String
   extended: Boolean!
   settled: Boolean!
@@ -105,14 +113,14 @@ type Auction implements Node {
 """GraphClient: A bid on a Vote Auction"""
 type AuctionBid implements Node {
 
+  """The amount of the bid"""
+  amount: BigInt!
+
   """The ID of the Vote Token"""
-  tokenId: String!
+  tokenId: BigInt!
 
   """The address of the bidder"""
   bidder: String!
-
-  """The amount of the bid"""
-  amount: String!
 
   """The time the bid was made"""
   blockTimestamp: String!
@@ -153,13 +161,13 @@ type AuctionConnection {
 }
 
 type AuctionContract implements Node {
+  reservePrice: BigInt!
+  minBidIncrement: BigInt!
   auctions(orderBy: OrderBy_Auctions, orderDirection: OrderDirection, where: Where_Auctions, first: Int, after: String, before: String, last: Int): AuctionConnection!
   treasury: String!
   duration: String!
   timeBuffer: String!
-  minBidIncrement: String!
   launched: Boolean!
-  reservePrice: String!
   reserveAddress: String!
   raffleAddress: String!
   votesURI: String!
@@ -420,8 +428,8 @@ type VerificationsData implements Node {
 
 """GraphClient: A Vote Token entity"""
 type Vote implements Node {
+  tokenId: BigInt!
   auction: Auction
-  tokenId: String!
   owner: String!
   uri: String!
   contract: VoteContract!
@@ -442,9 +450,9 @@ type VoteConnection {
 
 """GraphClient: A Vote Contract entity"""
 type VoteContract implements Node {
+  totalSupply: BigInt!
   name: String!
   symbol: String!
-  totalSupply: String!
   id: ID!
 }
 

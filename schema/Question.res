@@ -9,6 +9,8 @@ type question = {
   incorrectAnswers: array<string>,
   /** The correct answer */
   correctAnswer: string,
+  /** The day the question was asked */
+  day: option<string>,
 }
 
 /** An edge to a question. */
@@ -32,5 +34,6 @@ let questionStruct = {
     question: "question"->field(questionTextStruct),
     incorrectAnswers: "incorrectAnswers"->field(array(string)),
     correctAnswer: "correctAnswer"->field(string),
+    day: "day"->field(option(string)),
   })
 }

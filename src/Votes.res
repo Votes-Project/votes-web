@@ -32,7 +32,7 @@ module VoteItem = {
         </div>
         <p
           className="bg-default-dark block absolute w-full bottom-0 rounded-b-xl font-bold text-lg text-white">
-          {vote.tokenId->React.string}
+          {vote.tokenId->BigInt.toString->React.string}
         </p>
       </button>
     </li>
@@ -131,7 +131,9 @@ module VoteListDisplay = {
         <div>
           {switch voteContract {
           | Some({totalSupply}) =>
-            <h1 className="font-semibold "> {`Explore ${totalSupply} Votes`->React.string} </h1>
+            <h1 className="font-semibold ">
+              {`Explore ${totalSupply->BigInt.toString} Votes`->React.string}
+            </h1>
           | None => <> </>
           }}
         </div>
