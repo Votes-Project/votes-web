@@ -2,14 +2,10 @@
 @gql.type
 type auctionBid = {
   ...NodeInterface.node,
-  /** The ID of the Vote Token */
-  @gql.field
   tokenId: string,
   /** The address of the bidder */
   @gql.field
   bidder: string,
-  /** The amount of the bid */
-  @gql.field
   amount: string,
   /** The time the bid was made */
   @gql.field

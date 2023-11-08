@@ -9,7 +9,7 @@ module BidItem = {
   @react.component
   let make = (~bid) => {
     let {amount, bidder, id} = Fragment.use(bid)
-    let amount = amount->BigInt.fromString->Viem.formatUnits(18)
+    let amount = amount->Viem.formatUnits(18)
     let isNarrow = window->Window.innerWidth < 640
 
     <li className="border-b p-3 border-background-dark" key=id>

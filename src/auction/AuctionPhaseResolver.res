@@ -9,10 +9,11 @@
  */
 type t = Before | Active | After
 
-let auctionPhase = (startTime, endTime) => {
-  let startTimeMs = startTime->Float.fromString->Option.mapWithDefault(0., x => x *. 1000.)
-  let endTimeMs = endTime->Float.fromString->Option.mapWithDefault(0., x => x *. 1000.)
-  let now = Date.now()
+let auctionPhase = (startTime, endTime: Date.t) => {
+  open BigInt
+  let startTimeMs = startTime->Date.getTime->BigInt.fromFloat
+  let endTimeMs = endTime->Date.getTime->BigInt.fromFloat
+  let now = Date.now()->fromFloat
 
   if startTimeMs > now {
     Before

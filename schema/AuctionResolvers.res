@@ -75,3 +75,21 @@ let vote = async (auction: auction, ~ctx: ResGraphContext.context) => {
     vote
   }
 }
+
+/* Start time of auction */
+@gql.field
+let startTime = (auction: auction): Schema.Timestamp.t =>
+  auction.startTime->Float.fromString->Option.map(x => x *. 1000.)->Option.getExn->Date.fromTime
+
+/* End time of auction */
+@gql.field
+let endTime = (auction: auction): Schema.Timestamp.t =>
+  auction.endTime->Float.fromString->Option.map(x => x *. 1000.)->Option.getExn->Date.fromTime
+
+/* Token ID of auction */
+@gql.field
+let tokenId = (auction: auction): Schema.BigInt.t => auction.tokenId->BigInt.fromString
+
+/* Amount of highest bid */
+@gql.field
+let amount = (auction: auction): Schema.BigInt.t => auction.amount->BigInt.fromString

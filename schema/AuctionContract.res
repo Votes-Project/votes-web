@@ -10,14 +10,10 @@ type auctionContract = {
   /* Auction Time Buffer */
   @gql.field
   timeBuffer: string,
-  /* Auction Minimum Bid Increment */
-  @gql.field
   minBidIncrement: string,
   /* Auction Launched */
   @gql.field
   launched: bool,
-  /* Auction Reserve Price */
-  @gql.field
   reservePrice: string,
   /* Auction Reserve Address */
   @gql.field
