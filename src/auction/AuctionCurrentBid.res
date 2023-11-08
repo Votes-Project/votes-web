@@ -15,7 +15,6 @@ let make = (~auction) => {
     <p className="font-bold text-xl lg:text-3xl text-default-darker">
       {"Ξ "->React.string}
       {amount
-      ->BigInt.fromString
       ->Viem.formatEther
       ->React.string}
     </p>

@@ -8,7 +8,5 @@ type voteContract = {
   /* The symbol of the vote token */
   @gql.field
   symbol: string,
-  /* The total supply of the vote token */
-  @gql.field
   totalSupply: string,
 }

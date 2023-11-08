@@ -29,3 +29,11 @@ let auctionBids = async (
     await ctx.dataLoaders.auctionBid.list->DataLoader.load({first, orderBy, orderDirection, where})
   bids->ResGraph.Connections.connectionFromArray(~args={first: None, after, before, last})->Some
 }
+
+/** The ID of the Vote Token */
+@gql.field
+let tokenId = (auctionBid: auctionBid): Schema.BigInt.t => auctionBid.tokenId->BigInt.fromString
+
+/** The amount of the bid */
+@gql.field
+let amount = (auctionBid: auctionBid): Schema.BigInt.t => auctionBid.amount->BigInt.fromString

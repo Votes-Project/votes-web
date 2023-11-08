@@ -34,7 +34,6 @@ let make = (
   let data = queryRef->Option.map(queryRef => Query.usePreloaded(~queryRef))
   let vote = Fragment.useOpt(vote)
   let {setHeroComponent} = React.useContext(HeroComponentContext.context)
-  let tokenId = tokenId->Option.getExn
 
   let auctionRef = React.useCallback0(element => {
     switch element->Nullable.toOption {
@@ -76,9 +75,9 @@ let make = (
         Some({auction: Some({fragmentRefs, startTime}), contract: {totalSupply}, owner, tokenId}),
       ) =>
       <ErrorBoundary fallback={_ => "Auction Failed to load"->React.string}>
-        <VoteHeader tokenId={tokenId} totalSupply startTime />
+        <VoteHeader tokenId={Some(tokenId)} totalSupply startTime />
         <React.Suspense fallback={<div />}>
-          <AuctionDisplay owner auction=fragmentRefs tokenId />
+          <AuctionDisplay owner auction=fragmentRefs />
         </React.Suspense>
       </ErrorBoundary>
     | (
@@ -86,9 +85,9 @@ let make = (
         Some({auction: Some({fragmentRefs, startTime}), contract: {totalSupply}, owner, tokenId}),
       ) =>
       <ErrorBoundary fallback={_ => "Auction Failed to load"->React.string}>
-        <VoteHeader tokenId={tokenId} totalSupply startTime />
+        <VoteHeader tokenId={Some(tokenId)} totalSupply startTime />
         <React.Suspense fallback={<div />}>
-          <AuctionDisplay owner auction=fragmentRefs tokenId />
+          <AuctionDisplay owner auction=fragmentRefs />
         </React.Suspense>
       </ErrorBoundary>
     | (Some(FlashVote), Some({auction: None})) => raise(NoAuction)

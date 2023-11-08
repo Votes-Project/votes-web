@@ -20,7 +20,7 @@ let renderer = Routes.Main.Vote.Auction.Route.makeRenderer(
     <ErrorBoundary fallback={({error}) => JSON.stringifyAny(error)->Option.getExn->React.string}>
       <React.Suspense fallback={<div> {"Loading..."->React.string} </div>}>
         {switch prepared {
-        | Some(queryRef) => <SingleVote queryRef tokenId={Some(tokenId)} />
+        | Some(queryRef) => <SingleVote queryRef tokenId={Some(tokenId->BigInt.fromString)} />
 
         | None => <div> {"Failed to fetch vote..."->React.string} </div>
         }}
