@@ -52,8 +52,9 @@ let make = (~voteContract) => {
     open Dom.Storage2
     let timestamp = localStorage->getItem("votes_answer_timestamp")->Option.getWithDefault("0")
 
-    let auctionStartTime = auction->Option.mapWithDefault("0", auction => auction.startTime)
-    fromString(auctionStartTime)->mul(1000->fromInt) < timestamp->fromString
+    let auctionStartTime =
+      auction->Option.mapWithDefault(Date.fromString("0"), auction => auction.startTime)
+    auctionStartTime->Date.toTimeString->BigInt.fromString < timestamp->fromString
   }
 
   let location = RelayRouter.Utils.useLocation()
@@ -79,7 +80,7 @@ let make = (~voteContract) => {
 
   let newestTokenId = {
     open BigInt
-    fromString(totalSupply)->sub(1->fromInt)->toString
+    totalSupply->sub(1->fromInt)->toString
   }
 
   let handleWindowSizeChange = React.useCallback(() => {

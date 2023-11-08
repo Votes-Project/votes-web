@@ -2,8 +2,6 @@
 @gql.type
 type rec vote = {
   ...NodeInterface.node,
-  /* The token ID of the vote token */
-  @gql.field
   tokenId: string,
   /* The owner of the vote token */
   @gql.field

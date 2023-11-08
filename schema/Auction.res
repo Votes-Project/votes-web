@@ -3,16 +3,9 @@
 type auction = {
   ...NodeInterface.node,
   /* Start time of auction */
-  @gql.field
   startTime: string,
-  /* Token ID of auction */
-  @gql.field
   tokenId: string,
-  /* End time of auction */
-  @gql.field
   endTime: string,
-  /* Amount of highest bid */
-  @gql.field
   amount: string,
   /* Address of highest bidder */
   @gql.field

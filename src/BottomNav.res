@@ -25,9 +25,7 @@ let make = (~voteContract, ~question) => {
 
   let newestTokenId = {
     open BigInt
-    contract
-    ->Option.map(({totalSupply}) => totalSupply->fromString->sub(fromInt(1))->toString)
-    ->Option.getExn
+    contract->Option.map(({totalSupply}) => totalSupply->sub(1->fromInt))->Option.getExn
   }
 
   let handleScroll = React.useCallback2(_ => {
@@ -92,7 +90,7 @@ let make = (~voteContract, ~question) => {
             <button type_="button" disabled> {"Answer"->React.string} </button>
           </RelayRouter.Link>
           <RelayRouter.Link
-            to_={Routes.Main.Vote.Auction.Route.makeLink(~tokenId=newestTokenId)}
+            to_={Routes.Main.Vote.Auction.Route.makeLink(~tokenId=newestTokenId->BigInt.toString)}
             className="inline-flex items-center px-1 pt-1">
             <button type_="button" disabled> {"Auction"->React.string} </button>
           </RelayRouter.Link>

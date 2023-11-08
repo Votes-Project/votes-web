@@ -47,3 +47,7 @@ let auction = async (vote: vote, ~ctx: ResGraphContext.context) => {
   | None => None
   }
 }
+
+/* The token ID of the vote token */
+@gql.field
+let tokenId = (vote: vote): Schema.BigInt.t => vote.tokenId->BigInt.fromString

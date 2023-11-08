@@ -10,3 +10,8 @@ let voteContract = async (_: Schema.query, ~id, ~ctx: ResGraphContext.context): 
   | Some(voteContract) => voteContract->Some
   }
 }
+
+/* The total supply of the vote token */
+@gql.field
+let totalSupply = async (voteContract: voteContract): Schema.BigInt.t =>
+  voteContract.totalSupply->BigInt.fromString

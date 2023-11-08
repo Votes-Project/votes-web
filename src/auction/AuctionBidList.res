@@ -15,7 +15,7 @@ module AuctionBidItem = {
   @react.component
   let make = (~bid) => {
     let {amount, bidder, id} = Fragment.use(bid)
-    let amount = amount->BigInt.fromString->Viem.formatUnits(18)
+    let amount = amount->Viem.formatUnits(18)
 
     <li className="border-b p-3 border-background-dark" key=id>
       <div className=" font-semibold flex items-center justify-between">
@@ -87,9 +87,9 @@ let make = (~bids) => {
                 ~typeName="AuctionBid",
               )
               ->setValueString(~name="id", ~value=`${transactionHash}${logIndex->Int.toString}}`) // logIndex needs to be converted to a little endian I32. Probably okay though
-              ->setValueString(~name="tokenId", ~value=args.tokenId)
+              ->setValueString(~name="tokenId", ~value=args.tokenId->BigInt.toString)
               ->setValueString(~name="bidder", ~value=args.bidder)
-              ->setValueString(~name="amount", ~value=args.amount)
+              ->setValueString(~name="amount", ~value=args.amount->BigInt.toString)
 
             let newEdge = ConnectionHandler.createEdge(
               ~store,
@@ -104,7 +104,7 @@ let make = (~bids) => {
 
             let _ =
               auctionRecord
-              ->setValueString(~name="amount", ~value=args.amount)
+              ->setValueString(~name="amount", ~value=args.amount->BigInt.toString)
               ->setValueString(~name="bidder", ~value=args.bidder)
 
             ConnectionHandler.insertEdgeBefore(~connection=connectionRecord, ~newEdge)

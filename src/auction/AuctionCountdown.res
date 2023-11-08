@@ -25,24 +25,27 @@ let useInterval = (callback: unit => unit, delay) => {
 
 @react.component
 let make = (~auction) => {
-  let auction = Fragment.use(auction)
+  open BigInt
+  let {endTime} = Fragment.use(auction)
 
-  let endTime = auction.endTime->Float.fromString->Option.getExn
-
-  let (secondsRemaining, setSecondsRemaining) = React.useState(_ =>
-    (endTime -. Date.now() /. 1000.)->Float.toInt
-  )
+  let (secondsRemaining, setSecondsRemaining) = React.useState(_ => {
+    endTime
+    ->Date.getTime
+    ->BigInt.fromFloat
+    ->sub(BigInt.fromFloat(Date.now()))
+    ->div(BigInt.fromInt(1000))
+  })
 
   useInterval(() => {
-    if secondsRemaining > 0 {
-      setSecondsRemaining(_ => secondsRemaining - 1)
+    if secondsRemaining > fromInt(0) {
+      setSecondsRemaining(_ => secondsRemaining->sub(BigInt.fromInt(1)))
     }
   }, 1000)
 
-  let totalMinutesRemaining = secondsRemaining / 60
-  let seconds = secondsRemaining->mod(60)->Int.toString
-  let minutes = totalMinutesRemaining->mod(60)->Int.toString
-  let hours = (totalMinutesRemaining / 60)->Int.toString
+  let totalMinutesRemaining = secondsRemaining->div(BigInt.fromInt(60))
+  let seconds = secondsRemaining->BigInt.mod(fromInt(60))
+  let minutes = totalMinutesRemaining->BigInt.mod(fromInt(60))
+  let hours = totalMinutesRemaining->div(fromInt(60))
 
   <div className="flex lg:flex-col items-start justify-between">
     {<>
@@ -50,9 +53,9 @@ let make = (~auction) => {
         {"Time Left"->React.string}
       </p>
       <p className="font-bold text-xl lg:text-3xl text-default-darker">
-        {`${hours}h
-      ${minutes}m
-      ${seconds}s`->React.string}
+        {`${hours->BigInt.toString}h
+      ${minutes->BigInt.toString}m
+      ${seconds->BigInt.toString}s`->React.string}
       </p>
     </>}
   </div>
