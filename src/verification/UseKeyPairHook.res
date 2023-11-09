@@ -1,6 +1,7 @@
 type keyPair = {
   publicKey: string,
   privateKey: string,
+  jwk: Jose.JWK.t,
   contextId: string,
 }
 
@@ -14,21 +15,28 @@ let useKeyPair = () => {
       open Promise
       switch (localPublicKey, localPrivateKey) {
       | (Some(publicKey), Some(privateKey)) =>
-        switch await {Jose.importSPKI(publicKey, ~alg=ES256, ~options={extractable: true})}
-        ->then(Jose.exportJWK)
-        ->then(Jose.calculateJwkThumbprint) {
-        | contextId =>
-          setKeyPair(_ => Some({
-            publicKey,
-            privateKey,
-            contextId,
-          }))
-        | exception _ => {
-            Dom.Storage2.localStorage->Dom.Storage2.removeItem("votes_publicKey")
-            Dom.Storage2.localStorage->Dom.Storage2.removeItem("votes_privateKey")
-            setKeyPair(_ => None)
-          }
+        let (jwk, contextId) = switch await Jose.importSPKI(
+          publicKey,
+          ~alg=ES256,
+          ~options={extractable: true},
+        ) {
+        | spki =>
+          let jwk = await Jose.exportJWK(spki)
+          let contextId = await Jose.calculateJwkThumbprint(jwk)
+          (jwk, contextId)
         }
+        setKeyPair(_ => Some({
+          publicKey,
+          privateKey,
+          jwk,
+          contextId,
+        }))
+      | exception _ => {
+          Dom.Storage2.localStorage->Dom.Storage2.removeItem("votes_publicKey")
+          Dom.Storage2.localStorage->Dom.Storage2.removeItem("votes_privateKey")
+          setKeyPair(_ => None)
+        }
+
       | _ =>
         switch await Jose.generateKeyPair(
           ES256,
@@ -40,12 +48,13 @@ let useKeyPair = () => {
           switch (
             await Jose.exportSPKI(publicKey),
             await Jose.exportPKCS8(privateKey),
+            await Jose.exportJWK(publicKey),
             await {Jose.exportJWK(publicKey)}->then(Jose.calculateJwkThumbprint),
           ) {
-          | (publicKey, privateKey, contextId) =>
+          | (publicKey, privateKey, jwk, contextId) =>
             Dom.Storage2.localStorage->Dom.Storage2.setItem("votes_publicKey", publicKey)
             Dom.Storage2.localStorage->Dom.Storage2.setItem("votes_privateKey", privateKey)
-            setKeyPair(_ => Some({publicKey, privateKey, contextId}))
+            setKeyPair(_ => Some({publicKey, privateKey, jwk, contextId}))
           }
         | exception e => raise(e)
         }
