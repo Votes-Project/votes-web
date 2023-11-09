@@ -133,6 +133,8 @@ module QuestionProvider = {
   }
 }
 
+Dom.Storage2.localStorage->Dom.Storage2.setItem("votesdev_answer_jwt", "")
+
 ReactDOMExperimental.renderConcurrentRootAtElementWithId(
   <RescriptRelay.Context.Provider environment={RelayEnv.environment}>
     <RelayRouter.Provider value={Router.routerContext}>
