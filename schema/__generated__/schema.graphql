@@ -95,6 +95,38 @@ interface Node {
   id: ID!
 }
 
+type Answer implements Node {
+
+  """The user that submitted the answer"""
+  user: String!
+  option: String!
+  answerNumByUser: Int!
+  day: Int!
+  id: ID!
+}
+
+
+"""A connection to an auction."""
+type AnswerConnection {
+
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [AnswerEdge]
+}
+
+
+"""An edge to an auction."""
+type AnswerEdge {
+
+  """The item at the end of the edge."""
+  node: Answer
+
+  """A cursor for use in pagination."""
+  cursor: String!
+}
+
 type Auction implements Node {
   amount: BigInt!
   tokenId: BigInt!
@@ -324,6 +356,7 @@ type Query {
   auctionContract(id: String!): AuctionContract
   auctionBids(orderBy: OrderBy_AuctionBids, orderDirection: OrderDirection, where: Where_AuctionBids, first: Int, after: String, before: String, last: Int): AuctionBidConnection
   auctionBid(id: String!): AuctionBid
+  answer: Answer
 }
 
 type Question implements Node {

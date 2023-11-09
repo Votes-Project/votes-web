@@ -122,6 +122,12 @@ let enum_SubgraphError = GraphQLEnumType.make({
 })
 let i_Node: ref<GraphQLInterfaceType.t> = Obj.magic({"contents": Js.null})
 let get_Node = () => i_Node.contents
+let t_Answer: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
+let get_Answer = () => t_Answer.contents
+let t_AnswerConnection: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
+let get_AnswerConnection = () => t_AnswerConnection.contents
+let t_AnswerEdge: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
+let get_AnswerEdge = () => t_AnswerEdge.contents
 let t_Auction: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
 let get_Auction = () => t_Auction.contents
 let t_AuctionBid: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
@@ -250,6 +256,7 @@ let interface_Node_resolveType = (v: Interface_node.Resolver.t) =>
   | QuestionSubmitted(_) => "QuestionSubmitted"
   | Question(_) => "Question"
   | Vote(_) => "Vote"
+  | Answer(_) => "Answer"
   | VerificationsData(_) => "VerificationsData"
   }
 
@@ -266,6 +273,113 @@ i_Node.contents = GraphQLInterfaceType.make({
       },
     }->makeFields,
   resolveType: GraphQLInterfaceType.makeResolveInterfaceTypeFn(interface_Node_resolveType),
+})
+t_Answer.contents = GraphQLObjectType.make({
+  name: "Answer",
+  description: ?None,
+  interfaces: [get_Node()],
+  fields: () =>
+    {
+      "answerNumByUser": {
+        typ: Scalars.int->Scalars.toGraphQLType->nonNull,
+        description: ?None,
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["answerNumByUser"]
+        }),
+      },
+      "day": {
+        typ: Scalars.int->Scalars.toGraphQLType->nonNull,
+        description: ?None,
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["day"]
+        }),
+      },
+      "id": {
+        typ: Scalars.id->Scalars.toGraphQLType->nonNull,
+        description: ?None,
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, args, ctx) => {
+          let src = typeUnwrapper(src)
+          NodeInterfaceResolvers.id(src, ~typename=Answer)
+        }),
+      },
+      "option": {
+        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        description: ?None,
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["option"]
+        }),
+      },
+      "user": {
+        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        description: "The user that submitted the answer",
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["user"]
+        }),
+      },
+    }->makeFields,
+})
+t_AnswerConnection.contents = GraphQLObjectType.make({
+  name: "AnswerConnection",
+  description: "A connection to an auction.",
+  interfaces: [],
+  fields: () =>
+    {
+      "edges": {
+        typ: GraphQLListType.make(
+          get_AnswerEdge()->GraphQLObjectType.toGraphQLType,
+        )->GraphQLListType.toGraphQLType,
+        description: "A list of edges.",
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["edges"]
+        }),
+      },
+      "pageInfo": {
+        typ: get_PageInfo()->GraphQLObjectType.toGraphQLType->nonNull,
+        description: "Information to aid in pagination.",
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["pageInfo"]
+        }),
+      },
+    }->makeFields,
+})
+t_AnswerEdge.contents = GraphQLObjectType.make({
+  name: "AnswerEdge",
+  description: "An edge to an auction.",
+  interfaces: [],
+  fields: () =>
+    {
+      "cursor": {
+        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        description: "A cursor for use in pagination.",
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["cursor"]
+        }),
+      },
+      "node": {
+        typ: get_Answer()->GraphQLObjectType.toGraphQLType,
+        description: "The item at the end of the edge.",
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["node"]
+        }),
+      },
+    }->makeFields,
 })
 t_Auction.contents = GraphQLObjectType.make({
   name: "Auction",
@@ -1005,6 +1119,15 @@ t_Query.contents = GraphQLObjectType.make({
   interfaces: [],
   fields: () =>
     {
+      "answer": {
+        typ: get_Answer()->GraphQLObjectType.toGraphQLType,
+        description: ?None,
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, args, ctx) => {
+          let src = typeUnwrapper(src)
+          Answer.answer(src)
+        }),
+      },
       "auction": {
         typ: get_Auction()->GraphQLObjectType.toGraphQLType,
         description: ?None,
