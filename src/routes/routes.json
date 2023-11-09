@@ -8,7 +8,7 @@
         "name": "Vote",
         "children": [
           {
-            "path": "new/?owner=string",
+            "path": "new?owner=string",
             "name": "New",
             "children": [{
               "path": "",
