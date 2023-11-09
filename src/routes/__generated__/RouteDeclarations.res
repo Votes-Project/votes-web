@@ -188,7 +188,7 @@ let make = (~prepareDisposeTimeout=5 * 60 * 1000): array<RelayRouter.Types.route
             }
             
               {
-                path: "new/",
+                path: "new",
                 name: routeName,
                 chunk: "Main__Vote__New_route_renderer",
                 loadRouteRenderer,

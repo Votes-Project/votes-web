@@ -9,25 +9,56 @@ module QuestionFragment = %relay(`
   }
 `)
 
+module AuctionFragment = %relay(`
+  fragment BottomNav_auction on Auction {
+    startTime
+  }
+`)
+
 @react.component
-let make = (~voteContract, ~question) => {
+let make = (~voteContract, ~question, ~auction) => {
+  let contract = voteContract->VoteContractFragment.useOpt
+  let question = question->QuestionFragment.useOpt
+  let auction = auction->AuctionFragment.useOpt
+  let newestTokenId = {
+    open BigInt
+    contract->Option.map(({totalSupply}) => totalSupply->sub(1->fromInt))->Option.getExn
+  }
+
+  let location = RelayRouter.Utils.useLocation()
   let {
     queryParams: currentQuestionQueryParams,
   } = Routes.Main.Question.Current.Route.useQueryParams()
-  let contract = voteContract->VoteContractFragment.useOpt
-  let question = question->QuestionFragment.useOpt
-  let (_, setScrollY) = React.useState(_ => window->Window.scrollY)
+
+  let voteActiveSubroutes = Routes.Main.Vote.Route.getActiveSubRoute(location)
+  let mainActiveSubroutes = Routes.Main.Route.getActiveSubRoute(location)
+
+  let hasAnsweredQuestion = {
+    open Dom.Storage2
+    let timestamp = localStorage->getItem("votes_answer_timestamp")->Option.map(BigInt.fromString)
+
+    auction
+    ->Option.map(auction => auction.startTime)
+    ->Option.map(Date.getTime)
+    ->Option.map(BigInt.fromFloat)
+    ->Option.equal(timestamp, (startTime, lastVoteTimestamp) => startTime < lastVoteTimestamp)
+  }
+
+  let activeRoute = switch (mainActiveSubroutes, voteActiveSubroutes) {
+  | (Some(#Question), _) => Some(#Question)
+  | (_, Some(#Auction)) => Some(#Auction)
+  | (_, Some(#New)) => Some(#New)
+  | (None, None) if hasAnsweredQuestion == true => Some(#Auction)
+  | (None, None) if hasAnsweredQuestion == false => Some(#Question)
+  | _ => None
+  }
 
   let (disabled, setDisabled) = React.useState(_ => false)
 
   let (width, setWidth) = React.useState(_ => window->Window.innerWidth)
   let isNarrow = width <= 991
 
-  let newestTokenId = {
-    open BigInt
-    contract->Option.map(({totalSupply}) => totalSupply->sub(1->fromInt))->Option.getExn
-  }
-
+  let (_, setScrollY) = React.useState(_ => window->Window.scrollY)
   let handleScroll = React.useCallback2(_ => {
     let curr = window->Window.scrollY
     setScrollY(prev => {
@@ -75,26 +106,60 @@ let make = (~voteContract, ~question) => {
         variants=motionVariants
         initial=String("initial")
         animate=String("animate")>
-        <div className="flex py-2 justify-evenly items-center h-full text:md lg:text-lg font-bold">
+        <ul
+          className="w-full flex py-2 justify-evenly items-center h-full text:md lg:text-lg font-bold">
           <RelayRouter.Link
             to_={Routes.Main.Vote.New.Route.makeLink()}
-            className="inline-flex items-center px-1 pt-1 ">
-            <button type_="button" disabled> {"Ask"->React.string} </button>
+            className="relative flex flex-1 items-center justify-center">
+            <li className=" flex flex-1 items-center justify-center text-center">
+              <button className="z-10" type_="button" disabled> {"Ask"->React.string} </button>
+              {activeRoute == Some(#New)
+                ? <div className="absolute w-full">
+                    <Motion.Div
+                      className="w-1/2 md:w-1/4 absolute top-[-32px] left-0 right-0 mx-auto h-4 bg-default-darker rounded-t-full flex items-end justify-center pt-5"
+                      layoutId="underline">
+                      <div className="bg-default-light w-3 h-3 rounded-full " />
+                    </Motion.Div>
+                  </div>
+                : React.null}
+            </li>
           </RelayRouter.Link>
           <RelayRouter.Link
             to_={Routes.Main.Question.Current.Route.makeLinkFromQueryParams({
               ...currentQuestionQueryParams,
               id: question->Option.map(({id}) => id),
             })}
-            className="inline-flex items-center px-1 pt-1">
-            <button type_="button" disabled> {"Answer"->React.string} </button>
+            className="relative flex flex-1 items-center justify-center">
+            <li className=" flex-1 items-center flex justify-center text-center">
+              <button className="z-10" type_="button" disabled> {"Answer"->React.string} </button>
+              {activeRoute == Some(#Question)
+                ? <div className="absolute w-full">
+                    <Motion.Div
+                      className="w-1/2 md:w-1/4 absolute top-[-32px] left-0 right-0 mx-auto h-4 bg-default-darker rounded-t-full flex items-end justify-center pt-5"
+                      layoutId="underline">
+                      <div className="bg-default-light w-3 h-3 rounded-full" />
+                    </Motion.Div>
+                  </div>
+                : React.null}
+            </li>
           </RelayRouter.Link>
           <RelayRouter.Link
             to_={Routes.Main.Vote.Auction.Route.makeLink(~tokenId=newestTokenId->BigInt.toString)}
-            className="inline-flex items-center px-1 pt-1">
-            <button type_="button" disabled> {"Auction"->React.string} </button>
+            className="relative flex flex-1 items-center justify-center">
+            <li className=" flex-1 items-center flex justify-center text-center">
+              <button className="z-10" type_="button" disabled> {"Auction"->React.string} </button>
+              {activeRoute == Some(#Auction)
+                ? <div className="absolute w-full">
+                    <Motion.Div
+                      className="w-1/2 md:w-1/4 absolute top-[-32px] left-0 right-0 mx-auto h-4 bg-default-darker rounded-t-full flex items-end justify-center pt-5"
+                      layoutId="underline">
+                      <div className="bg-default-light w-3 h-3 rounded-full" />
+                    </Motion.Div>
+                  </div>
+                : React.null}
+            </li>
           </RelayRouter.Link>
-        </div>
+        </ul>
       </Motion.Nav>
     </div>
   </AnimatePresence>
