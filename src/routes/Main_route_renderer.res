@@ -1,8 +1,3 @@
-let tap = x => {
-  Js.log(x)
-  x
-}
-
 @val @scope(("import", "meta", "env"))
 external voteContractAddress: option<string> = "VITE_VOTES_CONTRACT_ADDRESS"
 @module("/src/abis/Auction.json") external auctionContractAbi: JSON.t = "default"

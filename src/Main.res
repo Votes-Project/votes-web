@@ -26,6 +26,7 @@ module Fragment = %relay(`
           auction {
             tokenId
             startTime
+            ...BottomNav_auction
           }
           ...SingleVote_node
         }
@@ -168,6 +169,7 @@ let make = (~children, ~queryRef) => {
           <BottomNav
             voteContract={voteContract->Option.map(c => c.fragmentRefs)}
             question={randomQuestion->Option.map(q => q.fragmentRefs)}
+            auction={newestVote->Option.flatMap(v => v.auction)->Option.map(a => a.fragmentRefs)}
           />
         </React.Suspense>
       </ErrorBoundary>
