@@ -32,7 +32,26 @@ external importPKCS8: (string, ~alg: alg=?, ~options: options=?) => Promise.t<cr
 @module("jose") external jwkToKey: JWK.t => Promise.t<cryptoKey> = "jwkToKey"
 @module("jose")
 external calculateJwkThumbprint: JWK.t => Promise.t<string> = "calculateJwkThumbprint"
-module SignJWT = {
+
+module JWT = {
   type t
-  @module("jose") @new external make: 'a => t = "SignJWT"
+  type header = {
+    jwk: JWK.t,
+    alg?: alg,
+  }
+  module Sign = {
+    @module("jose") @new external make: JSON.t => t = "SignJWT"
+    @send external setProtectedHeader: (t, header) => t = "setProtectedHeader"
+    @send external sign: (t, cryptoKey) => Promise.t<string> = "sign"
+  }
+  module Verify = {
+    type t<'data> = {
+      payload: 'data,
+      protectedHeader: header,
+    }
+    @module("jose")
+    external make: (string, Uint8Array.t) => Promise.t<t<'data>> = "jwtVerify"
+    @module("jose")
+    external decodeProtectedHeader: string => header = "decodeProtectedHeader"
+  }
 }
