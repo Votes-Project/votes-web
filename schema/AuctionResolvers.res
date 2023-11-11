@@ -71,7 +71,8 @@ let bids = async (
 let vote = async (auction: auction, ~ctx: ResGraphContext.context) => {
   switch await ctx.dataLoaders.vote.byId->DataLoader.load(auction.id) {
   | None => panic("Did not find vote with that ID")
-  | Some(vote) => // ctx.dataLoaders.vote.byId->DataLoader.prime(Some(vote))
+  | Some(vote) =>
+    ctx.dataLoaders.vote.byId->DataLoader.prime(Some(vote))
     vote
   }
 }
@@ -93,3 +94,17 @@ let tokenId = (auction: auction): Schema.BigInt.t => auction.tokenId->BigInt.fro
 /* Amount of highest bid */
 @gql.field
 let amount = (auction: auction): Schema.BigInt.t => auction.amount->BigInt.fromString
+
+/* Auction Contract */
+@gql.field
+let contract = async (
+  auction: auction,
+  ~ctx: ResGraphContext.context,
+): AuctionContract.auctionContract => {
+  switch await ctx.dataLoaders.auctionContract.byId->DataLoader.load(auction.contract.id) {
+  | None => panic("Did not find contract with that ID")
+  | Some(contract) =>
+    ctx.dataLoaders.auctionContract.byId->DataLoader.prime(Some(contract))
+    contract
+  }
+}

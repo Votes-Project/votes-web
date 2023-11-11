@@ -1,6 +1,6 @@
 /** GraphClient: A Vote Token entity */
 @gql.type
-type rec vote = {
+type vote = {
   ...NodeInterface.node,
   tokenId: string,
   /* The owner of the vote token */
@@ -9,9 +9,8 @@ type rec vote = {
   /* The IPFS uri of the vote token */
   @gql.field
   uri: string,
-  @gql.field
   /* The contract of the vote token */
-  contract: VoteContract.voteContract,
+  contract: GraphClient.linkById,
   /* The auction of the vote token */
   auction: Nullable.t<Auction.auction>,
 }

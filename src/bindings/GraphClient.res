@@ -14,7 +14,9 @@ type listVariables<'orderBy, 'where> = {
   where?: 'where,
   subgraphError?: subgraphError,
 }
+
 type result<'data> = {data?: 'data}
+type linkById = {id: string}
 type document<'data>
 @module("../../.graphclient/index.js")
 external execute: document<'data> => Promise.t<'data> = "execute"
