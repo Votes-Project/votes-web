@@ -9,11 +9,12 @@ type orderBy_Votes =
 type where_Votes = {
   id?: string,
   owner?: string,
+  tokenId_in?: array<string>,
 }
 
 type t = {
   byId: DataLoader.t<string, option<Vote.vote>>,
-  list: DataLoader.t<GraphClient.list<orderBy_Votes, where_Votes>, array<Vote.vote>>,
+  list: DataLoader.t<GraphClient.listVariables<orderBy_Votes, where_Votes>, array<Vote.vote>>,
 }
 
 module ById = {
