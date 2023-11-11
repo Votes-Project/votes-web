@@ -126,3 +126,13 @@ let auction = async (vote: vote, ~ctx: ResGraphContext.context) => {
 /* The token ID of the vote token */
 @gql.field
 let tokenId = (vote: vote): Schema.BigInt.t => vote.tokenId->BigInt.fromString
+
+@gql.field
+let contract = async (vote: vote, ~ctx: ResGraphContext.context): VoteContract.voteContract => {
+  switch await ctx.dataLoaders.voteContract.byId->DataLoader.load(vote.contract.id) {
+  | None => panic("Did not find vote contract")
+  | Some(voteContract) =>
+    ctx.dataLoaders.voteContract.byId->DataLoader.prime(Some(voteContract))
+    voteContract
+  }
+}
