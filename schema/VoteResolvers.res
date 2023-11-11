@@ -63,7 +63,7 @@ let votes = async (
 @gql.field
 let raffles = async (
   _: Schema.query,
-  ~voteContractAddress,
+  ~votesContractAddress,
   ~skip=?,
   ~orderBy=?,
   ~orderDirection=?,
@@ -78,7 +78,7 @@ let raffles = async (
   open GraphClient
 
   let {totalSupply} = switch await ctx.dataLoaders.voteContract.byId->DataLoader.load(
-    voteContractAddress,
+    votesContractAddress,
   ) {
   | None => panic("Did not find vote contract")
   | Some(voteContract) =>
