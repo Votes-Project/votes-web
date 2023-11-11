@@ -3,7 +3,6 @@
 type voteContract = {
   ...NodeInterface.node,
   /* The address of the vote contract */
-  @gql.field
   address: string,
   /* The name of the vote token */
   @gql.field
