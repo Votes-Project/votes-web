@@ -15,3 +15,6 @@ let voteContract = async (_: Schema.query, ~id, ~ctx: ResGraphContext.context): 
 @gql.field
 let totalSupply = async (voteContract: voteContract): Schema.BigInt.t =>
   voteContract.totalSupply->BigInt.fromString
+
+@gql.field
+let address = async (voteContract: voteContract) => voteContract.id
