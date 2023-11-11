@@ -15,18 +15,7 @@ query GetAuction($id: ID!) {
     }
     contract {
       id
-      treasury
-      duration
-      timeBuffer
-      minBidIncrement
-      launched
-      reservePrice
-      reserveAddress
-      raffleAddress
-      votesURI
-      flashVotesURI
-      paused
-      votesToken
+
     }
   }
 }

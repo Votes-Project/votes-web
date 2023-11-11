@@ -6,9 +6,6 @@ query GetVotes($first:Int, $skip:Int, $where: Vote_filter, $orderBy: Vote_orderB
     uri
     contract {
       id
-      name
-      symbol
-      totalSupply
     }
     auction {
       id
@@ -21,18 +18,6 @@ query GetVotes($first:Int, $skip:Int, $where: Vote_filter, $orderBy: Vote_orderB
       extended
       contract {
         id
-        treasury
-        duration
-        timeBuffer
-        minBidIncrement
-        launched
-        reservePrice
-        reserveAddress
-        raffleAddress
-        votesURI
-        flashVotesURI
-        paused
-        votesToken
       }
     }
   }

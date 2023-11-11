@@ -16,9 +16,7 @@ type auction = {
   /* True if auction has ended */
   @gql.field
   settled: bool,
-  /* Auction Contract */
-  @gql.field
-  contract: AuctionContract.auctionContract,
+  contract: GraphClient.linkById,
   /* Connection of auction bids */
   bids: AuctionBid.auctionBidConnection,
 }
