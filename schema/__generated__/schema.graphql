@@ -87,6 +87,7 @@ input Where_Transfers {
 input Where_Votes {
   id: String
   owner: String
+  tokenId_in: [String!]
 }
 
 
@@ -128,6 +129,7 @@ type AnswerEdge {
 }
 
 type Auction implements Node {
+  contract: AuctionContract!
   amount: BigInt!
   tokenId: BigInt!
   endTime: Timestamp!
@@ -137,7 +139,6 @@ type Auction implements Node {
   bidder: String
   extended: Boolean!
   settled: Boolean!
-  contract: AuctionContract!
   id: ID!
 }
 
@@ -331,7 +332,9 @@ type PageInfo {
 type Query {
   voteTransfers(skip: Int, orderBy: OrderBy_Transfers, orderDirection: OrderDirection, where: Where_Transfers, first: Int, after: String, before: String, last: Int): VoteTransferConnection
   voteTransfer(id: String!): VoteTransfer
+  raffles(votesContractAddress: String!, skip: Int, orderBy: OrderBy_Votes, orderDirection: OrderDirection, where: Where_Votes, first: Int, after: String, before: String, last: Int): VoteConnection!
   votes(skip: Int, orderBy: OrderBy_Votes, orderDirection: OrderDirection, where: Where_Votes, first: Int, after: String, before: String, last: Int): VoteConnection!
+  newestVote(voteContractAddress: String!): Vote
   vote(id: String!): Vote
   voteContract(id: String!): VoteContract
   verifications(context: String!): Verifications!
@@ -461,11 +464,11 @@ type VerificationsData implements Node {
 
 """GraphClient: A Vote Token entity"""
 type Vote implements Node {
+  contract: VoteContract!
   tokenId: BigInt!
   auction: Auction
   owner: String!
   uri: String!
-  contract: VoteContract!
   id: ID!
 }
 
@@ -483,6 +486,7 @@ type VoteConnection {
 
 """GraphClient: A Vote Contract entity"""
 type VoteContract implements Node {
+  address: String!
   totalSupply: BigInt!
   name: String!
   symbol: String!
