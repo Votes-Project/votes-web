@@ -6,9 +6,6 @@ query GetVote($id: ID!) {
     uri
     contract {
       id
-      name
-      symbol
-      totalSupply
     }
     auction {
       id
@@ -21,18 +18,6 @@ query GetVote($id: ID!) {
       extended
       contract {
         id
-        treasury
-        duration
-        timeBuffer
-        minBidIncrement
-        launched
-        reservePrice
-        reserveAddress
-        raffleAddress
-        votesURI
-        flashVotesURI
-        paused
-        votesToken
       }
     }
   }
