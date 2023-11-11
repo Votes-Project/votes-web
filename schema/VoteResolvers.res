@@ -61,6 +61,59 @@ let votes = async (
 }
 
 @gql.field
+let raffles = async (
+  _: Schema.query,
+  ~voteContractAddress,
+  ~skip=?,
+  ~orderBy=?,
+  ~orderDirection=?,
+  ~where=?,
+  ~first=?,
+  ~after,
+  ~before,
+  ~last,
+  ~ctx: ResGraphContext.context,
+): voteConnection => {
+  open VoteDataLoaders
+  open GraphClient
+
+  let {totalSupply} = switch await ctx.dataLoaders.voteContract.byId->DataLoader.load(
+    voteContractAddress,
+  ) {
+  | None => panic("Did not find vote contract")
+  | Some(voteContract) =>
+    ctx.dataLoaders.voteContract.byId->DataLoader.prime(Some(voteContract))
+    voteContract
+  }
+
+  let raffleTokenIds = {
+    let totalSupply = BigInt.fromString(totalSupply)->BigInt.toInt
+    Array.fromInitializer(~length=totalSupply, i => i - 1)
+    ->Array.filter(i => i->mod(10) == 9)
+    ->Array.map(i => i->Int.toString)
+  }
+
+  let where = switch where {
+  | Some(where) => {
+      ...where,
+      tokenId_in: raffleTokenIds,
+    }
+  | None => {tokenId_in: raffleTokenIds}
+  }
+
+  let variables = {
+    first: first->Option.getWithDefault(1000),
+    skip: skip->Option.getWithDefault(0),
+    orderBy: orderBy->Option.getWithDefault(ID),
+    orderDirection: orderDirection->Option.getWithDefault(Asc),
+    where,
+  }
+  let raffles = await ctx.dataLoaders.vote.list->DataLoader.load(variables)
+  ctx.dataLoaders.vote.list->DataLoader.prime(raffles)
+  raffles->ResGraph.Connections.connectionFromArray(~args={first: None, after, before, last})
+}
+
+@gql.field
 let auction = async (vote: vote, ~ctx: ResGraphContext.context) => {
   switch vote.auction->Nullable.toOption {
   | Some(auction) =>
