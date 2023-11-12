@@ -21,8 +21,10 @@ external alert: (t, string) => unit = "alert"
 
 module EventListener = {
   type type_ = | @as("resize") Resize | @as("scroll") Scroll
+  type options = {passive: bool}
 
-  @private @send external make: (Dom.window, type_, 'a => unit) => unit = "addEventListener"
+  @private @send
+  external make: (Dom.window, type_, 'a => unit, ~options: options=?) => unit = "addEventListener"
   @private @send external remove: (Dom.window, type_, 'a => unit) => unit = "removeEventListener"
 }
 

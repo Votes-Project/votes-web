@@ -68,10 +68,11 @@ module OptionItem = {
   @react.component
   let make = (~option, ~index, ~handleVote) => {
     let {queryParams, setParams} = Routes.Main.Question.Route.useQueryParams()
+    let dragControls = FramerMotion.Drag.Controls.use()
 
     let ref = React.useRef(Nullable.null)
 
-    let handleSelect = _ => {
+    let handleSelect = e => {
       setParams(~navigationMode_=Push, ~removeNotControlledParams=false, ~setter=c => {
         ...c,
         answer: Some(index),
@@ -81,7 +82,8 @@ module OptionItem = {
     open FramerMotion
     let onDragEnd = async (info: Drag.info) => {
       switch ref.current->Nullable.toOption {
-      | Some(current) if info.offset.x > 0.8 *. current->Element.offsetWidth =>
+      | Some(_) if info.velocity.x >= 500. => await handleVote(index)
+      | Some(current) if info.offset.x > 0.75 *. current->Element.offsetWidth =>
         await handleVote(index)
       | _ => ()
       }
@@ -91,34 +93,38 @@ module OptionItem = {
       switch queryParams.answer {
       | Some(answer) if answer == index =>
         <li
-          className={`relative font-semibold text-sm my-3 w-full flex items-center text-left backdrop-blur-md bg-black/10 duration-200 ease-linear lg:rounded-xl text-default-darker shadow-lg  lg:scale-105 border-4 border-default-darker lg:border-active rounded-xl `}
+          className={` touch-none relative font-semibold text-sm my-3 w-full flex items-center text-left backdrop-blur-md bg-black/10 duration-200 ease-linear lg:rounded-xl text-default-darker shadow-lg  lg:scale-95 border-y-4 lg:border-4 border-default-darker lg:border-active overflow-hidden  `}
           key={index->Int.toString}
-          ref={ReactDOM.Ref.domRef(ref)}
-          onClick=handleSelect>
-          <Motion.Div
-            drag=X
-            dragConstraints=Ref(ref)
-            dragSnapToOrigin=true
-            dragMomentum=true
-            onDragEnd={(_, info) => {
-              let _ = onDragEnd(info)
-            }}
-            className=" self-stretch flex flex-1 items-center justify-center relative font-bold text-3xl text-default lg:text-secondary bg-default-darker lg:bg-active px-6 rounded-lg overflow-hidden">
-            {"→"->React.string}
-          </Motion.Div>
-          <button
-            className={`relative w-full flex flex-row items-center  lg:my-2 first:mb-2 py-2 px-2 min-h-[80px] overflow-hidden transition-all  `}
+          ref={ReactDOM.Ref.domRef(ref)}>
+          <div
+            onPointerDown={e => dragControls.start(e)}
+            className="absolute w-full h-full self-stretch flex items-center justify-start border-2 border-transparent  font-bold text-3xl text-default lg:text-secondary  overflow-hidden z-50">
+            <Motion.Div
+              drag=X
+              dragConstraints=Ref(ref)
+              dragTransition={{bounceStiffness: 600., bounceDamping: 10.}}
+              dragControls={dragControls}
+              dragSnapToOrigin=true
+              onDragEnd={(_, info) => {
+                let _ = onDragEnd(info)
+              }}
+              className="flex items-center justify-center rounded-md h-full px-10 bg-default-darker lg:bg-active">
+              {""->React.string}
+            </Motion.Div>
+          </div>
+          <div
+            className={`relative w-full flex flex-row items-center  lg:my-2 first:mb-2 py-2 px-2 ml-20 min-h-[80px] overflow-hidden transition-all  `}
             key={index->Int.toString}>
             <div
               className="absolute w-full h-full flex items-center justify-center animate-pulse text-default-darker font-bold text-3xl duration-300">
               {"Swipe to Confirm"->React.string}
             </div>
             <p className="opacity-20"> {option->React.string} </p>
-          </button>
+          </div>
         </li>
       | Some(_) =>
         <li
-          className={`relative font-semibold text-sm my-3 pl-2 w-full flex items-center text-left backdrop-blur-md transition-all duration-200 ease-linear lg:rounded-xl text-default-darker shadow-lg bg-default/80 lg:bg-secondary/80 hover:lg:scale-105 focus:lg:scale-105`}
+          className={`touch-none relative font-semibold text-sm my-3 pl-2 w-full flex items-center text-left backdrop-blur-md transition-all duration-200 ease-linear lg:rounded-xl text-default-darker shadow-lg bg-default/80 lg:bg-secondary/80 hover:lg:scale-105 focus:lg:scale-105`}
           key={index->Int.toString}
           ref={ReactDOM.Ref.domRef(ref)}
           onClick=handleSelect>
@@ -134,7 +140,7 @@ module OptionItem = {
         </li>
       | _ =>
         <li
-          className={`relative font-semibold text-sm my-3 pl-2 w-full flex items-center text-left backdrop-blur-md transition-all duration-200 ease-linear lg:rounded-xl text-default-darker shadow-lg bg-default lg:bg-secondary hover:lg:scale-105 focus:lg:scale-105`}
+          className={`touch-none relative font-semibold text-sm my-3 pl-2 w-full flex items-center text-left backdrop-blur-md transition-all duration-200 ease-linear lg:rounded-xl text-default-darker shadow-lg bg-default lg:bg-secondary hover:lg:scale-105 focus:lg:scale-105`}
           key={index->Int.toString}
           ref={ReactDOM.Ref.domRef(ref)}
           onClick=handleSelect>
@@ -321,7 +327,7 @@ let make = (
   React.useEffect0(() => {
     setHeroComponent(_ =>
       <div
-        className="flex flex-col justify-center items-center w-full p-4 h-[558px] min-h-[558px] "
+        className="flex flex-col justify-center items-center w-full p-4 h-[420px] min-h-[420px]"
         ref={ReactDOM.Ref.callbackDomRef(answerRef)}>
         <QuestionTitle question={question->Option.map(q => q.fragmentRefs)} />
         <div
