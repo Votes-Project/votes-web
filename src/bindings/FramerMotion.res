@@ -1,13 +1,32 @@
-type line = {x: float, y: float}
+type point2D = {x: float, y: float}
 type boundingBox2D = {top?: int, left?: int, right?: int, bottom?: int}
+type boundingBox2DFloat = {top?: float, left?: float, right?: float, bottom?: float}
 
 module Drag = {
   type t = Boolean | @as("x") X | @as("y") Y
 
-  type info = {point: line, delta: line, offset: line, velocity: line}
+  type info = {point: point2D, delta: point2D, offset: point2D, velocity: point2D}
+  @unboxed type dragElastic = Boolean | Float(float) | Box(boundingBox2DFloat)
+  type inertiaOptions = {
+    timeConstant?: int,
+    power?: float,
+    bounceStiffness?: float,
+    bounceDamping?: float,
+    min?: int,
+  }
 
   @unboxed type dragConstraints = False | Ref(React.ref<Nullable.t<Dom.element>>)
+  module Controls = {
+    type options = {snapToCursor?: bool, snapToOrigin?: bool, threshold?: int}
+    type t<'event> = {start: ('event, ~options: options=?) => unit, stop: unit => unit}
+    @module("framer-motion") external use: unit => t<'event> = "useDragControls"
+  }
 }
+
+module Pan = {
+  type info = {point: point2D, delta: point2D, offset: point2D, velocity: point2D}
+}
+
 module Motion = {
   type layout = | @as("position") Position | @as(true) True | String(string)
   @unboxed
@@ -72,9 +91,14 @@ module Motion = {
       ~dragSnapToOrigin: bool=?,
       ~dragConstraints: Drag.dragConstraints=?,
       ~dragMomentum: bool=?,
-      ~onDrag: ('a, Drag.info) => unit=?,
+      ~onDrag: ('event, Drag.info) => unit=?,
       ~onDragStart: ('a, Drag.info) => unit=?,
-      ~onDragEnd: ('a, Drag.info) => unit=?,
+      ~onDragEnd: ('event, Drag.info) => unit=?,
+      ~dragControls: Drag.Controls.t<'a>=?,
+      ~dragElastic: Drag.dragElastic=?,
+      ~dragTransition: Drag.inertiaOptions=?,
+      ~onPan: ('event, Pan.info) => unit=?,
+      ~onPanEnd: ('event, Pan.info) => unit=?,
     ) => React.element = "div"
   }
 
