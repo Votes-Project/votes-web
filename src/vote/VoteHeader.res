@@ -2,7 +2,7 @@ exception NoTokenId
 
 type arrowPress = LeftPress | RightPress
 @react.component
-let make = (~tokenId, ~totalSupply, ~startTime=?) => {
+let make = (~tokenId, ~totalSupply, ~startTime) => {
   let newestTokenId = {
     open BigInt
     totalSupply->sub(1->fromInt)
@@ -27,10 +27,11 @@ let make = (~tokenId, ~totalSupply, ~startTime=?) => {
     }
   }
 
-  let auctionDateLocale =
-    startTime->Option.map(
-      Date.toLocaleDateStringWithLocaleAndOptions(_, "en-US", {dateStyle: #long}),
-    )
+  let auctionDateLocale = Date.toLocaleDateStringWithLocaleAndOptions(
+    startTime,
+    "en-US",
+    {dateStyle: #long},
+  )
 
   <div className="flex w-full items-center ">
     <div className="flex gap-2 items-center">
@@ -48,7 +49,7 @@ let make = (~tokenId, ~totalSupply, ~startTime=?) => {
         <ReactIcons.LuArrowRight color="white" className="stroke-[4]" />
       </button>
       <p className="font-semibold text-background-dark lg:text-active">
-        {auctionDateLocale->Option.getWithDefault("")->React.string}
+        {auctionDateLocale->React.string}
       </p>
     </div>
   </div>

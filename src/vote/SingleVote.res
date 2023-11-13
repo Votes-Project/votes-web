@@ -63,11 +63,12 @@ let make = (
 
   let vote = node->Option.orElse(vote)
   let voteType = vote->Option.flatMap(vote => vote.voteType)
+
   <div className="px-[5%]">
     {switch (voteType, vote) {
     | (Some(Raffle), Some({fragmentRefs, contract: {totalSupply}})) =>
       <ErrorBoundary fallback={_ => "Auction Failed to load"->React.string}>
-        <VoteHeader tokenId={tokenId} totalSupply />
+        <VoteHeader tokenId={tokenId} totalSupply startTime={Date.now()->Date.fromTime} />
         <Raffle vote=fragmentRefs />
       </ErrorBoundary>
     | (
