@@ -1,10 +1,13 @@
 @val @scope(("import", "meta", "env"))
 external voteContractAddress: option<string> = "VITE_VOTES_CONTRACT_ADDRESS"
+
 @module("/src/abis/Auction.json") external auctionContractAbi: JSON.t = "default"
 
 module Main = %relay.deferredComponent(Main.make)
 module LinkBrightID = %relay.deferredComponent(LinkBrightID.make)
 // module QuestionQueue = %relay.deferredComponent(QuestionQueue.make)
+
+let contextId = Dom.Storage2.localStorage->Dom.Storage2.getItem("votes_contextId")
 
 type initialRender = Loading | CurrentVote | CurrentQuestion | ChildRoutes
 let handleInitialRender = (auction: option<AuctionContext.auction>, isLoading, isSubroute) => {
@@ -38,11 +41,16 @@ let renderer = Routes.Main.Route.makeRenderer(
       },
     ]->Array.filterMap(v => v)
   },
-  ~prepare=({environment, linkBrightID, contextId}) => {
+  ~prepare=({environment, linkBrightID}) => {
     (
       MainQuery_graphql.load(
         ~environment,
-        ~variables={voteContractAddress: voteContractAddress->Option.getExn},
+        ~variables={
+          contextId: contextId->Option.getExn,
+          voteContractAddress: voteContractAddress
+          ->Option.map(address => address->String.toLowerCase)
+          ->Option.getExn,
+        },
         ~fetchPolicy=StoreOrNetwork,
       ),
       switch (linkBrightID, contextId) {
@@ -58,7 +66,7 @@ let renderer = Routes.Main.Route.makeRenderer(
       },
     )
   },
-  ~render=({childRoutes, linkBrightID, contextId, prepared}) => {
+  ~render=({childRoutes, linkBrightID, prepared}) => {
     let (queryRef, linkBrightIDQueryRef) = prepared
 
     let {auction, isLoading} = React.useContext(AuctionContext.context)
@@ -90,7 +98,11 @@ let renderer = Routes.Main.Route.makeRenderer(
         {switch (linkBrightID, linkBrightIDQueryRef, contextId) {
         | (Some(_), Some(queryRef), Some(contextId)) =>
           <ErrorBoundary fallback={_ => "Error"->React.string}>
-            <React.Suspense fallback={<p> {"Loading"->React.string} </p>}>
+            <React.Suspense
+              fallback={<div
+                className="w-full h-full flex justify-center items-center text-lg text-white">
+                {"Loading"->React.string}
+              </div>}>
               <LinkBrightID queryRef contextId />
             </React.Suspense>
           </ErrorBoundary>

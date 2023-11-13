@@ -1,5 +1,4 @@
-type verification = {isVerified: bool, contextId: Uint8Array.t}
-
+type verification = Verification({id: string, unique: bool}) | Error({error: bool})
 type context = {
   verification: option<verification>,
   setVerification: (option<verification> => option<verification>) => unit,
