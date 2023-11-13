@@ -72,7 +72,7 @@ module OptionItem = {
 
     let ref = React.useRef(Nullable.null)
 
-    let handleSelect = e => {
+    let handleSelect = _ => {
       setParams(~navigationMode_=Push, ~removeNotControlledParams=false, ~setter=c => {
         ...c,
         answer: Some(index),
