@@ -19,8 +19,8 @@ module Query = %relay(`
 
 module Fragment = %relay(`
   fragment MainFragment on Query {
-    votes(orderBy: id, orderDirection: desc, first: 1000)
-      @connection(key: "Main_votes_votes") {
+    votes(orderBy: id, orderDirection: desc, first: 1000, after: "")
+      @connection(key: "VotesConnection_votes") {
       __id
       edges {
         node {

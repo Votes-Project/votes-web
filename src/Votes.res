@@ -56,7 +56,7 @@ module VoteListDisplay = {
       orderBy: $orderBy
       orderDirection: $orderDirection
       where: { owner: $owner }
-    ) @connection(key: "VoteListDisplay_voteTransfers_votes") {
+    ) @connection(key: "VotesConnection_votes") {
       __id
       edges {
         node {
