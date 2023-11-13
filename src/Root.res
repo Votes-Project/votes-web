@@ -96,7 +96,7 @@ module VoteProvider = {
   }
 }
 
-module RequireVerificationProvider = {
+module VerificationProvider = {
   open VerificationContext
   @react.component
   let make = (~children) => {
@@ -135,15 +135,59 @@ module QuestionProvider = {
 
 Dom.Storage2.localStorage->Dom.Storage2.setItem("votesdev_answer_jwt", "")
 
+let localPrivateKey = Dom.Storage2.localStorage->Dom.Storage2.getItem("votes_privateKey")
+let localPublicKey = Dom.Storage2.localStorage->Dom.Storage2.getItem("votes_publicKey")
+let localContextId = Dom.Storage2.localStorage->Dom.Storage2.getItem("votes_contextId")
+
+let initializeKeyPair = async () => {
+  switch await Jose.generateKeyPair(
+    ES256,
+    ~options={
+      extractable: true,
+    },
+  ) {
+  | {publicKey, privateKey} =>
+    switch (
+      await Jose.exportSPKI(publicKey),
+      await Jose.exportPKCS8(privateKey),
+      await {Jose.exportJWK(publicKey)}->Promise.then(Jose.calculateJwkThumbprint),
+    ) {
+    | (publicKey, privateKey, contextId) =>
+      if localPrivateKey->Option.isNone {
+        Dom.Storage2.localStorage->Dom.Storage2.setItem("votes_privateKey", privateKey)
+      }
+      if localPublicKey->Option.isNone {
+        Dom.Storage2.localStorage->Dom.Storage2.setItem("votes_publicKey", publicKey)
+      }
+      if localContextId->Option.isNone {
+        Dom.Storage2.localStorage->Dom.Storage2.setItem("votes_contextId", contextId)
+      }
+    }
+
+  | exception e => raise(e)
+  }
+}
+
+initializeKeyPair()->ignore
+
 ReactDOMExperimental.renderConcurrentRootAtElementWithId(
   <RescriptRelay.Context.Provider environment={RelayEnv.environment}>
     <RelayRouter.Provider value={Router.routerContext}>
       <React.Suspense
         fallback={
           open FramerMotion
+
+          let title = "This is a placeholder for the daily question which will be rendered server side"
           <>
             <div className="text-center w-screen h-screen flex items-center justify-center">
-              <QuestionPreview.QuestionTitle />
+              <div className="">
+                <Motion.Div
+                  layout=True
+                  layoutId="daily-question-title"
+                  className={`font-bold [text-wrap:balance] text-center text-default-darker px-4 text-2xl`}>
+                  {("\"" ++ title ++ "\"")->React.string}
+                </Motion.Div>
+              </div>
             </div>
             <Motion.Div
               layoutId="background-noise"
@@ -164,20 +208,22 @@ ReactDOMExperimental.renderConcurrentRootAtElementWithId(
           </>}>
           <Wagmi.WagmiConfig config={%raw("wagmiConfig")}>
             <RainbowKit.Provider chains={%raw("chains")} initialChain={%raw("goerli")}>
-              <VoteProvider>
-                <AuctionProvider>
-                  <QuestionProvider>
-                    <HeroComponentProvider>
-                      <VotesySpeakProvider>
-                        <RelayRouter.RouteRenderer
-                          // This renders all the time, and when there"s a pending navigation (pending via React concurrent mode), pending will be `true`
-                          renderPending={pending => <PendingIndicatorBar pending />}
-                        />
-                      </VotesySpeakProvider>
-                    </HeroComponentProvider>
-                  </QuestionProvider>
-                </AuctionProvider>
-              </VoteProvider>
+              <VerificationProvider>
+                <VoteProvider>
+                  <AuctionProvider>
+                    <QuestionProvider>
+                      <HeroComponentProvider>
+                        <VotesySpeakProvider>
+                          <RelayRouter.RouteRenderer
+                            // This renders all the time, and when there"s a pending navigation (pending via React concurrent mode), pending will be `true`
+                            renderPending={pending => <PendingIndicatorBar pending />}
+                          />
+                        </VotesySpeakProvider>
+                      </HeroComponentProvider>
+                    </QuestionProvider>
+                  </AuctionProvider>
+                </VoteProvider>
+              </VerificationProvider>
             </RainbowKit.Provider>
           </Wagmi.WagmiConfig>
         </ErrorBoundary>
