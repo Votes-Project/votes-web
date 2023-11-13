@@ -29,7 +29,7 @@ module UseVoteDisplay = {
       orderBy: $orderBy
       orderDirection: $orderDirection
       where: { owner: $owner }
-    ) @connection(key: "UseVoteList_votes") {
+    ) @connection(key: "VotesConnection_votes") {
       __id
       edges {
         node {
