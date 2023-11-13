@@ -72,6 +72,7 @@ let make = (~verifications) => {
           <RelayRouter.Link
             key={name}
             to_={link}
+            preloadData=NoPreloading
             className="  bg-secondary hover:bg-primary-dark hover:text-white rounded-xl flex items-center font-semibold mr-4 px-3 h-10 justify-center gap-2 transition-all">
             {icon}
             {name->React.string}
@@ -97,6 +98,7 @@ let make = (~verifications) => {
           key={name}
           to_={link}
           onClick=handleMenu
+          preloadData={NoPreloading}
           className={`hover:bg-secondary hover:text-active lg:hidden justify-center items-center w-[262px] flex px-2 py-3 border border-primary rounded-xl font-bold text-white text-xl gap-2 transition-all ${isOpen
               ? ""
               : "hidden"}`}>
