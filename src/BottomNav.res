@@ -145,6 +145,7 @@ let make = (~voteContract, ~question, ~auction) => {
           </RelayRouter.Link>
           <RelayRouter.Link
             to_={Routes.Main.Vote.Auction.Route.makeLink(~tokenId=newestTokenId->BigInt.toString)}
+            preloadData={NoPreloading}
             className="relative flex flex-1 items-center justify-center">
             <li className=" flex-1 items-center flex justify-center text-center">
               <button className="z-10" type_="button" disabled> {"Auction"->React.string} </button>
