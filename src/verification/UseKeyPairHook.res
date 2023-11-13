@@ -36,7 +36,6 @@ let useKeyPair = () => {
           Dom.Storage2.localStorage->Dom.Storage2.removeItem("votes_privateKey")
           setKeyPair(_ => None)
         }
-
       | _ =>
         switch await Jose.generateKeyPair(
           ES256,
@@ -54,6 +53,7 @@ let useKeyPair = () => {
           | (publicKey, privateKey, jwk, contextId) =>
             Dom.Storage2.localStorage->Dom.Storage2.setItem("votes_publicKey", publicKey)
             Dom.Storage2.localStorage->Dom.Storage2.setItem("votes_privateKey", privateKey)
+            Dom.Storage2.localStorage->Dom.Storage2.setItem("votes_contextId", contextId)
             setKeyPair(_ => Some({publicKey, privateKey, jwk, contextId}))
           }
         | exception e => raise(e)
