@@ -37,7 +37,7 @@ module Fragment = %relay(`
       orderDirection: $orderDirection
       first: $first
       where: $where
-    ) @connection(key: "AllBidsList_bids_bids") {
+    ) @connection(key: "AllBidsList_bids") {
       __id
       edges {
         __id
