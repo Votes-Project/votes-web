@@ -3,6 +3,8 @@ module Votes = %relay.deferredComponent(Votes.make)
 @val @scope(("import", "meta", "env"))
 external votesContractAddress: option<string> = "VITE_VOTES_CONTRACT_ADDRESS"
 
+let votesContractAddress = votesContractAddress->Option.map(address => address->String.toLowerCase)
+
 let renderer = Routes.Main.Votes.Route.makeRenderer(
   ~prepareCode=_ => [Votes.preload()],
   ~prepare=({environment, sortBy}) => {

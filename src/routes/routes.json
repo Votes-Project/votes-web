@@ -1,6 +1,6 @@
 [
   {
-    "path": "?linkBrightID=int&contextId=string&voteDetails=int&voteDetailsToken=int&showAllBids=int",
+    "path": "?linkBrightID=int&voteDetails=int&voteDetailsToken=int&showAllBids=int",
     "name": "Main",
     "children": [
       {

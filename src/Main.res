@@ -1,16 +1,18 @@
-@val @scope(("import", "meta", "env"))
-external auctionContractAddress: option<string> = "VITE_AUCTION_CONTRACT_ADDRESS"
-@val @scope(("import", "meta", "env"))
-external voteContractAddress: option<string> = "VITE_VOTES_CONTRACT_ADDRESS"
-@module("/src/abis/Auction.json") external auctionContractAbi: JSON.t = "default"
-
 module Query = %relay(`
-  query MainQuery($voteContractAddress: String!) {
+  query MainQuery($voteContractAddress: String!, $contextId: String!) {
     ...MainFragment
     ...HeaderFragment
     voteContract(id: $voteContractAddress) {
-      ...QuestionPreview_voteContract
       ...BottomNav_voteContract
+    }
+    verification(contextId: $contextId) {
+      ... on VerificationData {
+        id
+        unique
+      }
+      ... on Error {
+        error
+      }
     }
   }
 `)
@@ -44,13 +46,15 @@ module Fragment = %relay(`
 @react.component @relay.deferredComponent
 let make = (~children, ~queryRef) => {
   open FramerMotion
-  let {fragmentRefs, voteContract} = Query.usePreloaded(~queryRef)
+  let {fragmentRefs, voteContract, verification} = Query.usePreloaded(~queryRef)
+
   let {votes, randomQuestion} = Fragment.use(fragmentRefs)
 
   let {heroComponent} = React.useContext(HeroComponentContext.context)
   let {setAuction, setIsLoading: setIsAuctionLoading} = React.useContext(AuctionContext.context)
   let {setVote} = React.useContext(VoteContext.context)
   let {setQuestion} = React.useContext(QuestionContext.context)
+  let {setVerification} = React.useContext(VerificationContext.context)
 
   let newestVote = votes->Fragment.getConnectionNodes->Array.get(0)
 
@@ -64,6 +68,15 @@ let make = (~children, ~queryRef) => {
       }
     | _ => ()
     }
+
+    setVerification(_ =>
+      switch verification {
+      | Error({error}) => VerificationContext.Error({error: error})->Some
+      | VerificationData({id, unique}) => VerificationContext.Verification({id, unique})->Some
+      | _ => None
+      }
+    )
+
     None
   })
 
