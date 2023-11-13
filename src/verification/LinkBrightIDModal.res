@@ -50,13 +50,14 @@ let make = (~children, ~isOpen) => {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
+        zIndex: "0",
       },
       content: {
         outline: "none",
         pointerEvents: "none",
       },
     }
-    className="w-full h-screen pointer-events-auto max-w-3xl"
+    className="w-full h-screen max-w-3xl"
     isOpen
     onRequestClose=onClose>
     {children}
