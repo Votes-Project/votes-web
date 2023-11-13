@@ -17,9 +17,14 @@ module AuctionFragment = %relay(`
 
 @react.component
 let make = (~voteContract, ~question, ~auction) => {
+  let (disabled, setDisabled) = React.useState(_ => false)
+  let (width, setWidth) = React.useState(_ => window->Window.innerWidth)
+  let isNarrow = width <= 991
+
   let contract = voteContract->VoteContractFragment.useOpt
   let question = question->QuestionFragment.useOpt
   let auction = auction->AuctionFragment.useOpt
+
   let newestTokenId = {
     open BigInt
     contract->Option.map(({totalSupply}) => totalSupply->sub(1->fromInt))->Option.getExn
@@ -53,22 +58,9 @@ let make = (~voteContract, ~question, ~auction) => {
   | _ => None
   }
 
-  let (disabled, setDisabled) = React.useState(_ => false)
-
-  let (width, setWidth) = React.useState(_ => window->Window.innerWidth)
-  let isNarrow = width <= 991
-
-  let (_, setScrollY) = React.useState(_ => window->Window.scrollY)
-  let handleScroll = React.useCallback2(_ => {
-    let curr = window->Window.scrollY
-    setScrollY(prev => {
-      let _ = switch prev {
-      | prev if prev > 1. && prev <= curr => setDisabled(_ => true)
-      | _ => setDisabled(_ => false)
-      }
-      curr
-    })
-  }, (setDisabled, setScrollY))
+  let handleScroll = React.useCallback0(_ => {
+    setDisabled(_ => false)
+  })
 
   let handleWindowSizeChange = React.useCallback(() => {
     setWidth(_ => window->Window.innerWidth)
@@ -105,14 +97,15 @@ let make = (~voteContract, ~question, ~auction) => {
         className="w-full h-full text-default bg-default-darker shadow-xl backdrop-blur-md rounded-full max-w-sm"
         variants=motionVariants
         initial=String("initial")
-        animate=String("animate")>
+        animate=String("animate")
+        onClick={() => setDisabled(_ => false)}>
         <ul
           className="w-full flex py-2 justify-evenly items-center h-full text:md lg:text-lg font-bold">
           <RelayRouter.Link
             to_={Routes.Main.Vote.New.Route.makeLink()}
             className="relative flex flex-1 items-center justify-center">
             <li className=" flex flex-1 items-center justify-center text-center">
-              <button className="z-10" type_="button" disabled> {"Ask"->React.string} </button>
+              <button className="z-10" type_="button"> {"Ask"->React.string} </button>
               {activeRoute == Some(#New)
                 ? <div className="absolute w-full">
                     <Motion.Div
@@ -131,7 +124,7 @@ let make = (~voteContract, ~question, ~auction) => {
             })}
             className="relative flex flex-1 items-center justify-center">
             <li className=" flex-1 items-center flex justify-center text-center">
-              <button className="z-10" type_="button" disabled> {"Answer"->React.string} </button>
+              <button className="z-10" type_="button"> {"Answer"->React.string} </button>
               {activeRoute == Some(#Question)
                 ? <div className="absolute w-full">
                     <Motion.Div
@@ -148,7 +141,7 @@ let make = (~voteContract, ~question, ~auction) => {
             preloadData={NoPreloading}
             className="relative flex flex-1 items-center justify-center">
             <li className=" flex-1 items-center flex justify-center text-center">
-              <button className="z-10" type_="button" disabled> {"Auction"->React.string} </button>
+              <button className="z-10" type_="button"> {"Auction"->React.string} </button>
               {activeRoute == Some(#Auction)
                 ? <div className="absolute w-full">
                     <Motion.Div
