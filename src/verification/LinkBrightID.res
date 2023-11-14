@@ -82,8 +82,11 @@ let make = (~queryRef, ~contextId) => {
 
   <div className="flex flex-col w-full justify-around items-center h-full z-50 ">
     <div className="w-full text-center">
-      <p className="text-white text-3xl lg:text-4xl font-bold pt-4">
+      <p className="text-white text-3xl lg:text-4xl font-bold py-4">
         {"Scan the QR Code to Link BrightID"->React.string}
+      </p>
+      <p className="text-white text-3xl lg:text-4xl font-bold py-4">
+        {"This should say smething about BrightID to help useres link."->React.string}
       </p>
     </div>
     <div
