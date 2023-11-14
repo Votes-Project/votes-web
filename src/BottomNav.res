@@ -19,7 +19,7 @@ module AuctionFragment = %relay(`
 let make = (~voteContract, ~question, ~auction) => {
   let (disabled, setDisabled) = React.useState(_ => false)
   let (width, setWidth) = React.useState(_ => window->Window.innerWidth)
-  let isNarrow = width <= 991
+  let isNarrow = width < 1024
 
   let contract = voteContract->VoteContractFragment.useOpt
   let question = question->QuestionFragment.useOpt
@@ -92,69 +92,67 @@ let make = (~voteContract, ~question, ~auction) => {
   }
 
   <AnimatePresence>
-    <div className="fixed bottom-8 w-full flex justify-center items-center z-50 ">
-      <Motion.Nav
-        className="w-full h-full text-default bg-default-darker shadow-xl backdrop-blur-md rounded-full max-w-sm"
-        variants=motionVariants
-        initial=String("initial")
-        animate=String("animate")
-        onClick={() => setDisabled(_ => false)}>
-        <ul
-          className="w-full flex py-2 justify-evenly items-center h-full text:md lg:text-lg font-bold">
-          <RelayRouter.Link
-            to_={Routes.Main.Vote.New.Route.makeLink()}
-            className="relative flex flex-1 items-center justify-center">
-            <li className=" flex flex-1 items-center justify-center text-center">
-              <button className="z-10" type_="button"> {"Ask"->React.string} </button>
-              {activeRoute == Some(#New)
-                ? <div className="absolute w-full">
-                    <Motion.Div
-                      className="w-1/2 md:w-1/4 absolute top-[-32px] left-0 right-0 mx-auto h-4 bg-default-darker rounded-t-full flex items-end justify-center pt-5"
-                      layoutId="underline">
-                      <div className="bg-default-light w-3 h-3 rounded-full " />
-                    </Motion.Div>
-                  </div>
-                : React.null}
-            </li>
-          </RelayRouter.Link>
-          <RelayRouter.Link
-            to_={Routes.Main.Question.Current.Route.makeLinkFromQueryParams({
-              ...currentQuestionQueryParams,
-              id: question->Option.map(({id}) => id),
-            })}
-            className="relative flex flex-1 items-center justify-center">
-            <li className=" flex-1 items-center flex justify-center text-center">
-              <button className="z-10" type_="button"> {"Answer"->React.string} </button>
-              {activeRoute == Some(#Question)
-                ? <div className="absolute w-full">
-                    <Motion.Div
-                      className="w-1/2 md:w-1/4 absolute top-[-32px] left-0 right-0 mx-auto h-4 bg-default-darker rounded-t-full flex items-end justify-center pt-5"
-                      layoutId="underline">
-                      <div className="bg-default-light w-3 h-3 rounded-full" />
-                    </Motion.Div>
-                  </div>
-                : React.null}
-            </li>
-          </RelayRouter.Link>
-          <RelayRouter.Link
-            to_={Routes.Main.Vote.Auction.Route.makeLink(~tokenId=newestTokenId->BigInt.toString)}
-            preloadData={NoPreloading}
-            className="relative flex flex-1 items-center justify-center">
-            <li className=" flex-1 items-center flex justify-center text-center">
-              <button className="z-10" type_="button"> {"Auction"->React.string} </button>
-              {activeRoute == Some(#Auction)
-                ? <div className="absolute w-full">
-                    <Motion.Div
-                      className="w-1/2 md:w-1/4 absolute top-[-32px] left-0 right-0 mx-auto h-4 bg-default-darker rounded-t-full flex items-end justify-center pt-5"
-                      layoutId="underline">
-                      <div className="bg-default-light w-3 h-3 rounded-full" />
-                    </Motion.Div>
-                  </div>
-                : React.null}
-            </li>
-          </RelayRouter.Link>
-        </ul>
-      </Motion.Nav>
-    </div>
+    <Motion.Nav
+      className="w-full h-full text-default lg:text-default-light bg-default-darker lg:bg-primary-dark shadow-xl lg:shadow-none backdrop-blur-md rounded-full max-w-sm"
+      variants=motionVariants
+      initial=String("initial")
+      animate=String("animate")
+      onClick={() => setDisabled(_ => false)}>
+      <ul
+        className="w-full flex py-2 justify-evenly items-center h-full text:md lg:text-lg font-bold">
+        <RelayRouter.Link
+          to_={Routes.Main.Vote.New.Route.makeLink()}
+          className="relative flex flex-1 items-center justify-center">
+          <li className=" flex flex-1 items-center justify-center text-center">
+            <button className="z-10" type_="button"> {"Ask"->React.string} </button>
+            {activeRoute == Some(#New)
+              ? <div className="absolute w-full">
+                  <Motion.Div
+                    className="w-1/2 md:w-1/4 absolute top-[-32px] left-0 right-0 mx-auto h-4 bg-default-darker lg:bg-primary-dark  rounded-t-full flex items-end justify-center pt-5"
+                    layoutId="underline">
+                    <div className="bg-default-light w-3 h-3 rounded-full " />
+                  </Motion.Div>
+                </div>
+              : React.null}
+          </li>
+        </RelayRouter.Link>
+        <RelayRouter.Link
+          to_={Routes.Main.Question.Current.Route.makeLinkFromQueryParams({
+            ...currentQuestionQueryParams,
+            id: question->Option.map(({id}) => id),
+          })}
+          className="relative flex flex-1 items-center justify-center">
+          <li className=" flex-1 items-center flex justify-center text-center">
+            <button className="z-10" type_="button"> {"Answer"->React.string} </button>
+            {activeRoute == Some(#Question)
+              ? <div className="absolute w-full">
+                  <Motion.Div
+                    className="w-1/2 md:w-1/4 absolute top-[-32px] left-0 right-0 mx-auto h-4 bg-default-darker lg:bg-primary-dark rounded-t-full flex items-end justify-center pt-5"
+                    layoutId="underline">
+                    <div className="bg-default-light w-3 h-3 rounded-full" />
+                  </Motion.Div>
+                </div>
+              : React.null}
+          </li>
+        </RelayRouter.Link>
+        <RelayRouter.Link
+          to_={Routes.Main.Vote.Auction.Route.makeLink(~tokenId=newestTokenId->BigInt.toString)}
+          preloadData={NoPreloading}
+          className="relative flex flex-1 items-center justify-center">
+          <li className=" flex-1 items-center flex justify-center text-center">
+            <button className="z-10" type_="button"> {"Auction"->React.string} </button>
+            {activeRoute == Some(#Auction)
+              ? <div className="absolute w-full">
+                  <Motion.Div
+                    className="w-1/2 md:w-1/4 absolute top-[-32px] left-0 right-0 mx-auto h-4 bg-default-darker lg:bg-primary-dark  rounded-t-full flex items-end justify-center pt-5"
+                    layoutId="underline">
+                    <div className="bg-default-light w-3 h-3 rounded-full" />
+                  </Motion.Div>
+                </div>
+              : React.null}
+          </li>
+        </RelayRouter.Link>
+      </ul>
+    </Motion.Nav>
   </AnimatePresence>
 }

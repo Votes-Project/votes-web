@@ -46,6 +46,18 @@ let make = (~children, ~queryRef) => {
   open FramerMotion
   let {fragmentRefs, voteContract, verification} = Query.usePreloaded(~queryRef)
 
+  let (width, setWidth) = React.useState(_ => window->Window.innerWidth)
+  let isNarrow = width < 1024
+
+  let handleWindowSizeChange = React.useCallback(() => {
+    setWidth(_ => window->Window.innerWidth)
+  })
+  React.useEffect0(() => {
+    window->Window.addEventListener(Resize, handleWindowSizeChange)
+
+    Some(() => window->Window.removeEventListener(Resize, handleWindowSizeChange))
+  })
+
   let {votes, randomQuestion} = Fragment.use(fragmentRefs)
 
   let {heroComponent} = React.useContext(HeroComponentContext.context)
@@ -78,79 +90,6 @@ let make = (~children, ~queryRef) => {
     None
   })
 
-  // let environment = RescriptRelay.useEnvironmentFromContext()
-
-  // Might cost too much money
-  // Wagmi.UseContractEvent.make({
-  //   address: auctionContractAddress->Belt.Option.getExn,
-  //   abi: auctionContractAbi,
-  //   eventName: "AuctionCreated",
-  //   listener: events => {
-  //     switch events {
-  //     | [] => ()
-  //     | events => {
-  //         let event = events->Array.get(events->Array.length - 1)->Option.getExn
-  //         let {args} = event
-
-  //         open RescriptRelay
-  //         let connectionId = votes.__id
-  //         commitLocalUpdate(~environment, ~updater=store => {
-  //           open AuctionCreated
-  //           open RecordSourceSelectorProxy
-  //           open RecordProxy
-  //           let connectionRecord = switch store->get(~dataId=connectionId) {
-  //           | Some(connectionRecord) => connectionRecord
-  //           | None => store->create(~dataId=connectionId, ~typeName="VotesConnection")
-  //           }
-
-  //           let id = args.tokenId->Helpers.tokenToSubgraphId->Option.getExn
-
-  //           let newAuctionRecord =
-  //             store
-  //             ->create(~dataId=`client:new_auction:${id}`->makeDataId, ~typeName="Auction")
-  //             ->setValueString(~name="id", ~value=id)
-  //             ->setValueString(~name="startTime", ~value=args.startTime)
-  //             ->setValueString(~name="endTime", ~value=args.endTime)
-
-  //           let voteContractAddress = voteContractAddress->Option.getWithDefault("0x0")
-  //           let totalSupply = {
-  //             open BigInt
-  //             args.tokenId->fromString->add(1->fromInt)->toString
-  //           }
-
-  //           let newContractRecord =
-  //             store
-  //             ->create(
-  //               ~dataId=`client:new_contract:${voteContractAddress}`->makeDataId,
-  //               ~typeName="VoteContract",
-  //             )
-  //             ->setValueString(~name="id", ~value=voteContractAddress)
-  //             ->setValueString(~name="totalSupply", ~value=totalSupply)
-
-  //           let newVoteRecord =
-  //             store
-  //             ->create(~dataId=`client:new_vote:${id}`->makeDataId, ~typeName="Vote")
-  //             ->setValueString(~name="id", ~value=id)
-  //             ->setValueString(~name="tokenId", ~value=args.tokenId)
-  //             ->setValueString(~name="startTime", ~value=args.startTime)
-  //             ->setValueString(~name="endTime", ~value=args.endTime)
-  //             ->setLinkedRecord(~record=newAuctionRecord, ~name="auction")
-  //             ->setLinkedRecord(~record=newContractRecord, ~name="contract")
-
-  //           let newEdge = ConnectionHandler.createEdge(
-  //             ~store,
-  //             ~connection=connectionRecord,
-  //             ~edgeType="Vote",
-  //             ~node=newVoteRecord,
-  //           )
-
-  //           ConnectionHandler.insertEdgeBefore(~connection=connectionRecord, ~newEdge)
-  //         })
-  //       }
-  //     }
-  //   },
-  // })
-
   <>
     <div className="relative w-full h-full flex flex-col z-0">
       <Motion.Div
@@ -174,16 +113,45 @@ let make = (~children, ~queryRef) => {
             </div>
           </div>
         </div>
+        {isNarrow
+          ? React.null
+          : <ErrorBoundary
+              fallback={({error}) => error->JSON.stringifyAny->Option.getExn->React.string}>
+              <React.Suspense fallback={<div />}>
+                <Motion.Div
+                  layoutId="bottom-nav"
+                  layout={True}
+                  className="w-full flex justify-center items-center z-50 py-4">
+                  <BottomNav
+                    voteContract={voteContract->Option.map(c => c.fragmentRefs)}
+                    question={randomQuestion->Option.map(q => q.fragmentRefs)}
+                    auction={newestVote
+                    ->Option.flatMap(v => v.auction)
+                    ->Option.map(a => a.fragmentRefs)}
+                  />
+                </Motion.Div>
+              </React.Suspense>
+            </ErrorBoundary>}
       </main>
-      <ErrorBoundary fallback={({error}) => error->JSON.stringifyAny->Option.getExn->React.string}>
-        <React.Suspense fallback={<div />}>
-          <BottomNav
-            voteContract={voteContract->Option.map(c => c.fragmentRefs)}
-            question={randomQuestion->Option.map(q => q.fragmentRefs)}
-            auction={newestVote->Option.flatMap(v => v.auction)->Option.map(a => a.fragmentRefs)}
-          />
-        </React.Suspense>
-      </ErrorBoundary>
+      {isNarrow
+        ? <ErrorBoundary
+            fallback={({error}) => error->JSON.stringifyAny->Option.getExn->React.string}>
+            <React.Suspense fallback={<div />}>
+              <Motion.Div
+                layoutId="bottom-nav"
+                layout={True}
+                className="fixed bottom-8 w-full flex justify-center items-center z-50 ">
+                <BottomNav
+                  voteContract={voteContract->Option.map(c => c.fragmentRefs)}
+                  question={randomQuestion->Option.map(q => q.fragmentRefs)}
+                  auction={newestVote
+                  ->Option.flatMap(v => v.auction)
+                  ->Option.map(a => a.fragmentRefs)}
+                />
+              </Motion.Div>
+            </React.Suspense>
+          </ErrorBoundary>
+        : React.null}
       <div className="bg-default w-full relative">
         <VotesInfo />
       </div>
