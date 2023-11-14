@@ -14,6 +14,17 @@ module VoteOptionInput = {
       ChangeOption({index: i, value: sanitizedContent})->dispatch
     }
 
+    let onDetailChange = (e, i) => {
+      open SanitizeHtml
+      let sanitizeConfig = {
+        allowedTags: ["b", "i", "em", "strong", "a", "p", "h1"],
+        allowedAttributes: {"a": ["href"]},
+      }
+      let sanitizedContent = SanitizeHtml.make((e->ReactEvent.Form.target)["value"], sanitizeConfig)
+
+      ChangeOptionDetail({index: i, value: sanitizedContent})->dispatch
+    }
+
     let handleFocus = _ => {
       document
       ->Document.getElementById(`create-vote-option-${Int.toString(index)}`)
@@ -25,11 +36,53 @@ module VoteOptionInput = {
       onFocus=handleFocus
       className="flex items-center pl-4 w-[90%] max-w-full break-all border-none focus:ring-0 bg-transparent cursor-pointer h-full placeholder:text-center focus:cursor-text min-h-[3.5rem]">
       {isOpen
-        ? <div className="h-40 w-full bg-red-400" />
+        ? <div className="h-40 w-full flex flex-col justify-around">
+            <ContentEditable
+              editablehasplaceholder="true"
+              placeholder="Option..."
+              html={options[index]
+              ->Option.flatMap(o => o)
+              ->Option.getWithDefault("")}
+              onChange={onOptionChange(_, index)}
+              className=" text-default lg:text-primary-dark focus:text-default-darker "
+            />
+            <div className="flex gap-2 pl-5 w-full">
+              <p className="flex items-center font-semibold">
+                {"Details"->React.string}
+                <ReactIcons.LuArrowRight />
+              </p>
+              <ContentEditable
+                editablehasplaceholder="true"
+                placeholder="Details..."
+                html={""}
+                onChange={onDetailChange(_, index)}
+                className=" text-default lg:text-primary-dark focus:text-default-darker border-b focus:border-black flex-1"
+              />
+            </div>
+            <div className="flex justify-between items-center">
+              <button
+                type_="button"
+                onClick={_ => ()}
+                className="text-lg flex gap-2 items-center font-bold text-default-dark lg:text-active hover:scale-105 hover:lg:scale-105 transition-all duration-200 ease-linear">
+                <ReactIcons.LuPlus />
+                {"Add Details"->React.string}
+              </button>
+              <button
+                type_="button"
+                disabled={Array.length(options) <= 2}
+                onClick={_ => RemoveOption(index)->dispatch}
+                className="text-lg flex gap-2 items-center font-bold text-red-500 disabled:text-default disabled:lg:text-primary hover:scale-105transition-all duration-200 ease-linear">
+                <ReactIcons.LuTrash />
+                {"Delete"->React.string}
+              </button>
+            </div>
+          </div>
         : <ContentEditable
             editablehasplaceholder="true"
             placeholder="Option..."
-            html={options[index]->Option.getWithDefault("")}
+            html={options[index]
+            ->Option.flatMap(o => o)
+            ->Option.getWithDefault("")}
             onChange={onOptionChange(_, index)}
             className=""
           />}
@@ -67,12 +120,6 @@ let make = () => {
             ? <ReactIcons.LuArrowLeft />
             : <ReactIcons.LuSettings />}
         </button>
-        // {switch toggleSettingsIndex == Some(index) {
-        // | true => <Motion.Div layout=True transition={duration: 200.} className="w-full h-36" >
-        // <ContentEditable editablehasplaceholder="true"
-        //   placeholder="Add Answer">
-        // | false => React.null
-        // }}
       </li>
     })
     ->React.array}

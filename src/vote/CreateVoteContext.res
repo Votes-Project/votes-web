@@ -1,6 +1,7 @@
 type changeTextActions =
   | ChangeOption({index: int, value: string})
   | ChangeTitle(string)
+  | ChangeOptionDetail({index: int, value: string})
 
 type action =
   | ...changeTextActions
@@ -8,13 +9,13 @@ type action =
   | RemoveOption(int)
   | MaxOptionsReached
 
-type state = {title: string, options: array<string>}
+type state = {title: option<string>, options: array<option<string>>}
 
 let reducer = (state, action) => {
   switch action {
   | AddOption => {
       ...state,
-      options: state.options->Array.concat([""]),
+      options: state.options->Array.concat([None]),
     }
   | RemoveOption(indexToRemove) => {
       ...state,
@@ -22,18 +23,27 @@ let reducer = (state, action) => {
     }
   | ChangeOption({index, value}) =>
     let options = state.options->Array.mapWithIndex((option, i) => {
-      i === index ? value : option
+      switch (value, index) {
+      | ("", _) => None
+      | (_, _) if i === index => Some(value)
+      | _ => option
+      }
     })
     {...state, options}
+  | ChangeOptionDetail(value) => state
 
   | MaxOptionsReached => state
-  | ChangeTitle(value) => {...state, title: value}
+  | ChangeTitle(value) =>
+    switch value {
+    | "" => {...state, title: None}
+    | _ => {...state, title: Some(value)}
+    }
   }
 }
 
 let initialState = {
-  title: "",
-  options: ["", ""],
+  title: None,
+  options: [None, None],
 }
 
 type context = {

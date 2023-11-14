@@ -9,7 +9,7 @@ let makeDiscordCommand = (title, options) => {
   let question = `question:${title}`
 
   let answers = options->Array.mapWithIndex((option, i) => {
-    `answer${(i + 1)->Int.toString}:${option}`
+    `answer${(i + 1)->Int.toString}:${option->Option.getExn}`
   })
 
   command ++ " " ++ question ++ " " ++ answers->Array.joinWith(" ")
@@ -65,15 +65,15 @@ let make = (~children) => {
     ->Element.Scroll.intoViewWithOptions(~options={behavior: Smooth, block: Center})
   }
 
-  let canSubmit =
-    Array.length(options) >= 2 &&
-    !(title->String.trim->String.equal("")) &&
-    options->Array.every(option => !(option->String.trim->String.equal("")))
+  let canSubmit = switch (options, title) {
+  | (options, Some(_)) if Array.length(options) >= 2 && options->Array.every(Option.isSome) => true
+  | _ => false
+  }
 
   React.useEffect1(() => {
     setHeroComponent(_ =>
       <div
-        className="flex justify-center items-start w-full p-4 h-[420px] min-h-[420px]   "
+        className="flex justify-center items-start w-full p-4 h-[558px] min-h-[558px]   "
         ref={ReactDOM.Ref.callbackDomRef(askRef)}>
         <div
           className="h-full flex-1 relative flex  bg-transparent focus-within:border-2 focus-within:ring-0 focus-within:border-primary backdrop-blur-[2px] rounded-lg transition-all duration-200 ease-linear">
