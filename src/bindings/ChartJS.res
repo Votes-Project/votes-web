@@ -22,12 +22,21 @@ type tension = {
   loop: bool,
 }
 
+type angleLines = {display?: bool}
+type gridLines = {display?: bool}
+type grid = {color?: string}
+
 module RadarChart = {
   type animation = {tension?: tension}
-  type ticks = {display: bool}
-  type scale = {ticks: ticks}
+  type ticks = {display?: bool, maxTicksLimit?: int}
+  type scale = {
+    ticks: ticks,
+    angleLines?: angleLines,
+    gridLines?: gridLines,
+    grid?: grid,
+  }
   type scales = {r?: scale}
-  type options = {animations?: animation, scales?: scales}
+  type options = {animations?: animation, scales?: scales, scale?: scale}
   type plugin = {}
   type config<'data> = {
     @as("type") type_: chartType,

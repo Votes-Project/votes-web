@@ -20,18 +20,16 @@ module VoteItem = {
     }
 
     <li
-      className="rounded-xl flex flex-col items-center justify-center relative transition-all  w-1/4 lg:w-1/5 shadow-lg"
+      className="rounded-xl flex flex-col items-center justify-center relative transition-all shadow-xl w-1/5 flex-[1_0_21%]"
       key=vote.id>
       <button
-        className="h-full m-0 border-0 relative w-full cursor-pointer bg-default noise rounded-xl"
+        className="h-full m-0 border border-default-dark lg:border-active relative w-full cursor-pointer bg-transparent rounded-xl"
         onClick=handleVoteClick>
-        <div className="w-full h-full align-middle">
-          <EmptyVoteChart
-            className=" rounded-none max-w-none my-0 mx-auto w-full h-full align-middle"
-          />
+        <div className="w-full h-full align-middle relative">
+          <EmptyVoteChart className=" rounded-none my-0 mx-auto w-full h-full align-middle" />
         </div>
         <p
-          className="bg-default-dark block absolute w-full bottom-0 rounded-b-xl font-bold text-lg text-white">
+          className="bg-default-dark lg:bg-active block absolute w-full bottom-0 rounded-b-xl font-bold text-lg text-default-light">
           {vote.tokenId->BigInt.toString->React.string}
         </p>
       </button>
@@ -126,7 +124,7 @@ module VoteListDisplay = {
       }
     }
 
-    <div className="pb-6">
+    <div className="">
       <nav className="px-4 w-full flex justify-between items-center pb-4">
         <div>
           {switch voteContract {
@@ -158,7 +156,7 @@ module VoteListDisplay = {
         </div>
       | _ =>
         <ul
-          className="px-4 flex flex-col lg:flex-row flex-wrap max-h-[576px] overflow-auto gap-y-4 gap-x-4 hide-scrollbar justify-center items-center">
+          className="px-4 flex flex-col lg:flex-row flex-wrap max-h-[576px] overflow-auto gap-y-4 gap-x-4 hide-scrollbar justify-center items-center pb-6">
           {data.votes
           ->VotesFragment.getConnectionNodes
           ->Array.map(vote => {

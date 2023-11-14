@@ -36,8 +36,6 @@ module Fragment = %relay(`
     }
     randomQuestion {
       id
-      question
-      options
       ...SingleQuestion_node
       ...BottomNav_question
     }
