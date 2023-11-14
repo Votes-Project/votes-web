@@ -20,16 +20,16 @@ module VoteItem = {
     }
 
     <li
-      className="rounded-xl flex flex-col items-center justify-center relative transition-all shadow-xl w-1/5 flex-[1_0_21%]"
+      className="rounded-xl flex flex-col items-start justify-center relative transition-all shadow-xl w-1/5"
       key=vote.id>
       <button
-        className="h-full m-0 border border-default-dark lg:border-active relative w-full cursor-pointer bg-transparent rounded-xl"
+        className=" h-full m-0 border border-default-dark lg:border-active relative w-full cursor-pointer bg-transparent rounded-xl"
         onClick=handleVoteClick>
-        <div className="w-full h-full align-middle relative">
+        <div className="w-full h-full relative">
           <EmptyVoteChart className=" rounded-none my-0 mx-auto w-full h-full align-middle" />
         </div>
         <p
-          className="bg-default-dark lg:bg-active block absolute w-full bottom-0 rounded-b-xl font-bold text-lg text-default-light">
+          className="bg-default-dark lg:bg-active w-full self-end rounded-b-xl font-bold text-lg text-default-light">
           {vote.tokenId->BigInt.toString->React.string}
         </p>
       </button>
