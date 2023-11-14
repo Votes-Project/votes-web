@@ -115,3 +115,18 @@ module LuHeart = {
   @react.component @module("react-icons/lu")
   external make: (~size: string=?, ~color: string=?, ~className: string=?) => t = "LuHeart"
 }
+
+module LuTicket = {
+  @react.component @module("react-icons/lu")
+  external make: (~size: string=?, ~color: string=?, ~className: string=?) => t = "LuTicket"
+}
+
+module LuTrash = {
+  @react.component @module("react-icons/lu")
+  external make: (~size: string=?, ~color: string=?, ~className: string=?) => t = "LuTrash"
+}
+
+module LuPlus = {
+  @react.component @module("react-icons/lu")
+  external make: (~size: string=?, ~color: string=?, ~className: string=?) => t = "LuPlus"
+}
