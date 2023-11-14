@@ -25,8 +25,25 @@ let options: RadarChart.options = {
       loop: true,
     },
   },
+  scale: {
+    grid: {
+      color: "rgba(1, 1, 1, 0.2)",
+    },
+    ticks: {
+      display: false,
+      maxTicksLimit: 1,
+    },
+  },
   scales: {
-    r: {ticks: {display: false}},
+    r: {
+      ticks: {display: false, maxTicksLimit: 1},
+      angleLines: {
+        display: false,
+      },
+      gridLines: {
+        display: false,
+      },
+    },
   },
 }
 
