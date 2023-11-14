@@ -7,7 +7,7 @@ external radarChart: string = "default"
 let make = (~children, ~isOpen) => {
   open FramerMotion
   let (width, setWidth) = React.useState(_ => window->innerWidth)
-  let isNarrow = width <= 991
+  let isNarrow = width < 1024
   let {setParams} = Routes.Main.Route.useQueryParams()
 
   let handleWindowSizeChange = () => {
