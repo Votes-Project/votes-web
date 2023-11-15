@@ -36,6 +36,7 @@ let make = (~voteContract, ~question, ~auction) => {
   } = Routes.Main.Question.Current.Route.useQueryParams()
 
   let voteActiveSubroutes = Routes.Main.Vote.Route.getActiveSubRoute(location)
+  let questionActiveSubroutes = Routes.Main.Question.Route.getActiveSubRoute(location)
   let mainActiveSubroutes = Routes.Main.Route.getActiveSubRoute(location)
 
   let hasAnsweredQuestion = {
@@ -49,12 +50,12 @@ let make = (~voteContract, ~question, ~auction) => {
     ->Option.equal(timestamp, (startTime, lastVoteTimestamp) => startTime < lastVoteTimestamp)
   }
 
-  let activeRoute = switch (mainActiveSubroutes, voteActiveSubroutes) {
-  | (Some(#Question), _) => Some(#Question)
-  | (_, Some(#Auction)) => Some(#Auction)
-  | (_, Some(#New)) => Some(#New)
-  | (None, None) if hasAnsweredQuestion == true => Some(#Auction)
-  | (None, None) if hasAnsweredQuestion == false => Some(#Question)
+  let activeRoute = switch (mainActiveSubroutes, voteActiveSubroutes, questionActiveSubroutes) {
+  | (Some(#Question), _, _) => Some(#Question)
+  | (_, Some(#Auction), _) => Some(#Auction)
+  | (_, _, Some(#Ask)) => Some(#Ask)
+  | (None, None, None) if hasAnsweredQuestion == true => Some(#Auction)
+  | (None, None, None) if hasAnsweredQuestion == false => Some(#Question)
   | _ => None
   }
 
@@ -101,11 +102,11 @@ let make = (~voteContract, ~question, ~auction) => {
       <ul
         className="w-full flex py-2 justify-evenly items-center h-full text:md lg:text-lg font-bold">
         <RelayRouter.Link
-          to_={Routes.Main.Vote.New.Route.makeLink()}
+          to_={Routes.Main.Question.Ask.Route.makeLink()}
           className="relative flex flex-1 items-center justify-center">
           <li className=" flex flex-1 items-center justify-center text-center">
             <button className="z-10" type_="button"> {"Ask"->React.string} </button>
-            {activeRoute == Some(#New)
+            {activeRoute == Some(#Ask)
               ? <div className="absolute w-full">
                   <Motion.Div
                     className="w-1/2 md:w-1/4 absolute top-[-32px] left-0 right-0 mx-auto h-4 bg-default-darker lg:bg-primary-dark  rounded-t-full flex items-end justify-center pt-5"

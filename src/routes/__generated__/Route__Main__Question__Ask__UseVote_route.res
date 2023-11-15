@@ -9,7 +9,9 @@ module Internal = {
     voteDetails: option<int>,
     voteDetailsToken: option<int>,
     showAllBids: option<int>,
+    answer: option<int>,
     owner: option<string>,
+    confirm: option<int>,
   }
 
   @live
@@ -22,7 +24,9 @@ module Internal = {
     voteDetails: option<int>,
     voteDetailsToken: option<int>,
     showAllBids: option<int>,
+    answer: option<int>,
     owner: option<string>,
+    confirm: option<int>,
   }
 
   @live
@@ -47,7 +51,9 @@ module Internal = {
       voteDetails: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetails")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
       voteDetailsToken: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetailsToken")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
       showAllBids: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("showAllBids")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
+      answer: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("answer")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
       owner: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("owner")->Belt.Option.flatMap(value => Some(value->Js.Global.decodeURIComponent)),
+      confirm: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("confirm")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
     }
   }
 
@@ -58,7 +64,9 @@ type queryParams = {
   voteDetails: option<int>,
   voteDetailsToken: option<int>,
   showAllBids: option<int>,
+  answer: option<int>,
   owner: option<string>,
+  confirm: option<int>,
 }
 
 @live
@@ -74,7 +82,11 @@ let parseQueryParams = (search: string): queryParams => {
 
     showAllBids: queryParams->QueryParams.getParamByKey("showAllBids")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
 
+    answer: queryParams->QueryParams.getParamByKey("answer")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
+
     owner: queryParams->QueryParams.getParamByKey("owner")->Belt.Option.flatMap(value => Some(value->Js.Global.decodeURIComponent)),
+
+    confirm: queryParams->QueryParams.getParamByKey("confirm")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
 
   }
 }
@@ -85,14 +97,18 @@ let makeQueryParams = (
   ~voteDetails: option<int>=?, 
   ~voteDetailsToken: option<int>=?, 
   ~showAllBids: option<int>=?, 
+  ~answer: option<int>=?, 
   ~owner: option<string>=?, 
+  ~confirm: option<int>=?, 
   ()
 ) => {
   linkBrightID: linkBrightID,
   voteDetails: voteDetails,
   voteDetailsToken: voteDetailsToken,
   showAllBids: showAllBids,
+  answer: answer,
   owner: owner,
+  confirm: confirm,
 }
 
 @live
@@ -107,7 +123,9 @@ let applyQueryParams = (
   queryParams->QueryParams.setParamOpt(~key="voteDetails", ~value=newParams.voteDetails->Belt.Option.map(voteDetails => Belt.Int.toString(voteDetails)))
   queryParams->QueryParams.setParamOpt(~key="voteDetailsToken", ~value=newParams.voteDetailsToken->Belt.Option.map(voteDetailsToken => Belt.Int.toString(voteDetailsToken)))
   queryParams->QueryParams.setParamOpt(~key="showAllBids", ~value=newParams.showAllBids->Belt.Option.map(showAllBids => Belt.Int.toString(showAllBids)))
+  queryParams->QueryParams.setParamOpt(~key="answer", ~value=newParams.answer->Belt.Option.map(answer => Belt.Int.toString(answer)))
   queryParams->QueryParams.setParamOpt(~key="owner", ~value=newParams.owner->Belt.Option.map(owner => owner->Js.Global.encodeURIComponent))
+  queryParams->QueryParams.setParamOpt(~key="confirm", ~value=newParams.confirm->Belt.Option.map(confirm => Belt.Int.toString(confirm)))
 }
 
 @live
@@ -163,10 +181,10 @@ let useQueryParams = (): useQueryParamsReturn => {
 }
 
 @inline
-let routePattern = "/vote/new"
+let routePattern = "/question/ask"
 
 @live
-let makeLink = (~linkBrightID: option<int>=?, ~voteDetails: option<int>=?, ~voteDetailsToken: option<int>=?, ~showAllBids: option<int>=?, ~owner: option<string>=?) => {
+let makeLink = (~linkBrightID: option<int>=?, ~voteDetails: option<int>=?, ~voteDetailsToken: option<int>=?, ~showAllBids: option<int>=?, ~answer: option<int>=?, ~owner: option<string>=?, ~confirm: option<int>=?) => {
   open RelayRouter.Bindings
   let queryParams = QueryParams.make()
   switch linkBrightID {
@@ -189,15 +207,25 @@ let makeLink = (~linkBrightID: option<int>=?, ~voteDetails: option<int>=?, ~vote
     | Some(showAllBids) => queryParams->QueryParams.setParam(~key="showAllBids", ~value=Belt.Int.toString(showAllBids))
   }
 
+  switch answer {
+    | None => ()
+    | Some(answer) => queryParams->QueryParams.setParam(~key="answer", ~value=Belt.Int.toString(answer))
+  }
+
   switch owner {
     | None => ()
     | Some(owner) => queryParams->QueryParams.setParam(~key="owner", ~value=owner->Js.Global.encodeURIComponent)
+  }
+
+  switch confirm {
+    | None => ()
+    | Some(confirm) => queryParams->QueryParams.setParam(~key="confirm", ~value=Belt.Int.toString(confirm))
   }
   RelayRouter.Bindings.generatePath(routePattern, Js.Dict.fromArray([])) ++ queryParams->QueryParams.toString
 }
 @live
 let makeLinkFromQueryParams = (queryParams: queryParams) => {
-  makeLink(~linkBrightID=?queryParams.linkBrightID, ~voteDetails=?queryParams.voteDetails, ~voteDetailsToken=?queryParams.voteDetailsToken, ~showAllBids=?queryParams.showAllBids, ~owner=?queryParams.owner, )
+  makeLink(~linkBrightID=?queryParams.linkBrightID, ~voteDetails=?queryParams.voteDetails, ~voteDetailsToken=?queryParams.voteDetailsToken, ~showAllBids=?queryParams.showAllBids, ~answer=?queryParams.answer, ~owner=?queryParams.owner, ~confirm=?queryParams.confirm, )
 }
 
 @live
@@ -224,26 +252,6 @@ let isRouteActive = (~exact: bool=false, {pathname}: RelayRouter.History.locatio
 let useIsRouteActive = (~exact=false) => {
   let location = RelayRouter.Utils.useLocation()
   React.useMemo2(() => location->isRouteActive(~exact), (location, exact))
-}
-@live
-type subRoute = [#UseVote]
-
-@live
-let getActiveSubRoute = (location: RelayRouter.History.location): option<[#UseVote]> => {
-  let {pathname} = location
-  if RelayRouter.Internal.matchPath("/vote/new", pathname)->Belt.Option.isSome {
-      Some(#UseVote)
-    } else {
-    None
-  }
-}
-
-@live
-let useActiveSubRoute = (): option<[#UseVote]> => {
-  let location = RelayRouter.Utils.useLocation()
-  React.useMemo1(() => {
-    getActiveSubRoute(location)
-  }, [location])
 }
 
 @obj

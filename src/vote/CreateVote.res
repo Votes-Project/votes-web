@@ -152,8 +152,8 @@ let make = (~children) => {
             type_="submit"
             id="copy-discord-command"
             disabled={!canSubmit}
-            className="m-auto disabled:bg-default-disabled disabled:text-default-darker disabled:opacity-50 disabled:scale-100 disabled:border-none rounded-xl p-4 max-w-xs self-center font-semibold hover:border-2 border-default-dark bg-default-dark text-white lg:border-primary transition-all ease-linear hover:scale-105 hover:backdrop-blur-sm ">
-            {"Generate Discord Command"->React.string}
+            className="mb-auto min-w-[8rem] min-h-[3rem] font-bold disabled:bg-default-disabled disabled:text-default-darker disabled:opacity-50 disabled:scale-100 rounded-2xl max-w-xs self-center bg-default-darker lg:bg-active text-white transition-all ease-linear hover:scale-105  ">
+            {"Ask "->React.string}
           </button>
         </form>
         {children}

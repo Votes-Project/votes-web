@@ -1,5 +1,5 @@
 module UseVoteList = %relay.deferredComponent(UseVoteList.make)
-let renderer = Routes.Main.Vote.New.UseVote.Route.makeRenderer(
+let renderer = Routes.Main.Question.Ask.UseVote.Route.makeRenderer(
   ~prepareCode=_ => [UseVoteList.preload()],
   ~prepare=({environment, owner}) => {
     owner->Option.map(owner =>

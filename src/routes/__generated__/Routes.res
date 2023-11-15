@@ -7,14 +7,6 @@ module Main = {
   module Vote = {
     module Route = Route__Main__Vote_route
 
-    module New = {
-      module Route = Route__Main__Vote__New_route
-
-      module UseVote = {
-        module Route = Route__Main__Vote__New__UseVote_route
-
-      }
-    }
     module Auction = {
       module Route = Route__Main__Vote__Auction_route
 
@@ -23,6 +15,14 @@ module Main = {
   module Question = {
     module Route = Route__Main__Question_route
 
+    module Ask = {
+      module Route = Route__Main__Question__Ask_route
+
+      module UseVote = {
+        module Route = Route__Main__Question__Ask__UseVote_route
+
+      }
+    }
     module Current = {
       module Route = Route__Main__Question__Current_route
 

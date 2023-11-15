@@ -86,13 +86,14 @@ module Fragment = %relay(`
   }
   `)
 
-module NewVoteLink = {
+module AskQuestionLink = {
   @react.component
   let make = (~children) => {
     let {address} = Wagmi.Account.use()
     let owner = address->Nullable.toOption->Option.getWithDefault("")
 
-    <RelayRouter.Link to_={Routes.Main.Vote.New.Route.makeLink(~owner)} preloadData={NoPreloading}>
+    <RelayRouter.Link
+      to_={Routes.Main.Question.Ask.Route.makeLink(~owner)} preloadData={NoPreloading}>
       {children}
     </RelayRouter.Link>
   }
@@ -136,14 +137,14 @@ let make = (~auction, ~owner) => {
           <AuctionCountdown auction={fragmentRefs} />
         </div>
         <div className="flex w-full">
-          <NewVoteLink>
+          <AskQuestionLink>
             <div className="flex flex-row gap-2 items-center justify-start">
               <ReactIcons.LuInfo size="1.25rem" className="text-default-darker" />
               <p className="text-md text-default-darker py-4">
                 {"Ask your own question"->React.string}
               </p>
             </div>
-          </NewVoteLink>
+          </AskQuestionLink>
         </div>
         <ErrorBoundary
           fallback={_ => {<div> {React.string("Bid Component Failed to Insantiate")} </div>}}>
@@ -195,14 +196,14 @@ let make = (~auction, ~owner) => {
           <SettleAuctionButton isSettled=settled />
         </OpenConnectModalWrapper>
         <div className="flex w-full">
-          <NewVoteLink>
+          <AskQuestionLink>
             <div className="flex flex-row gap-2 items-center justify-start">
               <ReactIcons.LuInfo size="1.25rem" className="text-default-darker" />
               <p className="text-md text-default-darker py-4">
                 {"Ask your own question"->React.string}
               </p>
             </div>
-          </NewVoteLink>
+          </AskQuestionLink>
         </div>
         <div className="flex pb-4 flex-col gap-2 justify-between text-default-darker">
           <div className="flex flex-row gap-2 items-center justify-start pt-2 font-semibold">
