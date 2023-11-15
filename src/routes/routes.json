@@ -19,7 +19,7 @@
         "name": "Question",
         "children": [
         {
-            "path": "ask?owner=string&confirm=int",
+            "path": "ask",
             "name": "Ask",
             "children": [{
               "path": "",

@@ -1,19 +1,11 @@
-module AskQuestion = %relay.deferredComponent(CreateVote.make)
-
-module Confirm = %relay.deferredComponent(Confirm.make)
+module AskQuestion = %relay.deferredComponent(AskQuestion.make)
 
 let renderer = Routes.Main.Question.Ask.Route.makeRenderer(
-  ~prepareCode=_ => [AskQuestion.preload(), Confirm.preload()],
+  ~prepareCode=_ => [AskQuestion.preload()],
   ~prepare=_ => (),
-  ~render=({childRoutes, confirm}) => {
+  ~render=({childRoutes}) => {
     <>
       <AskQuestion> {childRoutes} </AskQuestion>
-      <ConfirmModal isOpen={confirm->Option.isSome}>
-        {switch confirm {
-        | Some(_) => <Confirm />
-        | None => <> </>
-        }}
-      </ConfirmModal>
     </>
   },
 )

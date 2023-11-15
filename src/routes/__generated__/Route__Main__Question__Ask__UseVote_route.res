@@ -10,8 +10,6 @@ module Internal = {
     voteDetailsToken: option<int>,
     showAllBids: option<int>,
     answer: option<int>,
-    owner: option<string>,
-    confirm: option<int>,
   }
 
   @live
@@ -25,8 +23,6 @@ module Internal = {
     voteDetailsToken: option<int>,
     showAllBids: option<int>,
     answer: option<int>,
-    owner: option<string>,
-    confirm: option<int>,
   }
 
   @live
@@ -52,8 +48,6 @@ module Internal = {
       voteDetailsToken: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetailsToken")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
       showAllBids: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("showAllBids")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
       answer: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("answer")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
-      owner: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("owner")->Belt.Option.flatMap(value => Some(value->Js.Global.decodeURIComponent)),
-      confirm: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("confirm")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
     }
   }
 
@@ -65,8 +59,6 @@ type queryParams = {
   voteDetailsToken: option<int>,
   showAllBids: option<int>,
   answer: option<int>,
-  owner: option<string>,
-  confirm: option<int>,
 }
 
 @live
@@ -84,10 +76,6 @@ let parseQueryParams = (search: string): queryParams => {
 
     answer: queryParams->QueryParams.getParamByKey("answer")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
 
-    owner: queryParams->QueryParams.getParamByKey("owner")->Belt.Option.flatMap(value => Some(value->Js.Global.decodeURIComponent)),
-
-    confirm: queryParams->QueryParams.getParamByKey("confirm")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
-
   }
 }
 
@@ -98,8 +86,6 @@ let makeQueryParams = (
   ~voteDetailsToken: option<int>=?, 
   ~showAllBids: option<int>=?, 
   ~answer: option<int>=?, 
-  ~owner: option<string>=?, 
-  ~confirm: option<int>=?, 
   ()
 ) => {
   linkBrightID: linkBrightID,
@@ -107,8 +93,6 @@ let makeQueryParams = (
   voteDetailsToken: voteDetailsToken,
   showAllBids: showAllBids,
   answer: answer,
-  owner: owner,
-  confirm: confirm,
 }
 
 @live
@@ -124,8 +108,6 @@ let applyQueryParams = (
   queryParams->QueryParams.setParamOpt(~key="voteDetailsToken", ~value=newParams.voteDetailsToken->Belt.Option.map(voteDetailsToken => Belt.Int.toString(voteDetailsToken)))
   queryParams->QueryParams.setParamOpt(~key="showAllBids", ~value=newParams.showAllBids->Belt.Option.map(showAllBids => Belt.Int.toString(showAllBids)))
   queryParams->QueryParams.setParamOpt(~key="answer", ~value=newParams.answer->Belt.Option.map(answer => Belt.Int.toString(answer)))
-  queryParams->QueryParams.setParamOpt(~key="owner", ~value=newParams.owner->Belt.Option.map(owner => owner->Js.Global.encodeURIComponent))
-  queryParams->QueryParams.setParamOpt(~key="confirm", ~value=newParams.confirm->Belt.Option.map(confirm => Belt.Int.toString(confirm)))
 }
 
 @live
@@ -184,7 +166,7 @@ let useQueryParams = (): useQueryParamsReturn => {
 let routePattern = "/question/ask"
 
 @live
-let makeLink = (~linkBrightID: option<int>=?, ~voteDetails: option<int>=?, ~voteDetailsToken: option<int>=?, ~showAllBids: option<int>=?, ~answer: option<int>=?, ~owner: option<string>=?, ~confirm: option<int>=?) => {
+let makeLink = (~linkBrightID: option<int>=?, ~voteDetails: option<int>=?, ~voteDetailsToken: option<int>=?, ~showAllBids: option<int>=?, ~answer: option<int>=?) => {
   open RelayRouter.Bindings
   let queryParams = QueryParams.make()
   switch linkBrightID {
@@ -211,21 +193,11 @@ let makeLink = (~linkBrightID: option<int>=?, ~voteDetails: option<int>=?, ~vote
     | None => ()
     | Some(answer) => queryParams->QueryParams.setParam(~key="answer", ~value=Belt.Int.toString(answer))
   }
-
-  switch owner {
-    | None => ()
-    | Some(owner) => queryParams->QueryParams.setParam(~key="owner", ~value=owner->Js.Global.encodeURIComponent)
-  }
-
-  switch confirm {
-    | None => ()
-    | Some(confirm) => queryParams->QueryParams.setParam(~key="confirm", ~value=Belt.Int.toString(confirm))
-  }
   RelayRouter.Bindings.generatePath(routePattern, Js.Dict.fromArray([])) ++ queryParams->QueryParams.toString
 }
 @live
 let makeLinkFromQueryParams = (queryParams: queryParams) => {
-  makeLink(~linkBrightID=?queryParams.linkBrightID, ~voteDetails=?queryParams.voteDetails, ~voteDetailsToken=?queryParams.voteDetailsToken, ~showAllBids=?queryParams.showAllBids, ~answer=?queryParams.answer, ~owner=?queryParams.owner, ~confirm=?queryParams.confirm, )
+  makeLink(~linkBrightID=?queryParams.linkBrightID, ~voteDetails=?queryParams.voteDetails, ~voteDetailsToken=?queryParams.voteDetailsToken, ~showAllBids=?queryParams.showAllBids, ~answer=?queryParams.answer, )
 }
 
 @live

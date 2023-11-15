@@ -89,11 +89,7 @@ module Fragment = %relay(`
 module AskQuestionLink = {
   @react.component
   let make = (~children) => {
-    let {address} = Wagmi.Account.use()
-    let owner = address->Nullable.toOption->Option.getWithDefault("")
-
-    <RelayRouter.Link
-      to_={Routes.Main.Question.Ask.Route.makeLink(~owner)} preloadData={NoPreloading}>
+    <RelayRouter.Link to_={Routes.Main.Question.Ask.Route.makeLink()}>
       {children}
     </RelayRouter.Link>
   }

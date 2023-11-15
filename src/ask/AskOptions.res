@@ -1,7 +1,7 @@
-module VoteOptionInput = {
+module AskOptionInput = {
   @react.component
-  let make = (~index, ~option: CreateVoteContext.questionOption, ~isOpen) => {
-    let {state: {options}, dispatch} = React.useContext(CreateVoteContext.context)
+  let make = (~index, ~option: AskContext.questionOption, ~isOpen) => {
+    let {state: {options}, dispatch} = React.useContext(AskContext.context)
     let (toggleDetails, setToggleDetails) = React.useState(() => false)
 
     let onOptionChange = (e, i) => {
@@ -117,7 +117,7 @@ module VoteOptionInput = {
 
 @react.component
 let make = () => {
-  let {state} = React.useContext(CreateVoteContext.context)
+  let {state} = React.useContext(AskContext.context)
 
   let (toggleSettingsIndex, setToggleSettingsIndex) = React.useState(() => None)
   let handleSettingsClick = (_, index) =>
@@ -136,7 +136,7 @@ let make = () => {
           className="w-9 flex items-center justify-center relative font-bold text-2xl h-full text-default-dark lg:text-primary-dark bg-default lg:bg-primary px-3 rounded-l-lg border-default-dark lg:border-primary border-r-2 overflow-hidden ">
           <p className="z-10 "> {(index + 65)->String.fromCharCode->React.string} </p>
         </div>
-        <VoteOptionInput index option isOpen={toggleSettingsIndex == Some(index)} />
+        <AskOptionInput index option isOpen={toggleSettingsIndex == Some(index)} />
         <button
           type_="button"
           onClick={handleSettingsClick(_, index)}

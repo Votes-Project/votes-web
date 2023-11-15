@@ -1,21 +1,10 @@
 module UseVoteList = %relay.deferredComponent(UseVoteList.make)
 let renderer = Routes.Main.Question.Ask.UseVote.Route.makeRenderer(
   ~prepareCode=_ => [UseVoteList.preload()],
-  ~prepare=({environment, owner}) => {
-    owner->Option.map(owner =>
-      UseVoteListQuery_graphql.load(
-        ~environment,
-        ~variables={owner: owner},
-        ~fetchPolicy=StoreOrNetwork,
-      )
-    )
-  },
-  ~render=({prepared}) => {
+  ~prepare=_ => (),
+  ~render=_ => {
     <React.Suspense fallback={<div> {"Loading your VOTE tokens..."->React.string} </div>}>
-      {switch prepared {
-      | None => React.null
-      | Some(queryRef) => <UseVoteList queryRef />
-      }}
+      <UseVoteList />
     </React.Suspense>
   },
 )
