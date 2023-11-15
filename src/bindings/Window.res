@@ -20,7 +20,7 @@ module ScrollTo = {
 external alert: (t, string) => unit = "alert"
 
 module EventListener = {
-  type type_ = | @as("resize") Resize | @as("scroll") Scroll
+  type type_ = | @as("resize") Resize | @as("scroll") Scroll | @as("click") Click
   type options = {passive: bool}
 
   @private @send

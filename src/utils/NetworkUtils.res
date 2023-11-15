@@ -5,10 +5,7 @@ external publicUrl: option<string> = "VITE_VERCEL_URL"
 external port: option<string> = "PORT"
 
 let localhost = `http://localhost:${port->Option.getWithDefault("3000")}`
-// This is a simple example of how one could leverage `preloadAsset` to preload
-// things from the GraphQL response. This should live inside of thes
-// (comprehensive) example application we're going to build eventually.
-@modu
+
 let preloadFromResponse = (part: Js.Json.t, ~preloadAsset: RelayRouter__Types.preloadAssetFn) => {
   switch part->Js.Json.decodeObject {
   | None => ()

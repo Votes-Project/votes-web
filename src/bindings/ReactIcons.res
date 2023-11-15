@@ -130,3 +130,8 @@ module LuPlus = {
   @react.component @module("react-icons/lu")
   external make: (~size: string=?, ~color: string=?, ~className: string=?) => t = "LuPlus"
 }
+
+module LuMinus = {
+  @react.component @module("react-icons/lu")
+  external make: (~size: string=?, ~color: string=?, ~className: string=?) => t = "LuMinus"
+}

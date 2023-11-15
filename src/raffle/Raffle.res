@@ -3,7 +3,7 @@ module Fragment = %relay(`
    id
    tokenId
    owner
- 
+
    ...BlockExplorerButton_vote
  }
 `)
@@ -38,13 +38,13 @@ let make = (~vote) => {
       <BlockExplorerButton vote={fragmentRefs} />
     </div>
     <div className="flex flex-col w-full items-center justify-center px-8 text-lg">
-      <p className="p-4">
+      <p className="py-4">
         {"This Vote is set aside to be raffled to our wonderful community who participate in the daily Vote.
           Results are decided using the points accumulated over participation in the last 9 votes cycle, using the Chainlink ETF to determine a winner.
           Vote Raffles are a core ethos of Votes, providing tangible incentive for daily Voters to return and participate daily.
          "->React.string}
       </p>
-      <div className="w-full h-0 border " />
+      <div className="w-full h-0 border lg:border-primary-dark  " />
       <a href="" className="text-default-darker lg:text-active font-bold p-4">
         {"Go to Raffle Details"->React.string}
       </a>
