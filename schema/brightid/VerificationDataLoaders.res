@@ -101,7 +101,7 @@ let make = () => {
         )
       )
     | json =>
-      let verification = decodeData(json)->Option.map(verification => {
+      decodeData(json)->Option.map(verification => {
         let answerId = verification.contextIds->Array.get(0)->Option.getUnsafe
         Verification.Verification({
           id: answerId,
@@ -111,26 +111,6 @@ let make = () => {
           contextIds: verification.contextIds,
         })
       })
-      switch verification {
-      | Some(Verification({id: answerId})) =>
-        if answerId == id {
-          verification
-        } else {
-          switch await BrightID.SDK.verifyContextId(~context, ~contextId=answerId) {
-          | exception e => raise(e)
-          | json =>
-            let verification = decodeData(json)->Option.getExn
-            Verification.Verification({
-              id: answerId,
-              unique: verification.unique,
-              app: verification.app,
-              context: verification.context,
-              contextIds: verification.contextIds,
-            })->Some
-          }
-        }
-      | _ => verification
-      }
     }
   }),
 }

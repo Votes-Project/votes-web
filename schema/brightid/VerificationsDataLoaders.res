@@ -5,7 +5,6 @@ let make = () => {
     open Fetch
     open BrightID_Shared
     let url = verificationsUrl ++ id
-
     switch await fetch(url, {}) {
     | exception e =>
       Console.error2("e: ", e)
