@@ -3,13 +3,13 @@ module Clipboard = {
   external writeText: string => unit = "writeText"
 }
 
-let makeDiscordCommand = (title, options) => {
+let makeDiscordCommand = (title, options: array<CreateVoteContext.questionOption>) => {
   let command = "/poll"
 
   let question = `question:${title}`
 
   let answers = options->Array.mapWithIndex((option, i) => {
-    `answer${(i + 1)->Int.toString}:${option->Option.getExn}`
+    `answer${(i + 1)->Int.toString}:${option.option->Option.getExn}`
   })
 
   command ++ " " ++ question ++ " " ++ answers->Array.joinWith(" ")
@@ -66,7 +66,9 @@ let make = (~children) => {
   }
 
   let canSubmit = switch (options, title) {
-  | (options, Some(_)) if Array.length(options) >= 2 && options->Array.every(Option.isSome) => true
+  | (options, Some(_))
+    if Array.length(options) >= 2 &&
+      options->Array.every(({?option}) => option->Option.isSome) => true
   | _ => false
   }
 
