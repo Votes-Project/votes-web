@@ -3,24 +3,27 @@ module Query = %relay(`
     $owner: String
     $orderBy: OrderBy_Votes
     $orderDirection: OrderDirection
+    $voteContractAddress: String!
   ) {
-    ...UseVoteList_votes
+    ...UseVoteListFragment
       @arguments(
         owner: $owner
         orderBy: $orderBy
         orderDirection: $orderDirection
+        voteContractAddress: $voteContractAddress
       )
   }
 `)
 module UseVoteDisplay = {
   module Fragment = %relay(`
-  fragment UseVoteList_votes on Query
+  fragment UseVoteListFragment on Query
   @argumentDefinitions(
     first: { type: "Int", defaultValue: 1000 }
     after: { type: "String", defaultValue: "" }
     orderBy: { type: "OrderBy_Votes", defaultValue: id }
     orderDirection: { type: "OrderDirection", defaultValue: desc }
     owner: { type: "String" }
+    voteContractAddress: { type: "String!" }
   )
   @refetchable(queryName: "UseVoteListVotesQuery") {
     votes(
@@ -29,55 +32,96 @@ module UseVoteDisplay = {
       orderBy: $orderBy
       orderDirection: $orderDirection
       where: { owner: $owner }
-    ) @connection(key: "VotesConnection_votes") {
+    ) @connection(key: "UseVotesConnection_votes") {
       __id
       edges {
         node {
           id
+          tokenId
         }
       }
+    }
+    newestVote(voteContractAddress: $voteContractAddress) {
+      tokenId
     }
   }
 `)
   @react.component
   let make = (~votes) => {
-    let {setParams} = Routes.Main.Question.Ask.Route.useQueryParams()
-    let (_, refetch) = Fragment.useRefetchable(votes)
+    let (data, refetch) = Fragment.useRefetchable(votes)
+    let {votes, newestVote} = data
 
-    let _ = Wagmi.Account.use(
+    let {address} = Wagmi.Account.use(
       ~config={
-        onConnect: ({address}) =>
-          setParams(
-            ~removeNotControlledParams=false,
-            ~navigationMode_=Replace,
-            ~setter=c => {
-              ...c,
-              owner: Some(address),
-            },
-            ~onAfterParamsSet=({owner}) => {
-              let _ = Fragment.makeRefetchVariables(~owner)->(refetch(~variables=_))
-            },
-          ),
-        onDisconnect: _ =>
-          setParams(
-            ~removeNotControlledParams=false,
-            ~navigationMode_=Replace,
-            ~setter=c => {
-              ...c,
-              owner: None,
-            },
-            ~onAfterParamsSet=({owner}) => {
-              let _ = Fragment.makeRefetchVariables(~owner)->(refetch(~variables=_))
-            },
-          ),
+        onConnect: ({address, isReconnected}) => {
+          isReconnected
+            ? ()
+            : refetch(
+                ~variables=Fragment.makeRefetchVariables(~owner=Some(address)),
+                ~fetchPolicy=StoreOrNetwork,
+              )->ignore
+        },
+        onDisconnect: () =>
+          refetch(
+            ~variables=Fragment.makeRefetchVariables(~owner=Some("")),
+            ~fetchPolicy=StoreOrNetwork,
+          )->ignore,
       },
     )
-    React.null
+
+    React.useEffect0(() => {
+      let unwatch = Wagmi.Account.watch(({address}) =>
+        refetch(
+          ~variables=Fragment.makeRefetchVariables(~owner=address->Nullable.toOption),
+          ~fetchPolicy=StoreOrNetwork,
+        )->ignore
+      )
+      Some(unwatch)
+    })
+
+    if address->Nullable.toOption->Option.isNone {
+      <div className="flex flex-col items-center justify-center gap-2">
+        {"Connect your wallet to see your Vote tokens"->React.string}
+        <RainbowKit.ConnectButton />
+      </div>
+    } else {
+      switch votes->Fragment.getConnectionNodes {
+      | [] =>
+        <div className="flex flex-col items-center justify-center gap-2">
+          {"You don't own any Vote tokens"->React.string}
+          <RelayRouter.Link
+            to_={Routes.Main.Vote.Auction.Route.makeLink(
+              ~tokenId=newestVote->Option.map(v => v.tokenId->BigInt.toString)->Option.getExn,
+            )}>
+            <button> {"Go to Auction"->React.string} </button>
+          </RelayRouter.Link>
+        </div>
+      | votes =>
+        <ol className="flex justify-center items-center">
+          {votes
+          ->Array.map(vote => {
+            <li key={vote.id}> {vote.tokenId->BigInt.toString->React.string} </li>
+          })
+          ->React.array}
+        </ol>
+      }
+    }
   }
 }
 
+@val @scope(("import", "meta", "env"))
+external voteContractAddress: option<string> = "VITE_VOTES_CONTRACT_ADDRESS"
+let voteContractAddress =
+  voteContractAddress
+  ->Option.map(address => address->String.toLowerCase)
+  ->Option.getExn
+
 @react.component @relay.deferredComponent
-let make = (~queryRef) => {
-  let {fragmentRefs} = Query.usePreloaded(~queryRef)
+let make = () => {
+  let {address} = Wagmi.Account.use()
+  let {fragmentRefs} = Query.use(
+    ~variables={owner: address->Nullable.toOption->Option.getWithDefault(""), voteContractAddress},
+  )
+
   <UseVoteDisplay votes=fragmentRefs />
 }

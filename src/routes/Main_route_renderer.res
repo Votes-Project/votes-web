@@ -83,7 +83,7 @@ let renderer = Routes.Main.Route.makeRenderer(
     <>
       <ErrorBoundary fallback={({error}) => error->React.string}>
         <Main queryRef>
-          <React.Suspense fallback={<p> {"Loading"->React.string} </p>}>
+          <React.Suspense fallback={<div />}>
             {switch handleInitialRender(auction, isLoading, isSubroute) {
             | Loading => "Loading"->React.string
             | CurrentVote =>

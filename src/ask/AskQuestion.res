@@ -3,7 +3,7 @@ module Clipboard = {
   external writeText: string => unit = "writeText"
 }
 
-let makeDiscordCommand = (title, options: array<CreateVoteContext.questionOption>) => {
+let makeDiscordCommand = (title, options: array<AskContext.questionOption>) => {
   let command = "/poll"
 
   let question = `question:${title}`
@@ -27,10 +27,7 @@ let make = (~children) => {
     }
   })
   let titleRef = React.useRef("")
-  let (state, dispatch) = React.useReducer(
-    CreateVoteContext.reducer,
-    CreateVoteContext.initialState,
-  )
+  let (state, dispatch) = React.useReducer(AskContext.reducer, AskContext.initialState)
 
   let {options, title} = state
 
@@ -75,18 +72,24 @@ let make = (~children) => {
   React.useEffect1(() => {
     setHeroComponent(_ =>
       <div
-        className="flex justify-center items-start w-full p-4 h-[558px] min-h-[558px]   "
+        className="flex flex-col items-start w-full p-4 min-h-[558px]  "
         ref={ReactDOM.Ref.callbackDomRef(askRef)}>
+        <div className="w-full lg:p-4 p-2 flex flex-col  items-center min-h-[50%]">
+          <h2 className="text-2xl text-black opacity-60 self-start ">
+            {"1. Link Token (Optional)"->React.string}
+          </h2>
+          <div className="m-auto "> {children} </div>
+        </div>
         <div
-          className="h-full flex-1 relative flex  bg-transparent focus-within:border-2 focus-within:ring-0 focus-within:border-primary backdrop-blur-[2px] rounded-lg transition-all duration-200 ease-linear">
+          className=" lg:border-2 lg:border-primary w-full flex-1 relative flex bg-transparent focus-within:border-2 focus-within:ring-0 focus-within:border-primary backdrop-blur-[2px] rounded-lg transition-all duration-200 ease-linear">
           <ContentEditable
             id="create-vote-title"
             editablehasplaceholder="true"
-            placeholder="Ask a question..."
+            placeholder="2. Ask question..."
             html=titleRef.current
             onChange={onTitleChange}
             onFocus={handleTitleFocus}
-            className="w-[90vw] lg:w-auto max-w-lg lg:p-4 p-2 border-none focus:ring-0 break-words bg-transparent cursor-pointer text-wrap focus:cursor-text focus:text-left text-2xl transition-all duration-300 ease-linear "
+            className="w-[90vw] lg:w-auto max-w-md lg:p-4 p-2 border-none focus:ring-0 break-words bg-transparent cursor-pointer text-wrap focus:cursor-text focus:text-left text-2xl transition-all duration-300 ease-linear "
           />
         </div>
       </div>
@@ -94,12 +97,11 @@ let make = (~children) => {
     None
   }, [setHeroComponent])
 
-  let onSubmit = e => {
-    e->ReactEvent.Form.preventDefault
-    saveCommandToClipboard()
+  let handleAsk = _ => {
+    ()
   }
 
-  <CreateVoteContext.Provider value={state, dispatch}>
+  <AskContext.Provider value={state, dispatch}>
     <div className="h-full p-4 ">
       <div
         className="relative lg:p-4 w-full h-full  flex flex-col justify-around items-center lg:border-2 lg:border-primary rounded-xl ">
@@ -111,7 +113,7 @@ let make = (~children) => {
             clickable=true
             content="This will provide greater detail toward the process of asking a question. We will have to explain 3 main things. \n 1. The components of a question (Title, Answers, correct answer, further details). \n 2. Asking a question requires an unused VOTE token.  \n 3. If a vote token is not owned, your question will be turned into a Discord command that you can paste into the questions channel on Discord. "
           />
-          <h1 className="text-lg"> {"Add Options"->React.string} </h1>
+          <h2 className="text-2xl text-black opacity-60 "> {"3. Add Options"->React.string} </h2>
           <div
             id="create-vote-question"
             type_="button"
@@ -119,10 +121,9 @@ let make = (~children) => {
             <ReactIcons.LuInfo className="lg:text-default-darker text-default-dark" />
           </div>
         </div>
-        <form
-          className="h-full w-full rounded-xl flex justify-start flex-col z-10 pb-4 gap-4" onSubmit>
+        <div className="h-full w-full rounded-xl flex justify-start flex-col z-10 pb-4 gap-4">
           <div className="flex flex-row ">
-            <CreateVoteOptions />
+            <AskOptions />
             <div className="text-center pl-4 flex flex-col-reverse">
               <button
                 className="w-4 font-bold font-fugaz text-4xl pb-5 hover:scale-125 transition-all duration-300 ease-linear"
@@ -149,15 +150,13 @@ let make = (~children) => {
             </a>
           </ReactTooltip>
           <button
-            type_="submit"
-            id="copy-discord-command"
+            onClick=handleAsk
             disabled={!canSubmit}
             className="mb-auto min-w-[8rem] min-h-[3rem] font-bold disabled:bg-default-disabled disabled:text-default-darker disabled:opacity-50 disabled:scale-100 rounded-2xl max-w-xs self-center bg-default-darker lg:bg-active text-white transition-all ease-linear hover:scale-105  ">
             {"Ask "->React.string}
           </button>
-        </form>
-        {children}
+        </div>
       </div>
     </div>
-  </CreateVoteContext.Provider>
+  </AskContext.Provider>
 }
