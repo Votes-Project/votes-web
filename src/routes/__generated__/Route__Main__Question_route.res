@@ -226,12 +226,14 @@ let useIsRouteActive = (~exact=false) => {
   React.useMemo2(() => location->isRouteActive(~exact), (location, exact))
 }
 @live
-type subRoute = [#Current | #Past]
+type subRoute = [#Ask | #Current | #Past]
 
 @live
-let getActiveSubRoute = (location: RelayRouter.History.location): option<[#Current | #Past]> => {
+let getActiveSubRoute = (location: RelayRouter.History.location): option<[#Ask | #Current | #Past]> => {
   let {pathname} = location
-  if RelayRouter.Internal.matchPath("/question", pathname)->Belt.Option.isSome {
+  if RelayRouter.Internal.matchPath("/question/ask", pathname)->Belt.Option.isSome {
+      Some(#Ask)
+    } else if RelayRouter.Internal.matchPath("/question", pathname)->Belt.Option.isSome {
       Some(#Current)
     } else if RelayRouter.Internal.matchPath("/question/:questionId", pathname)->Belt.Option.isSome {
       Some(#Past)
@@ -241,7 +243,7 @@ let getActiveSubRoute = (location: RelayRouter.History.location): option<[#Curre
 }
 
 @live
-let useActiveSubRoute = (): option<[#Current | #Past]> => {
+let useActiveSubRoute = (): option<[#Ask | #Current | #Past]> => {
   let location = RelayRouter.Utils.useLocation()
   React.useMemo1(() => {
     getActiveSubRoute(location)

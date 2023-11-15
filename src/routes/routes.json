@@ -8,8 +8,19 @@
         "name": "Vote",
         "children": [
           {
-            "path": "new?owner=string",
-            "name": "New",
+            "path": ":tokenId",
+            "name": "Auction",
+            "children": []
+          }
+        ]
+      },
+      {
+        "path": "question?answer=int",
+        "name": "Question",
+        "children": [
+        {
+            "path": "ask?owner=string&confirm=int",
+            "name": "Ask",
             "children": [{
               "path": "",
               "name": "UseVote",
@@ -17,21 +28,11 @@
             }]
           },
           {
-            "path": ":tokenId",
-            "name": "Auction",
-            "children": []
-          },
-        ]
-      },
-      {
-        "path": "question?answer=int",
-        "name": "Question",
-        "children": [
-          {
             "path": "?id=string",
             "name": "Current",
             "children": []
           },
+
           {
           "path": ":questionId",
           "name": "Past",

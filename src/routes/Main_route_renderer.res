@@ -75,8 +75,10 @@ let renderer = Routes.Main.Route.makeRenderer(
 
     let mainSubroute = Routes.Main.Route.useActiveSubRoute()
     let voteSubroute = Routes.Main.Vote.Route.useActiveSubRoute()
+    let questionSubroute = Routes.Main.Question.Route.useActiveSubRoute()
 
-    let isSubroute = mainSubroute->Option.isSome || voteSubroute->Option.isSome
+    let isSubroute =
+      mainSubroute->Option.isSome || voteSubroute->Option.isSome || questionSubroute->Option.isSome
 
     <>
       <ErrorBoundary fallback={({error}) => error->React.string}>
