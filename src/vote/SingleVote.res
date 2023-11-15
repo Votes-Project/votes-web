@@ -28,7 +28,7 @@ exception NoAuction
 @react.component @relay.deferredComponent
 let make = (
   ~queryRef=?,
-  ~vote: option<RescriptRelay.fragmentRefs<[#SingleVote_node]>>=?,
+  ~vote: option<RescriptRelay.fragmentRefs<[#SingleVote_node]>>,
   ~tokenId,
 ) => {
   let data = queryRef->Option.map(queryRef => Query.usePreloaded(~queryRef))

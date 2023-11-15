@@ -1,4 +1,4 @@
-type auction = MainFragment_graphql.Types.fragment_votes_edges_node_auction
+type auction = MainFragment_graphql.Types.fragment_newestVote_auction
 
 type context = {
   auction: option<auction>,

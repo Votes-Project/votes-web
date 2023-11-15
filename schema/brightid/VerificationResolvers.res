@@ -8,9 +8,25 @@ let verification = async (
   ~contextId,
   ~ctx: ResGraphContext.context,
 ): verification => {
-  let data = await ctx.dataLoaders.verification.byId->DataLoader.load(contextId)
-  switch data {
+  switch await ctx.dataLoaders.verification.byId->DataLoader.load(contextId) {
   | None => panic("Something went wrong fetching from BrightID Node")
-  | Some(data) => data
+  | Some(verification) =>
+    switch verification {
+    | Verification.Verification({contextIds}) =>
+      switch contextIds->Array.get(0) {
+      | Some(answerServiceId) if answerServiceId == contextId =>
+        ctx.dataLoaders.verification.byId->DataLoader.prime(Some(verification))
+        verification
+      | Some(_) =>
+        switch await ctx.dataLoaders.verification.byId->DataLoader.load(contextId) {
+        | None => panic("Something went wrong fetching from BrightID Node")
+        | Some(verification) =>
+          ctx.dataLoaders.verification.byId->DataLoader.prime(Some(verification))
+          verification
+        }
+      | None => verification
+      }
+    | _ => verification
+    }
   }
 }

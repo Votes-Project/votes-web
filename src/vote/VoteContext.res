@@ -1,4 +1,4 @@
-type vote = RescriptRelay.fragmentRefs<[#SingleVote_node]>
+type vote = MainFragment_graphql.Types.fragment_newestVote
 
 type context = {
   vote: option<vote>,

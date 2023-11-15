@@ -86,7 +86,8 @@ let renderer = Routes.Main.Route.makeRenderer(
             | Loading => "Loading"->React.string
             | CurrentVote =>
               <SingleVote
-                vote={vote->Option.getExn} tokenId={auction->Option.map(auction => auction.tokenId)}
+                vote={vote->Option.map(v => v.fragmentRefs)}
+                tokenId={auction->Option.map(auction => auction.tokenId)}
               />
             | CurrentQuestion => <SingleQuestion question={question->Option.getExn} />
             | ChildRoutes => childRoutes

@@ -6,7 +6,7 @@ let auctionContract = async (_: Schema.query, ~id, ~ctx: ResGraphContext.context
   let id =
     id->ResGraph.Utils.Base64.decode->String.split(":")->Array.get(1)->Option.getWithDefault(id)
   switch await ctx.dataLoaders.auctionContract.byId->DataLoader.load(id) {
-  | None => panic("Did not find auction settled with that ID")
+  | None => panic("Did not find auction contract settled with that ID")
   | Some(auctionContract) =>
     ctx.dataLoaders.auctionContract.byId->DataLoader.prime(auctionContract->Some)
     auctionContract->Some

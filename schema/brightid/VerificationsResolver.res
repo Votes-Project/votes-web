@@ -11,6 +11,8 @@ let verifications = async (
   let data = await ctx.dataLoaders.verifications.byId->DataLoader.load(context)
   switch data {
   | None => panic("Something went wrong fetching from BrightID Node")
-  | Some(data) => data
+  | Some(data) =>
+    ctx.dataLoaders.verifications.byId->DataLoader.prime(Some(data))
+    data
   }
 }
