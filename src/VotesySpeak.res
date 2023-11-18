@@ -14,7 +14,7 @@ let make = () => {
   switch content {
   | "" => React.null
   | content =>
-    <div className="absolute top-14">
+    <div className="absolute top-16">
       <div
         className=" relative bg-white p-2 rounded-lg text-sm shadow-md"
         ref={ReactDOM.Ref.domRef(ref)}>

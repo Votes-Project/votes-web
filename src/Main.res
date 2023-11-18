@@ -97,7 +97,11 @@ module MainDisplay = {
     })
 
     <>
-      <Header verifications=fragmentRefs />
+      <ErrorBoundary fallback={_ => <div />}>
+        <React.Suspense fallback={<div />}>
+          <Header verifications=fragmentRefs />
+        </React.Suspense>
+      </ErrorBoundary>
       <div className="w-full pt-4">
         <div
           className="lg:flex-[0_0_auto] lg:max-w-6xl m-auto flex flex-col lg:flex-row  flex-shrink-0 max-w-full ">

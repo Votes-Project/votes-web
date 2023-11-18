@@ -16,15 +16,19 @@ let use = (ref: React.ref<Nullable.t<Dom.element>>) => {
 
       switch ref.current->Nullable.toOption {
       | Some(current) if current->Element.contains(target) => setIsOutside(_ => false)
-      | _ => setIsOutside(_ => true)
+      | _ =>
+        setIsOutside(_ => true)
+        setTimeout(() => setIsOutside(_ => false), 0)->ignore
       }
     }
+
     // Bind the event listener
-    document->Document.addEventListener(Mousedown, handleClickOutside)
+    document->Document.addEventListener(Click, handleClickOutside)
+
     Some(
       () => {
         // Unbind the event listener on clean up
-        document->Document.removeEventListener(Mousedown, handleClickOutside)
+        document->Document.removeEventListener(Click, handleClickOutside)
       },
     )
   }, [ref])
