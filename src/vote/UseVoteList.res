@@ -50,6 +50,23 @@ module UseVoteDisplay = {
   let make = (~votes) => {
     let (data, refetch) = Fragment.useRefetchable(votes)
     let {votes, newestVote} = data
+    let {queryParams, setParams} = Routes.Main.Question.Ask.Route.useQueryParams()
+
+    let handleVoteClick = (_, tokenId) => {
+      let tokenId = tokenId->BigInt.toInt
+      switch queryParams.useVote {
+      | Some(useVote) if useVote == tokenId =>
+        setParams(~navigationMode_=Replace, ~removeNotControlledParams=false, ~setter=c => {
+          ...c,
+          useVote: None,
+        })
+      | _ =>
+        setParams(~navigationMode_=Replace, ~removeNotControlledParams=false, ~setter=c => {
+          ...c,
+          useVote: Some(tokenId),
+        })
+      }
+    }
 
     let {address} = Wagmi.Account.use(
       ~config={
@@ -80,14 +97,14 @@ module UseVoteDisplay = {
     })
 
     if address->Nullable.toOption->Option.isNone {
-      <div className="flex flex-col items-center justify-center gap-2">
+      <>
         {"Connect your wallet to see your Vote tokens"->React.string}
         <RainbowKit.ConnectButton />
-      </div>
+      </>
     } else {
       switch votes->Fragment.getConnectionNodes {
       | [] =>
-        <div className="flex flex-col items-center justify-center gap-2">
+        <>
           {"You don't own any Vote tokens"->React.string}
           <RelayRouter.Link
             to_={Routes.Main.Vote.Auction.Route.makeLink(
@@ -95,12 +112,32 @@ module UseVoteDisplay = {
             )}>
             <button> {"Go to Auction"->React.string} </button>
           </RelayRouter.Link>
-        </div>
+        </>
       | votes =>
-        <ol className="flex justify-center items-center">
+        <ol
+          className="flex flex-[1_1_0] items-center justify-center w-full lg:h-full flex-wrap overflow-scroll hide-sidebar   ">
           {votes
           ->Array.map(vote => {
-            <li key={vote.id}> {vote.tokenId->BigInt.toString->React.string} </li>
+            switch queryParams.useVote {
+            | Some(useVote) if useVote == vote.tokenId->BigInt.toInt =>
+              <li
+                className="flex items-center justify-center h-1/5 w-1/6 text-lg p-2 m-2 bg-default-light rounded-lg text-active font-bold shadow cursor-pointer border border-active"
+                key={vote.id}>
+                <button
+                  className="w-full h-full font-fugaz" onClick={handleVoteClick(_, vote.tokenId)}>
+                  {vote.tokenId->BigInt.toString->React.string}
+                </button>
+              </li>
+            | _ =>
+              <li
+                className="flex items-center justify-center h-1/5 w-1/6 text-lg p-2 m-2 bg-primary-dark rounded-lg text-white font-bold shadow cursor-pointer"
+                key={vote.id}>
+                <button
+                  className="w-full h-full font-fugaz" onClick={handleVoteClick(_, vote.tokenId)}>
+                  {vote.tokenId->BigInt.toString->React.string}
+                </button>
+              </li>
+            }
           })
           ->React.array}
         </ol>

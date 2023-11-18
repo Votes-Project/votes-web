@@ -3,6 +3,7 @@ import react from "@vitejs/plugin-react-refresh";
 import { rescriptRelayVitePlugin } from "rescript-relay-router/RescriptRelayVitePlugin.mjs";
 
 export default defineConfig({
+  port: process.env.PORT || 3000,
   resolve: {
     alias: {
       process: 'process/browser',

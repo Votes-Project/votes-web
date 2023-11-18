@@ -10,3 +10,7 @@ external getEnsAddress: (publicClient, getEnsAddressInput) => promise<Nullable.t
   "getEnsAddress"
 @module("viem/ens")
 external normalize: string => string = "normalize"
+
+@module("viem") external toHexFromString: string => string = "toHex"
+
+@module("viem") external hexToString: string => string = "hexToString"

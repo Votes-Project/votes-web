@@ -1,7 +1,6 @@
 type questionOption = {
   option?: string,
   details?: string,
-  numAnswers?: BigInt.t,
 }
 
 type changeTextActions =
@@ -78,4 +77,54 @@ let context = React.createContext({
 
 module Provider = {
   let make = React.Context.provider(context)
+}
+
+let decodeQuestionOption = json =>
+  switch json->JSON.Decode.object {
+  | Some(questionOptionDict) =>
+    switch (questionOptionDict->Dict.get("option"), questionOptionDict->Dict.get("details")) {
+    | (Some(option), Some(details)) => {
+        option: ?option->JSON.Decode.string,
+        details: ?details->JSON.Decode.string,
+      }
+    | (Some(option), None) => {
+        option: ?option->JSON.Decode.string,
+        details: ?None,
+      }
+    | _ => {}
+    }
+  | _ => {}
+  }
+
+let decodeOptions = json =>
+  switch json->JSON.Decode.array {
+  | Some(options) => options->Array.map(decodeQuestionOption)
+  | _ => []
+  }
+
+let decodeState = json =>
+  switch json->JSON.Decode.object {
+  | Some(stateDict) =>
+    switch (stateDict->Dict.get("title"), stateDict->Dict.get("options")) {
+    | (Some(String(title)), Some(options)) =>
+      Some({
+        title: Some(title),
+        options: options->decodeOptions,
+      })
+    | _ => None
+    }
+  | _ => None
+  }
+
+let parseHexState = (hex): state => {
+  hex->Option.mapWithDefault(initialState, hex => {
+    try {
+      switch hex->Viem.hexToString->JSON.parseExn->decodeState {
+      | Some(state) => state
+      | None => initialState
+      }
+    } catch {
+    | _ => initialState
+    }
+  })
 }

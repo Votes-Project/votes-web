@@ -3,7 +3,7 @@ let renderer = Routes.Main.Question.Ask.UseVote.Route.makeRenderer(
   ~prepareCode=_ => [UseVoteList.preload()],
   ~prepare=_ => (),
   ~render=_ => {
-    <React.Suspense fallback={<div> {"Loading your VOTE tokens..."->React.string} </div>}>
+    <React.Suspense fallback={<div> {"Loading VOTE tokens..."->React.string} </div>}>
       <UseVoteList />
     </React.Suspense>
   },
