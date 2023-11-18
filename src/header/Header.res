@@ -20,31 +20,42 @@ module Fragment = %relay(`
   }
 `)
 
+let links = {
+  open ReactIcons
+
+  [
+    ("Raffles", Routes.Main.Raffles.Route.makeLink(), <LuAward size="1.5rem" />),
+    ("Votes", Routes.Main.Votes.Route.makeLink(), <LuCheckCircle size="1.5rem" />),
+    ("Questions", Routes.Main.Questions.Route.makeLink(), <LuHistory size="1.5rem" />),
+  ]
+}
+
 @react.component
 let make = (~verifications) => {
   let {verifications, randomQuestion} = Fragment.use(verifications)
   let (isOpen, setIsOpen) = React.useState(_ => false)
+  let accordionRef = React.useRef(Nullable.null)
+  let hamburgerRef = React.useRef(Nullable.null)
+  let isClickOutside = OutsideClickHook.use(accordionRef)
+  let isClickOutsideHamburger = OutsideClickHook.use(hamburgerRef)
 
   let handleMenu = _ => {
     setIsOpen(isOpen => !isOpen)
   }
 
-  let links = {
-    open ReactIcons
-
-    [
-      ("Raffles", Routes.Main.Raffles.Route.makeLink(), <LuAward size="1.5rem" />),
-      ("Votes", Routes.Main.Votes.Route.makeLink(), <LuCheckCircle size="1.5rem" />),
-      ("Questions", Routes.Main.Questions.Route.makeLink(), <LuHistory size="1.5rem" />),
-    ]
-  }
+  React.useEffect2(() => {
+    if isClickOutside && isClickOutsideHamburger {
+      setIsOpen(_ => false)
+    }
+    None
+  }, (isClickOutside, isClickOutsideHamburger))
 
   <header className=" flex flex-col justify-center items-center mb-[-8px] w-full">
     <nav className=" max-w-7xl flex w-full justify-between px-4 pt-2 flex-1">
       <div className="flex gap-3 justify-center items-center ">
         <RelayRouter.Link
           to_={Routes.Main.Question.Current.Route.makeLink(
-            ~id=randomQuestion->Option.map(q => q.id)->Option.getExn,
+            ~id=randomQuestion->Option.map(q => q.id)->Option.getWithDefault(""),
           )}
           className="relative z-2 px-2 py-0 transition-all z-2"
           onClick={_ => isOpen ? handleMenu() : ()}>
@@ -61,7 +72,9 @@ let make = (~verifications) => {
           <div className="flex items-center justify-around text-default-darker">
             <ReactIcons.LuVote size="1.5rem" />
             <ErrorBoundary fallback={_ => "N/A"->React.string}>
-              <VoterCount verifications={verifications.fragmentRefs} />
+              <React.Suspense fallback={<> </>}>
+                <VoterCount verifications={verifications.fragmentRefs} />
+              </React.Suspense>
             </ErrorBoundary>
           </div>
         </div>
@@ -82,6 +95,7 @@ let make = (~verifications) => {
         <RainbowKit.ConnectButton showBalance=false chainStatus=RainbowKit.ConnectButton.Icon />
       </div>
       <button
+        ref={ReactDOM.Ref.domRef(hamburgerRef)}
         className={`lg:hidden ${isOpen
             ? "border-2 border-active rounded-lg"
             : ""}  flex justify-center items-center m-1 h-11 self-center`}>
@@ -89,6 +103,7 @@ let make = (~verifications) => {
       </button>
     </nav>
     <div
+      ref={ReactDOM.Ref.domRef(accordionRef)}
       className={`${isOpen
           ? "py-10 bg-active w-full flex flex-col h-96 m-[-8px]"
           : "max-h-0"} color-active transition-all justify-around items-center flex lg:max-h-0 lg:p-0 `}>

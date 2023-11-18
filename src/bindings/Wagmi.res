@@ -182,8 +182,11 @@ module Account = {
     status: accountStatus,
   }
   type useAccountInput = {onConnect?: onConnect => unit, onDisconnect?: unit => unit}
-  @module("wagmi") @module("wagmi")
+  @module("wagmi")
   external use: (~config: useAccountInput=?) => t = "useAccount"
+
+  @module("@wagmi/core")
+  external watch: (t => unit) => unit => unit = "watchAccount"
 }
 
 module Network = {
