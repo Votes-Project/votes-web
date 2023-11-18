@@ -64,11 +64,116 @@ module LinkStatusTooltip = {
   }
 }
 
+module LongPress = {
+  type t = {
+    holdTime: float,
+    progress: float,
+    hasReachedThreshold: bool,
+    startCounter: unit => promise<unit>,
+    stopCounter: unit => unit,
+  }
+
+  let use = (~holdDelay, ~onSubmit) => {
+    let (holdTime, setHoldTime) = React.useState(_ => 0.0)
+    let (progress, setProgress) = React.useState(_ => 0.0)
+    let (hasReachedThreshold, setHasReachedThreshold) = React.useState(_ => false)
+    let holdIntervalRef = React.useRef(None)
+
+    let normalize = (value, min, max) => {
+      (value -. min) /. (max -. min) *. 100.
+    }
+
+    let clearTime = () => {
+      setHoldTime(_ => 0.0)
+      setProgress(_ => 0.0)
+      setHasReachedThreshold(_ => false)
+    }
+
+    let stopCounter = () => {
+      switch holdIntervalRef.current {
+      | Some(intervalId) =>
+        clearTime()
+        clearInterval(intervalId)
+        holdIntervalRef.current = None
+        ()
+      | None => ()
+      }
+    }
+    let startCounter = async () => {
+      await Promise.make((_, _) => holdIntervalRef.current = setInterval(() => {
+            // Check if enough time has elapsed
+            setHoldTime(
+              time =>
+                switch time {
+                | time if time > holdDelay =>
+                  setHasReachedThreshold(_ => true)
+                  onSubmit()->ignore
+                  stopCounter()
+                  0.0
+
+                | _ =>
+                  setProgress(_ => normalize(time, 0., holdDelay))
+                  time +. 10.
+                },
+            )
+          }, 10)->Some)
+    }
+    {holdTime, progress, hasReachedThreshold, startCounter, stopCounter}
+  }
+}
+
+module CircleProgress = {
+  open FramerMotion
+  @react.component
+  let make = (~progress, ~size=100) => {
+    let radius = 45
+    let circumference = Math.ceil(2. *. Math.Constants.pi *. radius->Int.toFloat)->Float.toInt
+    let fillPercents = Math.abs(Math.ceil(progress *. float(circumference) /. 100.))->Float.toInt
+
+    <div className="h-full">
+      <svg
+        viewBox="0 0 100 100"
+        version="1.1"
+        xmlns="http://www.w3.org/2000/svg"
+        width={size->Int.toString}
+        height={size->Int.toString}>
+        <circle
+          cx="50"
+          cy="50"
+          className="circle fill-transparent stroke-[1rem] stroke-default-darker lg:stroke-active"
+          r={radius->Int.toString}
+        />
+      </svg>
+      <svg
+        viewBox="0 0 100 100"
+        width={size->Int.toString}
+        height={size->Int.toString}
+        className="absolute rotate-90 overflow-visible"
+        style={{
+          marginTop: -size->Int.toString,
+        }}>
+        <Motion.Circle
+          cx="50"
+          cy="50"
+          r={radius->Int.toString}
+          className="circle fill-transparent stroke-[1rem] stroke-default-dark lg:stroke-primary"
+          strokeDashoffset={fillPercents->Int.toString}
+          strokeDasharray={circumference->Int.toString}
+        />
+      </svg>
+    </div>
+  }
+}
+
 module OptionItem = {
   @react.component
   let make = (~option, ~index, ~handleVote) => {
     let {queryParams, setParams} = Routes.Main.Question.Route.useQueryParams()
-    let dragControls = FramerMotion.Drag.Controls.use()
+
+    let holdDelay = 1000.
+    let {progress, startCounter, stopCounter} = LongPress.use(~holdDelay, ~onSubmit=() =>
+      handleVote(index)
+    )
 
     let ref = React.useRef(Nullable.null)
 
@@ -78,84 +183,34 @@ module OptionItem = {
         answer: Some(index),
       })
     }
-
-    open FramerMotion
-    let onDragEnd = async (info: Drag.info) => {
-      switch ref.current->Nullable.toOption {
-      | Some(_) if info.velocity.x >= 500. => await handleVote(index)
-      | Some(current) if info.offset.x > 0.75 *. current->Element.offsetWidth =>
-        await handleVote(index)
-      | _ => ()
-      }
-    }
-
-    {
-      switch queryParams.answer {
-      | Some(answer) if answer == index =>
-        <li
-          className={` touch-none relative font-semibold text-sm my-3 w-full flex items-center text-left backdrop-blur-md bg-black/10 duration-200 ease-linear lg:rounded-xl text-default-darker shadow-lg  lg:scale-95 border-y-4 lg:border-4 border-default-darker lg:border-active overflow-hidden  `}
-          key={index->Int.toString}
-          ref={ReactDOM.Ref.domRef(ref)}>
-          <div
-            onPointerDown={e => dragControls.start(e)}
-            className="absolute w-full h-full self-stretch flex items-center justify-start border-2 border-transparent  font-bold text-3xl text-default lg:text-secondary  overflow-hidden z-50">
-            <Motion.Div
-              drag=X
-              dragConstraints=Ref(ref)
-              dragTransition={{bounceStiffness: 600., bounceDamping: 10.}}
-              dragControls={dragControls}
-              dragSnapToOrigin=true
-              onDragEnd={(_, info) => {
-                let _ = onDragEnd(info)
-              }}
-              className="flex items-center justify-center rounded-md h-full px-10 bg-default-darker lg:bg-active">
-              {""->React.string}
-            </Motion.Div>
-          </div>
-          <div
-            className={`relative w-full flex flex-row items-center  lg:my-2 first:mb-2 py-2 px-2 ml-20 min-h-[80px] overflow-hidden transition-all  `}
-            key={index->Int.toString}>
-            <div
-              className="absolute w-full h-full flex items-center justify-center animate-pulse text-default-darker font-bold text-3xl duration-300">
-              {"Swipe to Confirm"->React.string}
-            </div>
-            <p className="opacity-20"> {option->React.string} </p>
-          </div>
-        </li>
-      | Some(_) =>
-        <li
-          className={`touch-none relative font-semibold text-sm my-3 pl-2 w-full flex items-center text-left backdrop-blur-md transition-all duration-200 ease-linear lg:rounded-xl text-default-darker shadow-lg bg-default/80 lg:bg-secondary/80 hover:lg:scale-105 focus:lg:scale-105`}
-          key={index->Int.toString}
-          ref={ReactDOM.Ref.domRef(ref)}
-          onClick=handleSelect>
-          <div
-            className="w-9 flex flex-1 items-center justify-center relative font-bold text-3xl h-full text-default-dark lg:text-primary-dark px-3 rounded-l-lg overflow-hidden">
-            {(index + 65)->String.fromCharCode->React.string}
-          </div>
-          <button
-            className={`w-full  flex flex-row items-center lg:my-2 first:mb-2 py-2  px-2 min-h-[80px] overflow-hidden  transition-all`}
-            key={index->Int.toString}>
-            {option->React.string}
-          </button>
-        </li>
+    <li
+      className={`outline-none relative font-semibold text-sm my-3 pl-2 w-full flex items-center text-left backdrop-blur-md transition-all duration-200 ease-linear lg:rounded-xl text-default-darker shadow-lg bg-default lg:bg-secondary hover:lg:scale-105 focus:lg:scale-105`}
+      key={index->Int.toString}
+      ref={ReactDOM.Ref.domRef(ref)}
+      onPointerLeave={_ => {
+        stopCounter()->ignore
+      }}
+      onPointerDown={e => {
+        handleSelect(e)
+        startCounter()->ignore
+      }}
+      onPointerUp={_ => {
+        stopCounter()->ignore
+      }}>
+      {switch queryParams.answer {
+      | Some(answer) if answer == index => <CircleProgress progress size=25 />
       | _ =>
-        <li
-          className={`touch-none relative font-semibold text-sm my-3 pl-2 w-full flex items-center text-left backdrop-blur-md transition-all duration-200 ease-linear lg:rounded-xl text-default-darker shadow-lg bg-default lg:bg-secondary hover:lg:scale-105 focus:lg:scale-105`}
-          key={index->Int.toString}
-          ref={ReactDOM.Ref.domRef(ref)}
-          onClick=handleSelect>
-          <div
-            className="w-9 flex flex-1 items-center justify-center relative font-bold text-3xl h-full text-default-dark lg:text-primary-dark px-3 rounded-l-lg overflow-hidden">
-            {(index + 65)->String.fromCharCode->React.string}
-          </div>
-          <button
-            className={`w-full  flex flex-row items-center lg:my-2 first:mb-2 py-2   px-2 min-h-[80px] overflow-hidden  transition-all`}
-            key={index->Int.toString}>
-            {option->React.string}
-          </button>
-        </li>
-      }
-    }
+        <div
+          className="pointer-events-none w-9 flex flex-1 items-center justify-center relative font-bold text-3xl h-full text-default-dark lg:text-primary-dark px-3 rounded-l-lg overflow-hidden">
+          {(index + 65)->String.fromCharCode->React.string}
+        </div>
+      }}
+      <button
+        className={`focus:outline-none w-full  flex flex-row items-center lg:my-2 first:mb-2 py-2   px-2 min-h-[80px] overflow-hidden  transition-all`}
+        key={index->Int.toString}>
+        <p className="pointer-events-none"> {option->React.string} </p>
+      </button>
+    </li>
   }
 }
 
@@ -168,7 +223,7 @@ module OptionsPage = {
   @react.component
   let make = (~question) => {
     let {options} = Fragment.useOpt(question)->Option.getWithDefault({options: []})
-    let {setParams} = Routes.Main.Question.Route.useQueryParams()
+    let {queryParams, setParams} = Routes.Main.Question.Route.useQueryParams()
     let keys = UseKeyPairHook.useKeyPair()
 
     let signAnswer = async (~answer, ~day, jwk, privateKey) => {
@@ -215,8 +270,9 @@ module OptionsPage = {
     }
 
     <>
-      <h1 className="text-2xl px-4 pt-2 text-default-dark lg:text-primary-dark text-center">
-        {"Pick an answer"->React.string}
+      <h1
+        className="text-2xl px-4 pt-2 text-default-dark lg:text-primary-dark text-center animate-typewriter">
+        {(queryParams.answer->Option.isSome ? "Hold to Confirm" : "Pick an answer")->React.string}
       </h1>
       <ul className="flex flex-col justify-between items-start lg:px-6 mb-4 lg:mr-4">
         {options
