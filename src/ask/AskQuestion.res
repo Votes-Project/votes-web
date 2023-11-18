@@ -1,3 +1,6 @@
+@val @scope(("import", "meta", "env"))
+external questionsContractAddress: option<string> = "VITE_QUESTIONS_CONTRACT_ADDRESS"
+
 module Clipboard = {
   @scope(("navigator", "clipboard"))
   external writeText: string => unit = "writeText"
@@ -19,6 +22,13 @@ let maxOptions = 5
 
 @react.component @relay.deferredComponent
 let make = (~children) => {
+  let {setParams, queryParams} = Routes.Main.Question.Ask.Route.useQueryParams()
+
+  let (state, dispatch) = React.useReducer(
+    AskContext.reducer,
+    AskContext.parseHexState(queryParams.hexState),
+  )
+
   let askRef = React.useCallback0(element => {
     switch element->Nullable.toOption {
     | Some(element) =>
@@ -26,8 +36,39 @@ let make = (~children) => {
     | None => ()
     }
   })
+
+  React.useEffect1(() => {
+    let hexState = state->JSON.stringifyAny->Option.map(Viem.toHexFromString)
+    setParams(~navigationMode_=Replace, ~removeNotControlledParams=false, ~setter=c => {
+      ...c,
+      hexState,
+    })
+    None
+  }, [state])
+
+  // let {config} = Wagmi.usePrepareContractWrite(
+  //   ~config={
+  //     address: questionsContractAddress->Belt.Option.getExn,
+  //     abi: auctionContractAbi,
+  //     functionName: "createBid",
+  //     value: bidAmount->Viem.parseEther->Option.getWithDefault(BigInt.fromString("0")),
+  //     args: [auction.tokenId],
+  //   },
+  // )
+  // let createBid = Wagmi.useContractWrite({
+  //   ...config,
+  //   onSuccess: _ => {
+  //     setBidAmount(_ => "")
+  //   },
+  // })
+
+  // let handleCreateBid = () =>
+  //   switch createBid.write {
+  //   | Some(createBid) => createBid()
+  //   | None => raise(ContractWriteDoesNotExist)
+  // }
+
   let titleRef = React.useRef("")
-  let (state, dispatch) = React.useReducer(AskContext.reducer, AskContext.initialState)
 
   let {options, title} = state
 
@@ -74,19 +115,19 @@ let make = (~children) => {
       <div
         className="flex flex-col items-start w-full p-4 min-h-[558px]  "
         ref={ReactDOM.Ref.callbackDomRef(askRef)}>
-        <div className="w-full lg:p-4 p-2 flex flex-col  items-center min-h-[50%]">
+        <div className="w-full lg:p-4 p-2 flex flex-col items-center max-h-[50%] min-h-0 flex-1 ">
           <h2 className="text-2xl text-black opacity-60 self-start ">
             {"1. Link Token (Optional)"->React.string}
           </h2>
-          <div className="m-auto "> {children} </div>
+          {children}
         </div>
         <div
-          className=" lg:border-2 lg:border-primary w-full flex-1 relative flex bg-transparent focus-within:border-2 focus-within:ring-0 focus-within:border-primary backdrop-blur-[2px] rounded-lg transition-all duration-200 ease-linear">
+          className="lg:border-2 lg:border-primary w-full flex-1 relative flex bg-transparent focus-within:border-2 focus-within:ring-0 focus-within:border-primary backdrop-blur-[2px] rounded-lg transition-all duration-200 ease-linear">
           <ContentEditable
             id="create-vote-title"
             editablehasplaceholder="true"
             placeholder="2. Ask question..."
-            html=titleRef.current
+            html={state.title->Option.getWithDefault("")}
             onChange={onTitleChange}
             onFocus={handleTitleFocus}
             className="w-[90vw] lg:w-auto max-w-md lg:p-4 p-2 border-none focus:ring-0 break-words bg-transparent cursor-pointer text-wrap focus:cursor-text focus:text-left text-2xl transition-all duration-300 ease-linear "

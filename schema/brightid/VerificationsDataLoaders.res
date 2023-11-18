@@ -6,9 +6,7 @@ let make = () => {
     open BrightID_Shared
     let url = verificationsUrl ++ id
     switch await fetch(url, {}) {
-    | exception e =>
-      Console.error2("e: ", e)
-      None
+    | exception _ => None
     | res =>
       let json = await res->Fetch.Response.json
 

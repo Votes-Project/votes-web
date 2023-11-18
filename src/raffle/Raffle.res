@@ -16,7 +16,7 @@ let make = (~vote) => {
       {`VOTE ${tokenId->BigInt.toString}`->React.string}
     </h1>
     <div className="flex flex-col lg:flex-row lg:gap-5 gap-2">
-      <div className="flex lg:flex-col itemsa-start justify-between">
+      <div className="flex lg:flex-col items-start justify-between">
         <p className="font-medium text-xl lg:text-active text-background-dark">
           {"Raffle Winner"->React.string}
         </p>
@@ -37,7 +37,7 @@ let make = (~vote) => {
     <div className="flex py-4 gap-4">
       <BlockExplorerButton vote={fragmentRefs} />
     </div>
-    <div className="flex flex-col w-full items-center justify-center px-8 text-lg">
+    <div className="flex flex-col w-full items-center justify-center pr-8 text-md">
       <p className="py-4">
         {"This Vote is set aside to be raffled to our wonderful community who participate in the daily Vote.
           Results are decided using the points accumulated over participation in the last 9 votes cycle, using the Chainlink ETF to determine a winner.

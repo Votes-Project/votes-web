@@ -140,10 +140,10 @@ let make = () => {
         <button
           type_="button"
           onClick={handleSettingsClick(_, index)}
-          className="absolute flex right-0 top-2 items-center font-bold text-2xl h-10 w-10 hover:scale-125 hover:default transition-all duration-200 ease-linear text-default-darker">
+          className="absolute flex right-0 top-2 items-center font-bold text-2xl h-10 w-10 hover:default transition-all duration-200 ease-linear text-default-darker">
           {toggleSettingsIndex == Some(index)
-            ? <ReactIcons.LuArrowLeft />
-            : <ReactIcons.LuSettings />}
+            ? <ReactIcons.LuChevronUp size="1.5rem" />
+            : <ReactIcons.LuChevronDown />}
         </button>
       </li>
     })
