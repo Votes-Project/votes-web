@@ -43,7 +43,7 @@ module Motion = {
     | @as("anticipate") Anticipate
     | @as("linear") Linear
     | Ease(array<string>)
-  type transition = {duration?: float, ease?: ease}
+  type transition = {duration?: float, ease?: ease, delay?: float}
   @unboxed type borderRadius = Pixel(int) | Percentage(string)
 
   type motionValues = {
@@ -57,13 +57,20 @@ module Motion = {
     height?: string,
     transition?: transition,
     borderRadius?: borderRadius,
+    borderTop?: string,
+    border?: string,
+    strokeDashoffset?: int,
   }
 
   @unboxed type initial = Initial(motionValues) | String(string)
   @unboxed type animate = Animate(motionValues) | String(string)
   @unboxed type exit = Exit(motionValues) | String(string)
+  @unboxed type show = Show(motionValues) | String(string)
+  @unboxed type hidden = Hidden(motionValues) | String(string)
 
   type variants = {
+    show?: show,
+    hidden?: hidden,
     initial?: initial,
     animate?: animate,
     transition?: transition,
@@ -157,6 +164,65 @@ module Motion = {
       ~onMouseLeave: 'a => unit=?,
       ~ref: ReactDOM.domRef=?,
     ) => React.element = "nav"
+  }
+  module Span = {
+    @react.component @module("framer-motion") @scope("motion")
+    external make: (
+      ~layoutId: string=?,
+      ~layout: layout=?,
+      ~variants: variants=?,
+      ~initial: initial=?,
+      ~animate: animate=?,
+      ~exit: exit=?,
+      ~transition: transition=?,
+      ~children: React.element=?,
+      ~className: string=?,
+      ~onClick: 'a => unit=?,
+      ~onMouseEnter: 'a => unit=?,
+      ~onMouseLeave: 'a => unit=?,
+      ~ref: ReactDOM.domRef=?,
+      ~drag: Drag.t=?,
+      ~whileDrag: variants=?,
+      ~dragSnapToOrigin: bool=?,
+      ~dragConstraints: Drag.dragConstraints=?,
+      ~dragMomentum: bool=?,
+      ~onDrag: ('event, Drag.info) => unit=?,
+      ~onDragStart: ('a, Drag.info) => unit=?,
+      ~onDragEnd: ('event, Drag.info) => unit=?,
+      ~dragControls: Drag.Controls.t<'a>=?,
+      ~dragElastic: Drag.dragElastic=?,
+      ~dragTransition: Drag.inertiaOptions=?,
+      ~onPan: ('event, Pan.info) => unit=?,
+      ~onPanEnd: ('event, Pan.info) => unit=?,
+    ) => React.element = "span"
+  }
+
+  module Circle = {
+    @react.component @module("framer-motion") @scope("motion")
+    external make: (
+      ~layoutId: string=?,
+      ~layout: layout=?,
+      ~variants: variants=?,
+      ~initial: initial=?,
+      ~animate: animate=?,
+      ~exit: exit=?,
+      ~transition: transition=?,
+      ~children: React.element=?,
+      ~className: string=?,
+      ~onClick: 'a => unit=?,
+      ~onMouseEnter: 'a => unit=?,
+      ~onMouseLeave: 'a => unit=?,
+      ~ref: ReactDOM.domRef=?,
+      ~cx: string=?,
+      ~cy: string=?,
+      ~r: string=?,
+      ~strokeWidth: string=?,
+      ~stroke: string=?,
+      ~fill: string=?,
+      ~strokeDashoffset: string=?,
+      ~strokeDasharray: string=?,
+      ~strokeOpacity: string=?,
+    ) => React.element = "circle"
   }
 }
 
