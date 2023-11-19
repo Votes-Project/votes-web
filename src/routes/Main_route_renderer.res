@@ -2,6 +2,7 @@
 
 module Main = %relay.deferredComponent(Main.make)
 module LinkBrightID = %relay.deferredComponent(LinkBrightID.make)
+module Stats = %relay.deferredComponent(Stats.make)
 // module QuestionQueue = %relay.deferredComponent(QuestionQueue.make)
 
 let contextId = Dom.Storage2.localStorage->Dom.Storage2.getItem("votes_contextId")
@@ -30,16 +31,20 @@ let handleInitialRender = (auction: option<AuctionContext.auction>, isLoading, i
 }
 
 let renderer = Routes.Main.Route.makeRenderer(
-  ~prepareCode=({linkBrightID}) => {
+  ~prepareCode=({linkBrightID, stats}) => {
     [
       Some(Main.preload()),
       switch linkBrightID {
       | None => None
       | Some(_) => Some(LinkBrightID.preload())
       },
+      switch stats {
+      | None => None
+      | Some(_) => Some(Stats.preload())
+      },
     ]->Array.filterMap(v => v)
   },
-  ~prepare=({environment, linkBrightID}) => {
+  ~prepare=({environment, linkBrightID, stats}) => {
     (
       MainQuery_graphql.load(
         ~environment,
@@ -57,13 +62,24 @@ let renderer = Routes.Main.Route.makeRenderer(
           ~fetchPolicy=NetworkOnly,
           ~fetchKey=linkBrightIDKey->Int.toString,
         )->Some
+      | _ => None
+      },
+      switch stats {
+      | None => None
+      | Some(statsKey) => Some(statsKey)
 
+      // StatsQuery_graphql.load(
+      //   ~environment,
+      //   ~variables={contextId: contextId},
+      //   ~fetchPolicy=NetworkOnly,
+      //   ~fetchKey=statsKey->Int.toString,
+      // )->Some
       | _ => None
       },
     )
   },
-  ~render=({childRoutes, linkBrightID, prepared}) => {
-    let (queryRef, linkBrightIDQueryRef) = prepared
+  ~render=({childRoutes, linkBrightID, stats, prepared}) => {
+    let (queryRef, linkBrightIDQueryRef, _) = prepared
 
     let {auction, isLoading} = React.useContext(AuctionContext.context)
     let {vote} = React.useContext(VoteContext.context)
@@ -108,6 +124,21 @@ let renderer = Routes.Main.Route.makeRenderer(
         | _ => React.null
         }}
       </LinkBrightIDModal>
+      <StatsModal isOpen={stats->Option.isSome}>
+        {switch stats {
+        | Some(_) =>
+          <ErrorBoundary fallback={_ => "Error"->React.string}>
+            <React.Suspense
+              fallback={<div
+                className="w-full h-full flex justify-center items-center text-lg text-white">
+                {"Loading"->React.string}
+              </div>}>
+              <Stats />
+            </React.Suspense>
+          </ErrorBoundary>
+        | _ => React.null
+        }}
+      </StatsModal>
     </>
   },
 )

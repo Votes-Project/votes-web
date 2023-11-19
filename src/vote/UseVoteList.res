@@ -1,3 +1,10 @@
+@val @scope(("import", "meta", "env"))
+external voteContractAddress: option<string> = "VITE_VOTES_CONTRACT_ADDRESS"
+let voteContractAddress =
+  voteContractAddress
+  ->Option.map(address => address->String.toLowerCase)
+  ->Option.getExn
+
 module Query = %relay(`
   query UseVoteListQuery(
     $owner: String
@@ -106,14 +113,18 @@ module UseVoteDisplay = {
         <div
           className="flex lg:flex-col lg:gap-2 gap-4  h-full w-full items-center justify-center font-semibold">
           {"You don't own any Vote tokens"->React.string}
-          <RelayRouter.Link
-            to_={Routes.Main.Vote.Auction.Route.makeLink(
-              ~tokenId=newestVote->Option.map(v => v.tokenId->BigInt.toString)->Option.getExn,
-            )}>
-            <button className="p-2 shadow bg-active text-default-light rounded-lg font-bold">
-              {"Go to Auction"->React.string}
-            </button>
-          </RelayRouter.Link>
+          {switch newestVote {
+          | None => React.null
+          | Some(newestVote) =>
+            <RelayRouter.Link
+              to_={Routes.Main.Vote.Auction.Route.makeLink(
+                ~tokenId=newestVote.tokenId->BigInt.toString,
+              )}>
+              <button className="p-2 shadow bg-active text-default-light rounded-lg font-bold">
+                {"Go to Auction"->React.string}
+              </button>
+            </RelayRouter.Link>
+          }}
         </div>
       | votes =>
         <ol
