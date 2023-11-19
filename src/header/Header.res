@@ -38,6 +38,7 @@ let make = (~verifications) => {
   let hamburgerRef = React.useRef(Nullable.null)
   let isClickOutside = OutsideClickHook.use(accordionRef)
   let isClickOutsideHamburger = OutsideClickHook.use(hamburgerRef)
+  let votesy = React.useContext(VotesySpeakContext.context)
 
   let handleMenu = _ => {
     setIsOpen(isOpen => !isOpen)
@@ -53,19 +54,22 @@ let make = (~verifications) => {
   <header className=" flex flex-col justify-center items-center mb-[-8px] w-full">
     <nav className=" max-w-7xl flex w-full justify-between px-4 pt-2 flex-1">
       <div className="flex gap-3 justify-center items-center ">
-        <RelayRouter.Link
-          to_={Routes.Main.Question.Current.Route.makeLink(
-            ~id=randomQuestion->Option.map(q => q.id)->Option.getWithDefault(""),
-          )}
+        <div
+          // to_={Routes.Main.Question.Current.Route.makeLink(
+          //   ~id=randomQuestion->Option.map(q => q.id)->Option.getWithDefault(""),
+          // )}
           className="relative z-2 px-2 py-0 transition-all z-2"
-          onClick={_ => isOpen ? handleMenu() : ()}>
+          onClick={_ => votesy.setShow(_ => true)}>
           <div className="relative w-24 h-24">
             <div className="fixed z-50">
               <img src={viteLogo["default"]} className="w-24 h-24  " alt="Vite logo" />
-              <VotesySpeak />
+              {switch votesy.show {
+              | true => <VotesySpeak />
+              | false => <> </>
+              }}
             </div>
           </div>
-        </RelayRouter.Link>
+        </div>
         <div
           className="   bg-secondary hover:bg-secondary  hover:cursor-pointer rounded-xl flex items-center font-semibold mr-4 px-2 h-10 justify-center transition-all">
           <p className="text-lg text-active  ml-1 mr-3"> {"Voters"->React.string} </p>

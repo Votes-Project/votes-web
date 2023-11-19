@@ -118,8 +118,18 @@ module VotesySpeakProvider = {
   open VotesySpeakContext
   @react.component
   let make = (~children) => {
-    let (content, setContent) = React.useState(_ => "")
-    <Provider value={{content, setContent}}> {children} </Provider>
+    let (content, setContent) = React.useState(_ => None)
+    let (show, setShow) = React.useState(_ => false)
+
+    React.useEffect1(() => {
+      switch content {
+      | None => ()
+      | Some(_) => setShow(_ => true)
+      }
+      None
+    }, [content])
+
+    <Provider value={{content, setContent, show, setShow}}> {children} </Provider>
   }
 }
 

@@ -26,6 +26,7 @@ exception ContractWriteDoesNotExist
 @react.component @relay.deferredComponent
 let make = (~children) => {
   let {setParams, queryParams} = Routes.Main.Question.Ask.Route.useQueryParams()
+  let votesy = React.useContext(VotesySpeakContext.context)
 
   let (state, dispatch) = React.useReducer(
     AskContext.reducer,
@@ -98,6 +99,20 @@ let make = (~children) => {
 
   let saveCommandToClipboard = (title, options) => {
     makeDiscordCommand(title, options)->Clipboard.writeText
+    votesy.setContent(_ => {
+      <div
+        className="p-4 rounded-lg flex flex-col gap-2 items-center font-bold backdrop-opacity-20 backdrop-blur-sm">
+        <p className="text-center text-md text-semibold text-default-darker">
+          {"Your question was saved to your clipboard!"->React.string}
+        </p>
+        <a href="https://discord.gg/uwqMn3rxxj" target="_blank" rel="noopener">
+          <button
+            className=" bg-indigo-500 p-2 rounded-lg text-center text-md text-semibold text-default-light">
+            {"Go to Discord"->React.string}
+          </button>
+        </a>
+      </div>->Some
+    })
   }
 
   let handleTitleFocus = _ => {
@@ -185,16 +200,8 @@ let make = (~children) => {
             clickable=true
             style={{
               backgroundColor: "transparent",
-            }}>
-            <a href="https://discord.gg/uwqMn3rxxj" target="_blank" rel="noopener">
-              <div
-                className="bg-default-dark p-4 rounded-lg flex flex-col gap-2 items-center font-bold backdrop-opacity-20 backdrop-blur-sm">
-                <p className="text-center text-md text-semibold text-default-darker">
-                  {"Question saved to clipboard ✔︎"->React.string}
-                </p>
-              </div>
-            </a>
-          </ReactTooltip>
+            }}
+          />
           <button
             onClick=handleAsk
             disabled={!canSubmit}
