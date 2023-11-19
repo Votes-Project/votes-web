@@ -30,7 +30,7 @@ module QuestionTitle = {
         className={`font-bold [text-wrap:balance] text-center text-default-darker px-4  ${titleStyle(
             title->String.length,
           )}`}>
-        {("\"" ++ title ++ "\"")->React.string}
+        {title->React.string}
       </Motion.Div>
     </div>
   }

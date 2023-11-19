@@ -97,31 +97,33 @@ module UseVoteDisplay = {
     })
 
     if address->Nullable.toOption->Option.isNone {
-      <>
-        {"Connect your wallet to see your Vote tokens"->React.string}
+      <div className="flex h-full w-full items-center justify-center">
         <RainbowKit.ConnectButton />
-      </>
+      </div>
     } else {
       switch votes->Fragment.getConnectionNodes {
       | [] =>
-        <>
+        <div
+          className="flex lg:flex-col lg:gap-2 gap-4  h-full w-full items-center justify-center font-semibold">
           {"You don't own any Vote tokens"->React.string}
           <RelayRouter.Link
             to_={Routes.Main.Vote.Auction.Route.makeLink(
               ~tokenId=newestVote->Option.map(v => v.tokenId->BigInt.toString)->Option.getExn,
             )}>
-            <button> {"Go to Auction"->React.string} </button>
+            <button className="p-2 shadow bg-active text-default-light rounded-lg font-bold">
+              {"Go to Auction"->React.string}
+            </button>
           </RelayRouter.Link>
-        </>
+        </div>
       | votes =>
         <ol
-          className="flex flex-[1_1_0] items-center justify-center w-full lg:h-full flex-wrap overflow-scroll hide-scrollbar   ">
+          className="flex lg:flex-[1_1_0] items-start lg:items-center lg:justify-center  max-w-full w-full lg:h-full lg:flex-wrap overflow-x-scroll lg:overflow-y-scroll hide-scrollbar   ">
           {votes
           ->Array.map(vote => {
             switch queryParams.useVote {
             | Some(useVote) if useVote == vote.tokenId->BigInt.toInt =>
               <li
-                className="flex items-center justify-center h-1/5 w-1/6 text-lg p-2 m-2 bg-default-light rounded-lg text-active font-bold shadow cursor-pointer border border-active"
+                className="flex items-center justify-center lg:h-1/5  w-1/6 min-w-[88px] text-lg p-2 m-2 bg-default-light rounded-lg text-active font-bold shadow cursor-pointer border border-active"
                 key={vote.id}>
                 <button
                   className="w-full h-full font-fugaz" onClick={handleVoteClick(_, vote.tokenId)}>
@@ -130,7 +132,7 @@ module UseVoteDisplay = {
               </li>
             | _ =>
               <li
-                className="flex items-center justify-center h-1/5 w-1/6 text-lg p-2 m-2 bg-primary-dark rounded-lg text-white font-bold shadow cursor-pointer"
+                className="flex items-center justify-center h-1/5 w-1/6 min-w-[88px] text-lg p-2 m-2 bg-primary-dark rounded-lg text-white font-bold shadow cursor-pointer"
                 key={vote.id}>
                 <button
                   className="w-full h-full font-fugaz" onClick={handleVoteClick(_, vote.tokenId)}>
