@@ -14,3 +14,4 @@ external normalize: string => string = "normalize"
 @module("viem") external toHexFromString: string => string = "toHex"
 
 @module("viem") external hexToString: string => string = "hexToString"
+@module("viem") external hexToBytes: string => Uint8Array.t = "hexToBytes"
