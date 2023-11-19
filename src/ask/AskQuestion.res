@@ -132,7 +132,7 @@ let make = (~children) => {
         className="flex flex-col items-start w-full p-4 min-h-[558px] "
         ref={ReactDOM.Ref.callbackDomRef(askRef)}>
         <div
-          className="w-full lg:p-4 p-2 flex flex-col items-center max-h-[50%] min-h-[279px] flex-1 hide-scrollbar">
+          className="w-full lg:p-4 p-2 flex flex-col items-center max-h-[50%] lg:min-h-[279px] hide-scrollbar">
           <h2 className="text-2xl text-black opacity-60 self-start ">
             {"1. Link Token (Optional)"->React.string}
           </h2>
@@ -210,10 +210,7 @@ let make = (~children) => {
             onClick=handleAsk
             disabled={!canSubmit}
             className="mb-auto min-w-[8rem] min-h-[3rem] font-bold disabled:bg-default-disabled disabled:text-default-darker disabled:opacity-50 disabled:scale-100 rounded-2xl max-w-xs self-center bg-default-darker lg:bg-active text-white transition-all ease-linear hover:scale-105  ">
-            {switch queryParams.useVote {
-            | Some(_) => "Ask"->React.string
-            | None => "Ask in Discord"->React.string
-            }}
+            {"Ask"->React.string}
           </button>
         </div>
       </div>

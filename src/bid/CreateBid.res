@@ -91,7 +91,7 @@ let make = (~auction) => {
       onInput={e => onBidChange(e)}
     />
     <button
-      className="flex-1 rounded-lg bg-active px-4 py-3 lg:px-3 lg:py-2 text-center text-white disabled:bg-default-disabled disabled:text-background-light text-xl lg:text-lg"
+      className="flex-1 rounded-lg bg-active px-4 py-3 lg:px-3 lg:py-2 text-center text-white disabled:bg-default-disabled disabled:text-background-light text-xl lg:text-lg font-bold"
       disabled={isDisabled}
       onClick={_ => handleCreateBid()}>
       {"Place Bid"->React.string}
