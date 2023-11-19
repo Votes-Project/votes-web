@@ -1,3 +1,13 @@
+module Alert = {
+  @react.component
+  let make = () => {
+    <div
+      className="absolute top-[-2px] right-[-2px] font-fugaz flex justify-center items-center w-4 h-4 rounded-full bg-active text-white text-xs animate-pulse">
+      {"!"->React.string}
+    </div>
+  }
+}
+
 @react.component @relay.deferredComponent
 let make = () => {
   <div className="flex flex-col justify-around h-full">

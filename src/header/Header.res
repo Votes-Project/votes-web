@@ -61,7 +61,6 @@ let make = (~verifications) => {
     }
     None
   }, (isClickOutside, isClickOutsideHamburger))
-  open FramerMotion
   <header className=" flex flex-col justify-center items-center mb-[-8px] w-full">
     <nav className=" max-w-7xl flex w-full justify-between px-4 pt-2 flex-1">
       <div className="flex gap-3 justify-center items-center ">
@@ -78,13 +77,12 @@ let make = (~verifications) => {
             </div>
           </div>
         </div>
-        <Motion.Button
+        <FramerMotion.Button
           onClick=handleStats
           layoutId="stats"
           layout=True
           className="relative bg-secondary hover:bg-secondary  hover:cursor-pointer rounded-xl flex items-center font-semibold mr-4 px-2 h-10 justify-center transition-all">
-        <div
-          className="   bg-secondary hover:bg-secondary  hover:cursor-pointer rounded-xl flex items-center font-semibold mr-4 px-2 h-10 justify-center transition-all">
+          <Stats.Alert />
           <p className="text-lg text-active  ml-1 mr-3"> {"Voters"->React.string} </p>
           <div className="flex items-center justify-around text-default-darker">
             <ReactIcons.LuVote size="1.5rem" />
@@ -94,7 +92,7 @@ let make = (~verifications) => {
               </React.Suspense>
             </ErrorBoundary>
           </div>
-        </Motion.Button>
+        </FramerMotion.Button>
       </div>
       <div className="hidden lg:flex lg:visible gap-4 justify-center items-center">
         {links

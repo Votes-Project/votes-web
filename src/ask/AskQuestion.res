@@ -130,7 +130,7 @@ let make = (~children) => {
         ref={ReactDOM.Ref.callbackDomRef(askRef)}>
         <div
           className="w-full lg:p-4 p-2 flex flex-col items-center max-h-[50%] lg:min-h-[279px] hide-scrollbar">
-          <h2 className="text-2xl text-black opacity-60 self-start ">
+          <h2 className="text-xl lg:text-2xl text-black opacity-60 self-start ">
             {"1. Link Token (Optional)"->React.string}
           </h2>
           {children}
@@ -144,7 +144,7 @@ let make = (~children) => {
             html={state.question.title->Option.getWithDefault("")}
             onChange={onTitleChange}
             onFocus={handleTitleFocus}
-            className="w-[90vw] lg:w-auto max-w-md lg:p-4 p-2 border-none focus:ring-0 break-words bg-transparent cursor-pointer text-wrap focus:cursor-text focus:text-left text-2xl transition-all duration-300 ease-linear "
+            className="w-[90vw] lg:w-auto max-w-md lg:p-4 p-2 border-none focus:ring-0 break-words bg-transparent cursor-pointer text-wrap focus:cursor-text focus:text-left text-xl lg:text-2xl transition-all duration-300 ease-linear "
           />
         </div>
       </div>
@@ -168,7 +168,7 @@ let make = (~children) => {
       <div className=" p-4 flex items-center justify-center w-full">
         <div
           className="relative lg:p-4 w-full h-full  flex flex-col justify-around items-center lg:border-2 lg:border-primary rounded-xl ">
-          <div className="flex flex-row justify-between items-center w-full">
+          <div className="p-2 lg:p-4 flex flex-row justify-between items-center w-full">
             <ReactTooltip
               className="z-50 h-fit-content max-w-xs"
               anchorSelect="#create-vote-question"
@@ -176,7 +176,9 @@ let make = (~children) => {
               clickable=true
               content="This will provide greater detail toward the process of asking a question. We will have to explain 3 main things. \n 1. The components of a question (Title, Answers, correct answer, further details). \n 2. Asking a question requires an unused VOTE token.  \n 3. If a vote token is not owned, your question will be turned into a Discord command that you can paste into the questions channel on Discord. "
             />
-            <h2 className="text-2xl text-black opacity-60 "> {"3. Add Options"->React.string} </h2>
+            <h2 className="text-xl lg:text-2xl text-black opacity-60 ">
+              {"3. Add Options"->React.string}
+            </h2>
             <div
               id="create-vote-question"
               type_="button"
