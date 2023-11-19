@@ -25,33 +25,10 @@ let make = (~auction) => {
   let (bidAmount, setBidAmount) = React.useState(_ => "")
   let auction = Fragment.use(auction)
 
-  let {config} = Wagmi.usePrepareContractWrite(
-    ~config={
-      address: auctionContractAddress->Belt.Option.getExn,
-      abi: auctionContractAbi,
-      functionName: "createBid",
-      value: bidAmount->Viem.parseEther->Option.getWithDefault(BigInt.fromString("0")),
-      args: [auction.tokenId],
-    },
-  )
-
   let onBidChange = e => {
     let value = ReactEvent.Form.currentTarget(e)["value"]
     setBidAmount(_ => value)
   }
-
-  let createBid = Wagmi.useContractWrite({
-    ...config,
-    onSuccess: _ => {
-      setBidAmount(_ => "")
-    },
-  })
-
-  let handleCreateBid = () =>
-    switch createBid.write {
-    | Some(createBid) => createBid()
-    | None => raise(ContractWriteDoesNotExist)
-    }
 
   let minBid = {
     open BigInt
@@ -75,6 +52,30 @@ let make = (~auction) => {
     ->Nullable.toOption
     ->Option.mapWithDefault(Some(BigInt.fromString("0")), balance => Some(balance.value)) <
       bidAmount->Viem.parseEther
+
+  let {config} = Wagmi.usePrepareContractWrite(
+    ~config={
+      address: auctionContractAddress->Belt.Option.getExn,
+      abi: auctionContractAbi,
+      functionName: "createBid",
+      value: bidAmount->Viem.parseEther->Option.getWithDefault(BigInt.fromString("0")),
+      args: [auction.tokenId],
+      enabled: !isDisabled,
+    },
+  )
+
+  let createBid = Wagmi.useContractWrite({
+    ...config,
+    onSuccess: _ => {
+      setBidAmount(_ => "")
+    },
+  })
+
+  let handleCreateBid = () =>
+    switch createBid.write {
+    | Some(createBid) => createBid()
+    | None => raise(ContractWriteDoesNotExist)
+    }
 
   <div
     className="flex flex-col lg:flex-row w-full lg:items-center justify-around gap-2 p-10 lg:p-0">
