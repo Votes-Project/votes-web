@@ -31,6 +31,7 @@ let make = (~children) => {
     AskContext.reducer,
     AskContext.parseHexState(queryParams.hexState),
   )
+  let {options, title} = state
 
   let askRef = React.useCallback0(element => {
     switch element->Nullable.toOption {
@@ -49,6 +50,13 @@ let make = (~children) => {
     None
   }, [state])
 
+  let canSubmit = switch (options, title) {
+  | (options, Some(_))
+    if Array.length(options) >= 2 &&
+      options->Array.every(({?option}) => option->Option.isSome) => true
+  | _ => false
+  }
+
   let {config} = Wagmi.usePrepareContractWrite(
     ~config={
       address: questionsContractAddress->Belt.Option.getExn,
@@ -56,6 +64,7 @@ let make = (~children) => {
       value: BigInt.fromInt(0),
       functionName: "submit",
       args: (queryParams.useVote, queryParams.hexState),
+      enabled: canSubmit && queryParams.useVote->Option.isSome,
     },
   )
   let submit = Wagmi.useContractWrite({
@@ -66,8 +75,6 @@ let make = (~children) => {
   })
 
   let titleRef = React.useRef("")
-
-  let {options, title} = state
 
   let {setHeroComponent} = React.useContext(HeroComponentContext.context)
 
@@ -100,20 +107,13 @@ let make = (~children) => {
     ->Element.Scroll.intoViewWithOptions(~options={behavior: Smooth, block: Center})
   }
 
-  let canSubmit = switch (options, title) {
-  | (options, Some(_))
-    if Array.length(options) >= 2 &&
-      options->Array.every(({?option}) => option->Option.isSome) => true
-  | _ => false
-  }
-
   React.useEffect1(() => {
     setHeroComponent(_ =>
       <div
         className="flex flex-col items-start w-full p-4 min-h-[558px] "
         ref={ReactDOM.Ref.callbackDomRef(askRef)}>
         <div
-          className="w-full lg:p-4 p-2 flex flex-col items-center max-h-[50%] min-h-[279px] flex-1  hide-scrollbar">
+          className="w-full lg:p-4 p-2 flex flex-col items-center max-h-[50%] min-h-[279px] flex-1 hide-scrollbar">
           <h2 className="text-2xl text-black opacity-60 self-start ">
             {"1. Link Token (Optional)"->React.string}
           </h2>
@@ -199,7 +199,10 @@ let make = (~children) => {
             onClick=handleAsk
             disabled={!canSubmit}
             className="mb-auto min-w-[8rem] min-h-[3rem] font-bold disabled:bg-default-disabled disabled:text-default-darker disabled:opacity-50 disabled:scale-100 rounded-2xl max-w-xs self-center bg-default-darker lg:bg-active text-white transition-all ease-linear hover:scale-105  ">
-            {"Ask"->React.string}
+            {switch queryParams.useVote {
+            | Some(_) => "Ask"->React.string
+            | None => "Ask in Discord"->React.string
+            }}
           </button>
         </div>
       </div>

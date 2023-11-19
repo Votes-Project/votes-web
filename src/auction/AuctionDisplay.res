@@ -13,6 +13,7 @@ module SettleAuctionButton = {
         address: auctionContractAddress->Belt.Option.getExn,
         abi: auctionContractAbi,
         functionName: "settleCurrentAndCreateNewAuction",
+        enabled: !isSettled,
       },
     )
     let settleCurrentAndCreateNewAuction = Wagmi.useContractWrite(config)
