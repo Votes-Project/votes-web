@@ -164,51 +164,53 @@ let make = (~children) => {
   }
 
   <AskContext.Provider value={state, dispatch}>
-    <div className="h-full p-4 ">
-      <div
-        className="relative lg:p-4 w-full h-full  flex flex-col justify-around items-center lg:border-2 lg:border-primary rounded-xl backdrop-blur-[2px]">
-        <div className="flex flex-row justify-between items-center w-full">
-          <ReactTooltip
-            className="z-50 h-fit-content max-w-xs"
-            anchorSelect="#create-vote-question"
-            closeOnEsc=true
-            clickable=true
-            content="This will provide greater detail toward the process of asking a question. We will have to explain 3 main things. \n 1. The components of a question (Title, Answers, correct answer, further details). \n 2. Asking a question requires an unused VOTE token.  \n 3. If a vote token is not owned, your question will be turned into a Discord command that you can paste into the questions channel on Discord. "
-          />
-          <h2 className="text-2xl text-black opacity-60 "> {"3. Add Options"->React.string} </h2>
-          <div
-            id="create-vote-question"
-            type_="button"
-            className="flex self-end items-center justify-center text-default-dark lg:text-primary-dark font-bold text-3xl h-10 w-10 hover:scale-125 hover:default transition-all duration-200 ease-linear rounded-full">
-            <ReactIcons.LuInfo className="lg:text-default-darker text-default-dark" />
-          </div>
-        </div>
-        <div className="h-full w-full rounded-xl flex justify-start flex-col z-10 pb-4 gap-4">
-          <div className="flex flex-row ">
-            <AskOptions />
-            <div className="text-center pl-4 flex flex-col-reverse">
-              <button
-                className="w-4 font-bold font-fugaz text-4xl pb-5 hover:scale-125 transition-all duration-300 ease-linear"
-                type_="button"
-                onClick={handleAddOption}>
-                {{Array.length(options) < maxOptions ? "+" : ""}->React.string}
-              </button>
+    <div className="flex justify-center items-center h-full">
+      <div className=" p-4 flex items-center justify-center w-full">
+        <div
+          className="relative lg:p-4 w-full h-full  flex flex-col justify-around items-center lg:border-2 lg:border-primary rounded-xl ">
+          <div className="flex flex-row justify-between items-center w-full">
+            <ReactTooltip
+              className="z-50 h-fit-content max-w-xs"
+              anchorSelect="#create-vote-question"
+              closeOnEsc=true
+              clickable=true
+              content="This will provide greater detail toward the process of asking a question. We will have to explain 3 main things. \n 1. The components of a question (Title, Answers, correct answer, further details). \n 2. Asking a question requires an unused VOTE token.  \n 3. If a vote token is not owned, your question will be turned into a Discord command that you can paste into the questions channel on Discord. "
+            />
+            <h2 className="text-2xl text-black opacity-60 "> {"3. Add Options"->React.string} </h2>
+            <div
+              id="create-vote-question"
+              type_="button"
+              className="flex self-end items-center justify-center text-default-dark lg:text-primary-dark font-bold text-3xl h-10 w-10 hover:scale-125 hover:default transition-all duration-200 ease-linear rounded-full">
+              <ReactIcons.LuInfo className="lg:text-default-darker text-default-dark" />
             </div>
           </div>
-          <ReactTooltip
-            anchorSelect="#copy-discord-command"
-            openOnClick=true
-            clickable=true
-            style={{
-              backgroundColor: "transparent",
-            }}
-          />
-          <button
-            onClick=handleAsk
-            disabled={!canSubmit}
-            className="mb-auto min-w-[8rem] min-h-[3rem] font-bold disabled:bg-default-disabled disabled:text-default-darker disabled:opacity-50 disabled:scale-100 rounded-2xl max-w-xs self-center bg-default-darker lg:bg-active text-white transition-all ease-linear hover:scale-105  ">
-            {"Ask"->React.string}
-          </button>
+          <div className="h-full w-full rounded-xl flex justify-start flex-col z-10 pb-4 gap-4">
+            <div className="flex flex-row ">
+              <AskOptions />
+              <div className="text-center pl-4 flex flex-col-reverse">
+                <button
+                  className="w-4 font-bold font-fugaz text-4xl pb-5 hover:scale-125 transition-all duration-300 ease-linear"
+                  type_="button"
+                  onClick={handleAddOption}>
+                  {{Array.length(options) < maxOptions ? "+" : ""}->React.string}
+                </button>
+              </div>
+            </div>
+            <ReactTooltip
+              anchorSelect="#copy-discord-command"
+              openOnClick=true
+              clickable=true
+              style={{
+                backgroundColor: "transparent",
+              }}
+            />
+            <button
+              onClick=handleAsk
+              disabled={!canSubmit}
+              className="mb-auto min-w-[8rem] min-h-[3rem] font-bold disabled:bg-default-disabled disabled:text-default-darker disabled:opacity-50 disabled:scale-100 rounded-2xl max-w-xs self-center bg-default-darker lg:bg-active text-white transition-all ease-linear hover:scale-105  ">
+              {"Ask"->React.string}
+            </button>
+          </div>
         </div>
       </div>
     </div>

@@ -40,8 +40,19 @@ let make = (~verifications) => {
   let isClickOutsideHamburger = OutsideClickHook.use(hamburgerRef)
   let votesy = React.useContext(VotesySpeakContext.context)
 
+  let {setParams} = Routes.Main.Route.useQueryParams()
+
   let handleMenu = _ => {
     setIsOpen(isOpen => !isOpen)
+  }
+
+  let handleStats = _ => {
+    setParams(
+      ~navigationMode_=Push,
+      ~removeNotControlledParams=false,
+      ~shallow=false,
+      ~setter=c => {...c, stats: Some(0)},
+    )
   }
 
   React.useEffect2(() => {
@@ -50,8 +61,8 @@ let make = (~verifications) => {
     }
     None
   }, (isClickOutside, isClickOutsideHamburger))
-
-  <header className="relative flex flex-col justify-center items-center mb-[-8px] w-full z-50">
+  open FramerMotion
+  <header className=" flex flex-col justify-center items-center mb-[-8px] w-full">
     <nav className=" max-w-7xl flex w-full justify-between px-4 pt-2 flex-1">
       <div className="flex gap-3 justify-center items-center ">
         <div
@@ -67,6 +78,11 @@ let make = (~verifications) => {
             </div>
           </div>
         </div>
+        <Motion.Button
+          onClick=handleStats
+          layoutId="stats"
+          layout=True
+          className="relative bg-secondary hover:bg-secondary  hover:cursor-pointer rounded-xl flex items-center font-semibold mr-4 px-2 h-10 justify-center transition-all">
         <div
           className="   bg-secondary hover:bg-secondary  hover:cursor-pointer rounded-xl flex items-center font-semibold mr-4 px-2 h-10 justify-center transition-all">
           <p className="text-lg text-active  ml-1 mr-3"> {"Voters"->React.string} </p>
@@ -78,7 +94,7 @@ let make = (~verifications) => {
               </React.Suspense>
             </ErrorBoundary>
           </div>
-        </div>
+        </Motion.Button>
       </div>
       <div className="hidden lg:flex lg:visible gap-4 justify-center items-center">
         {links
