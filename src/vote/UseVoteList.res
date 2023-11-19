@@ -115,7 +115,7 @@ module UseVoteDisplay = {
         </>
       | votes =>
         <ol
-          className="flex flex-[1_1_0] items-center justify-center w-full lg:h-full flex-wrap overflow-scroll hide-sidebar   ">
+          className="flex flex-[1_1_0] items-center justify-center w-full lg:h-full flex-wrap overflow-scroll hide-scrollbar   ">
           {votes
           ->Array.map(vote => {
             switch queryParams.useVote {

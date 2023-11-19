@@ -1,6 +1,8 @@
 @val @scope(("import", "meta", "env"))
 external questionsContractAddress: option<string> = "VITE_QUESTIONS_CONTRACT_ADDRESS"
 
+@module("/src/abis/Questions.json") external questionContractAbi: JSON.t = "default"
+
 module Clipboard = {
   @scope(("navigator", "clipboard"))
   external writeText: string => unit = "writeText"
@@ -20,6 +22,7 @@ let makeDiscordCommand = (title, options: array<AskContext.questionOption>) => {
 
 let maxOptions = 5
 
+exception ContractWriteDoesNotExist
 @react.component @relay.deferredComponent
 let make = (~children) => {
   let {setParams, queryParams} = Routes.Main.Question.Ask.Route.useQueryParams()
@@ -46,27 +49,21 @@ let make = (~children) => {
     None
   }, [state])
 
-  // let {config} = Wagmi.usePrepareContractWrite(
-  //   ~config={
-  //     address: questionsContractAddress->Belt.Option.getExn,
-  //     abi: auctionContractAbi,
-  //     functionName: "createBid",
-  //     value: bidAmount->Viem.parseEther->Option.getWithDefault(BigInt.fromString("0")),
-  //     args: [auction.tokenId],
-  //   },
-  // )
-  // let createBid = Wagmi.useContractWrite({
-  //   ...config,
-  //   onSuccess: _ => {
-  //     setBidAmount(_ => "")
-  //   },
-  // })
-
-  // let handleCreateBid = () =>
-  //   switch createBid.write {
-  //   | Some(createBid) => createBid()
-  //   | None => raise(ContractWriteDoesNotExist)
-  // }
+  let {config} = Wagmi.usePrepareContractWrite(
+    ~config={
+      address: questionsContractAddress->Belt.Option.getExn,
+      abi: questionContractAbi,
+      value: BigInt.fromInt(0),
+      functionName: "submit",
+      args: (queryParams.useVote, queryParams.hexState),
+    },
+  )
+  let submit = Wagmi.useContractWrite({
+    ...config,
+    onSuccess: _ => {
+      ()
+    },
+  })
 
   let titleRef = React.useRef("")
 
@@ -92,8 +89,8 @@ let make = (~children) => {
     | _ => MaxOptionsReached->dispatch
     }
 
-  let saveCommandToClipboard = () => {
-    makeDiscordCommand(titleRef.current, options)->Clipboard.writeText
+  let saveCommandToClipboard = (title, options) => {
+    makeDiscordCommand(title, options)->Clipboard.writeText
   }
 
   let handleTitleFocus = _ => {
@@ -113,9 +110,10 @@ let make = (~children) => {
   React.useEffect1(() => {
     setHeroComponent(_ =>
       <div
-        className="flex flex-col items-start w-full p-4 min-h-[558px]  "
+        className="flex flex-col items-start w-full p-4 min-h-[558px] "
         ref={ReactDOM.Ref.callbackDomRef(askRef)}>
-        <div className="w-full lg:p-4 p-2 flex flex-col items-center max-h-[50%] min-h-0 flex-1 ">
+        <div
+          className="w-full lg:p-4 p-2 flex flex-col items-center max-h-[50%] min-h-[279px] flex-1  hide-scrollbar">
           <h2 className="text-2xl text-black opacity-60 self-start ">
             {"1. Link Token (Optional)"->React.string}
           </h2>
@@ -139,7 +137,14 @@ let make = (~children) => {
   }, [setHeroComponent])
 
   let handleAsk = _ => {
-    ()
+    switch (queryParams.useVote, queryParams.hexState, submit.write) {
+    | (Some(_), Some(_), Some(submit)) if canSubmit => submit()
+    | _ =>
+      switch state.title {
+      | Some(title) if canSubmit => saveCommandToClipboard(title, options)
+      | _ => ()
+      }
+    }
   }
 
   <AskContext.Provider value={state, dispatch}>
@@ -194,7 +199,7 @@ let make = (~children) => {
             onClick=handleAsk
             disabled={!canSubmit}
             className="mb-auto min-w-[8rem] min-h-[3rem] font-bold disabled:bg-default-disabled disabled:text-default-darker disabled:opacity-50 disabled:scale-100 rounded-2xl max-w-xs self-center bg-default-darker lg:bg-active text-white transition-all ease-linear hover:scale-105  ">
-            {"Ask "->React.string}
+            {"Ask"->React.string}
           </button>
         </div>
       </div>
