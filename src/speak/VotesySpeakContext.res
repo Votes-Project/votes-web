@@ -1,11 +1,15 @@
 type context = {
-  content: string,
-  setContent: (string => string) => unit,
+  content: option<React.element>,
+  setContent: (option<React.element> => option<React.element>) => unit,
+  show: bool,
+  setShow: (bool => bool) => unit,
 }
 
 let context = React.createContext({
-  content: "",
+  content: None,
   setContent: _ => (),
+  show: false,
+  setShow: _ => (),
 })
 
 module Provider = {

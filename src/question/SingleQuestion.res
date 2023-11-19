@@ -184,7 +184,7 @@ module OptionItem = {
       })
     }
     <li
-      className={`outline-none relative font-semibold text-sm my-3 pl-2 w-full flex items-center text-left backdrop-blur-md transition-all duration-200 ease-linear lg:rounded-xl text-default-darker shadow-lg bg-default lg:bg-secondary hover:lg:scale-105 focus:lg:scale-105`}
+      className={`focus:outline-none focus:ring-0 relative font-semibold text-sm my-3 pl-2 w-full flex items-center text-left backdrop-blur-md transition-all duration-200 ease-linear lg:rounded-xl text-default-darker shadow-lg bg-default lg:bg-secondary hover:lg:scale-105 focus:lg:scale-105`}
       key={index->Int.toString}
       ref={ReactDOM.Ref.domRef(ref)}
       onPointerLeave={_ => {
@@ -206,7 +206,7 @@ module OptionItem = {
         </div>
       }}
       <button
-        className={`focus:outline-none w-full  flex flex-row items-center lg:my-2 first:mb-2 py-2   px-2 min-h-[80px] overflow-hidden  transition-all`}
+        className={`focus:outline-none focus:ring-0 w-full  flex flex-row items-center lg:my-2 first:mb-2 py-2   px-2 min-h-[80px] overflow-hidden  transition-all`}
         key={index->Int.toString}>
         <p className="pointer-events-none"> {option->React.string} </p>
       </button>
@@ -395,7 +395,9 @@ let make = (
         </div>
       </div>
     )
-    votesy.setContent(_ => "It's your first vote! Pick an answer and start your streak!")
+    votesy.setContent(_ =>
+      "It's your first vote! Pick an answer and start your streak!"->React.string->Some
+    )
 
     None
   })
