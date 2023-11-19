@@ -1,7 +1,33 @@
-type textQuestion = {text: string}
+@gql.type
+type questionOption = {
+  /** The text of the option */
+  @gql.field
+  option?: string,
+  /** The id of the option */
+  @gql.field
+  details?: string,
+}
 
 @gql.type
 type question = {
+  ...NodeInterface.node,
+  /** The question */
+  question: string,
+  /** The incorrect answers */
+  options: array<questionOption>,
+  /** The correct answer */
+  @gql.field
+  isLocked: bool,
+  contract: GraphClient.linkById,
+}
+@gql.type
+type textQuestion = {
+  @gql.field
+  text: string,
+}
+
+@gql.type
+type triviaQuestion = {
   ...NodeInterface.node,
   /** The question */
   question: textQuestion,
@@ -21,13 +47,21 @@ type questionEdge = ResGraph.Connections.edge<question>
 @gql.type
 type questionConnection = ResGraph.Connections.connection<questionEdge>
 
+/** An edge to a trivia question. */
+@gql.type
+type triviaQuestionEdge = ResGraph.Connections.edge<triviaQuestion>
+
+/** A connection of trivia questions. */
+@gql.type
+type triviaQuestionConnection = ResGraph.Connections.connection<triviaQuestionEdge>
+
 let questionTextStruct = {
   open S
   object(({field}) => {
     text: "text"->field(string),
   })
 }
-let questionStruct = {
+let triviaQuestionStruct = {
   open S
   object(({field}) => {
     id: "id"->field(string),

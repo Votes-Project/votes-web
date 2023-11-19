@@ -2,7 +2,7 @@ ReactModal.setAppElement("#root")
 
 module QuestionTitle = {
   module Fragment = %relay(`
-    fragment SingleQuestion_QuestionTitle_question on Question {
+    fragment SingleQuestion_QuestionTitle on TriviaQuestion {
       question
     }
   `)
@@ -216,7 +216,7 @@ module OptionItem = {
 
 module OptionsPage = {
   module Fragment = %relay(`
-    fragment SingleQuestion_OptionsPage_question on Question {
+    fragment SingleQuestion_OptionsPage on TriviaQuestion {
       options
     }
   `)
@@ -296,7 +296,7 @@ module AnswerPage = {
 `)
 
   module Fragment = %relay(`
-  fragment SingleQuestion_AnswerPage_question on Question {
+  fragment SingleQuestion_AnswerPage on TriviaQuestion {
     options
   }`)
 
@@ -340,11 +340,11 @@ module Query = %relay(`
 `)
 
 module Fragment = %relay(`
-  fragment SingleQuestion_node on Question {
+  fragment SingleQuestion_node on TriviaQuestion {
     id
-    ...SingleQuestion_OptionsPage_question
-    ...SingleQuestion_QuestionTitle_question
-    ...SingleQuestion_AnswerPage_question
+    ...SingleQuestion_OptionsPage
+    ...SingleQuestion_QuestionTitle
+    ...SingleQuestion_AnswerPage
   }
 `)
 

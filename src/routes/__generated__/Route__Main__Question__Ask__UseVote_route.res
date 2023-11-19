@@ -11,7 +11,7 @@ module Internal = {
     showAllBids: option<int>,
     answer: option<int>,
     useVote: option<int>,
-    hexState: option<string>,
+    question: option<string>,
   }
 
   @live
@@ -26,7 +26,7 @@ module Internal = {
     showAllBids: option<int>,
     answer: option<int>,
     useVote: option<int>,
-    hexState: option<string>,
+    question: option<string>,
   }
 
   @live
@@ -53,7 +53,7 @@ module Internal = {
       showAllBids: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("showAllBids")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
       answer: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("answer")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
       useVote: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("useVote")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
-      hexState: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("hexState")->Belt.Option.flatMap(value => Some(value->Js.Global.decodeURIComponent)),
+      question: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("question")->Belt.Option.flatMap(value => Some(value->Js.Global.decodeURIComponent)),
     }
   }
 
@@ -66,7 +66,7 @@ type queryParams = {
   showAllBids: option<int>,
   answer: option<int>,
   useVote: option<int>,
-  hexState: option<string>,
+  question: option<string>,
 }
 
 @live
@@ -86,7 +86,7 @@ let parseQueryParams = (search: string): queryParams => {
 
     useVote: queryParams->QueryParams.getParamByKey("useVote")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
 
-    hexState: queryParams->QueryParams.getParamByKey("hexState")->Belt.Option.flatMap(value => Some(value->Js.Global.decodeURIComponent)),
+    question: queryParams->QueryParams.getParamByKey("question")->Belt.Option.flatMap(value => Some(value->Js.Global.decodeURIComponent)),
 
   }
 }
@@ -99,7 +99,7 @@ let makeQueryParams = (
   ~showAllBids: option<int>=?, 
   ~answer: option<int>=?, 
   ~useVote: option<int>=?, 
-  ~hexState: option<string>=?, 
+  ~question: option<string>=?, 
   ()
 ) => {
   linkBrightID: linkBrightID,
@@ -108,7 +108,7 @@ let makeQueryParams = (
   showAllBids: showAllBids,
   answer: answer,
   useVote: useVote,
-  hexState: hexState,
+  question: question,
 }
 
 @live
@@ -125,7 +125,7 @@ let applyQueryParams = (
   queryParams->QueryParams.setParamOpt(~key="showAllBids", ~value=newParams.showAllBids->Belt.Option.map(showAllBids => Belt.Int.toString(showAllBids)))
   queryParams->QueryParams.setParamOpt(~key="answer", ~value=newParams.answer->Belt.Option.map(answer => Belt.Int.toString(answer)))
   queryParams->QueryParams.setParamOpt(~key="useVote", ~value=newParams.useVote->Belt.Option.map(useVote => Belt.Int.toString(useVote)))
-  queryParams->QueryParams.setParamOpt(~key="hexState", ~value=newParams.hexState->Belt.Option.map(hexState => hexState->Js.Global.encodeURIComponent))
+  queryParams->QueryParams.setParamOpt(~key="question", ~value=newParams.question->Belt.Option.map(question => question->Js.Global.encodeURIComponent))
 }
 
 @live
@@ -184,7 +184,7 @@ let useQueryParams = (): useQueryParamsReturn => {
 let routePattern = "/question/ask"
 
 @live
-let makeLink = (~linkBrightID: option<int>=?, ~voteDetails: option<int>=?, ~voteDetailsToken: option<int>=?, ~showAllBids: option<int>=?, ~answer: option<int>=?, ~useVote: option<int>=?, ~hexState: option<string>=?) => {
+let makeLink = (~linkBrightID: option<int>=?, ~voteDetails: option<int>=?, ~voteDetailsToken: option<int>=?, ~showAllBids: option<int>=?, ~answer: option<int>=?, ~useVote: option<int>=?, ~question: option<string>=?) => {
   open RelayRouter.Bindings
   let queryParams = QueryParams.make()
   switch linkBrightID {
@@ -217,15 +217,15 @@ let makeLink = (~linkBrightID: option<int>=?, ~voteDetails: option<int>=?, ~vote
     | Some(useVote) => queryParams->QueryParams.setParam(~key="useVote", ~value=Belt.Int.toString(useVote))
   }
 
-  switch hexState {
+  switch question {
     | None => ()
-    | Some(hexState) => queryParams->QueryParams.setParam(~key="hexState", ~value=hexState->Js.Global.encodeURIComponent)
+    | Some(question) => queryParams->QueryParams.setParam(~key="question", ~value=question->Js.Global.encodeURIComponent)
   }
   RelayRouter.Bindings.generatePath(routePattern, Js.Dict.fromArray([])) ++ queryParams->QueryParams.toString
 }
 @live
 let makeLinkFromQueryParams = (queryParams: queryParams) => {
-  makeLink(~linkBrightID=?queryParams.linkBrightID, ~voteDetails=?queryParams.voteDetails, ~voteDetailsToken=?queryParams.voteDetailsToken, ~showAllBids=?queryParams.showAllBids, ~answer=?queryParams.answer, ~useVote=?queryParams.useVote, ~hexState=?queryParams.hexState, )
+  makeLink(~linkBrightID=?queryParams.linkBrightID, ~voteDetails=?queryParams.voteDetails, ~voteDetailsToken=?queryParams.voteDetailsToken, ~showAllBids=?queryParams.showAllBids, ~answer=?queryParams.answer, ~useVote=?queryParams.useVote, ~question=?queryParams.question, )
 }
 
 @live

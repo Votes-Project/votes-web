@@ -31,6 +31,11 @@ enum OrderBy_Auctions {
   amount
 }
 
+enum OrderBy_Questions {
+  id
+  tokenId
+}
+
 enum OrderBy_Transfers {
   id
   tokenId
@@ -74,6 +79,11 @@ input Where_AuctionCreateds {
 }
 
 input Where_Auctions {
+  id: String
+  tokenId: String
+}
+
+input Where_Questions {
   id: String
   tokenId: String
 }
@@ -339,11 +349,13 @@ type Query {
   voteContract(id: String!): VoteContract
   verifications(context: String!): Verifications!
   verification(contextId: String!): Verification!
+  randomQuestions(limit: Int!, first: Int, after: String, before: String, last: Int): TriviaQuestionConnection!
+  randomQuestion: TriviaQuestion
+  triviaQuestionById(id: String!): TriviaQuestion
   questionSubmitteds(skip: Int, first: Int, after: String, before: String, last: Int): QuestionSubmittedConnection
   questionSubmitted(id: String!): QuestionSubmitted
-  randomQuestions(limit: Int!, first: Int, after: String, before: String, last: Int): QuestionConnection!
-  randomQuestion: Question
-  questionById(id: String!): Question
+  questions(orderBy: OrderBy_Questions, orderDirection: OrderDirection, where: Where_Questions, first: Int, after: String, before: String, last: Int): QuestionConnection!
+  question(id: String!): Question
 
   """Fetches objects given their IDs."""
   nodes(ids: [ID!]!): [Node]!
@@ -363,8 +375,11 @@ type Query {
 }
 
 type Question implements Node {
-  options: [String!]!
-  question: String!
+  options: [QuestionOption!]!
+  title: String!
+
+  """The correct answer"""
+  isLocked: Boolean!
   id: ID!
 }
 
@@ -388,6 +403,15 @@ type QuestionEdge {
 
   """A cursor for use in pagination."""
   cursor: String!
+}
+
+type QuestionOption {
+
+  """The text of the option"""
+  option: String
+
+  """The id of the option"""
+  details: String
 }
 
 type QuestionSubmitted implements Node {
@@ -423,6 +447,38 @@ type QuestionSubmittedEdge {
 
   """The item at the end of the edge."""
   node: QuestionSubmitted
+
+  """A cursor for use in pagination."""
+  cursor: String!
+}
+
+type TextQuestion {
+  text: String!
+}
+
+type TriviaQuestion implements Node {
+  options: [String!]!
+  question: String!
+  id: ID!
+}
+
+
+"""A connection of trivia questions."""
+type TriviaQuestionConnection {
+
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [TriviaQuestionEdge]
+}
+
+
+"""An edge to a trivia question."""
+type TriviaQuestionEdge {
+
+  """The item at the end of the edge."""
+  node: TriviaQuestion
 
   """A cursor for use in pagination."""
   cursor: String!
