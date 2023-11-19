@@ -4,7 +4,7 @@ module VoteContractFragment = %relay(`
   }
 `)
 module QuestionFragment = %relay(`
-  fragment BottomNav_question on Question {
+  fragment BottomNav_question on TriviaQuestion {
     id
   }
 `)

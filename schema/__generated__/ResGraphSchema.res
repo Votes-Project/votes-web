@@ -82,6 +82,14 @@ let enum_OrderBy_Auctions = GraphQLEnumType.make({
     "amount": {GraphQLEnumType.value: "amount", description: ?None, deprecationReason: ?None},
   }->makeEnumValues,
 })
+let enum_OrderBy_Questions = GraphQLEnumType.make({
+  name: "OrderBy_Questions",
+  description: ?None,
+  values: {
+    "id": {GraphQLEnumType.value: "id", description: ?None, deprecationReason: ?None},
+    "tokenId": {GraphQLEnumType.value: "tokenId", description: ?None, deprecationReason: ?None},
+  }->makeEnumValues,
+})
 let enum_OrderBy_Transfers = GraphQLEnumType.make({
   name: "OrderBy_Transfers",
   description: ?None,
@@ -166,12 +174,22 @@ let t_QuestionConnection: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.n
 let get_QuestionConnection = () => t_QuestionConnection.contents
 let t_QuestionEdge: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
 let get_QuestionEdge = () => t_QuestionEdge.contents
+let t_QuestionOption: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
+let get_QuestionOption = () => t_QuestionOption.contents
 let t_QuestionSubmitted: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
 let get_QuestionSubmitted = () => t_QuestionSubmitted.contents
 let t_QuestionSubmittedConnection: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
 let get_QuestionSubmittedConnection = () => t_QuestionSubmittedConnection.contents
 let t_QuestionSubmittedEdge: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
 let get_QuestionSubmittedEdge = () => t_QuestionSubmittedEdge.contents
+let t_TextQuestion: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
+let get_TextQuestion = () => t_TextQuestion.contents
+let t_TriviaQuestion: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
+let get_TriviaQuestion = () => t_TriviaQuestion.contents
+let t_TriviaQuestionConnection: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
+let get_TriviaQuestionConnection = () => t_TriviaQuestionConnection.contents
+let t_TriviaQuestionEdge: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
+let get_TriviaQuestionEdge = () => t_TriviaQuestionEdge.contents
 let t_VerificationData: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
 let get_VerificationData = () => t_VerificationData.contents
 let t_VerificationsData: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
@@ -199,6 +217,9 @@ let input_Where_AuctionCreateds_conversionInstructions = []
 let input_Where_Auctions: ref<GraphQLInputObjectType.t> = Obj.magic({"contents": Js.null})
 let get_Where_Auctions = () => input_Where_Auctions.contents
 let input_Where_Auctions_conversionInstructions = []
+let input_Where_Questions: ref<GraphQLInputObjectType.t> = Obj.magic({"contents": Js.null})
+let get_Where_Questions = () => input_Where_Questions.contents
+let input_Where_Questions_conversionInstructions = []
 let input_Where_Transfers: ref<GraphQLInputObjectType.t> = Obj.magic({"contents": Js.null})
 let get_Where_Transfers = () => input_Where_Transfers.contents
 let input_Where_Transfers_conversionInstructions = []
@@ -214,6 +235,10 @@ input_Where_AuctionCreateds_conversionInstructions->Array.pushMany([
   ("tokenId", makeInputObjectFieldConverterFn(v => v->Nullable.toOption)),
 ])
 input_Where_Auctions_conversionInstructions->Array.pushMany([
+  ("id", makeInputObjectFieldConverterFn(v => v->Nullable.toOption)),
+  ("tokenId", makeInputObjectFieldConverterFn(v => v->Nullable.toOption)),
+])
+input_Where_Questions_conversionInstructions->Array.pushMany([
   ("id", makeInputObjectFieldConverterFn(v => v->Nullable.toOption)),
   ("tokenId", makeInputObjectFieldConverterFn(v => v->Nullable.toOption)),
 ])
@@ -254,8 +279,9 @@ let interface_Node_resolveType = (v: Interface_node.Resolver.t) =>
   | VoteContract(_) => "VoteContract"
   | AuctionCreated(_) => "AuctionCreated"
   | VerificationData(_) => "VerificationData"
-  | QuestionSubmitted(_) => "QuestionSubmitted"
+  | TriviaQuestion(_) => "TriviaQuestion"
   | Question(_) => "Question"
+  | QuestionSubmitted(_) => "QuestionSubmitted"
   | Vote(_) => "Vote"
   | Answer(_) => "Answer"
   | VerificationsData(_) => "VerificationsData"
@@ -1345,14 +1371,14 @@ t_Query.contents = GraphQLObjectType.make({
           NodeInterfaceResolvers.nodes(src, ~ctx, ~ids=args["ids"])
         }),
       },
-      "questionById": {
+      "question": {
         typ: get_Question()->GraphQLObjectType.toGraphQLType,
         description: ?None,
         deprecationReason: ?None,
         args: {"id": {typ: Scalars.string->Scalars.toGraphQLType->nonNull}}->makeArgs,
         resolve: makeResolveFn((src, args, ctx) => {
           let src = typeUnwrapper(src)
-          QuestionResolvers.questionById(src, ~ctx, ~id=args["id"])
+          QuestionResolvers.question(src, ~ctx, ~id=args["id"])
         }),
       },
       "questionSubmitted": {
@@ -1385,6 +1411,38 @@ t_Query.contents = GraphQLObjectType.make({
             ~first=args["first"]->Nullable.toOption,
             ~last=args["last"]->Nullable.toOption,
             ~skip=args["skip"]->Nullable.toOption,
+          )
+        }),
+      },
+      "questions": {
+        typ: get_QuestionConnection()->GraphQLObjectType.toGraphQLType->nonNull,
+        description: ?None,
+        deprecationReason: ?None,
+        args: {
+          "after": {typ: Scalars.string->Scalars.toGraphQLType},
+          "before": {typ: Scalars.string->Scalars.toGraphQLType},
+          "first": {typ: Scalars.int->Scalars.toGraphQLType},
+          "last": {typ: Scalars.int->Scalars.toGraphQLType},
+          "orderBy": {typ: enum_OrderBy_Questions->GraphQLEnumType.toGraphQLType},
+          "orderDirection": {typ: enum_OrderDirection->GraphQLEnumType.toGraphQLType},
+          "where": {typ: get_Where_Questions()->GraphQLInputObjectType.toGraphQLType},
+        }->makeArgs,
+        resolve: makeResolveFn((src, args, ctx) => {
+          let src = typeUnwrapper(src)
+          QuestionResolvers.questions(
+            src,
+            ~after=args["after"]->Nullable.toOption,
+            ~before=args["before"]->Nullable.toOption,
+            ~ctx,
+            ~first=args["first"]->Nullable.toOption,
+            ~last=args["last"]->Nullable.toOption,
+            ~orderBy=args["orderBy"]->Nullable.toOption,
+            ~orderDirection=args["orderDirection"]->Nullable.toOption,
+            ~where=switch args["where"]->Nullable.toOption {
+            | None => None
+            | Some(v) =>
+              v->applyConversionToInputObject(input_Where_Questions_conversionInstructions)->Some
+            },
           )
         }),
       },
@@ -1425,16 +1483,16 @@ t_Query.contents = GraphQLObjectType.make({
         }),
       },
       "randomQuestion": {
-        typ: get_Question()->GraphQLObjectType.toGraphQLType,
+        typ: get_TriviaQuestion()->GraphQLObjectType.toGraphQLType,
         description: ?None,
         deprecationReason: ?None,
         resolve: makeResolveFn((src, args, ctx) => {
           let src = typeUnwrapper(src)
-          QuestionResolvers.randomQuestion(src, ~ctx)
+          TriviaQuestionResolvers.randomQuestion(src, ~ctx)
         }),
       },
       "randomQuestions": {
-        typ: get_QuestionConnection()->GraphQLObjectType.toGraphQLType->nonNull,
+        typ: get_TriviaQuestionConnection()->GraphQLObjectType.toGraphQLType->nonNull,
         description: ?None,
         deprecationReason: ?None,
         args: {
@@ -1446,7 +1504,7 @@ t_Query.contents = GraphQLObjectType.make({
         }->makeArgs,
         resolve: makeResolveFn((src, args, ctx) => {
           let src = typeUnwrapper(src)
-          QuestionResolvers.randomQuestions(
+          TriviaQuestionResolvers.randomQuestions(
             src,
             ~after=?args["after"]->Nullable.toOption,
             ~before=?args["before"]->Nullable.toOption,
@@ -1455,6 +1513,16 @@ t_Query.contents = GraphQLObjectType.make({
             ~last=?args["last"]->Nullable.toOption,
             ~limit=args["limit"],
           )
+        }),
+      },
+      "triviaQuestionById": {
+        typ: get_TriviaQuestion()->GraphQLObjectType.toGraphQLType,
+        description: ?None,
+        deprecationReason: ?None,
+        args: {"id": {typ: Scalars.string->Scalars.toGraphQLType->nonNull}}->makeArgs,
+        resolve: makeResolveFn((src, args, ctx) => {
+          let src = typeUnwrapper(src)
+          TriviaQuestionResolvers.triviaQuestionById(src, ~ctx, ~id=args["id"])
         }),
       },
       "verification": {
@@ -1591,8 +1659,17 @@ t_Question.contents = GraphQLObjectType.make({
           NodeInterfaceResolvers.id(src, ~typename=Question)
         }),
       },
+      "isLocked": {
+        typ: Scalars.boolean->Scalars.toGraphQLType->nonNull,
+        description: "The correct answer",
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["isLocked"]
+        }),
+      },
       "options": {
-        typ: GraphQLListType.make(Scalars.string->Scalars.toGraphQLType->nonNull)
+        typ: GraphQLListType.make(get_QuestionOption()->GraphQLObjectType.toGraphQLType->nonNull)
         ->GraphQLListType.toGraphQLType
         ->nonNull,
         description: ?None,
@@ -1602,13 +1679,13 @@ t_Question.contents = GraphQLObjectType.make({
           QuestionResolvers.options(src, ~ctx)
         }),
       },
-      "question": {
+      "title": {
         typ: Scalars.string->Scalars.toGraphQLType->nonNull,
         description: ?None,
         deprecationReason: ?None,
         resolve: makeResolveFn((src, args, ctx) => {
           let src = typeUnwrapper(src)
-          QuestionResolvers.question(src, ~ctx)
+          QuestionResolvers.title(src, ~ctx)
         }),
       },
     }->makeFields,
@@ -1663,6 +1740,32 @@ t_QuestionEdge.contents = GraphQLObjectType.make({
         resolve: makeResolveFn((src, _args, _ctx) => {
           let src = typeUnwrapper(src)
           src["node"]
+        }),
+      },
+    }->makeFields,
+})
+t_QuestionOption.contents = GraphQLObjectType.make({
+  name: "QuestionOption",
+  description: ?None,
+  interfaces: [],
+  fields: () =>
+    {
+      "details": {
+        typ: Scalars.string->Scalars.toGraphQLType,
+        description: "The id of the option",
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["details"]
+        }),
+      },
+      "option": {
+        typ: Scalars.string->Scalars.toGraphQLType,
+        description: "The text of the option",
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["option"]
         }),
       },
     }->makeFields,
@@ -1778,6 +1881,114 @@ t_QuestionSubmittedEdge.contents = GraphQLObjectType.make({
       },
       "node": {
         typ: get_QuestionSubmitted()->GraphQLObjectType.toGraphQLType,
+        description: "The item at the end of the edge.",
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["node"]
+        }),
+      },
+    }->makeFields,
+})
+t_TextQuestion.contents = GraphQLObjectType.make({
+  name: "TextQuestion",
+  description: ?None,
+  interfaces: [],
+  fields: () =>
+    {
+      "text": {
+        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        description: ?None,
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["text"]
+        }),
+      },
+    }->makeFields,
+})
+t_TriviaQuestion.contents = GraphQLObjectType.make({
+  name: "TriviaQuestion",
+  description: ?None,
+  interfaces: [get_Node()],
+  fields: () =>
+    {
+      "id": {
+        typ: Scalars.id->Scalars.toGraphQLType->nonNull,
+        description: ?None,
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, args, ctx) => {
+          let src = typeUnwrapper(src)
+          NodeInterfaceResolvers.id(src, ~typename=TriviaQuestion)
+        }),
+      },
+      "options": {
+        typ: GraphQLListType.make(Scalars.string->Scalars.toGraphQLType->nonNull)
+        ->GraphQLListType.toGraphQLType
+        ->nonNull,
+        description: ?None,
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, args, ctx) => {
+          let src = typeUnwrapper(src)
+          TriviaQuestionResolvers.options(src, ~ctx)
+        }),
+      },
+      "question": {
+        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        description: ?None,
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, args, ctx) => {
+          let src = typeUnwrapper(src)
+          TriviaQuestionResolvers.question(src, ~ctx)
+        }),
+      },
+    }->makeFields,
+})
+t_TriviaQuestionConnection.contents = GraphQLObjectType.make({
+  name: "TriviaQuestionConnection",
+  description: "A connection of trivia questions.",
+  interfaces: [],
+  fields: () =>
+    {
+      "edges": {
+        typ: GraphQLListType.make(
+          get_TriviaQuestionEdge()->GraphQLObjectType.toGraphQLType,
+        )->GraphQLListType.toGraphQLType,
+        description: "A list of edges.",
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["edges"]
+        }),
+      },
+      "pageInfo": {
+        typ: get_PageInfo()->GraphQLObjectType.toGraphQLType->nonNull,
+        description: "Information to aid in pagination.",
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["pageInfo"]
+        }),
+      },
+    }->makeFields,
+})
+t_TriviaQuestionEdge.contents = GraphQLObjectType.make({
+  name: "TriviaQuestionEdge",
+  description: "An edge to a trivia question.",
+  interfaces: [],
+  fields: () =>
+    {
+      "cursor": {
+        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        description: "A cursor for use in pagination.",
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["cursor"]
+        }),
+      },
+      "node": {
+        typ: get_TriviaQuestion()->GraphQLObjectType.toGraphQLType,
         description: "The item at the end of the edge.",
         deprecationReason: ?None,
         resolve: makeResolveFn((src, _args, _ctx) => {
@@ -2218,6 +2429,23 @@ input_Where_AuctionCreateds.contents = GraphQLInputObjectType.make({
 })
 input_Where_Auctions.contents = GraphQLInputObjectType.make({
   name: "Where_Auctions",
+  description: ?None,
+  fields: () =>
+    {
+      "id": {
+        GraphQLInputObjectType.typ: Scalars.string->Scalars.toGraphQLType,
+        description: ?None,
+        deprecationReason: ?None,
+      },
+      "tokenId": {
+        GraphQLInputObjectType.typ: Scalars.string->Scalars.toGraphQLType,
+        description: ?None,
+        deprecationReason: ?None,
+      },
+    }->makeFields,
+})
+input_Where_Questions.contents = GraphQLInputObjectType.make({
+  name: "Where_Questions",
   description: ?None,
   fields: () =>
     {

@@ -75,6 +75,11 @@ let node = async (_: Schema.query, ~id, ~ctx: ResGraphContext.context): option<
       | None => panic("Something went wrong querying question node")
       | Some(question) => Question(question)->Some
       }
+    | Some(TriviaQuestion) =>
+      switch await ctx.dataLoaders.question.triviaById->DataLoader.load(id) {
+      | None => panic("Something went wrong querying trivia question node")
+      | Some(triviaQuestion) => TriviaQuestion(triviaQuestion)->Some
+      }
     }
 
   | _ => None

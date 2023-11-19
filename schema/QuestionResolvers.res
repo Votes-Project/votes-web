@@ -1,6 +1,7 @@
 open Question
+
 @gql.field
-let questionById = async (_: Schema.query, ~id, ~ctx: ResGraphContext.context) => {
+let question = async (_: Schema.query, ~id, ~ctx: ResGraphContext.context) => {
   switch await ctx.dataLoaders.question.byId->DataLoader.load(id) {
   | None => panic("Something went wrong fetching the question")
   | Some(question) => Some(question)
@@ -8,39 +9,34 @@ let questionById = async (_: Schema.query, ~id, ~ctx: ResGraphContext.context) =
 }
 
 @gql.field
-let randomQuestion = async (_: Schema.query, ~ctx: ResGraphContext.context) => {
-  switch await ctx.dataLoaders.question.random->DataLoader.load("1") {
-  | [] => panic("Something went wrong fetching the question")
-  | question => question[0]
-  }
-}
-
-@gql.field
-let randomQuestions = async (
+let questions = async (
   _: Schema.query,
-  ~limit,
-  ~first=?,
-  ~after=?,
-  ~before=?,
-  ~last=?,
+  ~orderBy: option<QuestionDataLoaders.orderBy_Questions>,
+  ~orderDirection,
+  ~where,
+  ~first,
+  ~after,
+  ~before,
+  ~last,
   ~ctx: ResGraphContext.context,
 ): questionConnection => {
-  let questions = await ctx.dataLoaders.question.random->DataLoader.load(limit->Int.toString)
+  let questions =
+    await ctx.dataLoaders.question.list->DataLoader.load({first, orderBy, orderDirection, where})
   questions->ResGraph.Connections.connectionFromArray(~args={first, after, before, last})
 }
 
 @gql.field
-let question = async (q: question, ~ctx: ResGraphContext.context) => {
+let title = async (q: question, ~ctx: ResGraphContext.context) => {
   switch await ctx.dataLoaders.question.byId->DataLoader.load(q.id) {
   | None => panic("Something went wrong fetching the question")
-  | Some({question: {text}}) => text
+  | Some({question}) => question
   }
 }
+
 @gql.field
-let options = async (question: question, ~ctx: ResGraphContext.context): array<string> => {
-  switch await ctx.dataLoaders.question.byId->DataLoader.load(question.id) {
+let options = async (q: question, ~ctx: ResGraphContext.context): array<questionOption> => {
+  switch await ctx.dataLoaders.question.byId->DataLoader.load(q.id) {
   | None => panic("Something went wrong fetching the question")
-  | Some(question) =>
-    question.incorrectAnswers->Array.concat([question.correctAnswer])->Array.toShuffled
+  | Some({options}) => options
   }
 }

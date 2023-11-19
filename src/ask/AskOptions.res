@@ -1,7 +1,7 @@
 module AskOptionInput = {
   @react.component
-  let make = (~index, ~option: AskContext.questionOption, ~isOpen) => {
-    let {state: {options}, dispatch} = React.useContext(AskContext.context)
+  let make = (~index, ~option: Question.questionOption, ~isOpen) => {
+    let {state: {question: {options}}, dispatch} = React.useContext(AskContext.context)
     let (toggleDetails, setToggleDetails) = React.useState(() => false)
 
     let onOptionChange = (e, i) => {
@@ -127,7 +127,7 @@ let make = () => {
     }
 
   <ol className="flex flex-col justify-start items-start flex-1 ">
-    {state.options
+    {state.question.options
     ->Array.mapWithIndex((option, index) => {
       <li
         key={Int.toString(index)}

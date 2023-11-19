@@ -8,7 +8,7 @@ module Clipboard = {
   external writeText: string => unit = "writeText"
 }
 
-let makeDiscordCommand = (title, options: array<AskContext.questionOption>) => {
+let makeDiscordCommand = (title, options: array<Question.questionOption>) => {
   let command = "/poll"
 
   let question = `question:${title}`
@@ -30,9 +30,13 @@ let make = (~children) => {
 
   let (state, dispatch) = React.useReducer(
     AskContext.reducer,
-    AskContext.parseHexState(queryParams.hexState),
+    {
+      question: QuestionUtils.parseHexQuestion(queryParams.question)->Option.getWithDefault(
+        QuestionUtils.emptyQuestion,
+      ),
+    },
   )
-  let {options, title} = state
+  let {options, title} = state.question
 
   let askRef = React.useCallback0(element => {
     switch element->Nullable.toOption {
@@ -43,10 +47,10 @@ let make = (~children) => {
   })
 
   React.useEffect1(() => {
-    let hexState = state->JSON.stringifyAny->Option.map(Viem.toHexFromString)
+    let question = state.question->JSON.stringifyAny->Option.map(Viem.toHexFromString)
     setParams(~navigationMode_=Replace, ~removeNotControlledParams=false, ~setter=c => {
       ...c,
-      hexState,
+      question,
     })
     None
   }, [state])
@@ -64,7 +68,7 @@ let make = (~children) => {
       abi: questionContractAbi,
       value: BigInt.fromInt(0),
       functionName: "submit",
-      args: (queryParams.useVote, queryParams.hexState),
+      args: (queryParams.useVote, queryParams.question),
       enabled: canSubmit && queryParams.useVote->Option.isSome,
     },
   )
@@ -140,7 +144,7 @@ let make = (~children) => {
             id="create-vote-title"
             editablehasplaceholder="true"
             placeholder="2. Ask question..."
-            html={state.title->Option.getWithDefault("")}
+            html={state.question.title->Option.getWithDefault("")}
             onChange={onTitleChange}
             onFocus={handleTitleFocus}
             className="w-[90vw] lg:w-auto max-w-md lg:p-4 p-2 border-none focus:ring-0 break-words bg-transparent cursor-pointer text-wrap focus:cursor-text focus:text-left text-2xl transition-all duration-300 ease-linear "
@@ -152,10 +156,10 @@ let make = (~children) => {
   }, [setHeroComponent])
 
   let handleAsk = _ => {
-    switch (queryParams.useVote, queryParams.hexState, submit.write) {
+    switch (queryParams.useVote, queryParams.question, submit.write) {
     | (Some(_), Some(_), Some(submit)) if canSubmit => submit()
     | _ =>
-      switch state.title {
+      switch state.question.title {
       | Some(title) if canSubmit => saveCommandToClipboard(title, options)
       | _ => ()
       }

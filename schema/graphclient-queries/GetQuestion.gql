@@ -1,0 +1,10 @@
+query GetQuestion($id: ID!) {
+  question(id: $id) {
+    id
+    question
+    isLocked
+    contract {
+      id
+    }
+  }
+}

@@ -19,7 +19,7 @@
         "name": "Question",
         "children": [
         {
-            "path": "ask?useVote=int&hexState=string",
+            "path": "ask?useVote=int&question=string",
             "name": "Ask",
             "children": [{
               "path": "",
