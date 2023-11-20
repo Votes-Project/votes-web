@@ -4,7 +4,7 @@ open RelayRouter__Internal__DeclarationsSupport
 external unsafe_toPrepareProps: 'any => prepareProps = "%identity"
 
 let loadedRouteRenderers: Belt.HashMap.String.t<loadedRouteRenderer> = Belt.HashMap.String.make(
-  ~hintSize=13,
+  ~hintSize=16,
 )
 
 let make = (~prepareDisposeTimeout=5 * 60 * 1000): array<RelayRouter.Types.route> => {
@@ -947,6 +947,243 @@ let make = (~prepareDisposeTimeout=5 * 60 * 1000): array<RelayRouter.Types.route
             ~intent
           ),
           children: [],
+        }
+      },
+      {
+        let routeName = "Main__Auth"
+        let loadRouteRenderer = () => (() => Js.import(Main__Auth_route_renderer.renderer))->Obj.magic->doLoadRouteRenderer(~routeName, ~loadedRouteRenderers)
+        let makePrepareProps = (. 
+        ~environment: RescriptRelay.Environment.t,
+        ~pathParams: Js.Dict.t<string>,
+        ~queryParams: RelayRouter.Bindings.QueryParams.t,
+        ~location: RelayRouter.History.location,
+      ): prepareProps => {
+        ignore(pathParams)
+        let prepareProps: Route__Main__Auth_route.Internal.prepareProps =   {
+          environment: environment,
+      
+          location: location,
+          linkBrightID: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("linkBrightID")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
+          voteDetails: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetails")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
+          voteDetailsToken: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetailsToken")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
+          showAllBids: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("showAllBids")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
+        }
+        prepareProps->unsafe_toPrepareProps
+      }
+      
+        {
+          path: "auth",
+          name: routeName,
+          chunk: "Main__Auth_route_renderer",
+          loadRouteRenderer,
+          preloadCode: (
+            ~environment: RescriptRelay.Environment.t,
+            ~pathParams: Js.Dict.t<string>,
+            ~queryParams: RelayRouter.Bindings.QueryParams.t,
+            ~location: RelayRouter.History.location,
+          ) => preloadCode(
+            ~loadedRouteRenderers,
+            ~routeName,
+            ~loadRouteRenderer,
+            ~environment,
+            ~location,
+            ~makePrepareProps,
+            ~pathParams,
+            ~queryParams,
+          ),
+          prepare: (
+            ~environment: RescriptRelay.Environment.t,
+            ~pathParams: Js.Dict.t<string>,
+            ~queryParams: RelayRouter.Bindings.QueryParams.t,
+            ~location: RelayRouter.History.location,
+            ~intent: RelayRouter.Types.prepareIntent,
+          ) => prepareRoute(
+            ~environment,
+            ~pathParams,
+            ~queryParams,
+            ~location,
+            ~getPrepared,
+            ~loadRouteRenderer,
+            ~makePrepareProps,
+            ~makeRouteKey=(
+        ~pathParams: Js.Dict.t<string>,
+        ~queryParams: RelayRouter.Bindings.QueryParams.t
+      ): string => {
+        ignore(pathParams)
+      
+        "Main__Auth:"
+      
+          ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("linkBrightID")->Belt.Option.getWithDefault("")
+          ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetails")->Belt.Option.getWithDefault("")
+          ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetailsToken")->Belt.Option.getWithDefault("")
+          ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("showAllBids")->Belt.Option.getWithDefault("")
+      }
+      
+      ,
+            ~routeName,
+            ~intent
+          ),
+          children: [      {
+              let routeName = "Main__Auth__Twitter"
+              let loadRouteRenderer = () => (() => Js.import(Main__Auth__Twitter_route_renderer.renderer))->Obj.magic->doLoadRouteRenderer(~routeName, ~loadedRouteRenderers)
+              let makePrepareProps = (. 
+              ~environment: RescriptRelay.Environment.t,
+              ~pathParams: Js.Dict.t<string>,
+              ~queryParams: RelayRouter.Bindings.QueryParams.t,
+              ~location: RelayRouter.History.location,
+            ): prepareProps => {
+              ignore(pathParams)
+              let prepareProps: Route__Main__Auth__Twitter_route.Internal.prepareProps =   {
+                environment: environment,
+            
+                location: location,
+                linkBrightID: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("linkBrightID")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
+                voteDetails: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetails")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
+                voteDetailsToken: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetailsToken")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
+                showAllBids: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("showAllBids")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
+                state: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("state")->Belt.Option.flatMap(value => Some(value->Js.Global.decodeURIComponent)),
+                code: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("code")->Belt.Option.flatMap(value => Some(value->Js.Global.decodeURIComponent)),
+              }
+              prepareProps->unsafe_toPrepareProps
+            }
+            
+              {
+                path: "twitter",
+                name: routeName,
+                chunk: "Main__Auth__Twitter_route_renderer",
+                loadRouteRenderer,
+                preloadCode: (
+                  ~environment: RescriptRelay.Environment.t,
+                  ~pathParams: Js.Dict.t<string>,
+                  ~queryParams: RelayRouter.Bindings.QueryParams.t,
+                  ~location: RelayRouter.History.location,
+                ) => preloadCode(
+                  ~loadedRouteRenderers,
+                  ~routeName,
+                  ~loadRouteRenderer,
+                  ~environment,
+                  ~location,
+                  ~makePrepareProps,
+                  ~pathParams,
+                  ~queryParams,
+                ),
+                prepare: (
+                  ~environment: RescriptRelay.Environment.t,
+                  ~pathParams: Js.Dict.t<string>,
+                  ~queryParams: RelayRouter.Bindings.QueryParams.t,
+                  ~location: RelayRouter.History.location,
+                  ~intent: RelayRouter.Types.prepareIntent,
+                ) => prepareRoute(
+                  ~environment,
+                  ~pathParams,
+                  ~queryParams,
+                  ~location,
+                  ~getPrepared,
+                  ~loadRouteRenderer,
+                  ~makePrepareProps,
+                  ~makeRouteKey=(
+              ~pathParams: Js.Dict.t<string>,
+              ~queryParams: RelayRouter.Bindings.QueryParams.t
+            ): string => {
+              ignore(pathParams)
+            
+              "Main__Auth__Twitter:"
+            
+                ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("linkBrightID")->Belt.Option.getWithDefault("")
+                ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetails")->Belt.Option.getWithDefault("")
+                ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetailsToken")->Belt.Option.getWithDefault("")
+                ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("showAllBids")->Belt.Option.getWithDefault("")
+                ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("state")->Belt.Option.getWithDefault("")
+                ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("code")->Belt.Option.getWithDefault("")
+            }
+            
+            ,
+                  ~routeName,
+                  ~intent
+                ),
+                children: [        {
+                      let routeName = "Main__Auth__Twitter__Callback"
+                      let loadRouteRenderer = () => (() => Js.import(Main__Auth__Twitter__Callback_route_renderer.renderer))->Obj.magic->doLoadRouteRenderer(~routeName, ~loadedRouteRenderers)
+                      let makePrepareProps = (. 
+                      ~environment: RescriptRelay.Environment.t,
+                      ~pathParams: Js.Dict.t<string>,
+                      ~queryParams: RelayRouter.Bindings.QueryParams.t,
+                      ~location: RelayRouter.History.location,
+                    ): prepareProps => {
+                      ignore(pathParams)
+                      let prepareProps: Route__Main__Auth__Twitter__Callback_route.Internal.prepareProps =   {
+                        environment: environment,
+                    
+                        location: location,
+                        linkBrightID: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("linkBrightID")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
+                        voteDetails: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetails")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
+                        voteDetailsToken: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetailsToken")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
+                        showAllBids: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("showAllBids")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
+                        state: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("state")->Belt.Option.flatMap(value => Some(value->Js.Global.decodeURIComponent)),
+                        code: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("code")->Belt.Option.flatMap(value => Some(value->Js.Global.decodeURIComponent)),
+                      }
+                      prepareProps->unsafe_toPrepareProps
+                    }
+                    
+                      {
+                        path: "callback",
+                        name: routeName,
+                        chunk: "Main__Auth__Twitter__Callback_route_renderer",
+                        loadRouteRenderer,
+                        preloadCode: (
+                          ~environment: RescriptRelay.Environment.t,
+                          ~pathParams: Js.Dict.t<string>,
+                          ~queryParams: RelayRouter.Bindings.QueryParams.t,
+                          ~location: RelayRouter.History.location,
+                        ) => preloadCode(
+                          ~loadedRouteRenderers,
+                          ~routeName,
+                          ~loadRouteRenderer,
+                          ~environment,
+                          ~location,
+                          ~makePrepareProps,
+                          ~pathParams,
+                          ~queryParams,
+                        ),
+                        prepare: (
+                          ~environment: RescriptRelay.Environment.t,
+                          ~pathParams: Js.Dict.t<string>,
+                          ~queryParams: RelayRouter.Bindings.QueryParams.t,
+                          ~location: RelayRouter.History.location,
+                          ~intent: RelayRouter.Types.prepareIntent,
+                        ) => prepareRoute(
+                          ~environment,
+                          ~pathParams,
+                          ~queryParams,
+                          ~location,
+                          ~getPrepared,
+                          ~loadRouteRenderer,
+                          ~makePrepareProps,
+                          ~makeRouteKey=(
+                      ~pathParams: Js.Dict.t<string>,
+                      ~queryParams: RelayRouter.Bindings.QueryParams.t
+                    ): string => {
+                      ignore(pathParams)
+                    
+                      "Main__Auth__Twitter__Callback:"
+                    
+                        ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("linkBrightID")->Belt.Option.getWithDefault("")
+                        ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetails")->Belt.Option.getWithDefault("")
+                        ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetailsToken")->Belt.Option.getWithDefault("")
+                        ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("showAllBids")->Belt.Option.getWithDefault("")
+                        ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("state")->Belt.Option.getWithDefault("")
+                        ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("code")->Belt.Option.getWithDefault("")
+                    }
+                    
+                    ,
+                          ~routeName,
+                          ~intent
+                        ),
+                        children: [],
+                      }
+                    }],
+              }
+            }],
         }
       }],
     }

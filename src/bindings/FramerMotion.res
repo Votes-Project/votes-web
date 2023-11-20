@@ -58,6 +58,9 @@ module Motion = {
     transition?: transition,
     borderRadius?: borderRadius,
     borderTop?: string,
+    borderBottom?: string,
+    borderLeft?: string,
+    borderRight?: string,
     border?: string,
     strokeDashoffset?: int,
   }

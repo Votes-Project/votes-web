@@ -164,6 +164,8 @@ let t_AuctionSettledEdge: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.n
 let get_AuctionSettledEdge = () => t_AuctionSettledEdge.contents
 let t_Error: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
 let get_Error = () => t_Error.contents
+let t_Mutation: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
+let get_Mutation = () => t_Mutation.contents
 let t_PageInfo: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
 let get_PageInfo = () => t_PageInfo.contents
 let t_Query: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
@@ -190,6 +192,10 @@ let t_TriviaQuestionConnection: ref<GraphQLObjectType.t> = Obj.magic({"contents"
 let get_TriviaQuestionConnection = () => t_TriviaQuestionConnection.contents
 let t_TriviaQuestionEdge: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
 let get_TriviaQuestionEdge = () => t_TriviaQuestionEdge.contents
+let t_TwitterOAuthError: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
+let get_TwitterOAuthError = () => t_TwitterOAuthError.contents
+let t_TwitterToken: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
+let get_TwitterToken = () => t_TwitterToken.contents
 let t_VerificationData: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
 let get_VerificationData = () => t_VerificationData.contents
 let t_VerificationsData: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
@@ -252,10 +258,18 @@ input_Where_Votes_conversionInstructions->Array.pushMany([
   ("owner", makeInputObjectFieldConverterFn(v => v->Nullable.toOption)),
   ("tokenId_in", makeInputObjectFieldConverterFn(v => v->Nullable.toOption)),
 ])
+let union_TwitterOAuthResponse: ref<GraphQLUnionType.t> = Obj.magic({"contents": Js.null})
+let get_TwitterOAuthResponse = () => union_TwitterOAuthResponse.contents
 let union_Verification: ref<GraphQLUnionType.t> = Obj.magic({"contents": Js.null})
 let get_Verification = () => union_Verification.contents
 let union_Verifications: ref<GraphQLUnionType.t> = Obj.magic({"contents": Js.null})
 let get_Verifications = () => union_Verifications.contents
+
+let union_TwitterOAuthResponse_resolveType = (v: Twitter.twitterOAuthResponse) =>
+  switch v {
+  | Token(_) => "TwitterToken"
+  | Error(_) => "TwitterOAuthError"
+  }
 
 let union_Verification_resolveType = (v: Verification.verification) =>
   switch v {
@@ -274,6 +288,7 @@ let interface_Node_resolveType = (v: Interface_node.Resolver.t) =>
   | AuctionContract(_) => "AuctionContract"
   | VoteTransfer(_) => "VoteTransfer"
   | AuctionBid(_) => "AuctionBid"
+  | TwitterToken(_) => "TwitterToken"
   | Auction(_) => "Auction"
   | AuctionSettled(_) => "AuctionSettled"
   | VoteContract(_) => "VoteContract"
@@ -1092,6 +1107,24 @@ t_Error.contents = GraphQLObjectType.make({
         resolve: makeResolveFn((src, _args, _ctx) => {
           let src = typeUnwrapper(src)
           src["errorNum"]
+        }),
+      },
+    }->makeFields,
+})
+t_Mutation.contents = GraphQLObjectType.make({
+  name: "Mutation",
+  description: ?None,
+  interfaces: [],
+  fields: () =>
+    {
+      "setToken": {
+        typ: get_TwitterOAuthResponse()->GraphQLUnionType.toGraphQLType,
+        description: ?None,
+        deprecationReason: ?None,
+        args: {"code": {typ: Scalars.string->Scalars.toGraphQLType->nonNull}}->makeArgs,
+        resolve: makeResolveFn((src, args, ctx) => {
+          let src = typeUnwrapper(src)
+          TwitterResolvers.setToken(src, ~code=args["code"], ~ctx)
         }),
       },
     }->makeFields,
@@ -1998,6 +2031,94 @@ t_TriviaQuestionEdge.contents = GraphQLObjectType.make({
       },
     }->makeFields,
 })
+t_TwitterOAuthError.contents = GraphQLObjectType.make({
+  name: "TwitterOAuthError",
+  description: ?None,
+  interfaces: [],
+  fields: () =>
+    {
+      "error": {
+        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        description: ?None,
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["error"]
+        }),
+      },
+      "errorDescription": {
+        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        description: ?None,
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["errorDescription"]
+        }),
+      },
+    }->makeFields,
+})
+t_TwitterToken.contents = GraphQLObjectType.make({
+  name: "TwitterToken",
+  description: ?None,
+  interfaces: [get_Node()],
+  fields: () =>
+    {
+      "accessToken": {
+        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        description: ?None,
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["accessToken"]
+        }),
+      },
+      "expiresIn": {
+        typ: Scalars.int->Scalars.toGraphQLType->nonNull,
+        description: ?None,
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["expiresIn"]
+        }),
+      },
+      "id": {
+        typ: Scalars.id->Scalars.toGraphQLType->nonNull,
+        description: ?None,
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, args, ctx) => {
+          let src = typeUnwrapper(src)
+          NodeInterfaceResolvers.id(src, ~typename=TwitterToken)
+        }),
+      },
+      "refreshToken": {
+        typ: Scalars.string->Scalars.toGraphQLType,
+        description: ?None,
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["refreshToken"]
+        }),
+      },
+      "scope": {
+        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        description: ?None,
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["scope"]
+        }),
+      },
+      "tokenType": {
+        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        description: ?None,
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["tokenType"]
+        }),
+      },
+    }->makeFields,
+})
 t_VerificationData.contents = GraphQLObjectType.make({
   name: "VerificationData",
   description: "Data fields from a verified contextID",
@@ -2507,6 +2628,12 @@ input_Where_Votes.contents = GraphQLInputObjectType.make({
       },
     }->makeFields,
 })
+union_TwitterOAuthResponse.contents = GraphQLUnionType.make({
+  name: "TwitterOAuthResponse",
+  description: ?None,
+  types: () => [get_TwitterOAuthError(), get_TwitterToken()],
+  resolveType: GraphQLUnionType.makeResolveUnionTypeFn(union_TwitterOAuthResponse_resolveType),
+})
 union_Verification.contents = GraphQLUnionType.make({
   name: "Verification",
   description: ?None,
@@ -2520,4 +2647,4 @@ union_Verifications.contents = GraphQLUnionType.make({
   resolveType: GraphQLUnionType.makeResolveUnionTypeFn(union_Verifications_resolveType),
 })
 
-let schema = GraphQLSchemaType.make({"query": get_Query()})
+let schema = GraphQLSchemaType.make({"query": get_Query(), "mutation": get_Mutation()})

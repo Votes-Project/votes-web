@@ -21,3 +21,13 @@ let tokenToSubgraphId = tokenId =>
 
 let idToGlobalId = (id, typename) =>
   id->Option.map(id => `${typename}:${id}`->ResGraph.Utils.Base64.encode)
+
+let getURLWithQueryParams = (baseUrl, params: Dict.t<string>) => {
+  let query =
+    params
+    ->Dict.toArray
+    ->Array.map(((key, value)) => `${key}=${encodeURIComponent(value)}`)
+    ->Array.joinWith("&")
+
+  `${baseUrl}?${query}`
+}

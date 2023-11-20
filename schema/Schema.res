@@ -1,6 +1,9 @@
 @gql.type
 type query
 
+@gql.type
+type mutation
+
 module Timestamp: {
   /** A timestamp. */
   @gql.scalar

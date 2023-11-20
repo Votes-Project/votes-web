@@ -46,6 +46,7 @@ let makeFetchQuery = (~preloadAsset) =>
         "body": {"query": operation.text, "variables": variables}
         ->Js.Json.stringifyAny
         ->Option.getWithDefault(""),
+        "credentials": "same-origin",
       },
     )
     ->Promise.thenResolve(r => {

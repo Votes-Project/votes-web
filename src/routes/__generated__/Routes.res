@@ -48,6 +48,18 @@ module Main = {
     module Route = Route__Main__Questions_route
 
   }
+  module Auth = {
+    module Route = Route__Main__Auth_route
+
+    module Twitter = {
+      module Route = Route__Main__Auth__Twitter_route
+
+      module Callback = {
+        module Route = Route__Main__Auth__Twitter__Callback_route
+
+      }
+    }
+  }
 }
 module FourOhFour = {
   module Route = Route__FourOhFour_route
