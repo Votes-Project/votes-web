@@ -512,6 +512,9 @@ module Query = %relay(`
     node(id: $id) {
       ...SingleQuestion_node
     }
+    randomQuestion {
+      ...SingleQuestion_node
+    }
   }
 `)
 
@@ -538,6 +541,7 @@ let make = (
 
   let node = switch data {
   | Some({node: Some({fragmentRefs})}) => Some(fragmentRefs)
+  | Some({randomQuestion: Some({fragmentRefs})}) => Some(fragmentRefs)
   | _ => None
   }
 

@@ -14,9 +14,6 @@ module Fragment = %relay(`
     verifications(context: $context) {
       ...VoterCount
     }
-    randomQuestion {
-      id
-    }
   }
 `)
 
