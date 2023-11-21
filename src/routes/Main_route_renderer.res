@@ -13,7 +13,8 @@ type initialRender = Loading | CurrentVote | CurrentQuestion | ChildRoutes
 let handleInitialRender = (auction: option<AuctionContext.auction>, isLoading, isSubroute) => {
   let hasAnsweredQuestion = {
     open Dom.Storage2
-    let timestamp = localStorage->getItem("votes_answer_timestamp")->Option.map(BigInt.fromString)
+    let timestamp =
+      localStorage->getItem("votesdev_answer_timestamp")->Option.map(BigInt.fromString)
 
     auction
     ->Option.map(auction => auction.startTime)

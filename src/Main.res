@@ -36,9 +36,6 @@ module MainDisplay = {
         error
       }
     }
-    voteContract(id: $voteContractAddress) {
-      ...BottomNav_voteContract
-    }
     newestVote(voteContractAddress: $voteContractAddress) {
       id
       auction {
@@ -66,7 +63,7 @@ module MainDisplay = {
       Some(() => window->Window.removeEventListener(Resize, handleWindowSizeChange))
     })
 
-    let {randomQuestion, voteContract, verification, newestVote} = Fragment.use(fragmentRefs)
+    let {randomQuestion, verification, newestVote} = Fragment.use(fragmentRefs)
 
     let {heroComponent} = React.useContext(HeroComponentContext.context)
     let {setAuction, setIsLoading: setIsAuctionLoading} = React.useContext(AuctionContext.context)
@@ -92,6 +89,24 @@ module MainDisplay = {
         | _ => None
         }
       )
+
+      None
+    })
+
+    React.useEffect0(() => {
+      let localAnswerTime =
+        Dom.Storage2.localStorage
+        ->Dom.Storage2.getItem("votesdev_answer_timestamp")
+        ->Option.flatMap(Float.fromString)
+        ->Option.map(Date.fromTime)
+
+      switch (newestVote, localAnswerTime) {
+      | (Some({auction: Some({startTime})}), Some(localAnswerTime))
+        if localAnswerTime < startTime =>
+        Dom.Storage2.localStorage->Dom.Storage2.removeItem("votesdev_answer_jwt")
+      | (_, None) => Dom.Storage2.localStorage->Dom.Storage2.removeItem("votesdev_answer_jwt")
+      | _ => ()
+      }
 
       None
     })
@@ -125,7 +140,6 @@ module MainDisplay = {
                 layout={True}
                 className="fixed bottom-8 w-full flex justify-center items-center z-50 ">
                 <BottomNav
-                  voteContract={voteContract->Option.map(c => c.fragmentRefs)}
                   question={randomQuestion->Option.map(q => q.fragmentRefs)}
                   auction={newestVote
                   ->Option.flatMap(v => v.auction)
@@ -137,7 +151,6 @@ module MainDisplay = {
                 layout={True}
                 className="w-full flex justify-center items-center z-50 py-4">
                 <BottomNav
-                  voteContract={voteContract->Option.map(c => c.fragmentRefs)}
                   question={randomQuestion->Option.map(q => q.fragmentRefs)}
                   auction={newestVote
                   ->Option.flatMap(v => v.auction)

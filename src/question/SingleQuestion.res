@@ -1,5 +1,7 @@
 ReactModal.setAppElement("#root")
 
+let asker = "0xf4bb53eFcFd49Fe036FdCc8F46D981203ae3BAB8"
+
 module QuestionTitle = {
   module Fragment = %relay(`
     fragment SingleQuestion_QuestionTitle on TriviaQuestion {
@@ -167,62 +169,7 @@ module CircleProgress = {
 
 module OptionItem = {
   @react.component
-  let make = (~option, ~index, ~handleVote) => {
-    let {queryParams, setParams} = Routes.Main.Question.Route.useQueryParams()
-
-    let holdDelay = 1000.
-    let {progress, startCounter, stopCounter} = LongPress.use(~holdDelay, ~onSubmit=() =>
-      handleVote(index)
-    )
-
-    let ref = React.useRef(Nullable.null)
-
-    let handleSelect = _ => {
-      setParams(~navigationMode_=Push, ~removeNotControlledParams=false, ~setter=c => {
-        ...c,
-        answer: Some(index),
-      })
-    }
-    <li
-      className={`focus:outline-none focus:ring-0 relative font-semibold text-sm my-3 pl-2 w-full flex items-center text-left backdrop-blur-md transition-all duration-200 ease-linear lg:rounded-xl text-default-darker shadow-lg bg-default lg:bg-secondary hover:lg:scale-105 focus:lg:scale-105`}
-      key={index->Int.toString}
-      ref={ReactDOM.Ref.domRef(ref)}
-      onPointerLeave={_ => {
-        stopCounter()->ignore
-      }}
-      onPointerDown={e => {
-        handleSelect(e)
-        startCounter()->ignore
-      }}
-      onPointerUp={_ => {
-        stopCounter()->ignore
-      }}>
-      {switch queryParams.answer {
-      | Some(answer) if answer == index => <CircleProgress progress size=25 />
-      | _ =>
-        <div
-          className="pointer-events-none w-9 flex flex-1 items-center justify-center relative font-bold text-3xl h-full text-default-dark lg:text-primary-dark px-3 rounded-l-lg overflow-hidden">
-          {(index + 65)->String.fromCharCode->React.string}
-        </div>
-      }}
-      <button
-        className={`focus:outline-none focus:ring-0 w-full  flex flex-row items-center lg:my-2 first:mb-2 py-2   px-2 min-h-[80px] overflow-hidden  transition-all`}
-        key={index->Int.toString}>
-        <p className="pointer-events-none"> {option->React.string} </p>
-      </button>
-    </li>
-  }
-}
-
-module OptionsPage = {
-  module Fragment = %relay(`
-    fragment SingleQuestion_OptionsPage on TriviaQuestion {
-      options
-    }
-  `)
-  @react.component
-  let make = (~question) => {
-    let {options} = Fragment.useOpt(question)->Option.getWithDefault({options: []})
+  let make = (~option, ~index) => {
     let {queryParams, setParams} = Routes.Main.Question.Route.useQueryParams()
     let keys = UseKeyPairHook.useKeyPair()
 
@@ -257,7 +204,7 @@ module OptionsPage = {
         Dom.Storage2.localStorage->Dom.Storage2.setItem("votesdev_answer_jwt", jwt)
 
         Dom.Storage2.localStorage->Dom.Storage2.setItem(
-          "votes_answer_timestamp",
+          "votesdev_answer_timestamp",
           Date.now()->Float.toString,
         )
 
@@ -269,17 +216,178 @@ module OptionsPage = {
       }
     }
 
+    let holdDelay = 1000.
+    let {progress, startCounter, stopCounter} = LongPress.use(~holdDelay, ~onSubmit=() =>
+      handleVote(index)
+    )
+
+    let ref = React.useRef(Nullable.null)
+
+    let handleSelect = _ => {
+      setParams(~navigationMode_=Push, ~removeNotControlledParams=false, ~setter=c => {
+        ...c,
+        answer: Some(index),
+      })
+    }
+    <li
+      className={`focus:outline-none focus:ring-0 relative font-semibold text-sm my-3 w-full flex items-center text-left backdrop-blur-md transition-all duration-200 ease-linear lg:rounded-xl text-default-darker shadow-lg bg-default lg:bg-secondary hover:lg:scale-105 focus:lg:scale-105`}
+      key={index->Int.toString}
+      ref={ReactDOM.Ref.domRef(ref)}
+      onPointerLeave={_ => {
+        stopCounter()->ignore
+      }}
+      onPointerDown={e => {
+        handleSelect(e)
+        startCounter()->ignore
+      }}
+      onPointerUp={_ => {
+        stopCounter()->ignore
+      }}>
+      <div
+        className=" pointer-events-none w-9 flex flex-1 items-center justify-center relative font-bold text-3xl h-full text-default-dark lg:text-primary-dark px-5 rounded-l-lg ">
+        {switch queryParams.answer {
+        | Some(answer) if answer == index => <CircleProgress progress size=25 />
+        | _ => (index + 65)->String.fromCharCode->React.string
+        }}
+      </div>
+      <button
+        className={`focus:outline-none focus:ring-0 w-full  flex flex-row items-center lg:my-2 first:mb-2 py-2   px-2 min-h-[80px] overflow-hidden  transition-all`}
+        key={index->Int.toString}>
+        {option->React.string}
+      </button>
+    </li>
+  }
+}
+
+module AnswerItem = {
+  @react.component
+  let make = (~option, ~answer, ~index) => {
+    open FramerMotion
+    let numAnswerPercentage = Math.ceil(Math.random() *. 100.)
+
+    switch answer {
+    | Some(answer) if answer == index =>
+      <li
+        className={` border-y-4 lg:border-4 border-default-darker lg:border-active focus:outline-none focus:ring-0 relative font-semibold text-sm my-3 w-full flex items-center text-left backdrop-blur-md transition-all duration-200 ease-linear lg:rounded-xl text-default-darker shadow-lg bg-default-light hover:lg:scale-105 focus:lg:scale-105`}
+        key={index->Int.toString}>
+        <div
+          className="z-50 pointer-events-none w-9 flex flex-1 items-center justify-center relative font-bold text-3xl h-full text-default-dark lg:text-primary-dark px-5 rounded-l-lg ">
+          {(index + 65)->String.fromCharCode->React.string}
+        </div>
+        <div
+          className={`focus:outline-none focus:ring-0 w-full  flex flex-row items-center lg:my-2 first:mb-2 py-2   px-2 min-h-[80px] overflow-hidden  transition-all`}
+          key={index->Int.toString}>
+          <p className="z-50 pointer-events-none"> {option->React.string} </p>
+        </div>
+        <p className="z-50 pointer-events-none px-4 text-xl font-bold">
+          {(numAnswerPercentage->Float.toString ++ "%")->React.string}
+        </p>
+        <Motion.Div
+          className=" z-10 absolute h-full bg-default lg:bg-secondary lg:rounded-xl"
+          initial=Initial({width: "0"})
+          animate={Animate({width: numAnswerPercentage->Float.toString ++ "%"})}
+        />
+      </li>
+    | _ =>
+      <li
+        className={` opacity-80 focus:outline-none focus:ring-0 relative font-semibold text-sm my-3 w-full flex items-center text-left backdrop-blur-md transition-all duration-200 ease-linear lg:rounded-xl text-default-darker shadow-lg bg-default-light hover:lg:scale-105 focus:lg:scale-105`}
+        key={index->Int.toString}>
+        <div
+          className="z-50 pointer-events-none w-9 flex flex-1 items-center justify-center relative font-bold text-3xl h-full text-default-dark lg:text-primary-dark px-5 rounded-l-lg ">
+          {(index + 65)->String.fromCharCode->React.string}
+        </div>
+        <div
+          className={`focus:outline-none focus:ring-0 w-full  flex flex-row items-center lg:my-2 first:mb-2 py-2   px-2 min-h-[80px] overflow-hidden  transition-all`}
+          key={index->Int.toString}>
+          <p className="z-50 pointer-events-none"> {option->React.string} </p>
+        </div>
+        <div className="px-4 text-xl font-bold">
+          <p className="z-50 pointer-events-none">
+            {(numAnswerPercentage->Float.toString ++ "%")->React.string}
+          </p>
+        </div>
+        <Motion.Div
+          className=" z-10 absolute h-full bg-default lg:bg-secondary lg:rounded-xl"
+          initial=Initial({width: "0"})
+          animate={Animate({width: numAnswerPercentage->Float.toString ++ "%"})}
+        />
+      </li>
+    }
+  }
+}
+
+module OptionsList = {
+  module Fragment = %relay(`
+    fragment SingleQuestion_OptionsList on TriviaQuestion {
+      options
+    }
+  `)
+  @react.component
+  let make = (~options, ~answer=?) => {
+    let {options} = Fragment.useOpt(options)->Option.getWithDefault({options: []})
+
+    options
+    ->Array.mapWithIndex((option, index) =>
+      switch answer {
+      | Some(answer) => <AnswerItem key={index->Int.toString} option answer index />
+      | _ => <OptionItem key={index->Int.toString} option index />
+      }
+    )
+    ->React.array
+  }
+}
+
+module OptionsPage = {
+  module Fragment = %relay(`
+    fragment SingleQuestion_OptionsPage on TriviaQuestion {
+      ...SingleQuestion_OptionsList
+      ...SingleQuestion_QuestionTitle
+    }
+  `)
+  @react.component
+  let make = (~question) => {
+    let question = Fragment.useOpt(question)
+
+    let {setHeroComponent} = React.useContext(HeroComponentContext.context)
+    let votesy = React.useContext(VotesySpeakContext.context)
+
+    let {queryParams} = Routes.Main.Question.Route.useQueryParams()
+    let answerRef = React.useCallback0(element => {
+      switch element->Nullable.toOption {
+      | Some(element) =>
+        element->Element.Scroll.intoViewWithOptions(~options={behavior: Smooth, block: End})
+      | None => ()
+      }
+    })
+
+    React.useEffect0(() => {
+      setHeroComponent(_ =>
+        <div
+          className="flex flex-col justify-center items-center w-full p-4 h-[420px] min-h-[420px]"
+          ref={ReactDOM.Ref.callbackDomRef(answerRef)}>
+          <QuestionTitle question={question->Option.map(q => q.fragmentRefs)} />
+          <div
+            className=" flex justify-around w-full text-xl font-semibold text-default-darker pt-10 text-center">
+            <div />
+            <React.Suspense fallback={<div />}>
+              <ShortAddress address=Some(asker) avatar=true />
+            </React.Suspense>
+          </div>
+        </div>
+      )
+      votesy.setContent(_ =>
+        "It's your first vote! Pick an answer and start your streak!"->React.string->Some
+      )
+      None
+    })
+
     <>
       <h1
         className="text-2xl px-4 pt-2 text-default-dark lg:text-primary-dark text-center animate-typewriter">
         {(queryParams.answer->Option.isSome ? "Hold to Confirm" : "Pick an answer")->React.string}
       </h1>
       <ul className="flex flex-col justify-between items-start lg:px-6 mb-4 lg:mr-4">
-        {options
-        ->Array.mapWithIndex((option, index) =>
-          <OptionItem key={index->Int.toString} option index handleVote />
-        )
-        ->React.array}
+        <OptionsList options={question->Option.map(q => q.fragmentRefs)} />
       </ul>
       <div className="flex flex-col justify-center items-center mb-6 gap-3" />
     </>
@@ -287,24 +395,82 @@ module OptionsPage = {
 }
 
 module AnswerPage = {
-  module Query = %relay(`
-  query SingleQuestion_AnswerPage_Query {
-    answer {
-      __typename
-    }
-  }
-`)
-
   module Fragment = %relay(`
   fragment SingleQuestion_AnswerPage on TriviaQuestion {
-    options
+    ...SingleQuestion_OptionsList
+    ...SingleQuestion_QuestionTitle
   }`)
 
   @react.component
   let make = (~question) => {
-    let _ = Query.use(~variables=())
-    let {options} = Fragment.useOpt(question)->Option.getWithDefault({options: []})
+    let question = Fragment.useOpt(question)
+
+    let {setHeroComponent} = React.useContext(HeroComponentContext.context)
+    let votesy = React.useContext(VotesySpeakContext.context)
+
     let (answer, setAnswer) = React.useState(_ => None)
+
+    let answerRef = React.useCallback0(element => {
+      switch element->Nullable.toOption {
+      | Some(element) =>
+        element->Element.Scroll.intoViewWithOptions(~options={behavior: Smooth, block: End})
+      | None => ()
+      }
+    })
+
+    let {setParams} = Routes.Main.Route.useQueryParams()
+    let handleLinkBrightId = _ => {
+      setParams(
+        ~removeNotControlledParams=false,
+        ~navigationMode_=Push,
+        ~shallow=false,
+        ~setter=c => {
+          {
+            ...c,
+            linkBrightID: Some(0),
+          }
+        },
+      )
+    }
+
+    React.useEffect0(() => {
+      setHeroComponent(_ =>
+        <div
+          className="flex flex-col justify-start items-center w-full p-4 h-[420px] min-h-[420px]"
+          ref={ReactDOM.Ref.callbackDomRef(answerRef)}>
+          <QuestionTitle question={question->Option.map(q => q.fragmentRefs)} />
+          <div
+            className=" flex justify-around w-full text-xl font-semibold text-default-darker pt-10 text-center">
+            <div />
+            <React.Suspense fallback={<div />}>
+              <ShortAddress address=Some(asker) avatar=true />
+            </React.Suspense>
+          </div>
+          <div className="w-full flex-col flex-1 px-4">
+            <div className="w-full flex flex-row justify-between items-center">
+              <p className="text-xl font-semibold text-default-darker text-center">
+                {"🔥 Answer Streak"->React.string}
+              </p>
+              <p className="text-xl font-semibold text-default-darker text-center">
+                {"1"->React.string}
+              </p>
+            </div>
+          </div>
+        </div>
+      )
+      votesy.setContent(_ =>
+        <div className="p-1 rounded-lg flex flex-col items-center font-semibold">
+          {"Good Answer! Link a BrightID to collect your reward!"->React.string}
+          <button
+            onClick={handleLinkBrightId}
+            className="bg-active hover:scale-105 transition-all text-white font-bold py-2 px-4 rounded mt-4">
+            {"Link BrightID"->React.string}
+          </button>
+        </div>->Some
+      )
+
+      None
+    })
 
     React.useEffect0(() => {
       let getAnswerFromJWT = async () => {
@@ -320,11 +486,21 @@ module AnswerPage = {
       None
     })
 
+    let clearAnswer = _ => {
+      Dom.Storage2.localStorage->Dom.Storage2.setItem("votesdev_answer_jwt", "")
+      Dom.Storage2.localStorage->Dom.Storage2.setItem("votesdev_answer_timestamp", "")
+      setAnswer(_ => None)
+    }
+
     switch answer {
-    | None => React.null
+    | None => "No answer"->React.string
     | Some(answer) =>
-      switch options->Array.get(answer.payload["answer"]) {
-      | Some(option) => <div> {`✅  ${option}`->React.string} </div>
+      switch answer.payload["answer"] {
+      | Some(answer) =>
+        <div>
+          <button onClick=clearAnswer> {"Clear Answer"->React.string} </button>
+          <OptionsList options={question->Option.map(q => q.fragmentRefs)} answer />
+        </div>
       | None => <div> {"Error: Invalid answer"->React.string} </div>
       }
     }
@@ -355,13 +531,6 @@ let make = (
 ) => {
   let {queryParams} = Routes.Main.Question.Route.useQueryParams()
   let (hasAnswered, setHasAnswered) = React.useState(_ => false)
-  let answerRef = React.useCallback0(element => {
-    switch element->Nullable.toOption {
-    | Some(element) =>
-      element->Element.Scroll.intoViewWithOptions(~options={behavior: Smooth, block: End})
-    | None => ()
-    }
-  })
 
   let data = queryRef->Option.map(queryRef => Query.usePreloaded(~queryRef))
 
@@ -375,32 +544,6 @@ let make = (
   let node = node->Fragment.useOpt
 
   let question = node->Option.orElse(question)
-  let {setHeroComponent} = React.useContext(HeroComponentContext.context)
-  let votesy = React.useContext(VotesySpeakContext.context)
-
-  let asker = "0xf4bb53eFcFd49Fe036FdCc8F46D981203ae3BAB8"
-
-  React.useEffect0(() => {
-    setHeroComponent(_ =>
-      <div
-        className="flex flex-col justify-center items-center w-full p-4 h-[420px] min-h-[420px]"
-        ref={ReactDOM.Ref.callbackDomRef(answerRef)}>
-        <QuestionTitle question={question->Option.map(q => q.fragmentRefs)} />
-        <div
-          className=" flex justify-around w-full text-xl font-semibold text-default-darker pt-10 text-center">
-          <div />
-          <React.Suspense fallback={<div />}>
-            <ShortAddress address=Some(asker) avatar=true />
-          </React.Suspense>
-        </div>
-      </div>
-    )
-    votesy.setContent(_ =>
-      "It's your first vote! Pick an answer and start your streak!"->React.string->Some
-    )
-
-    None
-  })
 
   React.useEffect1(() => {
     setHasAnswered(_ => {
