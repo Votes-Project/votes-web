@@ -14,6 +14,7 @@ let default = createYoga({
   context: async ({request}) => {
     {
       ResGraphContext.dataLoaders: DataLoaders.make(),
+      ResGraphContext.mutations: Mutations.make(),
       request,
     }
   },

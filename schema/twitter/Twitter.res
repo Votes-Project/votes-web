@@ -30,3 +30,27 @@ type twitterOAuthError = {
 
 @gql.union
 type twitterOAuthResponse = Token(twitterToken) | Error(twitterOAuthError)
+
+@gql.inputObject
+type sendTweetInput = {
+  /* Tweet text */
+  text: string,
+  /* Quote Tweet ID */
+  quote_tweet_id?: string,
+}
+
+@gql.type
+type tweet = {
+  ...NodeInterface.node,
+  /* Tweet text */
+  @gql.field
+  text: string,
+}
+
+let tweetStruct = {
+  open S
+  object(({field}) => {
+    id: "id"->field(string),
+    text: "text"->field(string),
+  })
+}

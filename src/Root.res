@@ -143,8 +143,6 @@ module QuestionProvider = {
   }
 }
 
-Dom.Storage2.localStorage->Dom.Storage2.setItem("votesdev_answer_jwt", "")
-
 switch Dom.Storage2.localStorage->Dom.Storage2.getItem("votes_twitter_accessToken") {
 | Some(accessToken) => document->Document.setCookie("votes_twitter_accessToken=" ++ accessToken)
 | None => ()
