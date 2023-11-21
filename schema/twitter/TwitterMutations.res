@@ -2,7 +2,7 @@
 external vercelUrl: option<string> = "VERCEL_URL"
 
 @gql.field
-let setToken = async (_: Schema.mutation, ~code, ~ctx: ResGraphContext.context) => {
+let setTwitterToken = async (_: Schema.mutation, ~code, ~ctx: ResGraphContext.context) => {
   switch await ctx.dataLoaders.twitter.byCode->DataLoader.load(code) {
   | None => None
   | Some(token) =>

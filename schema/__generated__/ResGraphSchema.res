@@ -1117,14 +1117,14 @@ t_Mutation.contents = GraphQLObjectType.make({
   interfaces: [],
   fields: () =>
     {
-      "setToken": {
+      "setTwitterToken": {
         typ: get_TwitterOAuthResponse()->GraphQLUnionType.toGraphQLType,
         description: ?None,
         deprecationReason: ?None,
         args: {"code": {typ: Scalars.string->Scalars.toGraphQLType->nonNull}}->makeArgs,
         resolve: makeResolveFn((src, args, ctx) => {
           let src = typeUnwrapper(src)
-          TwitterResolvers.setToken(src, ~code=args["code"], ~ctx)
+          TwitterMutations.setTwitterToken(src, ~code=args["code"], ~ctx)
         }),
       },
     }->makeFields,

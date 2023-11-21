@@ -328,7 +328,7 @@ type Error {
 }
 
 type Mutation {
-  setToken(code: String!): TwitterOAuthResponse
+  setTwitterToken(code: String!): TwitterOAuthResponse
 }
 
 

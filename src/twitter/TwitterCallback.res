@@ -5,7 +5,7 @@ let contextId = Dom.Storage2.localStorage->Dom.Storage2.getItem("votes_contextId
 
 module SetTokenMutation = %relay(`
   mutation TwitterCallbackSetTokenMutation($code: String!) {
-    setToken(code: $code) {
+    setTwitterToken(code: $code) {
       ... on TwitterToken {
         accessToken
         refreshToken
@@ -38,7 +38,7 @@ let make = () => {
     switch queryParams.code {
     | Some(code) if contextId == queryParams.state =>
       let _ = mutate(~variables={code: code}, ~onCompleted=(response, _) => {
-        switch response.setToken {
+        switch response.setTwitterToken {
         | Some(TwitterToken({accessToken})) =>
           open Dom.Storage2
           localStorage->setItem("votes_twitter_accessToken", accessToken)
