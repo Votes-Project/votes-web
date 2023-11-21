@@ -20,14 +20,14 @@ module VoteItem = {
     }
 
     <li
-      className="rounded-xl flex flex-col items-start justify-center relative transition-all shadow-xl w-1/5 backdrop-blur-sm hover:bg-default-light lg:hover:bg-secondary"
+      className="rounded-xl flex flex-col items-start justify-center relative transition-all shadow-xl w-[25vw] h-1/3 lg:h-auto md:w-[20vw] lg:w-1/5 backdrop-blur-sm hover:bg-default-light lg:hover:bg-secondary"
       key=vote.id>
       <button
         className=" h-full m-0 border border-default-dark lg:border-active relative w-full cursor-pointer bg-transparent rounded-xl"
         onClick=handleVoteClick>
-        <div className="w-full h-full relative ">
+        <div className="w-full relative ">
           <EmptyVoteChart
-            className=" rounded-none my-0 mx-auto w-full h-full align-middle min-w-[100px] min-h-[100px]"
+            className="rounded-none my-0 mx-auto w-full h-full align-middle min-w-[100px] min-h-[100px]"
           />
         </div>
         <p
