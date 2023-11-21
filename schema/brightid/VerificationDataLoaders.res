@@ -86,9 +86,30 @@ let make = () => {
     switch await BrightID.SDK.verifyContextId(~context, ~contextId=id) {
     | exception e =>
       let json = switch e {
-      | Exn.Error(error) => error->JSON.stringifyAny->Option.map(JSON.parseExn)
-      | _ => None
+      | Exn.Error(e) if e->Exn.name == Some("SyntaxError") =>
+        (
+          {
+            errorMessage: "SyntaxError",
+            code: -1,
+            errorNum: -1,
+            error: true,
+          }: BrightID_Shared.error
+        )
+        ->JSON.stringifyAny
+        ->Option.map(JSON.parseExn)
+      | _ =>
+        (
+          {
+            errorMessage: "Unknown Error",
+            code: -1,
+            errorNum: -1,
+            error: true,
+          }: BrightID_Shared.error
+        )
+        ->JSON.stringifyAny
+        ->Option.map(JSON.parseExn)
       }
+
       json->Option.flatMap(json =>
         decodeError(json)->Option.map(
           error =>
