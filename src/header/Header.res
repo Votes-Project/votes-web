@@ -32,7 +32,8 @@ let links = {
 
 @react.component
 let make = (~verifications) => {
-  let {verifications, randomQuestion} = Fragment.use(verifications)
+  let {verifications} = Fragment.use(verifications)
+  Js.log2("verifications: ", verifications)
   let (isOpen, setIsOpen) = React.useState(_ => false)
   let accordionRef = React.useRef(Nullable.null)
   let hamburgerRef = React.useRef(Nullable.null)
@@ -55,9 +56,6 @@ let make = (~verifications) => {
     <nav className=" max-w-7xl flex w-full justify-between px-4 pt-2 flex-1">
       <div className="flex gap-3 justify-center items-center ">
         <div
-          // to_={Routes.Main.Question.Current.Route.makeLink(
-          //   ~id=randomQuestion->Option.map(q => q.id)->Option.getWithDefault(""),
-          // )}
           className="relative z-2 px-2 py-0 transition-all z-2"
           onClick={_ => votesy.setShow(_ => true)}>
           <div className="relative w-24 h-24">

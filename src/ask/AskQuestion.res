@@ -169,7 +169,7 @@ let make = (~children) => {
   <AskContext.Provider value={state, dispatch}>
     <div className="h-full p-4 ">
       <div
-        className="relative lg:p-4 w-full h-full  flex flex-col justify-around items-center lg:border-2 lg:border-primary rounded-xl ">
+        className="relative lg:p-4 w-full h-full  flex flex-col justify-around items-center lg:border-2 lg:border-primary rounded-xl backdrop-blur-[2px]">
         <div className="flex flex-row justify-between items-center w-full">
           <ReactTooltip
             className="z-50 h-fit-content max-w-xs"

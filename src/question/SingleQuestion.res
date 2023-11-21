@@ -251,7 +251,7 @@ module OptionItem = {
         }}
       </div>
       <button
-        className={`focus:outline-none focus:ring-0 w-full  flex flex-row items-center lg:my-2 first:mb-2 py-2   px-2 min-h-[80px] overflow-hidden  transition-all`}
+        className={`select-none focus:outline-none focus:ring-0 w-full  flex flex-row items-center lg:my-2 first:mb-2 py-2   px-2 min-h-[80px] overflow-hidden  transition-all`}
         key={index->Int.toString}>
         {option->React.string}
       </button>

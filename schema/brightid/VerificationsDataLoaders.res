@@ -5,11 +5,26 @@ let make = () => {
     open Fetch
     open BrightID_Shared
     let url = verificationsUrl ++ id
-    switch await fetch(url, {}) {
-    | exception _ => None
-    | res =>
-      let json = await res->Fetch.Response.json
+    switch await fetch(url, {})->Promise.then(Response.json) {
+    | exception e =>
+      switch e {
+      | Exn.Error(e) if e->Exn.name == Some("SyntaxError") =>
+        Verifications.BrightIdError({
+          errorMessage: "SyntaxError",
+          code: -1,
+          errorNum: -1,
+          error: true,
+        })->Some
+      | _ =>
+        Verifications.BrightIdError({
+          errorMessage: "Unknown Error",
+          code: -1,
+          errorNum: -1,
+          error: true,
+        })->Some
+      }
 
+    | json =>
       let verifications = json->S.parseWith(dataStruct(Verifications.verificationsStruct))
       let error = json->S.parseWith(errorStruct)
 
