@@ -1,8 +1,3 @@
-module VoteContractFragment = %relay(`
-  fragment BottomNav_voteContract on VoteContract {
-    totalSupply
-  }
-`)
 module QuestionFragment = %relay(`
   fragment BottomNav_question on TriviaQuestion {
     id
@@ -12,23 +7,20 @@ module QuestionFragment = %relay(`
 module AuctionFragment = %relay(`
   fragment BottomNav_auction on Auction {
     startTime
+    tokenId
   }
 `)
 
 @react.component
-let make = (~voteContract, ~question, ~auction) => {
+let make = (~question, ~auction) => {
   let (disabled, setDisabled) = React.useState(_ => false)
   let (width, setWidth) = React.useState(_ => window->Window.innerWidth)
   let isNarrow = width < 1024
 
-  let contract = voteContract->VoteContractFragment.useOpt
   let question = question->QuestionFragment.useOpt
   let auction = auction->AuctionFragment.useOpt
 
-  let newestTokenId = {
-    open BigInt
-    contract->Option.map(({totalSupply}) => totalSupply->sub(1->fromInt))->Option.getExn
-  }
+  let newestTokenId = auction->Option.mapWithDefault("", a => a.tokenId->BigInt.toString)
 
   let location = RelayRouter.Utils.useLocation()
   let {
@@ -41,7 +33,8 @@ let make = (~voteContract, ~question, ~auction) => {
 
   let hasAnsweredQuestion = {
     open Dom.Storage2
-    let timestamp = localStorage->getItem("votes_answer_timestamp")->Option.map(BigInt.fromString)
+    let timestamp =
+      localStorage->getItem("votesdev_answer_timestamp")->Option.map(BigInt.fromString)
 
     auction
     ->Option.map(auction => auction.startTime)
@@ -137,7 +130,7 @@ let make = (~voteContract, ~question, ~auction) => {
           </li>
         </RelayRouter.Link>
         <RelayRouter.Link
-          to_={Routes.Main.Vote.Auction.Route.makeLink(~tokenId=newestTokenId->BigInt.toString)}
+          to_={Routes.Main.Vote.Auction.Route.makeLink(~tokenId=newestTokenId)}
           preloadData={NoPreloading}
           className="relative flex flex-1 items-center justify-center">
           <li className=" flex-1 items-center flex justify-center text-center">
