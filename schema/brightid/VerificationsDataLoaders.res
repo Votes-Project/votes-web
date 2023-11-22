@@ -1,4 +1,4 @@
-type t = {byId: DataLoader.t<string, option<Verifications.verifications>>}
+type t = {byId: DataLoader.t<string, Verifications.verifications>}
 
 let make = () => {
   byId: DataLoader.makeSingle(async id => {
@@ -8,20 +8,20 @@ let make = () => {
     switch await fetch(url, {})->Promise.then(Response.json) {
     | exception e =>
       switch e {
-      | Exn.Error(e) if e->Exn.name == Some("SyntaxError") =>
+      | Exn.Error(e) if e->Exn.name->Option.isSome =>
         Verifications.BrightIdError({
-          errorMessage: "SyntaxError",
+          errorMessage: e->Exn.name->Option.getWithDefault("Unknown Error"),
           code: -1,
           errorNum: -1,
           error: true,
-        })->Some
+        })
       | _ =>
         Verifications.BrightIdError({
           errorMessage: "Unknown Error",
           code: -1,
           errorNum: -1,
           error: true,
-        })->Some
+        })
       }
 
     | json =>
@@ -34,9 +34,15 @@ let make = () => {
           id,
           contextIds,
           count,
-        })->Some
-      | (_, Ok(error)) => Verifications.BrightIdError(error)->Some
-      | (Error(_), Error(_)) => None
+        })
+      | (_, Ok(error)) => Verifications.BrightIdError(error)
+      | (Error(_), Error(_)) =>
+        Verifications.BrightIdError({
+          errorMessage: "Unknown Error",
+          code: -1,
+          errorNum: -1,
+          error: true,
+        })
       }
     }
   }),
