@@ -1,3 +1,6 @@
 /** An object with an ID. */
 @gql.interface
-type node = {id: string}
+type node = {
+  @gql.field
+  id: string,
+}

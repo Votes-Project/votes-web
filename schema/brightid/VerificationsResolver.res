@@ -8,10 +8,7 @@ let verifications = async (
   ~context,
   ~ctx: ResGraphContext.context,
 ): verifications => {
-  switch await ctx.dataLoaders.verifications.byId->DataLoader.load(context) {
-  | None => panic("Something went wrong fetching from BrightID Node")
-  | Some(data) =>
-    ctx.dataLoaders.verifications.byId->DataLoader.prime(Some(data))
-    data
-  }
+  let verifications = await ctx.dataLoaders.verifications.byId->DataLoader.load(context)
+  ctx.dataLoaders.verifications.byId->DataLoader.prime(verifications)
+  verifications
 }

@@ -33,7 +33,6 @@ let links = {
 @react.component
 let make = (~verifications) => {
   let {verifications} = Fragment.use(verifications)
-  Js.log2("verifications: ", verifications)
   let (isOpen, setIsOpen) = React.useState(_ => false)
   let accordionRef = React.useRef(Nullable.null)
   let hamburgerRef = React.useRef(Nullable.null)

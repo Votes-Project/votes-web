@@ -104,16 +104,17 @@ input Where_Votes {
 """An object with an ID."""
 interface Node {
   id: ID!
+  id: String!
 }
 
 type Answer implements Node {
+  id: String!
 
   """The user that submitted the answer"""
   user: String!
   option: String!
   answerNumByUser: Int!
   day: Int!
-  id: ID!
 }
 
 
@@ -146,10 +147,10 @@ type Auction implements Node {
   startTime: Timestamp!
   vote: Vote!
   bids(orderBy: OrderBy_AuctionBids, orderDirection: OrderDirection, where: Where_AuctionBids, first: Int, after: String, before: String, last: Int): AuctionBidConnection!
+  id: String!
   bidder: String
   extended: Boolean!
   settled: Boolean!
-  id: ID!
 }
 
 
@@ -161,13 +162,13 @@ type AuctionBid implements Node {
 
   """The ID of the Vote Token"""
   tokenId: BigInt!
+  id: String!
 
   """The address of the bidder"""
   bidder: String!
 
   """The time the bid was made"""
   blockTimestamp: String!
-  id: ID!
 }
 
 
@@ -207,6 +208,7 @@ type AuctionContract implements Node {
   reservePrice: BigInt!
   minBidIncrement: BigInt!
   auctions(orderBy: OrderBy_Auctions, orderDirection: OrderDirection, where: Where_Auctions, first: Int, after: String, before: String, last: Int): AuctionConnection!
+  id: String!
   treasury: String!
   duration: String!
   timeBuffer: String!
@@ -217,12 +219,12 @@ type AuctionContract implements Node {
   flashVotesURI: String!
   paused: Boolean!
   votesToken: String!
-  id: ID!
 }
 
 
 """GraphClient: A Votes Auction"""
 type AuctionCreated implements Node {
+  id: String!
 
   """ID of Votes token *"""
   tokenId: String!
@@ -232,7 +234,6 @@ type AuctionCreated implements Node {
 
   """End time of auction *"""
   endTime: String!
-  id: ID!
 }
 
 
@@ -271,6 +272,7 @@ type AuctionEdge {
 
 """GraphClient: A Settled Votes Auction"""
 type AuctionSettled implements Node {
+  id: String!
 
   """Winner of auction"""
   winner: String!
@@ -280,7 +282,6 @@ type AuctionSettled implements Node {
 
   """Amount of winning bid *"""
   amount: String!
-  id: ID!
 }
 
 
@@ -377,10 +378,10 @@ type Query {
 type Question implements Node {
   options: [QuestionOption!]!
   title: String!
+  id: String!
 
   """The correct answer"""
   isLocked: Boolean!
-  id: ID!
 }
 
 
@@ -415,6 +416,7 @@ type QuestionOption {
 }
 
 type QuestionSubmitted implements Node {
+  id: String!
 
   """ID of the vote token attached to the question. If the community vote is
   used this will be the zero address"""
@@ -427,7 +429,6 @@ type QuestionSubmitted implements Node {
   options: [String!]!
   answers: [String!]
   answerNum: Int
-  id: ID!
 }
 
 
@@ -459,7 +460,7 @@ type TextQuestion {
 type TriviaQuestion implements Node {
   options: [String!]!
   question: String!
-  id: ID!
+  id: String!
 }
 
 
@@ -487,6 +488,7 @@ type TriviaQuestionEdge {
 
 """Data fields from a verified contextID"""
 type VerificationData implements Node {
+  id: String!
 
   """the key of app"""
   app: String!
@@ -508,13 +510,12 @@ type VerificationData implements Node {
 
   """The public key of the verification"""
   publicKey: String
-  id: ID!
 }
 
 type VerificationsData implements Node {
+  id: String!
   contextIds: [String!]!
   count: Int!
-  id: ID!
 }
 
 
@@ -523,9 +524,9 @@ type Vote implements Node {
   contract: VoteContract!
   tokenId: BigInt!
   auction: Auction
+  id: String!
   owner: String!
   uri: String!
-  id: ID!
 }
 
 
@@ -544,9 +545,9 @@ type VoteConnection {
 type VoteContract implements Node {
   address: String!
   totalSupply: BigInt!
+  id: String!
   name: String!
   symbol: String!
-  id: ID!
 }
 
 
@@ -563,11 +564,11 @@ type VoteEdge {
 
 """GraphClient: A Transfer Event for a Vote token"""
 type VoteTransfer implements Node {
+  id: String!
   tokenId: String!
   to: String!
   transactionHash: String!
   blockNumber: Int!
-  id: ID!
 }
 
 
