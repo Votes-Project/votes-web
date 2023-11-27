@@ -375,10 +375,13 @@ type Query {
 }
 
 type Question implements Node {
+  tokenId: BigInt!
   options: [QuestionOption!]!
+
+  """The question"""
   title: String!
 
-  """The correct answer"""
+  """If question has been locked by curator"""
   isLocked: Boolean!
   id: ID!
 }

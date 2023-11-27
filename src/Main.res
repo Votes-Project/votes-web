@@ -49,8 +49,6 @@ module MainDisplay = {
 
   @react.component
   let make = (~fragmentRefs, ~children) => {
-    open FramerMotion
-
     let (width, setWidth) = React.useState(_ => window->Window.innerWidth)
     let isNarrow = width < 1024
 
@@ -122,7 +120,7 @@ module MainDisplay = {
           className="lg:flex-[0_0_auto] lg:max-w-6xl m-auto flex flex-col lg:flex-row  flex-shrink-0 max-w-full ">
           {heroComponent}
           <div
-            className=" pt-[5%]  lg:pl-0 lg:pt-0 min-h-[558px] lg:flex-[0_0_auto] w-full bg-white pb-0 lg:bg-transparent lg:w-[50%]">
+            className="pt-[5%] lg:pl-0 lg:pt-0 min-h-[558px] lg:flex-[0_0_auto] w-full bg-white pb-0 lg:bg-transparent lg:w-[50%]">
             <ErrorBoundary
               fallback={({error}) => {
                 error->JSON.stringifyAny->Option.getWithDefault("")->React.string
@@ -135,7 +133,7 @@ module MainDisplay = {
       <ErrorBoundary fallback={({error}) => error->JSON.stringifyAny->Option.getExn->React.string}>
         <React.Suspense fallback={<div />}>
           {isNarrow
-            ? <Motion.Div
+            ? <FramerMotion.Div
                 layoutId="bottom-nav"
                 layout={True}
                 className="fixed bottom-8 w-full flex justify-center items-center z-50 ">
@@ -145,8 +143,8 @@ module MainDisplay = {
                   ->Option.flatMap(v => v.auction)
                   ->Option.map(a => a.fragmentRefs)}
                 />
-              </Motion.Div>
-            : <Motion.Div
+              </FramerMotion.Div>
+            : <FramerMotion.Div
                 layoutId="bottom-nav"
                 layout={True}
                 className="w-full flex justify-center items-center z-50 py-4">
@@ -156,7 +154,7 @@ module MainDisplay = {
                   ->Option.flatMap(v => v.auction)
                   ->Option.map(a => a.fragmentRefs)}
                 />
-              </Motion.Div>}
+              </FramerMotion.Div>}
         </React.Suspense>
       </ErrorBoundary>
     </>
@@ -167,10 +165,9 @@ module MainDisplay = {
 let make = (~children, ~queryRef) => {
   let {fragmentRefs} = Query.usePreloaded(~queryRef)
 
-  open FramerMotion
   <>
     <div className="relative w-full h-full flex flex-col z-0">
-      <Motion.Div
+      <FramerMotion.Div
         layoutId="background-noise"
         className="fixed bg-primary noise animate-[grain_10s_steps(10)_infinite] flex flex-col z-[-1] w-[300%] h-[300%] left-[-50%] top-[-100%] overflow-hidden"
       />
@@ -181,12 +178,12 @@ let make = (~children, ~queryRef) => {
 
             <div
               className=" lg:max-w-6xl m-auto flex flex-col lg:flex-row  flex-shrink-0 max-w-full min-h-[558px] h-[558px] items-center justify-center ">
-              <Motion.Div
+              <FramerMotion.Div
                 layout=True
                 layoutId="daily-question-title"
                 className={`font-bold [text-wrap:balance] text-center text-default-darker px-4 text-2xl`}>
                 {("\"" ++ title ++ "\"")->React.string}
-              </Motion.Div>
+              </FramerMotion.Div>
             </div>
           }>
           <MainDisplay fragmentRefs> {children} </MainDisplay>

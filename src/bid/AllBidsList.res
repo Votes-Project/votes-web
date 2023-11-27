@@ -10,7 +10,7 @@ module BidItem = {
   let make = (~bid) => {
     let {amount, bidder, id} = Fragment.use(bid)
     let amount = amount->Viem.formatUnits(18)
-    let isNarrow = window->Window.innerWidth < 640
+    let isNarrow = window->Window.innerWidth < 1024
 
     <li className="border-b p-3 border-background-dark" key=id>
       <div className=" font-semibold flex items-center justify-between">

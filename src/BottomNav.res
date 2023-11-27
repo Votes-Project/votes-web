@@ -73,7 +73,7 @@ let make = (~question, ~auction) => {
   })
 
   open FramerMotion
-  let motionVariants: Motion.variants = {
+  let motionVariants: variants = {
     initial: Initial({
       width: isNarrow ? "65%" : "24rem",
       opacity: disabled ? 0. : 1.,
@@ -86,12 +86,12 @@ let make = (~question, ~auction) => {
   }
 
   <AnimatePresence>
-    <Motion.Nav
-      className="w-full h-full text-default lg:text-default-light bg-default-darker lg:bg-primary-dark shadow-xl lg:shadow-none backdrop-blur-md rounded-full max-w-sm"
+    <FramerMotion.Nav
+      className="w-full h-full text-default lg:text-default-light bg-default-darker lg:bg-primary-dark shadow-xl lg:shadow-none backdrop-blur-md rounded-full max-w-sm "
       variants=motionVariants
       initial=String("initial")
       animate=String("animate")
-      onClick={() => setDisabled(_ => false)}>
+      onClick={_ => setDisabled(_ => false)}>
       <ul
         className="w-full flex py-2 justify-evenly items-center h-full text:md lg:text-lg font-bold">
         <RelayRouter.Link
@@ -101,11 +101,11 @@ let make = (~question, ~auction) => {
             <button className="z-10" type_="button"> {"Ask"->React.string} </button>
             {activeRoute == Some(#Ask)
               ? <div className="absolute w-full">
-                  <Motion.Div
+                  <FramerMotion.Div
                     className="w-1/2 md:w-1/4 absolute top-[-32px] left-0 right-0 mx-auto h-4 bg-default-darker lg:bg-primary-dark  rounded-t-full flex items-end justify-center pt-5"
                     layoutId="underline">
                     <div className="bg-default-light w-3 h-3 rounded-full " />
-                  </Motion.Div>
+                  </FramerMotion.Div>
                 </div>
               : React.null}
           </li>
@@ -120,11 +120,11 @@ let make = (~question, ~auction) => {
             <button className="z-10" type_="button"> {"Answer"->React.string} </button>
             {activeRoute == Some(#Question)
               ? <div className="absolute w-full">
-                  <Motion.Div
+                  <FramerMotion.Div
                     className="w-1/2 md:w-1/4 absolute top-[-32px] left-0 right-0 mx-auto h-4 bg-default-darker lg:bg-primary-dark rounded-t-full flex items-end justify-center pt-5"
                     layoutId="underline">
                     <div className="bg-default-light w-3 h-3 rounded-full" />
-                  </Motion.Div>
+                  </FramerMotion.Div>
                 </div>
               : React.null}
           </li>
@@ -137,16 +137,16 @@ let make = (~question, ~auction) => {
             <button className="z-10" type_="button"> {"Auction"->React.string} </button>
             {activeRoute == Some(#Auction)
               ? <div className="absolute w-full">
-                  <Motion.Div
+                  <FramerMotion.Div
                     className="w-1/2 md:w-1/4 absolute top-[-32px] left-0 right-0 mx-auto h-4 bg-default-darker lg:bg-primary-dark  rounded-t-full flex items-end justify-center pt-5"
                     layoutId="underline">
                     <div className="bg-default-light w-3 h-3 rounded-full" />
-                  </Motion.Div>
+                  </FramerMotion.Div>
                 </div>
               : React.null}
           </li>
         </RelayRouter.Link>
       </ul>
-    </Motion.Nav>
+    </FramerMotion.Nav>
   </AnimatePresence>
 }

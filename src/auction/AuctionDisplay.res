@@ -49,11 +49,16 @@ module BlockExplorerButton = {
   @react.component
   let make = (~auction) => {
     let auction = Fragment.use(auction)
-    let {chain} = Wagmi.Network.use()
+    let {chain, chains} = Wagmi.Network.use()
+
     let chainBlockExplorer = switch chain->Nullable.toOption {
-    | None => None
+    | None =>
+      chains
+      ->Array.findMap(chain => chain.id == 1 ? Some(chain) : None)
+      ->Option.flatMap(chain => chain.blockExplorers->Dict.get("default"))
     | Some({blockExplorers}) => blockExplorers->Dict.get("default")
     }
+
     switch chainBlockExplorer {
     | Some({name, url}) =>
       <a

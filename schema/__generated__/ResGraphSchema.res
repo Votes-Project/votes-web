@@ -1661,7 +1661,7 @@ t_Question.contents = GraphQLObjectType.make({
       },
       "isLocked": {
         typ: Scalars.boolean->Scalars.toGraphQLType->nonNull,
-        description: "The correct answer",
+        description: "If question has been locked by curator",
         deprecationReason: ?None,
         resolve: makeResolveFn((src, _args, _ctx) => {
           let src = typeUnwrapper(src)
@@ -1681,11 +1681,20 @@ t_Question.contents = GraphQLObjectType.make({
       },
       "title": {
         typ: Scalars.string->Scalars.toGraphQLType->nonNull,
-        description: ?None,
+        description: "The question",
         deprecationReason: ?None,
         resolve: makeResolveFn((src, args, ctx) => {
           let src = typeUnwrapper(src)
           QuestionResolvers.title(src, ~ctx)
+        }),
+      },
+      "tokenId": {
+        typ: scalar_BigInt->GraphQLScalar.toGraphQLType->nonNull,
+        description: ?None,
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, args, ctx) => {
+          let src = typeUnwrapper(src)
+          QuestionResolvers.tokenId(src)
         }),
       },
     }->makeFields,

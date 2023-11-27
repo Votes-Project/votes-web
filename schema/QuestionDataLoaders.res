@@ -35,6 +35,7 @@ type t = {
 type questionFromContract = {
   id: string,
   question: string,
+  tokenId: string,
   isLocked: bool,
   contract: GraphClient.linkById,
 }
@@ -57,6 +58,7 @@ module ById = {
                 {
                   id: question.id,
                   question: "",
+                  tokenId: question.tokenId,
                   options,
                   isLocked: question.isLocked,
                   contract: {id: question.contract.id},
@@ -69,6 +71,7 @@ module ById = {
                 {
                   id: question.id,
                   question: title,
+                  tokenId: question.tokenId,
                   options,
                   isLocked: question.isLocked,
                   contract: {id: question.contract.id},
@@ -108,6 +111,7 @@ module List = {
                 {
                   id: question.id,
                   question: "",
+                  tokenId: question.tokenId,
                   options: [],
                   isLocked: question.isLocked,
                   contract: {id: question.contract.id},
@@ -119,6 +123,7 @@ module List = {
                 {
                   id: question.id,
                   question: "",
+                  tokenId: question.tokenId,
                   options,
                   isLocked: question.isLocked,
                   contract: {id: question.contract.id},
@@ -130,6 +135,7 @@ module List = {
                 {
                   id: question.id,
                   question: title,
+                  tokenId: question.tokenId,
                   options,
                   isLocked: question.isLocked,
                   contract: {id: question.contract.id},

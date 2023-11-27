@@ -20,7 +20,11 @@ module ScrollTo = {
 external alert: (t, string) => unit = "alert"
 
 module EventListener = {
-  type type_ = | @as("resize") Resize | @as("scroll") Scroll | @as("click") Click
+  type type_ =
+    | @as("resize") Resize
+    | @as("scroll") Scroll
+    | @as("click") Click
+    | @as("wheel") Wheel
   type options = {passive: bool}
 
   @private @send
@@ -31,7 +35,35 @@ module EventListener = {
 let addEventListener = EventListener.make
 let removeEventListener = EventListener.remove
 
-@get external innerWidth: Dom.window => int = "innerWidth"
 @get external scrollY: Dom.window => float = "scrollY"
 
 @send external clearTimeout: (t, timeoutId) => unit = "clearTimeout"
+
+module Width = {
+  type size = XS | SM | MD | LG | XL | XXL
+  module Inner = {
+    @get external make: Dom.window => int = "innerWidth"
+    let use = () => {
+      let (width, setWidth) = React.useState(_ => window->make)
+
+      let handleWindowSizeChange = React.useCallback(() => {
+        setWidth(_ => window->make)
+      })
+      React.useEffect0(() => {
+        window->addEventListener(Resize, handleWindowSizeChange)
+
+        Some(() => window->removeEventListener(Resize, handleWindowSizeChange))
+      })
+
+      switch width {
+      | width if width < 576 => XS
+      | width if width < 640 => SM
+      | width if width < 768 => MD
+      | width if width < 1024 => LG
+      | width if width < 1280 => XL
+      | _ => XXL
+      }
+    }
+  }
+}
+let innerWidth = Width.Inner.make

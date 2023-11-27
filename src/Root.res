@@ -189,15 +189,15 @@ ReactDOMExperimental.renderConcurrentRootAtElementWithId(
           <>
             <div className="text-center w-screen h-screen flex items-center justify-center">
               <div className="">
-                <Motion.Div
+                <FramerMotion.Div
                   layout=True
                   layoutId="daily-question-title"
                   className={`font-bold [text-wrap:balance] text-center text-default-darker px-4 text-2xl`}>
                   {("\"" ++ title ++ "\"")->React.string}
-                </Motion.Div>
+                </FramerMotion.Div>
               </div>
             </div>
-            <Motion.Div
+            <FramerMotion.Div
               layoutId="background-noise"
               layout=String("opacity")
               initial={Initial({opacity: 0.})}
