@@ -25,6 +25,7 @@ let questions = async (
   questions->ResGraph.Connections.connectionFromArray(~args={first, after, before, last})
 }
 
+/** The question */
 @gql.field
 let title = async (q: question, ~ctx: ResGraphContext.context) => {
   switch await ctx.dataLoaders.question.byId->DataLoader.load(q.id) {
@@ -40,3 +41,20 @@ let options = async (q: question, ~ctx: ResGraphContext.context): array<question
   | Some({options}) => options
   }
 }
+
+/* The token ID of the vote token */
+@gql.field
+let tokenId = (question: question): Schema.BigInt.t => question.tokenId->BigInt.fromString
+
+// @gql.field
+// let contract = async (
+//   question: question,
+//   ~ctx: ResGraphContext.context,
+// ): QuestionContract.questionContract => {
+//   switch await ctx.dataLoaders.questionContract.byId->DataLoader.load(vote.contract.id) {
+//   | None => panic("Did not find question contract")
+//   | Some(questionContract) =>
+//     ctx.dataLoaders.questionContract.byId->DataLoader.prime(Some(questionContract))
+//     questionContract
+//   }
+// }

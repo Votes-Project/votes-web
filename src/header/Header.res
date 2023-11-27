@@ -51,7 +51,7 @@ let make = (~verifications) => {
     None
   }, (isClickOutside, isClickOutsideHamburger))
 
-  <header className=" flex flex-col justify-center items-center mb-[-8px] w-full">
+  <header className="relative flex flex-col justify-center items-center mb-[-8px] w-full z-50">
     <nav className=" max-w-7xl flex w-full justify-between px-4 pt-2 flex-1">
       <div className="flex gap-3 justify-center items-center ">
         <div

@@ -9,7 +9,7 @@ module QuestionTitle = {
     }
   `)
 
-  let titleStyle = titleLength => {
+  let size = titleLength => {
     if titleLength <= 50 {
       "text-4xl"
     } else if titleLength <= 150 {
@@ -20,21 +20,13 @@ module QuestionTitle = {
   }
 
   @react.component
-  let make = (~question) => {
+  let make = (~question, ~className="") => {
     let question = Fragment.useOpt(question)
     let title = question->Option.map(q => q.question)->Option.getWithDefault("")
-    open FramerMotion
 
-    <div className="">
-      <Motion.Div
-        layout=True
-        layoutId="daily-question-title"
-        className={`font-bold [text-wrap:balance] text-center text-default-darker px-4  ${titleStyle(
-            title->String.length,
-          )}`}>
-        {title->React.string}
-      </Motion.Div>
-    </div>
+    <FramerMotion.Div layout=True layoutId="daily-question-title" className>
+      {title->React.string}
+    </FramerMotion.Div>
   }
 }
 
@@ -154,7 +146,7 @@ module CircleProgress = {
         style={{
           marginTop: -size->Int.toString,
         }}>
-        <Motion.Circle
+        <FramerMotion.Circle
           cx="50"
           cy="50"
           r={radius->Int.toString}
@@ -271,19 +263,19 @@ module AnswerItem = {
         className={` border-y-4 lg:border-4 border-default-darker lg:border-active focus:outline-none focus:ring-0 relative font-semibold text-sm my-3 w-full flex items-center text-left backdrop-blur-md transition-all duration-200 ease-linear lg:rounded-xl text-default-darker shadow-lg bg-default-light hover:lg:scale-105 focus:lg:scale-105`}
         key={index->Int.toString}>
         <div
-          className="z-50 pointer-events-none w-9 flex flex-1 items-center justify-center relative font-bold text-3xl h-full text-default-dark lg:text-primary-dark px-5 rounded-l-lg ">
+          className="z-50 pointer-events-none w-9 flex flex-1 items-center justify-center relative font-bold text-3xl h-full text-default-darker lg:text-active px-5 rounded-l-lg ">
           {(index + 65)->String.fromCharCode->React.string}
         </div>
         <div
           className={`focus:outline-none focus:ring-0 w-full  flex flex-row items-center lg:my-2 first:mb-2 py-2   px-2 min-h-[80px] overflow-hidden  transition-all`}
           key={index->Int.toString}>
-          <p className="z-50 pointer-events-none"> {option->React.string} </p>
+          <p className="z-50 font-bold pointer-events-none"> {option->React.string} </p>
         </div>
         <p className="z-50 pointer-events-none px-4 text-xl font-bold">
           {(numAnswerPercentage->Float.toString ++ "%")->React.string}
         </p>
-        <Motion.Div
-          className=" z-10 absolute h-full bg-default lg:bg-secondary lg:rounded-xl"
+        <FramerMotion.Div
+          className="z-10 absolute h-full bg-default lg:bg-secondary lg:rounded-xl"
           initial=Initial({width: "0"})
           animate={Animate({width: numAnswerPercentage->Float.toString ++ "%"})}
         />
@@ -306,7 +298,7 @@ module AnswerItem = {
             {(numAnswerPercentage->Float.toString ++ "%")->React.string}
           </p>
         </div>
-        <Motion.Div
+        <FramerMotion.Div
           className=" z-10 absolute h-full bg-default lg:bg-secondary lg:rounded-xl"
           initial=Initial({width: "0"})
           animate={Animate({width: numAnswerPercentage->Float.toString ++ "%"})}
@@ -342,6 +334,7 @@ module OptionsPage = {
     fragment SingleQuestion_OptionsPage on TriviaQuestion {
       ...SingleQuestion_OptionsList
       ...SingleQuestion_QuestionTitle
+      question
     }
   `)
   @react.component
@@ -360,12 +353,22 @@ module OptionsPage = {
       }
     })
 
+    let questionTextSize =
+      question
+      ->Option.map(({question}) => question)
+      ->Option.getWithDefault("")
+      ->String.length
+      ->QuestionTitle.size
+
     React.useEffect0(() => {
       setHeroComponent(_ =>
         <div
           className="flex flex-col justify-center items-center w-full p-4 lg:h-[420px] lg:min-h-[420px]"
           ref={ReactDOM.Ref.callbackDomRef(answerRef)}>
-          <QuestionTitle question={question->Option.map(q => q.fragmentRefs)} />
+          <QuestionTitle
+            question={question->Option.map(q => q.fragmentRefs)}
+            className={`font-bold [text-wrap:balance] text-center text-default-darker px-4  ${questionTextSize}`}
+          />
           <div
             className=" flex justify-around w-full text-xl font-semibold text-default-darker pt-10 text-center">
             <div />
@@ -438,7 +441,10 @@ module AnswerPage = {
         <div
           className="flex flex-col justify-start items-center w-full p-4 h-[420px] min-h-[420px]"
           ref={ReactDOM.Ref.callbackDomRef(answerRef)}>
-          <QuestionTitle question={question->Option.map(q => q.fragmentRefs)} />
+          <QuestionTitle
+            question={question->Option.map(q => q.fragmentRefs)}
+            className={`font-bold [text-wrap:balance] text-center text-default-darker px-4 text-xl`}
+          />
           <div
             className=" flex justify-around w-full text-xl font-semibold text-default-darker pt-10 text-center">
             <div />
@@ -512,6 +518,9 @@ module Query = %relay(`
     node(id: $id) {
       ...SingleQuestion_node
     }
+    randomQuestion {
+      ...SingleQuestion_node
+    }
   }
 `)
 
@@ -538,6 +547,7 @@ let make = (
 
   let node = switch data {
   | Some({node: Some({fragmentRefs})}) => Some(fragmentRefs)
+  | Some({randomQuestion: Some({fragmentRefs})}) => Some(fragmentRefs)
   | _ => None
   }
 

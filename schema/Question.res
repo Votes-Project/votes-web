@@ -11,11 +11,10 @@ type questionOption = {
 @gql.type
 type question = {
   ...NodeInterface.node,
-  /** The question */
   question: string,
-  /** The incorrect answers */
+  tokenId: string,
   options: array<questionOption>,
-  /** The correct answer */
+  /** If question has been locked by curator*/
   @gql.field
   isLocked: bool,
   contract: GraphClient.linkById,
