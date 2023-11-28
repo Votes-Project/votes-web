@@ -51,6 +51,8 @@ module Style = {
   @set external setHeight: (Dom.element, float) => unit = "height"
   @get external scale: t => float = "scale"
   @set external setScale: (Dom.element, float) => unit = "scale"
+  @get external overflow: t => string = "overflow"
+  @set external setOverflow: (Dom.element, string) => unit = "overflow"
 }
 
 @get external parentNode: t => Dom.element = "parentNode"
@@ -62,6 +64,9 @@ module EventListener = {
     | @as("scroll") Scroll
     | @as("click") Click
     | @as("wheel") Wheel
+    | @as("touchstart") TouchStart
+    | @as("touchmove") TouchMove
+    | @as("touchend") TouchEnd
   type options = {passive: bool}
 
   @private @send

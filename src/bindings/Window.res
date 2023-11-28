@@ -1,5 +1,12 @@
 type t = Dom.window
 
+module Scroll = {
+  @get external top: t => float = "scrollTop"
+  @set external setTop: (t, float) => unit = "scrollTop"
+  @get external width: t => float = "scrollWidth"
+  @get external height: t => float = "scrollHeight"
+}
+
 module ScrollTo = {
   type behavior =
     | @as("smooth") Smooth
@@ -56,14 +63,22 @@ module Width = {
       })
 
       switch width {
-      | width if width < 576 => XS
-      | width if width < 640 => SM
-      | width if width < 768 => MD
-      | width if width < 1024 => LG
-      | width if width < 1280 => XL
+      | width if width < 640 => XS
+      | width if width < 768 => SM
+      | width if width < 1024 => MD
+      | width if width < 1280 => LG
+      | width if width < 1536 => XL
       | _ => XXL
       }
     }
   }
 }
 let innerWidth = Width.Inner.make
+
+module Height = {
+  module Inner = {
+    @get external make: Dom.window => int = "innerHeight"
+  }
+}
+
+let innerHeight = Height.Inner.make

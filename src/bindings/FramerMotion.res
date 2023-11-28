@@ -100,7 +100,7 @@ module Gestures = {
   }
 }
 
-type motionStyle = {y: t, ...JsxDOMStyle.t}
+type motionStyle = {y?: t, ...JsxDOMStyle.t}
 
 type motionProps<'event> = {
   layoutId?: string,

@@ -56,7 +56,7 @@
         "children": []
       },
       {
-        "path": "questions",
+        "path": "questions?day=int",
         "name": "Questions",
         "children": []
       },
