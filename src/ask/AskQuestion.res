@@ -129,7 +129,7 @@ let make = (~children) => {
   React.useEffect1(() => {
     setHeroComponent(_ =>
       <div
-        className="flex flex-col items-start w-full p-4 min-h-[558px] "
+        className="flex flex-col items-start w-full p-4 lg:min-h-[420px] "
         ref={ReactDOM.Ref.callbackDomRef(askRef)}>
         <div
           className="w-full lg:p-4 p-2 flex flex-col items-center max-h-[50%] lg:min-h-[279px] hide-scrollbar">
@@ -139,7 +139,7 @@ let make = (~children) => {
           {children}
         </div>
         <div
-          className="lg:border-2 lg:border-primary w-full flex-1 relative flex bg-transparent focus-within:border-2 focus-within:ring-0 focus-within:border-primary backdrop-blur-[2px] rounded-lg transition-all duration-200 ease-linear">
+          className="border-2  pb-2 border-primary w-full flex-1 relative flex bg-transparent focus-within:border-2 focus-within:ring-0 focus-within:border-primary backdrop-blur-[2px] rounded-lg transition-all duration-200 ease-linear">
           <ContentEditable
             id="create-vote-title"
             editablehasplaceholder="true"

@@ -363,7 +363,7 @@ module OptionsPage = {
     React.useEffect0(() => {
       setHeroComponent(_ =>
         <div
-          className="flex flex-col justify-center items-center w-full p-4 h-[420px] min-h-[420px]"
+          className="flex flex-col justify-center items-center w-full p-4 lg:h-[420px] lg:min-h-[420px]"
           ref={ReactDOM.Ref.callbackDomRef(answerRef)}>
           <QuestionTitle question={question->Option.map(q => q.fragmentRefs)} />
           <div

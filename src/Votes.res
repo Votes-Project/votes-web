@@ -126,7 +126,7 @@ module VoteListDisplay = {
       }
     }
 
-    <div className="">
+    <div className="lg:max-h-[420px]">
       <nav className="px-4 w-full flex justify-between items-center pb-4">
         <div>
           {switch voteContract {
@@ -195,7 +195,7 @@ let make = (~queryRef) => {
   React.useEffect1(() => {
     setHeroComponent(_ =>
       <div
-        className=" lg:w-[50%] w-[80%] md:w-[70%] mx-[10%] mt-8 md:mx-[15%] lg:mx-0 flex align-end lg:pr-20">
+        className=" lg:w-[50%] w-[80%] md:w-[70%] mx-[10%] mt-8 md:mx-[15%] lg:mx-0 flex align-end lg:pr-20 ">
         <div className="relative h-0 w-full pt-[100%]">
           <EmptyVoteChart className="absolute left-0 top-0 w-full align-middle " />
         </div>
