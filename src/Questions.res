@@ -1,6 +1,7 @@
 type unhandledQuestionType = {
   id: string,
   title: string,
+  day: int,
 }
 
 type question =
@@ -11,70 +12,56 @@ type question =
 let pastQuestions = [
   PastQuestion({
     id: "1",
-    title: "How do I get started with Rescript?",
+    title: "Past Question stand in",
+    day: 0,
   }),
   PastQuestion({
     id: "2",
-    title: "How do I get started with Rescript?",
+    title: "Past Question stand in",
+    day: 1,
   }),
   PastQuestion({
     id: "3",
-    title: "How do I get started with Rescript?",
+    title: "Past Question stand in",
+    day: 2,
   }),
   PastQuestion({
     id: "4",
-    title: "How do I get started with Rescript?",
+    title: "Past Question stand in",
+    day: 3,
   }),
   PastQuestion({
     id: "5",
-    title: "How do I get started with Rescript?",
+    title: "Past Question stand in",
+    day: 4,
   }),
   PastQuestion({
     id: "6",
-    title: "How do I get started with Rescript?",
+    title: "Past Question stand in",
+    day: 5,
   }),
 ]
 
 let seedQuestions = [
   SeedQuestion({
     id: "a",
-    title: "How do I get started with Relay",
+    title: "Seed Question stand in.",
+    day: 100,
   }),
   SeedQuestion({
     id: "b",
-    title: "How do I get started with Relay",
+    title: "Seed Question stand in.",
+    day: 101,
   }),
   SeedQuestion({
     id: "c",
-    title: "How do I get started with Relay",
+    title: "Seed Question stand in.",
+    day: 102,
   }),
   SeedQuestion({
     id: "d",
-    title: "How do I get started with Relay",
-  }),
-  SeedQuestion({
-    id: "e",
-    title: "How do I get started with Relay",
-  }),
-  SeedQuestion({
-    id: "f",
-    title: "How do I get started with Relay",
-  }),
-  SeedQuestion({
-    id: "g",
-    title: "How do I get started with Relay",
-  }),
-  SeedQuestion({
-    id: "h",
-    title: "How do I get started with Relay",
-  }),
-  SeedQuestion({
-    id: "i",
-    title: "How do I get started with Relay",
-  }),
-  SeedQuestion({
-    id: "j",
-    title: "How do I get started with Relay",
+    title: "Seed Question stand in.",
+    day: 103,
   }),
 ]
 
@@ -90,12 +77,11 @@ module QuestionItem = {
   @react.component
   let make = (~question) => {
     let question = Fragment.use(question)
-
     <div className="flex flex-col justify-center items-center">
-      <button
+      <div
         className=" flex-1 whitespace-pre-wrap [text-wrap:pretty] bg-default lg:bg-secondary shadow-lg p-2 rounded-lg self-start mr-auto">
         {question.title->React.string}
-      </button>
+      </div>
     </div>
   }
 }
@@ -104,10 +90,10 @@ module SeedQuestionItem = {
   @react.component
   let make = (~question) => {
     <div className="flex flex-col justify-center items-center">
-      <button
+      <div
         className=" flex-1 whitespace-pre-wrap [text-wrap:pretty] bg-default lg:bg-secondary shadow-lg p-2 rounded-lg self-start">
         {question.title->React.string}
-      </button>
+      </div>
     </div>
   }
 }
@@ -116,23 +102,18 @@ module PastQuestionItem = {
   @react.component
   let make = (~question) => {
     <div className="flex flex-col justify-center items-center">
-      <button
+      <div
         className=" flex-1 whitespace-pre-wrap [text-wrap:pretty] bg-default lg:bg-secondary opacity-50 shadow-lg p-2 rounded-lg self-start">
         {question.title->React.string}
-      </button>
+      </div>
     </div>
   }
 }
 
 module Item = {
   @react.component
-  let make = (
-    ~question,
-    ~index,
-    ~controls: FramerMotion.Gestures.Drag.Controls.t<'event>,
-    ~listSyntheticScrollY,
-    ~setSyntheticScrollHeight,
-  ) => {
+  let make = (~question, ~index) => {
+    let {setParams} = Routes.Main.Questions.Route.useQueryParams()
     let ref = React.useRef(Nullable.null)
     let today = Date.now()->Date.fromTime
     let date =
@@ -140,24 +121,26 @@ module Item = {
       ->Js.Date.setDate(float(today->Date.getDate + index))
       ->Date.fromTime
 
-    let isClosestToTop = (current, scrollY) => {
-      open Element
-      scrollY > current->Offset.top && scrollY < current->Offset.top -. current->Offset.height
-    }
-
     let isToday = today->Date.getTime == date->Date.getTime
-
     let day = date->Date.toLocaleStringWithLocaleAndOptions("en-us", {day: #"2-digit"})
     let weekday = date->Date.toLocaleStringWithLocaleAndOptions("en-us", {weekday: #short})
-
-    let startDrag = event => {
-      controls.start(event)
+    let handleQuestionSelect = _ => {
+      setParams(~removeNotControlledParams=false, ~navigationMode_=Replace, ~setter=c => {
+        ...c,
+        day: switch question {
+        | Question(_) => (pastQuestions->Array.length + index)->Some
+        | SeedQuestion({day}) | PastQuestion({day}) => Some(day)
+        },
+      })
     }
 
-    <div
-      className="w-full flex flex-col justify-center items-center " ref={ReactDOM.Ref.domRef(ref)}>
-      <div className="flex flex-1 flex-row gap-2 justify-end w-full items-stretch mr-auto">
-        <FramerMotion.Div className="flex flex-col py-2 touch-scroll">
+    <button
+      onClick=handleQuestionSelect
+      className="w-screen px-4 min-w-[100vw] max-w-[100vw] lg:min-w-0 lg:w-full flex lg:flex-col lg:justify-center lg:items-center "
+      ref={ReactDOM.Ref.domRef(ref)}>
+      <div
+        className="w-screen flex lg:flex-1 flex-col-reverse lg:flex-row gap-2 justify-end lg:w-full items-stretch  lg:mr-auto snap-start ">
+        <FramerMotion.Div className="flex flex-col py-2">
           {switch question {
           | Question(question) => <QuestionItem question />
           | SeedQuestion(question) => <SeedQuestionItem question />
@@ -165,23 +148,24 @@ module Item = {
           }}
         </FramerMotion.Div>
         <div
-          onPointerDown={startDrag}
-          className=" flex flex-col items-center cursor-row-resize touch-none min-w-[4rem]">
-          <div
-            className="select-none text-xs font-fugaz self-center rounded-full  text-default-darker">
-            {weekday->React.string}
+          className="flex flex-col items-start lg:items-center cursor-row-resize lg:min-w-[4rem]  min-w-[2rem]">
+          <div>
+            <div
+              className="select-none text-xs font-fugaz text-center lg:self-center rounded-full  text-default-darker">
+              {weekday->React.string}
+            </div>
+            {isToday
+              ? <div
+                  className="select-none text-xl font-fugaz  bg-default-darker text-default-light lg:bg-active rounded-full p-2 ">
+                  {day->React.string}
+                </div>
+              : <div className="select-none text-xl font-fugaz text-default-darker">
+                  {day->React.string}
+                </div>}
           </div>
-          {isToday
-            ? <div
-                className="select-none text-xl font-fugaz  bg-default-darker text-default-light lg:bg-active rounded-full p-2 ">
-                {day->React.string}
-              </div>
-            : <div className="select-none text-xl font-fugaz text-default-darker">
-                {day->React.string}
-              </div>}
         </div>
       </div>
-    </div>
+    </button>
   }
 }
 
@@ -212,55 +196,69 @@ module List = {
 
   @react.component
   let make = (~questions) => {
-    open FramerMotion
+    let {queryParams} = Routes.Main.Questions.Route.useQueryParams()
     let {questions} = Fragment.use(questions)
-    let (syntheticScrollHeight, setSyntheticScrollHeight) = React.useState(() => 0.)
-    let (dragConstraints, setDragConstraints) = React.useState(() => Gestures.Drag.Box({
-      top: 0.,
-      bottom: 0.,
-    }))
-    let width = Window.Width.Inner.use()
+    let (height, setHeight) = React.useState(_ => None)
+    let (width, setWidth) = React.useState(_ => None)
 
+    let windowWidth = Window.Width.Inner.use()
     let ref = React.useRef(Nullable.null)
+    let pastQuestionsRef = React.useRef(Nullable.null)
+    let questionsRef = React.useRef(Nullable.null)
+    let seedQuestionsRef = React.useRef(Nullable.null)
+    let currentQuestionRef = React.useRef(Nullable.null)
 
-    let controls = FramerMotion.Gestures.Drag.Controls.use()
+    React.useEffect7(() => {
+      switch (
+        ref.current->Nullable.toOption,
+        pastQuestionsRef.current->Nullable.toOption,
+        questionsRef.current->Nullable.toOption,
+        seedQuestionsRef.current->Nullable.toOption,
+      ) {
+      | (Some(current), Some(pastQuestions), Some(questions), Some(seedQuestions)) =>
+        switch windowWidth {
+        | LG | XL | XXL =>
+          open Element
+          let height =
+            pastQuestions->Offset.height +.
+            questions->Offset.height +.
+            seedQuestions->Offset.height +.
+            current->Offset.height *. 2.
+          setHeight(_ => Some(Float.toString(height) ++ "px"))
+          setWidth(_ => None)
+        | XS | SM | MD =>
+          open Element
+          let questionsWidth =
+            pastQuestions->Offset.width +. questions->Offset.width +. seedQuestions->Offset.width
+          let width = questionsWidth +. current->Offset.width *. 2.
 
-    let y = Spring.use(0, ~config={damping: 4, stiffness: 110, mass: 0.1})
+          setWidth(_ => Some(width->Float.toString ++ "px"))
+          setHeight(_ => None)
+        }
+      | _ => ()
+      }
+      None
+    }, (ref, pastQuestionsRef, questionsRef, seedQuestionsRef, setHeight, windowWidth, setWidth))
 
     let handlePageScroll = _ =>
-      switch width {
+      switch windowWidth {
       | LG | XL | XXL =>
         %raw(`document.body.style.overflow = (document.body.style.overflow === "hidden") ? "auto":"hidden"`)
       | _ => ()
       }
 
-    let handleSyntheticScroll = e =>
-      switch width {
-      | LG | XL | XXL => y->FramerMotion.set(y->FramerMotion.get -. e->ReactEvent.Wheel.deltaY)
-      | _ => ()
-      }
-
-    React.useEffect1(() => {
-      open Element
-      ref.current
-      ->Nullable.toOption
-      ->Option.map(current => {
-        setDragConstraints(
-          _ => Box({
-            top: -0.5 *. (current->Scroll.height +. current->Offset.height),
-            bottom: 0.5 *. (current->Scroll.height +. current->Offset.height),
-          }),
-        )
-        current->parentNode->EventListener.make(Wheel, handleSyntheticScroll)
-        () => current->parentNode->EventListener.remove(Wheel, handleSyntheticScroll)
-      })
-    }, [ref])
-
     let pastQuestions = pastQuestions->Array.mapWithIndex((question, index) => {
       let index = index - Array.length(pastQuestions)
-      switch question {
-      | PastQuestion({id}) =>
-        <Item key=id question index controls listSyntheticScrollY=y setSyntheticScrollHeight />
+      switch (question, queryParams.day) {
+      | (PastQuestion({id, day}), Some(currentQuestionDay)) if day == currentQuestionDay =>
+        <li ref={ReactDOM.Ref.domRef(currentQuestionRef)} key=id>
+          <Item question index />
+        </li>
+
+      | (PastQuestion({id}), _) =>
+        <li key=id>
+          <Item question index />
+        </li>
       | _ => React.null
       }
     })
@@ -269,70 +267,60 @@ module List = {
       questions
       ->Fragment.getConnectionNodes
       ->Array.mapWithIndex((question, index) => {
-        <React.Suspense fallback={<div />}>
-          <Item
-            question=Question(question.fragmentRefs)
-            index
-            controls
-            listSyntheticScrollY=y
-            setSyntheticScrollHeight
-            key=question.id
-          />
-        </React.Suspense>
+        let day = pastQuestions->Array.length + index
+        switch queryParams.day {
+        | Some(currentQuestionDay) if day == currentQuestionDay =>
+          <li ref={ReactDOM.Ref.domRef(currentQuestionRef)} key=question.id>
+            <Item question=Question(question.fragmentRefs) index />
+          </li>
+        | _ =>
+          <li key=question.id>
+            <Item question=Question(question.fragmentRefs) index />
+          </li>
+        }
       })
 
     let seedQuestions = seedQuestions->Array.mapWithIndex((question, index) => {
-      switch question {
-      | SeedQuestion({id}) =>
-        <Item
-          key=id
-          question
-          index={questions->Array.length + index}
-          controls
-          listSyntheticScrollY=y
-          setSyntheticScrollHeight
-        />
+      switch (question, queryParams.day) {
+      | (SeedQuestion({id, day}), Some(currentQuestionDay)) if day == currentQuestionDay =>
+        <li ref={ReactDOM.Ref.domRef(currentQuestionRef)} key=id>
+          <Item index={questions->Array.length + index} question />
+        </li>
+      | (SeedQuestion({id}), _) =>
+        <li key=id>
+          <Item question index={questions->Array.length + index} />
+        </li>
       | _ => React.null
       }
     })
 
-    let questions =
-      pastQuestions
-      ->Array.concat(questions)
-      ->Array.concat(seedQuestions)
-      ->Array.mapWithIndex((question, index) => {
-        let cycle = index / 10
-        switch index {
-        | index if index->mod(10) == 0 && cycle != 0 =>
-          <>
-            <div
-              className="flex flex-row items-center justify-between w-full"
-              key={`cycle-${cycle->Int.toString}`}>
-              <p className="text-default-darker text-md font-bold">
-                {`Cycle ${cycle->Int.toString}`->React.string}
-              </p>
-              <div className="flex-1 h-0 border border-default-darker" />
-            </div>
-            {question}
-          </>
-        | _ => question
-        }
-      })
-
     <div
-      className="overflow-hidden  py-4 "
+      className="overflow-scroll lg:overscroll-contain py-4 pl-4 lg:pl-0 hide-scrollbar lg:hover:border-2  border-primary-dark/50 lg:rounded-3xl m-2 snap-x lg:snap-none snap-mandatory"
       onMouseEnter={handlePageScroll}
-      onMouseLeave={handlePageScroll}>
+      onMouseLeave={handlePageScroll}
+      ref={ReactDOM.Ref.domRef(ref)}>
       <FramerMotion.Div
-        drag=Y
-        dragConstraints
-        dragListener=false
-        dragControls=controls
-        dragMomentum={false}
-        ref={ReactDOM.Ref.domRef(ref)}
-        style={{y: y}}
-        className=" flex items-center justify-center flex-col w-full flex-1 h-full max-h-[420px] hide-scrollbar pt-10 z-0 ">
-        {questions->React.array}
+        layout=Position
+        className="flex flex-row lg:flex-col lg:items-center justify-center px-2 pt-1 hover:lg:m-[-2px] h-full"
+        style={{
+          height: `${height->Option.getWithDefault("auto")}`,
+          width: `${width->Option.getWithDefault("auto")}`,
+        }}>
+        <ul
+          className="flex  justify-center flex-row lg:flex-col lg:w-full z-0"
+          ref={ReactDOM.Ref.domRef(pastQuestionsRef)}>
+          {pastQuestions->React.array}
+        </ul>
+        <ul
+          ref={ReactDOM.Ref.domRef(questionsRef)}
+          className="flex  justify-center flex-row lg:flex-col lg:w-full z-0">
+          {questions->React.array}
+        </ul>
+        <ul
+          className="flex justify-center flex-row lg:flex-col lg:w-full z-0"
+          ref={ReactDOM.Ref.domRef(seedQuestionsRef)}>
+          {seedQuestions->React.array}
+        </ul>
       </FramerMotion.Div>
     </div>
   }
@@ -368,8 +356,9 @@ let make = (~queryRef) => {
     None
   })
 
-  <FramerMotion.Div transition={{duration: 2.}} className="relative flex flex-col mt-[-5%] lg:mt-0">
-    <div className=" absolute top-0 w-full flex justify-start items-center pt-2 z-10 px-4 gap-4">
+  <FramerMotion.Div
+    transition={{duration: 2.}} className="relative flex flex-col lg:mt-0 max-h-[558px] ">
+    <div className=" w-full flex justify-start items-center pt-2 z-10 px-4 gap-4  ">
       <label>
         <select
           value={""}
@@ -381,7 +370,7 @@ let make = (~queryRef) => {
         </select>
       </label>
       <input
-        className="border-2 border-gray-300 bg-default-light lg:bg-secondary white backdrop-blur-md h-10 px-5 pr-16 rounded-lg text-sm focus:outline-none"
+        className="border-2 border-gray-300 bg-default-light lg:bg-secondary white backdrop-blur-md h-10 px-5 lg:pr-16 rounded-lg text-sm focus:outline-none"
         type_="search"
         name="search"
         placeholder="Search"

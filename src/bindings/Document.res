@@ -11,3 +11,5 @@ module EventListener = {
 
 let addEventListener = EventListener.make
 let removeEventListener = EventListener.remove
+
+@get external body: t => Dom.element = "body"
