@@ -115,7 +115,7 @@ let make = (~children) => {
     open Document
     document
     ->getElementById("create-vote-title")
-    ->Element.Scroll.intoViewWithOptions(~options={behavior: Smooth, block: Center})
+    ->Element.Scroll.intoViewWithOptions(~options={behavior: Smooth, block: End})
   }
 
   React.useEffect1(() => {

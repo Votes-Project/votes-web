@@ -36,6 +36,7 @@ type motionValues = {
   borderTop?: string,
   border?: string,
   strokeDashoffset?: int,
+  padding?: string,
 }
 
 @unboxed type initial = Initial(motionValues) | String(string)
@@ -229,3 +230,14 @@ module AnimatePresence = {
     ~className: string=?,
   ) => React.element = "AnimatePresence"
 }
+
+module InView = {
+  type stop = unit => unit
+  @module("framer-motion")
+  external makeWithSelector: (string, ~info: Dom.element => unit=?) => stop = "useInView"
+  @module("framer-motion")
+  external makeWithElement: (Dom.element, ~info: Dom.element => unit=?) => stop = "inView"
+}
+
+let inViewWithElement = InView.makeWithElement
+let inViewWithSelector = InView.makeWithSelector
