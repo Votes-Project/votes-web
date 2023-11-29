@@ -47,7 +47,7 @@ let make = (
   React.useEffect1(() => {
     setHeroComponent(_ =>
       <div
-        className=" lg:w-[50%] w-[80%] md:w-[70%] mx-[10%] mt-8 md:mx-[15%] lg:mx-0 flex align-end lg:pr-20 relative"
+        className=" lg:w-[50%] w-[80%] md:w-[70%] mx-[10%] mt-8 md:mx-[15%] lg:mx-0 flex align-end lg:pr-20 relative "
         ref={ReactDOM.Ref.callbackDomRef(auctionRef)}>
         {switch Environment.featureFlags {
         | {enableCharts: true} =>
@@ -87,7 +87,7 @@ let make = (
   let vote = node->Option.orElse(vote)
   let voteType = vote->Option.flatMap(vote => vote.voteType)
 
-  <div className="px-[5%]">
+  <div className="px-[5%] ">
     {switch (voteType, vote) {
     | (Some(Raffle), Some({fragmentRefs, contract: {totalSupply}})) =>
       <ErrorBoundary fallback={_ => "Auction Failed to load"->React.string}>

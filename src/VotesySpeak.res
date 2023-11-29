@@ -1,38 +1,57 @@
 @react.component
 let make = () => {
-  let {content, setShow} = React.useContext(VotesySpeakContext.context)
+  let {content, show, position, setPosition, setShow} = React.useContext(VotesySpeakContext.context)
   let ref = React.useRef(Nullable.null)
   let isOutside = OutsideClickHook.use(ref)
-  let (isInView, setIsInView) = React.useState(_ => false)
+  let (inView, setInView) = React.useState(_ => false)
 
-  React.useEffect1(() => {
-    if isOutside && isInView {
+  React.useEffect3(() => {
+    if isOutside && inView {
       setShow(_ => false)
+      setInView(_ => false)
     }
     None
-  }, [isOutside])
+  }, (isOutside, setPosition, setInView))
 
-  React.useEffect1(() => {
-    setIsInView(_ => true)
+  React.useEffect2(() => {
+    switch ref.current->Nullable.toOption {
+    | Some(current) if show =>
+      Some(
+        current->FramerMotion.inViewWithElement(~info=_ => {
+          setInView(_ => true)
+        }),
+      )
+    | _ => None
+    }
+  }, (ref, show))
 
-    None
-  }, [isInView])
-
-  switch content {
-  | None => React.null
-  | Some(content) =>
-    <div className="absolute top-16">
-      <div
-        className=" relative bg-white p-2 rounded-lg text-sm shadow-md"
-        ref={ReactDOM.Ref.domRef(ref)}>
-        <div
-          className="absolute top-[-6px] left-10 w-0 h-0 border-x-8 border-x-transparent border-b-8 border-b-white"
-        />
-        <div
-          className="relative w-[max-content] lg:max-w-sm  max-w-xs font-mono before:absolute before:inset-0 before:animate-typewriter before:bg-white  break-words ">
-          {content}
-        </div>
-      </div>
-    </div>
+  let parsePosition = (position: VotesySpeakContext.position) => {
+    switch position {
+    | Static => "static"
+    | Absolute => "absolute"
+    | Relative => "relative"
+    | Fixed => "fixed"
+    | Sticky => "sticky"
+    }
   }
+
+  <FramerMotion.AnimatePresence initial=false>
+    {switch content {
+    | Some(content) if show =>
+      <FramerMotion.Div
+        key="votesy-speak"
+        layout=Position
+        initial=Initial({height: "0px"})
+        animate=Animate({height: "fit-content"})
+        exit=Exit({height: "0px"})
+        transition={{duration: 0.5, ease: EaseInOut}}
+        className={`${parsePosition(
+            position,
+          )} top-24 bg-white rounded-lg px-4  font-semibold shadow-md whitespace-pre-wrap w-fit overflow-hidden z-40`}
+        ref={ReactDOM.Ref.domRef(ref)}>
+        {content}
+      </FramerMotion.Div>
+    | _ => React.null
+    }}
+  </FramerMotion.AnimatePresence>
 }
