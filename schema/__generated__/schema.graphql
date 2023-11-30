@@ -73,6 +73,11 @@ union Verifications =
   | Error
 
 
+input SendTweetInput {
+  text: String!
+  quote_tweet_id: String
+}
+
 input Where_AuctionBids {
   id: String
   tokenId: String
@@ -328,6 +333,7 @@ type Error {
 }
 
 type Mutation {
+  postTweet(input: SendTweetInput!): Tweet
   setTwitterToken(code: String!): TwitterOAuthResponse
 }
 
@@ -491,6 +497,11 @@ type TriviaQuestionEdge {
 
   """A cursor for use in pagination."""
   cursor: String!
+}
+
+type Tweet implements Node {
+  text: String!
+  id: ID!
 }
 
 type TwitterOAuthError {

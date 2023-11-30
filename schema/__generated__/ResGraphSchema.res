@@ -192,6 +192,8 @@ let t_TriviaQuestionConnection: ref<GraphQLObjectType.t> = Obj.magic({"contents"
 let get_TriviaQuestionConnection = () => t_TriviaQuestionConnection.contents
 let t_TriviaQuestionEdge: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
 let get_TriviaQuestionEdge = () => t_TriviaQuestionEdge.contents
+let t_Tweet: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
+let get_Tweet = () => t_Tweet.contents
 let t_TwitterOAuthError: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
 let get_TwitterOAuthError = () => t_TwitterOAuthError.contents
 let t_TwitterToken: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
@@ -214,6 +216,9 @@ let t_VoteTransferConnection: ref<GraphQLObjectType.t> = Obj.magic({"contents": 
 let get_VoteTransferConnection = () => t_VoteTransferConnection.contents
 let t_VoteTransferEdge: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
 let get_VoteTransferEdge = () => t_VoteTransferEdge.contents
+let input_SendTweetInput: ref<GraphQLInputObjectType.t> = Obj.magic({"contents": Js.null})
+let get_SendTweetInput = () => input_SendTweetInput.contents
+let input_SendTweetInput_conversionInstructions = []
 let input_Where_AuctionBids: ref<GraphQLInputObjectType.t> = Obj.magic({"contents": Js.null})
 let get_Where_AuctionBids = () => input_Where_AuctionBids.contents
 let input_Where_AuctionBids_conversionInstructions = []
@@ -232,6 +237,9 @@ let input_Where_Transfers_conversionInstructions = []
 let input_Where_Votes: ref<GraphQLInputObjectType.t> = Obj.magic({"contents": Js.null})
 let get_Where_Votes = () => input_Where_Votes.contents
 let input_Where_Votes_conversionInstructions = []
+input_SendTweetInput_conversionInstructions->Array.pushMany([
+  ("quote_tweet_id", makeInputObjectFieldConverterFn(v => v->Nullable.toOption)),
+])
 input_Where_AuctionBids_conversionInstructions->Array.pushMany([
   ("id", makeInputObjectFieldConverterFn(v => v->Nullable.toOption)),
   ("tokenId", makeInputObjectFieldConverterFn(v => v->Nullable.toOption)),
@@ -288,6 +296,7 @@ let interface_Node_resolveType = (v: Interface_node.Resolver.t) =>
   | AuctionContract(_) => "AuctionContract"
   | VoteTransfer(_) => "VoteTransfer"
   | AuctionBid(_) => "AuctionBid"
+  | Tweet(_) => "Tweet"
   | TwitterToken(_) => "TwitterToken"
   | Auction(_) => "Auction"
   | AuctionSettled(_) => "AuctionSettled"
@@ -1117,6 +1126,24 @@ t_Mutation.contents = GraphQLObjectType.make({
   interfaces: [],
   fields: () =>
     {
+      "postTweet": {
+        typ: get_Tweet()->GraphQLObjectType.toGraphQLType,
+        description: ?None,
+        deprecationReason: ?None,
+        args: {
+          "input": {typ: get_SendTweetInput()->GraphQLInputObjectType.toGraphQLType->nonNull},
+        }->makeArgs,
+        resolve: makeResolveFn((src, args, ctx) => {
+          let src = typeUnwrapper(src)
+          TwitterResolvers.postTweet(
+            src,
+            ~ctx,
+            ~input=args["input"]->applyConversionToInputObject(
+              input_SendTweetInput_conversionInstructions,
+            ),
+          )
+        }),
+      },
       "setTwitterToken": {
         typ: get_TwitterOAuthResponse()->GraphQLUnionType.toGraphQLType,
         description: ?None,
@@ -1124,7 +1151,7 @@ t_Mutation.contents = GraphQLObjectType.make({
         args: {"code": {typ: Scalars.string->Scalars.toGraphQLType->nonNull}}->makeArgs,
         resolve: makeResolveFn((src, args, ctx) => {
           let src = typeUnwrapper(src)
-          TwitterMutations.setTwitterToken(src, ~code=args["code"], ~ctx)
+          TwitterResolvers.setTwitterToken(src, ~code=args["code"], ~ctx)
         }),
       },
     }->makeFields,
@@ -2031,6 +2058,32 @@ t_TriviaQuestionEdge.contents = GraphQLObjectType.make({
       },
     }->makeFields,
 })
+t_Tweet.contents = GraphQLObjectType.make({
+  name: "Tweet",
+  description: ?None,
+  interfaces: [get_Node()],
+  fields: () =>
+    {
+      "id": {
+        typ: Scalars.id->Scalars.toGraphQLType->nonNull,
+        description: ?None,
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, args, ctx) => {
+          let src = typeUnwrapper(src)
+          NodeInterfaceResolvers.id(src, ~typename=Tweet)
+        }),
+      },
+      "text": {
+        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        description: ?None,
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["text"]
+        }),
+      },
+    }->makeFields,
+})
 t_TwitterOAuthError.contents = GraphQLObjectType.make({
   name: "TwitterOAuthError",
   description: ?None,
@@ -2511,6 +2564,23 @@ t_VoteTransferEdge.contents = GraphQLObjectType.make({
           let src = typeUnwrapper(src)
           src["node"]
         }),
+      },
+    }->makeFields,
+})
+input_SendTweetInput.contents = GraphQLInputObjectType.make({
+  name: "SendTweetInput",
+  description: ?None,
+  fields: () =>
+    {
+      "quote_tweet_id": {
+        GraphQLInputObjectType.typ: Scalars.string->Scalars.toGraphQLType,
+        description: ?None,
+        deprecationReason: ?None,
+      },
+      "text": {
+        GraphQLInputObjectType.typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        description: ?None,
+        deprecationReason: ?None,
       },
     }->makeFields,
 })

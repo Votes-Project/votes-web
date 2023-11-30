@@ -1,26 +1,33 @@
-@val @scope(("process", "env"))
-external vercelUrl: option<string> = "VERCEL_URL"
+type t = {sendTweet: (Twitter.sendTweetInput, string) => promise<option<Twitter.tweet>>}
 
-@gql.field
-let setTwitterToken = async (_: Schema.mutation, ~code, ~ctx: ResGraphContext.context) => {
-  switch await ctx.dataLoaders.twitter.byCode->DataLoader.load(code) {
-  | None => None
-  | Some(token) =>
-    switch (token, ctx.request->ResGraphContext.Request.cookieStore) {
-    | (Token(token), Some(c)) =>
-      await c->CookieStore.setWithOptions({
-        name: "votes_twitter_accessToken",
-        expires: float(token.expiresIn),
-        value: token.accessToken,
-        sameSite: Lax,
-        domain: vercelUrl
-        ->Option.flatMap(url => url->String.split(":")->Array.get(0))
-        ->Option.getWithDefault("localhost"),
-        // path: "/auth/twitter/callback",
-      })
+let twitterApiV2 = "https://api.twitter.com/2/"
+let tweetsApi = twitterApiV2 ++ "tweets/"
 
-    | _ => panic("Could not set access token cookie")
+let make = () => {
+  sendTweet: async (input, token) => {
+    open Fetch
+    let body = JSON.stringifyAny(input)->Option.map(Body.string)->Option.getExn
+
+    switch await fetch(
+      tweetsApi,
+      {
+        method: #POST,
+        headers: Headers.fromObject({
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " ++ token,
+        }),
+        body,
+      },
+    ) {
+    | exception _ => None
+    | res =>
+      let json = await res->Response.json
+      let tweet = json->S.parseWith(BrightID_Shared.dataStruct(Twitter.tweetStruct))
+
+      switch tweet {
+      | Ok(tweet) => Some(tweet.data)
+      | Error(_) => None
+      }
     }
-    Some(token)
-  }
+  },
 }

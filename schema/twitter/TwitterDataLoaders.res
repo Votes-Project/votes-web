@@ -63,12 +63,12 @@ let decodeError = json => {
 
 let tokenUrl = "https://api.twitter.com/2/oauth2/token"
 
-type t = {byCode: DataLoader.t<string, option<Twitter.twitterOAuthResponse>>}
+type t = {token: DataLoader.t<string, option<Twitter.twitterOAuthResponse>>}
 
 external btoa: string => string = "btoa"
 
 let make = () => {
-  byCode: DataLoader.makeSingle(async code => {
+  token: DataLoader.makeSingle(async code => {
     open Fetch
 
     let baseUrl = "http://" ++ vercelUrl->Option.getWithDefault("localhost:3000")

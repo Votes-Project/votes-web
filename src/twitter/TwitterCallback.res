@@ -65,8 +65,9 @@ let make = () => {
 
     None
   })
-
-  <div className="text-3xl flex flex-1 justify-center items-center-full h-full">
-    {"Verifying Twitter OAuth..."->React.string}
-  </div>
+  isMutating
+    ? <div className="text-3xl flex flex-1 justify-center items-center-full h-full">
+        {"Authenticating Twitter..."->React.string}
+      </div>
+    : React.null
 }
