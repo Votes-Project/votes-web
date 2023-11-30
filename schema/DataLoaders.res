@@ -11,6 +11,7 @@ type t = {
   verifications: VerificationsDataLoaders.t,
   auctionContract: AuctionContractDataLoaders.t,
   question: QuestionDataLoaders.t,
+  twitter: TwitterDataLoaders.t,
 }
 
 let make = () => {
@@ -26,4 +27,5 @@ let make = () => {
   verifications: VerificationsDataLoaders.make(),
   auctionContract: AuctionContractDataLoaders.make(),
   question: QuestionDataLoaders.make(),
+  twitter: TwitterDataLoaders.make(),
 }

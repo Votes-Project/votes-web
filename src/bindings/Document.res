@@ -11,3 +11,11 @@ module EventListener = {
 
 let addEventListener = EventListener.make
 let removeEventListener = EventListener.remove
+
+module Cookie = {
+  type t = string
+  @set external setCookie: (Dom.document, string) => unit = "cookie"
+  @get external cookie: Dom.document => string = "cookie"
+}
+let cookie = Cookie.cookie
+let setCookie = Cookie.setCookie

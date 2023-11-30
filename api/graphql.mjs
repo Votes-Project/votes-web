@@ -3,18 +3,28 @@
 import * as DataLoaders from "../schema/DataLoaders.mjs";
 import * as GraphqlYoga from "graphql-yoga";
 import * as ResGraphSchema from "../schema/__generated__/ResGraphSchema.mjs";
+import * as ServerPluginCookies from "@whatwg-node/server-plugin-cookies";
+
+var Cookies = {};
+
+var Plugins = {
+  Cookies: Cookies
+};
 
 var $$default = GraphqlYoga.createYoga({
       schema: ResGraphSchema.schema,
       context: (async function (param) {
           return {
-                  dataLoaders: DataLoaders.make()
+                  dataLoaders: DataLoaders.make(),
+                  request: param.request
                 };
         }),
-      graphqlEndpoint: "/api/graphql"
+      graphqlEndpoint: "/api/graphql",
+      plugins: [ServerPluginCookies.useCookies()]
     });
 
 export {
+  Plugins ,
   $$default as default,
 }
 /* default Not a pure module */

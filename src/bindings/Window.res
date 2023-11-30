@@ -35,3 +35,17 @@ let removeEventListener = EventListener.remove
 @get external scrollY: Dom.window => float = "scrollY"
 
 @send external clearTimeout: (t, timeoutId) => unit = "clearTimeout"
+
+module Location = {
+  type t
+
+  @get external make: Dom.window => t = "location"
+
+  @get external href: t => string = "href"
+  @get external pathname: t => string = "pathname"
+  @get external search: t => string = "search"
+  @get external hash: t => string = "hash"
+  @get external origin: t => string = "origin"
+}
+
+let location = Location.make

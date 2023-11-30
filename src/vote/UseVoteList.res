@@ -97,7 +97,7 @@ module UseVoteDisplay = {
     })
 
     if address->Nullable.toOption->Option.isNone {
-      <div className="flex h-full w-full items-center justify-center">
+      <div className="flex h-full w-full items-center justify-center py-4">
         <RainbowKit.ConnectButton />
       </div>
     } else {

@@ -9,6 +9,8 @@ module Internal = {
     voteDetails: option<int>,
     voteDetailsToken: option<int>,
     showAllBids: option<int>,
+    state: option<string>,
+    code: option<string>,
   }
 
   @live
@@ -21,6 +23,8 @@ module Internal = {
     voteDetails: option<int>,
     voteDetailsToken: option<int>,
     showAllBids: option<int>,
+    state: option<string>,
+    code: option<string>,
   }
 
   @live
@@ -45,6 +49,8 @@ module Internal = {
       voteDetails: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetails")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
       voteDetailsToken: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetailsToken")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
       showAllBids: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("showAllBids")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
+      state: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("state")->Belt.Option.flatMap(value => Some(value->Js.Global.decodeURIComponent)),
+      code: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("code")->Belt.Option.flatMap(value => Some(value->Js.Global.decodeURIComponent)),
     }
   }
 
@@ -55,6 +61,8 @@ type queryParams = {
   voteDetails: option<int>,
   voteDetailsToken: option<int>,
   showAllBids: option<int>,
+  state: option<string>,
+  code: option<string>,
 }
 
 @live
@@ -70,6 +78,10 @@ let parseQueryParams = (search: string): queryParams => {
 
     showAllBids: queryParams->QueryParams.getParamByKey("showAllBids")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
 
+    state: queryParams->QueryParams.getParamByKey("state")->Belt.Option.flatMap(value => Some(value->Js.Global.decodeURIComponent)),
+
+    code: queryParams->QueryParams.getParamByKey("code")->Belt.Option.flatMap(value => Some(value->Js.Global.decodeURIComponent)),
+
   }
 }
 
@@ -79,12 +91,16 @@ let makeQueryParams = (
   ~voteDetails: option<int>=?, 
   ~voteDetailsToken: option<int>=?, 
   ~showAllBids: option<int>=?, 
+  ~state: option<string>=?, 
+  ~code: option<string>=?, 
   ()
 ) => {
   linkBrightID: linkBrightID,
   voteDetails: voteDetails,
   voteDetailsToken: voteDetailsToken,
   showAllBids: showAllBids,
+  state: state,
+  code: code,
 }
 
 @live
@@ -99,6 +115,8 @@ let applyQueryParams = (
   queryParams->QueryParams.setParamOpt(~key="voteDetails", ~value=newParams.voteDetails->Belt.Option.map(voteDetails => Belt.Int.toString(voteDetails)))
   queryParams->QueryParams.setParamOpt(~key="voteDetailsToken", ~value=newParams.voteDetailsToken->Belt.Option.map(voteDetailsToken => Belt.Int.toString(voteDetailsToken)))
   queryParams->QueryParams.setParamOpt(~key="showAllBids", ~value=newParams.showAllBids->Belt.Option.map(showAllBids => Belt.Int.toString(showAllBids)))
+  queryParams->QueryParams.setParamOpt(~key="state", ~value=newParams.state->Belt.Option.map(state => state->Js.Global.encodeURIComponent))
+  queryParams->QueryParams.setParamOpt(~key="code", ~value=newParams.code->Belt.Option.map(code => code->Js.Global.encodeURIComponent))
 }
 
 @live
@@ -154,10 +172,10 @@ let useQueryParams = (): useQueryParamsReturn => {
 }
 
 @inline
-let routePattern = "/"
+let routePattern = "/auth/twitter"
 
 @live
-let makeLink = (~linkBrightID: option<int>=?, ~voteDetails: option<int>=?, ~voteDetailsToken: option<int>=?, ~showAllBids: option<int>=?) => {
+let makeLink = (~linkBrightID: option<int>=?, ~voteDetails: option<int>=?, ~voteDetailsToken: option<int>=?, ~showAllBids: option<int>=?, ~state: option<string>=?, ~code: option<string>=?) => {
   open RelayRouter.Bindings
   let queryParams = QueryParams.make()
   switch linkBrightID {
@@ -179,11 +197,21 @@ let makeLink = (~linkBrightID: option<int>=?, ~voteDetails: option<int>=?, ~vote
     | None => ()
     | Some(showAllBids) => queryParams->QueryParams.setParam(~key="showAllBids", ~value=Belt.Int.toString(showAllBids))
   }
+
+  switch state {
+    | None => ()
+    | Some(state) => queryParams->QueryParams.setParam(~key="state", ~value=state->Js.Global.encodeURIComponent)
+  }
+
+  switch code {
+    | None => ()
+    | Some(code) => queryParams->QueryParams.setParam(~key="code", ~value=code->Js.Global.encodeURIComponent)
+  }
   RelayRouter.Bindings.generatePath(routePattern, Js.Dict.fromArray([])) ++ queryParams->QueryParams.toString
 }
 @live
 let makeLinkFromQueryParams = (queryParams: queryParams) => {
-  makeLink(~linkBrightID=?queryParams.linkBrightID, ~voteDetails=?queryParams.voteDetails, ~voteDetailsToken=?queryParams.voteDetailsToken, ~showAllBids=?queryParams.showAllBids, )
+  makeLink(~linkBrightID=?queryParams.linkBrightID, ~voteDetails=?queryParams.voteDetails, ~voteDetailsToken=?queryParams.voteDetailsToken, ~showAllBids=?queryParams.showAllBids, ~state=?queryParams.state, ~code=?queryParams.code, )
 }
 
 @live
@@ -212,32 +240,20 @@ let useIsRouteActive = (~exact=false) => {
   React.useMemo2(() => location->isRouteActive(~exact), (location, exact))
 }
 @live
-type subRoute = [#Vote | #Question | #Queue | #Raffles | #Votes | #Questions | #Auth]
+type subRoute = [#Callback]
 
 @live
-let getActiveSubRoute = (location: RelayRouter.History.location): option<[#Vote | #Question | #Queue | #Raffles | #Votes | #Questions | #Auth]> => {
+let getActiveSubRoute = (location: RelayRouter.History.location): option<[#Callback]> => {
   let {pathname} = location
-  if RelayRouter.Internal.matchPath("/vote", pathname)->Belt.Option.isSome {
-      Some(#Vote)
-    } else if RelayRouter.Internal.matchPath("/question", pathname)->Belt.Option.isSome {
-      Some(#Question)
-    } else if RelayRouter.Internal.matchPath("/queue", pathname)->Belt.Option.isSome {
-      Some(#Queue)
-    } else if RelayRouter.Internal.matchPath("/raffles", pathname)->Belt.Option.isSome {
-      Some(#Raffles)
-    } else if RelayRouter.Internal.matchPath("/votes", pathname)->Belt.Option.isSome {
-      Some(#Votes)
-    } else if RelayRouter.Internal.matchPath("/questions", pathname)->Belt.Option.isSome {
-      Some(#Questions)
-    } else if RelayRouter.Internal.matchPath("/auth", pathname)->Belt.Option.isSome {
-      Some(#Auth)
+  if RelayRouter.Internal.matchPath("/auth/twitter/callback", pathname)->Belt.Option.isSome {
+      Some(#Callback)
     } else {
     None
   }
 }
 
 @live
-let useActiveSubRoute = (): option<[#Vote | #Question | #Queue | #Raffles | #Votes | #Questions | #Auth]> => {
+let useActiveSubRoute = (): option<[#Callback]> => {
   let location = RelayRouter.Utils.useLocation()
   React.useMemo1(() => {
     getActiveSubRoute(location)

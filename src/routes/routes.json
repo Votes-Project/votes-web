@@ -60,7 +60,22 @@
         "name": "Questions",
         "children": []
       },
-
+      {
+        "name": "Auth",
+        "path": "auth",
+        "children":[
+          {
+            "name": "Twitter",
+            "path": "twitter?state=string&code=string",
+            "children": [
+              {
+                "name": "Callback",
+                "path": "callback",
+              }
+            ]
+          },
+        ]
+      }
     ]
   },
   {

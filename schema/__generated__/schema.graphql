@@ -58,6 +58,11 @@ enum SubgraphError {
   deny
 }
 
+union TwitterOAuthResponse = 
+  | TwitterToken
+  | TwitterOAuthError
+
+
 union Verification = 
   | VerificationData
   | Error
@@ -322,6 +327,10 @@ type Error {
   code: Int!
 }
 
+type Mutation {
+  setTwitterToken(code: String!): TwitterOAuthResponse
+}
+
 
 """Information about pagination in a connection."""
 type PageInfo {
@@ -482,6 +491,20 @@ type TriviaQuestionEdge {
 
   """A cursor for use in pagination."""
   cursor: String!
+}
+
+type TwitterOAuthError {
+  error: String!
+  errorDescription: String!
+}
+
+type TwitterToken implements Node {
+  tokenType: String!
+  expiresIn: Int!
+  accessToken: String!
+  refreshToken: String
+  scope: String!
+  id: ID!
 }
 
 

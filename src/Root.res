@@ -143,6 +143,13 @@ module QuestionProvider = {
   }
 }
 
+Dom.Storage2.localStorage->Dom.Storage2.setItem("votesdev_answer_jwt", "")
+
+switch Dom.Storage2.localStorage->Dom.Storage2.getItem("votes_twitter_accessToken") {
+| Some(accessToken) => document->Document.setCookie("votes_twitter_accessToken=" ++ accessToken)
+| None => ()
+}
+
 let localPrivateKey = Dom.Storage2.localStorage->Dom.Storage2.getItem("votes_privateKey")
 let localPublicKey = Dom.Storage2.localStorage->Dom.Storage2.getItem("votes_publicKey")
 let localContextId = Dom.Storage2.localStorage->Dom.Storage2.getItem("votes_contextId")

@@ -14,6 +14,7 @@ module Resolver = {
     | Question(Question.question)
     | QuestionSubmitted(QuestionSubmitted.questionSubmitted)
     | TriviaQuestion(Question.triviaQuestion)
+    | TwitterToken(Twitter.twitterToken)
     | VerificationData(Verification.verificationData)
     | VerificationsData(Verifications.verificationsData)
     | Vote(Vote.vote)
@@ -32,6 +33,7 @@ module ImplementedBy = {
     | Question
     | QuestionSubmitted
     | TriviaQuestion
+    | TwitterToken
     | VerificationData
     | VerificationsData
     | Vote
@@ -49,6 +51,7 @@ module ImplementedBy = {
     | "Question" => Some(Question)
     | "QuestionSubmitted" => Some(QuestionSubmitted)
     | "TriviaQuestion" => Some(TriviaQuestion)
+    | "TwitterToken" => Some(TwitterToken)
     | "VerificationData" => Some(VerificationData)
     | "VerificationsData" => Some(VerificationsData)
     | "Vote" => Some(Vote)
@@ -70,6 +73,7 @@ type typeMap<'a> = {
   @as("Question") question: 'a,
   @as("QuestionSubmitted") questionSubmitted: 'a,
   @as("TriviaQuestion") triviaQuestion: 'a,
+  @as("TwitterToken") twitterToken: 'a,
   @as("VerificationData") verificationData: 'a,
   @as("VerificationsData") verificationsData: 'a,
   @as("Vote") vote: 'a,
