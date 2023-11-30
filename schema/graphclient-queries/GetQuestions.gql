@@ -1,8 +1,11 @@
 query GetQuestions($first: Int, $orderBy: Question_orderBy, $orderDirection: OrderDirection, $where: Question_filter){
   questions(first: $first, orderBy: $orderBy, orderDirection: $orderDirection, where: $where) {
     id
-    tokenId
+    asker
     question
+    vote {
+      id
+    }
     isLocked
     contract {
       id

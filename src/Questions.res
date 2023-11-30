@@ -71,6 +71,7 @@ module QuestionItem = {
     id
     title
     tokenId
+    asker
   }
 `)
 

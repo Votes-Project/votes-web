@@ -44,7 +44,17 @@ let options = async (q: question, ~ctx: ResGraphContext.context): array<question
 
 /* The token ID of the vote token */
 @gql.field
-let tokenId = (question: question): Schema.BigInt.t => question.tokenId->BigInt.fromString
+let tokenId = (question: question): Schema.BigInt.t => question.vote.id->BigInt.fromString
+
+@gql.field
+let vote = async (question: question, ~ctx: ResGraphContext.context) => {
+  switch await ctx.dataLoaders.vote.byId->DataLoader.load(question.vote.id) {
+  | None => panic("Something went wrong fetching the vote")
+  | Some(vote) =>
+    ctx.dataLoaders.vote.byId->DataLoader.prime(Some(vote))
+    vote
+  }
+}
 
 // @gql.field
 // let contract = async (

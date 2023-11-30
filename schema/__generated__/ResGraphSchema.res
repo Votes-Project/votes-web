@@ -1650,6 +1650,15 @@ t_Question.contents = GraphQLObjectType.make({
   interfaces: [get_Node()],
   fields: () =>
     {
+      "asker": {
+        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        description: "The ethereum address who asked the question",
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["asker"]
+        }),
+      },
       "id": {
         typ: Scalars.id->Scalars.toGraphQLType->nonNull,
         description: ?None,
@@ -1695,6 +1704,15 @@ t_Question.contents = GraphQLObjectType.make({
         resolve: makeResolveFn((src, args, ctx) => {
           let src = typeUnwrapper(src)
           QuestionResolvers.tokenId(src)
+        }),
+      },
+      "vote": {
+        typ: get_Vote()->GraphQLObjectType.toGraphQLType->nonNull,
+        description: ?None,
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, args, ctx) => {
+          let src = typeUnwrapper(src)
+          QuestionResolvers.vote(src, ~ctx)
         }),
       },
     }->makeFields,

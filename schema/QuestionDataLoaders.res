@@ -35,7 +35,8 @@ type t = {
 type questionFromContract = {
   id: string,
   question: string,
-  tokenId: string,
+  vote: GraphClient.linkById,
+  asker: string,
   isLocked: bool,
   contract: GraphClient.linkById,
 }
@@ -58,7 +59,8 @@ module ById = {
                 {
                   id: question.id,
                   question: "",
-                  tokenId: question.tokenId,
+                  asker: question.asker,
+                  vote: {id: question.vote.id},
                   options,
                   isLocked: question.isLocked,
                   contract: {id: question.contract.id},
@@ -71,7 +73,8 @@ module ById = {
                 {
                   id: question.id,
                   question: title,
-                  tokenId: question.tokenId,
+                  asker: question.asker,
+                  vote: {id: question.vote.id},
                   options,
                   isLocked: question.isLocked,
                   contract: {id: question.contract.id},
@@ -111,7 +114,8 @@ module List = {
                 {
                   id: question.id,
                   question: "",
-                  tokenId: question.tokenId,
+                  asker: question.asker,
+                  vote: {id: question.vote.id},
                   options: [],
                   isLocked: question.isLocked,
                   contract: {id: question.contract.id},
@@ -123,7 +127,8 @@ module List = {
                 {
                   id: question.id,
                   question: "",
-                  tokenId: question.tokenId,
+                  asker: question.asker,
+                  vote: {id: question.vote.id},
                   options,
                   isLocked: question.isLocked,
                   contract: {id: question.contract.id},
@@ -135,7 +140,8 @@ module List = {
                 {
                   id: question.id,
                   question: title,
-                  tokenId: question.tokenId,
+                  asker: question.asker,
+                  vote: {id: question.vote.id},
                   options,
                   isLocked: question.isLocked,
                   contract: {id: question.contract.id},
