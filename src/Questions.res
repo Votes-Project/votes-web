@@ -79,7 +79,7 @@ module QuestionItem = {
     let question = Fragment.use(question)
     <div className="flex flex-col justify-center items-center">
       <div
-        className=" flex-1 whitespace-pre-wrap [text-wrap:pretty] bg-default lg:bg-secondary shadow-lg p-2 rounded-lg self-start mr-auto">
+        className=" flex-1 whitespace-pre-wrap [text-wrap:pretty] lg:bg-secondary lg:shadow-lg p-2 rounded-lg self-start mr-auto">
         {question.title->React.string}
       </div>
     </div>
@@ -91,7 +91,7 @@ module SeedQuestionItem = {
   let make = (~question) => {
     <div className="flex flex-col justify-center items-center">
       <div
-        className=" flex-1 whitespace-pre-wrap [text-wrap:pretty] bg-default lg:bg-secondary shadow-lg p-2 rounded-lg self-start">
+        className=" flex-1 whitespace-pre-wrap [text-wrap:pretty]  lg:bg-secondary lg:shadow-lg p-2 rounded-lg self-start">
         {question.title->React.string}
       </div>
     </div>
@@ -103,16 +103,18 @@ module PastQuestionItem = {
   let make = (~question) => {
     <div className="flex flex-col justify-center items-center">
       <div
-        className=" flex-1 whitespace-pre-wrap [text-wrap:pretty] bg-default lg:bg-secondary opacity-50 shadow-lg p-2 rounded-lg self-start">
+        className=" flex-1 whitespace-pre-wrap [text-wrap:pretty]  lg:bg-secondary opacity-50 lg:shadow-lg p-2 rounded-lg self-start">
         {question.title->React.string}
       </div>
     </div>
   }
 }
 
+type calendarType = Day | HalfCycle | Cycle
 module Item = {
   @react.component
   let make = (~question, ~index) => {
+    let windowWidth = Window.Width.Inner.use()
     let {setParams} = Routes.Main.Questions.Route.useQueryParams()
     let ref = React.useRef(Nullable.null)
     let today = Date.now()->Date.fromTime
@@ -134,12 +136,32 @@ module Item = {
       })
     }
 
-    <button
-      onClick=handleQuestionSelect
-      className="w-screen px-4 min-w-[100vw] max-w-[100vw] lg:min-w-0 lg:w-full flex lg:flex-col lg:justify-center lg:items-center "
-      ref={ReactDOM.Ref.domRef(ref)}>
+    let calendarType = HalfCycle
+    let className = switch (windowWidth, calendarType) {
+    | (
+        LG | XL | XXL,
+        _,
+      ) => "mx-1 p-2 min-w-0 w-full flex flex-col justify-center items-center snap-start"
+    | (
+        _,
+        Day,
+      ) => "w-[90vw] max-w-[90vw] min-w-[90vw] border-b-2 border-x-2 border-default rounded-b-2xl
+     lg:border-0 mx-1 p-2 lg:min-w-0 lg:w-full flex lg:flex-col lg:justify-center
+     lg:items-center snap-start"
+    | (_, HalfCycle) => "w-[18w] max-w-[20vw] min-w-[20vw] max-h-[10rem] overflow-hidden
+    border-b-2 border-x-2  border-default rounded-b-2xl lg:border-0 mx-1 p-2 lg:min-w-0 lg:w-full
+    flex lg:flex-col lg:justify-center lg:items-center snap-start"
+    | (
+        _,
+        Cycle,
+      ) => "w-[9vw] max-h-[15rem] min-w-[15vw] overflow-hidden border-b-2 border-x-2  border-default
+     rounded-b-2xl lg:border-0 mx-1 p-2 lg:min-w-0 lg:w-full flex lg:flex-col
+     lg:justify-center lg:items-center snap-start"
+    }
+
+    <button className onClick=handleQuestionSelect ref={ReactDOM.Ref.domRef(ref)}>
       <div
-        className="w-screen flex lg:flex-1 flex-col-reverse lg:flex-row gap-2 justify-end lg:w-full items-stretch  lg:mr-auto snap-start ">
+        className="flex lg:flex-1 flex-col-reverse lg:flex-row gap-2 justify-end lg:w-full items-stretch  lg:mr-auto font-semibold  ">
         <FramerMotion.Div className="flex flex-col py-2">
           {switch question {
           | Question(question) => <QuestionItem question />
@@ -148,7 +170,7 @@ module Item = {
           }}
         </FramerMotion.Div>
         <div
-          className="flex flex-col items-start lg:items-center cursor-row-resize lg:min-w-[4rem]  min-w-[2rem]">
+          className="flex flex-col items-start lg:items-center lg:min-w-[4rem]  min-w-[2rem] lg:min-h-0">
           <div>
             <div
               className="select-none text-xs font-fugaz text-center lg:self-center rounded-full  text-default-darker">
@@ -240,6 +262,31 @@ module List = {
       None
     }, (ref, pastQuestionsRef, questionsRef, seedQuestionsRef, setHeight, windowWidth, setWidth))
 
+    React.useEffect6(() => {
+      open Element
+      switch (ref.current->Nullable.toOption, questionsRef.current->Nullable.toOption) {
+      | (Some(current), Some(questions)) =>
+        switch (height, width) {
+        | (Some(_), _) =>
+          switch currentQuestionRef.current->Nullable.toOption {
+          | None => current->Scroll.setTop(questions->Offset.top -. current->Offset.top)
+          | Some(currentQuestion) =>
+            current->Scroll.setTop(currentQuestion->Offset.top -. current->Offset.top)
+          }
+        | (_, Some(_)) =>
+          switch currentQuestionRef.current->Nullable.toOption {
+          | None => current->Scroll.setLeft(questions->Offset.left -. current->Offset.left)
+          | Some(currentQuestion) =>
+            current->Scroll.setLeft(currentQuestion->Offset.left -. current->Offset.left)
+          }
+        | _ => ()
+        }
+      | _ => ()
+      }
+
+      None
+    }, (ref, questionsRef, currentQuestionRef, height, width, queryParams.day))
+
     let handlePageScroll = _ =>
       switch windowWidth {
       | LG | XL | XXL =>
@@ -295,29 +342,29 @@ module List = {
     })
 
     <div
-      className="overflow-scroll lg:overscroll-contain py-4 pl-4 lg:pl-0 hide-scrollbar lg:hover:border-2  border-primary-dark/50 lg:rounded-3xl m-2 snap-x lg:snap-none snap-mandatory"
+      className="h-fit overflow-scroll lg:overscroll-contain py-4 pl-4 lg:pl-0 hide-scrollbar lg:hover:border-2  border-primary-dark/50 lg:rounded-3xl m-2 snap-x lg:snap-none snap-mandatory first:scroll-pl-0 scroll-px-[2.5vw]"
       onMouseEnter={handlePageScroll}
       onMouseLeave={handlePageScroll}
       ref={ReactDOM.Ref.domRef(ref)}>
       <FramerMotion.Div
         layout=Position
-        className="flex flex-row lg:flex-col lg:items-center justify-center px-2 pt-1 hover:lg:m-[-2px] h-full"
+        className="flex flex-row lg:flex-col lg:items-center justify-center px-2 pt-1 hover:lg:m-[-2px] h-full "
         style={{
           height: `${height->Option.getWithDefault("auto")}`,
           width: `${width->Option.getWithDefault("auto")}`,
         }}>
         <ul
-          className="flex  justify-center flex-row lg:flex-col lg:w-full z-0"
+          className="flex  justify-center flex-row lg:flex-col lg:w-full z-0 h-fit border-t-2 border-default lg:border-t-0  "
           ref={ReactDOM.Ref.domRef(pastQuestionsRef)}>
           {pastQuestions->React.array}
         </ul>
         <ul
           ref={ReactDOM.Ref.domRef(questionsRef)}
-          className="flex  justify-center flex-row lg:flex-col lg:w-full z-0">
+          className="flex  justify-center flex-row lg:flex-col lg:w-full z-0  h-fit border-t-2 border-default lg:border-t-0 ">
           {questions->React.array}
         </ul>
         <ul
-          className="flex justify-center flex-row lg:flex-col lg:w-full z-0"
+          className="flex justify-center flex-row lg:flex-col lg:w-full z-0  h-fit border-t-2 border-default lg:border-t-0 "
           ref={ReactDOM.Ref.domRef(seedQuestionsRef)}>
           {seedQuestions->React.array}
         </ul>
@@ -358,7 +405,8 @@ let make = (~queryRef) => {
 
   <FramerMotion.Div
     transition={{duration: 2.}} className="relative flex flex-col lg:mt-0 max-h-[558px] ">
-    <div className=" w-full flex justify-start items-center pt-2 z-10 px-4 gap-4  ">
+    <div
+      className=" w-full flex lg:flex-row-reverse lg:justify-between justify-start items-center pt-2 z-10 px-4 gap-4  ">
       <label>
         <select
           value={""}
