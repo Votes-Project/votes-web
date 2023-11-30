@@ -2,7 +2,11 @@ query GetQuestion($id: ID!) {
   question(id: $id) {
     id
     question
+    asker
     isLocked
+    vote {
+      id
+    }
     contract {
       id
     }

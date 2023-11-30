@@ -375,11 +375,15 @@ type Query {
 }
 
 type Question implements Node {
+  vote: Vote!
   tokenId: BigInt!
   options: [QuestionOption!]!
 
   """The question"""
   title: String!
+
+  """The ethereum address who asked the question"""
+  asker: String!
 
   """If question has been locked by curator"""
   isLocked: Boolean!

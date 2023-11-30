@@ -12,7 +12,10 @@ type questionOption = {
 type question = {
   ...NodeInterface.node,
   question: string,
-  tokenId: string,
+  /** The ethereum address who asked the question */
+  @gql.field
+  asker: string,
+  vote: GraphClient.linkById,
   options: array<questionOption>,
   /** If question has been locked by curator*/
   @gql.field
