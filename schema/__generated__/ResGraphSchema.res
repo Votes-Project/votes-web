@@ -298,11 +298,6 @@ i_Node.contents = GraphQLInterfaceType.make({
         description: ?None,
         deprecationReason: ?None,
       },
-      "id": {
-        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
-        description: ?None,
-        deprecationReason: ?None,
-      },
     }->makeFields,
   resolveType: GraphQLInterfaceType.makeResolveInterfaceTypeFn(interface_Node_resolveType),
 })
@@ -331,12 +326,12 @@ t_Answer.contents = GraphQLObjectType.make({
         }),
       },
       "id": {
-        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        typ: Scalars.id->Scalars.toGraphQLType->nonNull,
         description: ?None,
         deprecationReason: ?None,
-        resolve: makeResolveFn((src, _args, _ctx) => {
+        resolve: makeResolveFn((src, args, ctx) => {
           let src = typeUnwrapper(src)
-          src["id"]
+          NodeInterfaceResolvers.id(src, ~typename=Answer)
         }),
       },
       "option": {
@@ -497,12 +492,12 @@ t_Auction.contents = GraphQLObjectType.make({
         }),
       },
       "id": {
-        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        typ: Scalars.id->Scalars.toGraphQLType->nonNull,
         description: ?None,
         deprecationReason: ?None,
-        resolve: makeResolveFn((src, _args, _ctx) => {
+        resolve: makeResolveFn((src, args, ctx) => {
           let src = typeUnwrapper(src)
-          src["id"]
+          NodeInterfaceResolvers.id(src, ~typename=Auction)
         }),
       },
       "settled": {
@@ -577,12 +572,12 @@ t_AuctionBid.contents = GraphQLObjectType.make({
         }),
       },
       "id": {
-        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        typ: Scalars.id->Scalars.toGraphQLType->nonNull,
         description: ?None,
         deprecationReason: ?None,
-        resolve: makeResolveFn((src, _args, _ctx) => {
+        resolve: makeResolveFn((src, args, ctx) => {
           let src = typeUnwrapper(src)
-          src["id"]
+          NodeInterfaceResolvers.id(src, ~typename=AuctionBid)
         }),
       },
       "tokenId": {
@@ -735,12 +730,12 @@ t_AuctionContract.contents = GraphQLObjectType.make({
         }),
       },
       "id": {
-        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        typ: Scalars.id->Scalars.toGraphQLType->nonNull,
         description: ?None,
         deprecationReason: ?None,
-        resolve: makeResolveFn((src, _args, _ctx) => {
+        resolve: makeResolveFn((src, args, ctx) => {
           let src = typeUnwrapper(src)
-          src["id"]
+          NodeInterfaceResolvers.id(src, ~typename=AuctionContract)
         }),
       },
       "launched": {
@@ -851,12 +846,12 @@ t_AuctionCreated.contents = GraphQLObjectType.make({
         }),
       },
       "id": {
-        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        typ: Scalars.id->Scalars.toGraphQLType->nonNull,
         description: ?None,
         deprecationReason: ?None,
-        resolve: makeResolveFn((src, _args, _ctx) => {
+        resolve: makeResolveFn((src, args, ctx) => {
           let src = typeUnwrapper(src)
-          src["id"]
+          NodeInterfaceResolvers.id(src, ~typename=AuctionCreated)
         }),
       },
       "startTime": {
@@ -975,12 +970,12 @@ t_AuctionSettled.contents = GraphQLObjectType.make({
         }),
       },
       "id": {
-        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        typ: Scalars.id->Scalars.toGraphQLType->nonNull,
         description: ?None,
         deprecationReason: ?None,
-        resolve: makeResolveFn((src, _args, _ctx) => {
+        resolve: makeResolveFn((src, args, ctx) => {
           let src = typeUnwrapper(src)
-          src["id"]
+          NodeInterfaceResolvers.id(src, ~typename=AuctionSettled)
         }),
       },
       "tokenId": {
@@ -1656,12 +1651,12 @@ t_Question.contents = GraphQLObjectType.make({
   fields: () =>
     {
       "id": {
-        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        typ: Scalars.id->Scalars.toGraphQLType->nonNull,
         description: ?None,
         deprecationReason: ?None,
-        resolve: makeResolveFn((src, _args, _ctx) => {
+        resolve: makeResolveFn((src, args, ctx) => {
           let src = typeUnwrapper(src)
-          src["id"]
+          NodeInterfaceResolvers.id(src, ~typename=Question)
         }),
       },
       "isLocked": {
@@ -1802,12 +1797,12 @@ t_QuestionSubmitted.contents = GraphQLObjectType.make({
         }),
       },
       "id": {
-        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        typ: Scalars.id->Scalars.toGraphQLType->nonNull,
         description: ?None,
         deprecationReason: ?None,
-        resolve: makeResolveFn((src, _args, _ctx) => {
+        resolve: makeResolveFn((src, args, ctx) => {
           let src = typeUnwrapper(src)
-          src["id"]
+          NodeInterfaceResolvers.id(src, ~typename=QuestionSubmitted)
         }),
       },
       "options": {
@@ -1919,12 +1914,12 @@ t_TriviaQuestion.contents = GraphQLObjectType.make({
   fields: () =>
     {
       "id": {
-        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        typ: Scalars.id->Scalars.toGraphQLType->nonNull,
         description: ?None,
         deprecationReason: ?None,
-        resolve: makeResolveFn((src, _args, _ctx) => {
+        resolve: makeResolveFn((src, args, ctx) => {
           let src = typeUnwrapper(src)
-          src["id"]
+          NodeInterfaceResolvers.id(src, ~typename=TriviaQuestion)
         }),
       },
       "options": {
@@ -2039,12 +2034,12 @@ t_VerificationData.contents = GraphQLObjectType.make({
         }),
       },
       "id": {
-        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        typ: Scalars.id->Scalars.toGraphQLType->nonNull,
         description: ?None,
         deprecationReason: ?None,
-        resolve: makeResolveFn((src, _args, _ctx) => {
+        resolve: makeResolveFn((src, args, ctx) => {
           let src = typeUnwrapper(src)
-          src["id"]
+          NodeInterfaceResolvers.id(src, ~typename=VerificationData)
         }),
       },
       "publicKey": {
@@ -2112,12 +2107,12 @@ t_VerificationsData.contents = GraphQLObjectType.make({
         }),
       },
       "id": {
-        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        typ: Scalars.id->Scalars.toGraphQLType->nonNull,
         description: ?None,
         deprecationReason: ?None,
-        resolve: makeResolveFn((src, _args, _ctx) => {
+        resolve: makeResolveFn((src, args, ctx) => {
           let src = typeUnwrapper(src)
-          src["id"]
+          NodeInterfaceResolvers.id(src, ~typename=VerificationsData)
         }),
       },
     }->makeFields,
@@ -2147,12 +2142,12 @@ t_Vote.contents = GraphQLObjectType.make({
         }),
       },
       "id": {
-        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        typ: Scalars.id->Scalars.toGraphQLType->nonNull,
         description: ?None,
         deprecationReason: ?None,
-        resolve: makeResolveFn((src, _args, _ctx) => {
+        resolve: makeResolveFn((src, args, ctx) => {
           let src = typeUnwrapper(src)
-          src["id"]
+          NodeInterfaceResolvers.id(src, ~typename=Vote)
         }),
       },
       "owner": {
@@ -2228,12 +2223,12 @@ t_VoteContract.contents = GraphQLObjectType.make({
         }),
       },
       "id": {
-        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        typ: Scalars.id->Scalars.toGraphQLType->nonNull,
         description: ?None,
         deprecationReason: ?None,
-        resolve: makeResolveFn((src, _args, _ctx) => {
+        resolve: makeResolveFn((src, args, ctx) => {
           let src = typeUnwrapper(src)
-          src["id"]
+          NodeInterfaceResolvers.id(src, ~typename=VoteContract)
         }),
       },
       "name": {
@@ -2307,12 +2302,12 @@ t_VoteTransfer.contents = GraphQLObjectType.make({
         }),
       },
       "id": {
-        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
+        typ: Scalars.id->Scalars.toGraphQLType->nonNull,
         description: ?None,
         deprecationReason: ?None,
-        resolve: makeResolveFn((src, _args, _ctx) => {
+        resolve: makeResolveFn((src, args, ctx) => {
           let src = typeUnwrapper(src)
-          src["id"]
+          NodeInterfaceResolvers.id(src, ~typename=VoteTransfer)
         }),
       },
       "to": {
