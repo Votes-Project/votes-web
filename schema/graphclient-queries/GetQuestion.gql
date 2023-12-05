@@ -3,7 +3,8 @@ query GetQuestion($id: ID!) {
     id
     question
     asker
-    isLocked
+    state
+    modifiedTimestamp
     vote {
       id
     }

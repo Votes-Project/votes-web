@@ -53,6 +53,13 @@ enum OrderDirection {
   desc
 }
 
+enum QuestionState {
+  Submitted
+  Approved
+  Used
+  Flagged
+}
+
 enum SubgraphError {
   allow
   deny
@@ -352,8 +359,6 @@ type Query {
   randomQuestions(limit: Int!, first: Int, after: String, before: String, last: Int): TriviaQuestionConnection!
   randomQuestion: TriviaQuestion
   triviaQuestionById(id: String!): TriviaQuestion
-  questionSubmitteds(skip: Int, first: Int, after: String, before: String, last: Int): QuestionSubmittedConnection
-  questionSubmitted(id: String!): QuestionSubmitted
   questions(orderBy: OrderBy_Questions, orderDirection: OrderDirection, where: Where_Questions, first: Int, after: String, before: String, last: Int): QuestionConnection!
   question(id: String!): Question
 
@@ -376,6 +381,9 @@ type Query {
 
 type Question implements Node {
   vote: Vote!
+
+  """Timestamp of the most recent edit"""
+  modifiedTimestamp: Timestamp!
   tokenId: BigInt!
   options: [QuestionOption!]!
 
@@ -385,8 +393,8 @@ type Question implements Node {
   """The ethereum address who asked the question"""
   asker: String!
 
-  """If question has been locked by curator"""
-  isLocked: Boolean!
+  """State of the question (Submitted | Approved | Used | Flagged)"""
+  state: QuestionState!
   id: ID!
 }
 
@@ -419,44 +427,6 @@ type QuestionOption {
 
   """The id of the option"""
   details: String
-}
-
-type QuestionSubmitted implements Node {
-
-  """ID of the vote token attached to the question. If the community vote is
-  used this will be the zero address"""
-  tokenId: String!
-
-  """Question asked"""
-  question: String!
-
-  """Answer options for the question"""
-  options: [String!]!
-  answers: [String!]
-  answerNum: Int
-  id: ID!
-}
-
-
-"""A connection to a todo."""
-type QuestionSubmittedConnection {
-
-  """Information to aid in pagination."""
-  pageInfo: PageInfo!
-
-  """A list of edges."""
-  edges: [QuestionSubmittedEdge]
-}
-
-
-"""An edge to a submitted Question."""
-type QuestionSubmittedEdge {
-
-  """The item at the end of the edge."""
-  node: QuestionSubmitted
-
-  """A cursor for use in pagination."""
-  cursor: String!
 }
 
 type TextQuestion {

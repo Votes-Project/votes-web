@@ -6,7 +6,8 @@ query GetQuestions($first: Int, $orderBy: Question_orderBy, $orderDirection: Ord
     vote {
       id
     }
-    isLocked
+    state
+    modifiedTimestamp
     contract {
       id
     }

@@ -37,7 +37,9 @@ type questionFromContract = {
   question: string,
   vote: GraphClient.linkById,
   asker: string,
-  isLocked: bool,
+  state: Question.questionState,
+  modifiedTimestamp: string,
+  day: Nullable.t<string>,
   contract: GraphClient.linkById,
 }
 module ById = {
@@ -62,8 +64,10 @@ module ById = {
                   asker: question.asker,
                   vote: {id: question.vote.id},
                   options,
-                  isLocked: question.isLocked,
+                  state: question.state,
                   contract: {id: question.contract.id},
+                  day: question.day->Nullable.toOption,
+                  modifiedTimestamp: question.modifiedTimestamp,
                 }: Question.question
               ),
             )
@@ -76,7 +80,9 @@ module ById = {
                   asker: question.asker,
                   vote: {id: question.vote.id},
                   options,
-                  isLocked: question.isLocked,
+                  state: question.state,
+                  modifiedTimestamp: question.modifiedTimestamp,
+                  day: question.day->Nullable.toOption,
                   contract: {id: question.contract.id},
                 }: Question.question
               ),
@@ -117,7 +123,9 @@ module List = {
                   asker: question.asker,
                   vote: {id: question.vote.id},
                   options: [],
-                  isLocked: question.isLocked,
+                  state: question.state,
+                  modifiedTimestamp: question.modifiedTimestamp,
+                  day: question.day->Nullable.toOption,
                   contract: {id: question.contract.id},
                 }: Question.question
               )
@@ -130,7 +138,9 @@ module List = {
                   asker: question.asker,
                   vote: {id: question.vote.id},
                   options,
-                  isLocked: question.isLocked,
+                  state: question.state,
+                  modifiedTimestamp: question.modifiedTimestamp,
+                  day: question.day->Nullable.toOption,
                   contract: {id: question.contract.id},
                 }: Question.question
               )
@@ -143,7 +153,9 @@ module List = {
                   asker: question.asker,
                   vote: {id: question.vote.id},
                   options,
-                  isLocked: question.isLocked,
+                  state: question.state,
+                  modifiedTimestamp: question.modifiedTimestamp,
+                  day: question.day->Nullable.toOption,
                   contract: {id: question.contract.id},
                 }: Question.question
               )
