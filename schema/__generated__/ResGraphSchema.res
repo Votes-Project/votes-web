@@ -120,6 +120,16 @@ let enum_OrderDirection = GraphQLEnumType.make({
     "desc": {GraphQLEnumType.value: "desc", description: ?None, deprecationReason: ?None},
   }->makeEnumValues,
 })
+let enum_QuestionState = GraphQLEnumType.make({
+  name: "QuestionState",
+  description: ?None,
+  values: {
+    "Submitted": {GraphQLEnumType.value: "Submitted", description: ?None, deprecationReason: ?None},
+    "Approved": {GraphQLEnumType.value: "Approved", description: ?None, deprecationReason: ?None},
+    "Used": {GraphQLEnumType.value: "Used", description: ?None, deprecationReason: ?None},
+    "Flagged": {GraphQLEnumType.value: "Flagged", description: ?None, deprecationReason: ?None},
+  }->makeEnumValues,
+})
 let enum_SubgraphError = GraphQLEnumType.make({
   name: "SubgraphError",
   description: ?None,
@@ -176,12 +186,6 @@ let t_QuestionEdge: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
 let get_QuestionEdge = () => t_QuestionEdge.contents
 let t_QuestionOption: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
 let get_QuestionOption = () => t_QuestionOption.contents
-let t_QuestionSubmitted: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
-let get_QuestionSubmitted = () => t_QuestionSubmitted.contents
-let t_QuestionSubmittedConnection: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
-let get_QuestionSubmittedConnection = () => t_QuestionSubmittedConnection.contents
-let t_QuestionSubmittedEdge: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
-let get_QuestionSubmittedEdge = () => t_QuestionSubmittedEdge.contents
 let t_TextQuestion: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
 let get_TextQuestion = () => t_TextQuestion.contents
 let t_TriviaQuestion: ref<GraphQLObjectType.t> = Obj.magic({"contents": Js.null})
@@ -281,7 +285,6 @@ let interface_Node_resolveType = (v: Interface_node.Resolver.t) =>
   | VerificationData(_) => "VerificationData"
   | TriviaQuestion(_) => "TriviaQuestion"
   | Question(_) => "Question"
-  | QuestionSubmitted(_) => "QuestionSubmitted"
   | Vote(_) => "Vote"
   | Answer(_) => "Answer"
   | VerificationsData(_) => "VerificationsData"
@@ -1381,39 +1384,6 @@ t_Query.contents = GraphQLObjectType.make({
           QuestionResolvers.question(src, ~ctx, ~id=args["id"])
         }),
       },
-      "questionSubmitted": {
-        typ: get_QuestionSubmitted()->GraphQLObjectType.toGraphQLType,
-        description: ?None,
-        deprecationReason: ?None,
-        args: {"id": {typ: Scalars.string->Scalars.toGraphQLType->nonNull}}->makeArgs,
-        resolve: makeResolveFn((src, args, ctx) => {
-          let src = typeUnwrapper(src)
-          QuestionSubmittedResolvers.Node.questionSubmitted(src, ~ctx, ~id=args["id"])
-        }),
-      },
-      "questionSubmitteds": {
-        typ: get_QuestionSubmittedConnection()->GraphQLObjectType.toGraphQLType,
-        description: ?None,
-        deprecationReason: ?None,
-        args: {
-          "after": {typ: Scalars.string->Scalars.toGraphQLType},
-          "before": {typ: Scalars.string->Scalars.toGraphQLType},
-          "first": {typ: Scalars.int->Scalars.toGraphQLType},
-          "last": {typ: Scalars.int->Scalars.toGraphQLType},
-          "skip": {typ: Scalars.int->Scalars.toGraphQLType},
-        }->makeArgs,
-        resolve: makeResolveFn((src, args, ctx) => {
-          let src = typeUnwrapper(src)
-          QuestionSubmittedResolvers.Connection.questionSubmitteds(
-            src,
-            ~after=args["after"]->Nullable.toOption,
-            ~before=args["before"]->Nullable.toOption,
-            ~first=args["first"]->Nullable.toOption,
-            ~last=args["last"]->Nullable.toOption,
-            ~skip=args["skip"]->Nullable.toOption,
-          )
-        }),
-      },
       "questions": {
         typ: get_QuestionConnection()->GraphQLObjectType.toGraphQLType->nonNull,
         description: ?None,
@@ -1668,13 +1638,13 @@ t_Question.contents = GraphQLObjectType.make({
           NodeInterfaceResolvers.id(src, ~typename=Question)
         }),
       },
-      "isLocked": {
-        typ: Scalars.boolean->Scalars.toGraphQLType->nonNull,
-        description: "If question has been locked by curator",
+      "modifiedTimestamp": {
+        typ: scalar_Timestamp->GraphQLScalar.toGraphQLType->nonNull,
+        description: "Timestamp of the most recent edit",
         deprecationReason: ?None,
-        resolve: makeResolveFn((src, _args, _ctx) => {
+        resolve: makeResolveFn((src, args, ctx) => {
           let src = typeUnwrapper(src)
-          src["isLocked"]
+          QuestionResolvers.modifiedTimestamp(src)
         }),
       },
       "options": {
@@ -1686,6 +1656,15 @@ t_Question.contents = GraphQLObjectType.make({
         resolve: makeResolveFn((src, args, ctx) => {
           let src = typeUnwrapper(src)
           QuestionResolvers.options(src, ~ctx)
+        }),
+      },
+      "state": {
+        typ: enum_QuestionState->GraphQLEnumType.toGraphQLType->nonNull,
+        description: "State of the question (Submitted | Approved | Used | Flagged)",
+        deprecationReason: ?None,
+        resolve: makeResolveFn((src, _args, _ctx) => {
+          let src = typeUnwrapper(src)
+          src["state"]
         }),
       },
       "title": {
@@ -1793,126 +1772,6 @@ t_QuestionOption.contents = GraphQLObjectType.make({
         resolve: makeResolveFn((src, _args, _ctx) => {
           let src = typeUnwrapper(src)
           src["option"]
-        }),
-      },
-    }->makeFields,
-})
-t_QuestionSubmitted.contents = GraphQLObjectType.make({
-  name: "QuestionSubmitted",
-  description: ?None,
-  interfaces: [get_Node()],
-  fields: () =>
-    {
-      "answerNum": {
-        typ: Scalars.int->Scalars.toGraphQLType,
-        description: ?None,
-        deprecationReason: ?None,
-        resolve: makeResolveFn((src, _args, _ctx) => {
-          let src = typeUnwrapper(src)
-          src["answerNum"]
-        }),
-      },
-      "answers": {
-        typ: GraphQLListType.make(
-          Scalars.string->Scalars.toGraphQLType->nonNull,
-        )->GraphQLListType.toGraphQLType,
-        description: ?None,
-        deprecationReason: ?None,
-        resolve: makeResolveFn((src, _args, _ctx) => {
-          let src = typeUnwrapper(src)
-          src["answers"]
-        }),
-      },
-      "id": {
-        typ: Scalars.id->Scalars.toGraphQLType->nonNull,
-        description: ?None,
-        deprecationReason: ?None,
-        resolve: makeResolveFn((src, args, ctx) => {
-          let src = typeUnwrapper(src)
-          NodeInterfaceResolvers.id(src, ~typename=QuestionSubmitted)
-        }),
-      },
-      "options": {
-        typ: GraphQLListType.make(Scalars.string->Scalars.toGraphQLType->nonNull)
-        ->GraphQLListType.toGraphQLType
-        ->nonNull,
-        description: "Answer options for the question",
-        deprecationReason: ?None,
-        resolve: makeResolveFn((src, _args, _ctx) => {
-          let src = typeUnwrapper(src)
-          src["options"]
-        }),
-      },
-      "question": {
-        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
-        description: "Question asked",
-        deprecationReason: ?None,
-        resolve: makeResolveFn((src, _args, _ctx) => {
-          let src = typeUnwrapper(src)
-          src["question"]
-        }),
-      },
-      "tokenId": {
-        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
-        description: "ID of the vote token attached to the question. If the community vote is\n  used this will be the zero address",
-        deprecationReason: ?None,
-        resolve: makeResolveFn((src, _args, _ctx) => {
-          let src = typeUnwrapper(src)
-          src["tokenId"]
-        }),
-      },
-    }->makeFields,
-})
-t_QuestionSubmittedConnection.contents = GraphQLObjectType.make({
-  name: "QuestionSubmittedConnection",
-  description: "A connection to a todo.",
-  interfaces: [],
-  fields: () =>
-    {
-      "edges": {
-        typ: GraphQLListType.make(
-          get_QuestionSubmittedEdge()->GraphQLObjectType.toGraphQLType,
-        )->GraphQLListType.toGraphQLType,
-        description: "A list of edges.",
-        deprecationReason: ?None,
-        resolve: makeResolveFn((src, _args, _ctx) => {
-          let src = typeUnwrapper(src)
-          src["edges"]
-        }),
-      },
-      "pageInfo": {
-        typ: get_PageInfo()->GraphQLObjectType.toGraphQLType->nonNull,
-        description: "Information to aid in pagination.",
-        deprecationReason: ?None,
-        resolve: makeResolveFn((src, _args, _ctx) => {
-          let src = typeUnwrapper(src)
-          src["pageInfo"]
-        }),
-      },
-    }->makeFields,
-})
-t_QuestionSubmittedEdge.contents = GraphQLObjectType.make({
-  name: "QuestionSubmittedEdge",
-  description: "An edge to a submitted Question.",
-  interfaces: [],
-  fields: () =>
-    {
-      "cursor": {
-        typ: Scalars.string->Scalars.toGraphQLType->nonNull,
-        description: "A cursor for use in pagination.",
-        deprecationReason: ?None,
-        resolve: makeResolveFn((src, _args, _ctx) => {
-          let src = typeUnwrapper(src)
-          src["cursor"]
-        }),
-      },
-      "node": {
-        typ: get_QuestionSubmitted()->GraphQLObjectType.toGraphQLType,
-        description: "The item at the end of the edge.",
-        deprecationReason: ?None,
-        resolve: makeResolveFn((src, _args, _ctx) => {
-          let src = typeUnwrapper(src)
-          src["node"]
         }),
       },
     }->makeFields,

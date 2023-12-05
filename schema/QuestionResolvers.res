@@ -44,7 +44,20 @@ let options = async (q: question, ~ctx: ResGraphContext.context): array<question
 
 /* The token ID of the vote token */
 @gql.field
-let tokenId = (question: question): Schema.BigInt.t => question.vote.id->BigInt.fromString
+let tokenId = (question: question): Schema.BigInt.t =>
+  switch question.vote.id->Helpers.i32toInt {
+  | None => panic("Something went wrong parsing linked Vote ID")
+  | Some(tokenId) => tokenId->BigInt.fromInt
+  }
+
+/** Timestamp of the most recent edit */
+@gql.field
+let modifiedTimestamp = (question: question): Schema.Timestamp.t =>
+  (question.modifiedTimestamp ++ "000")->Date.fromString
+
+/** Timestamp of the day the question was used */
+let day = (question: question): option<Schema.Timestamp.t> =>
+  question.day->Option.map(day => (day ++ "000")->Date.fromString)
 
 @gql.field
 let vote = async (question: question, ~ctx: ResGraphContext.context) => {

@@ -12,7 +12,6 @@ module Resolver = {
     | AuctionCreated(AuctionCreated.auctionCreated)
     | AuctionSettled(AuctionSettled.auctionSettled)
     | Question(Question.question)
-    | QuestionSubmitted(QuestionSubmitted.questionSubmitted)
     | TriviaQuestion(Question.triviaQuestion)
     | VerificationData(Verification.verificationData)
     | VerificationsData(Verifications.verificationsData)
@@ -30,7 +29,6 @@ module ImplementedBy = {
     | AuctionCreated
     | AuctionSettled
     | Question
-    | QuestionSubmitted
     | TriviaQuestion
     | VerificationData
     | VerificationsData
@@ -47,7 +45,6 @@ module ImplementedBy = {
     | "AuctionCreated" => Some(AuctionCreated)
     | "AuctionSettled" => Some(AuctionSettled)
     | "Question" => Some(Question)
-    | "QuestionSubmitted" => Some(QuestionSubmitted)
     | "TriviaQuestion" => Some(TriviaQuestion)
     | "VerificationData" => Some(VerificationData)
     | "VerificationsData" => Some(VerificationsData)
@@ -68,7 +65,6 @@ type typeMap<'a> = {
   @as("AuctionCreated") auctionCreated: 'a,
   @as("AuctionSettled") auctionSettled: 'a,
   @as("Question") question: 'a,
-  @as("QuestionSubmitted") questionSubmitted: 'a,
   @as("TriviaQuestion") triviaQuestion: 'a,
   @as("VerificationData") verificationData: 'a,
   @as("VerificationsData") verificationsData: 'a,

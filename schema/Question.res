@@ -8,6 +8,13 @@ type questionOption = {
   details?: string,
 }
 
+@gql.enum
+type questionState =
+  | Submitted
+  | Approved
+  | Used
+  | Flagged
+
 @gql.type
 type question = {
   ...NodeInterface.node,
@@ -15,13 +22,16 @@ type question = {
   /** The ethereum address who asked the question */
   @gql.field
   asker: string,
+  /** State of the question (Submitted | Approved | Used | Flagged) */
+  @gql.field
+  state: questionState,
   vote: GraphClient.linkById,
   options: array<questionOption>,
-  /** If question has been locked by curator*/
-  @gql.field
-  isLocked: bool,
+  modifiedTimestamp: string,
+  day: option<string>,
   contract: GraphClient.linkById,
 }
+
 @gql.type
 type textQuestion = {
   @gql.field
