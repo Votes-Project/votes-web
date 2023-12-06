@@ -21,3 +21,9 @@ let tokenToSubgraphId = tokenId =>
 
 let idToGlobalId = (id, typename) =>
   id->Option.map(id => `${typename}:${id}`->ResGraph.Utils.Base64.encode)
+
+module Date = {
+  let hourInMilliseconds = 1000. *. 60. *. 60.
+  let dayInMilliseconds = hourInMilliseconds *. 24.
+  let weekInMilliseconds = dayInMilliseconds *. 7.
+}
