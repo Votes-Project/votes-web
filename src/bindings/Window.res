@@ -47,7 +47,7 @@ let removeEventListener = EventListener.remove
 @send external clearTimeout: (t, timeoutId) => unit = "clearTimeout"
 
 module Width = {
-  type size = XS | SM | MD | LG | XL | XXL
+  type size = XS(int) | SM(int) | MD(int) | LG(int) | XL(int) | XXL(int)
   module Inner = {
     @get external make: Dom.window => int = "innerWidth"
     let use = () => {
@@ -63,12 +63,12 @@ module Width = {
       })
 
       switch width {
-      | width if width < 640 => XS
-      | width if width < 768 => SM
-      | width if width < 1024 => MD
-      | width if width < 1280 => LG
-      | width if width < 1536 => XL
-      | _ => XXL
+      | width if width < 640 => XS(width)
+      | width if width < 768 => SM(width)
+      | width if width < 1024 => MD(width)
+      | width if width < 1280 => LG(width)
+      | width if width < 1536 => XL(width)
+      | _ => XXL(width)
       }
     }
   }

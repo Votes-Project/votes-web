@@ -1,44 +1,48 @@
-type unhandledQuestionType = {
+type pastQuestion = {
   id: string,
   title: string,
-  day: int,
+  day: Date.t,
+}
+type seedQuestion = {
+  id: string,
+  title: string,
 }
 
 type question =
   | Question(RescriptRelay.fragmentRefs<[#Questions_item]>)
-  | SeedQuestion(unhandledQuestionType)
-  | PastQuestion(unhandledQuestionType)
+  | SeedQuestion(seedQuestion)
+  | PastQuestion(pastQuestion)
 
 let pastQuestions = [
   PastQuestion({
     id: "1",
     title: "Past Question stand in",
-    day: 0,
+    day: Date.fromTime(1701343236000.),
   }),
   PastQuestion({
     id: "2",
     title: "Past Question stand in",
-    day: 1,
+    day: Date.fromTime(1701343236000. +. Helpers.Date.dayInMilliseconds),
   }),
   PastQuestion({
     id: "3",
     title: "Past Question stand in",
-    day: 2,
+    day: Date.fromTime(1701343236000. +. Helpers.Date.dayInMilliseconds *. 2.),
   }),
   PastQuestion({
     id: "4",
     title: "Past Question stand in",
-    day: 3,
+    day: Date.fromTime(1701343236000. +. Helpers.Date.dayInMilliseconds *. 3.),
   }),
   PastQuestion({
     id: "5",
     title: "Past Question stand in",
-    day: 4,
+    day: Date.fromTime(1701343236000. +. Helpers.Date.dayInMilliseconds *. 4.),
   }),
   PastQuestion({
     id: "6",
     title: "Past Question stand in",
-    day: 5,
+    day: Date.fromTime(1701343236000. +. Helpers.Date.dayInMilliseconds *. 5.),
   }),
 ]
 
@@ -46,22 +50,18 @@ let seedQuestions = [
   SeedQuestion({
     id: "a",
     title: "Seed Question stand in.",
-    day: 100,
   }),
   SeedQuestion({
     id: "b",
     title: "Seed Question stand in.",
-    day: 101,
   }),
   SeedQuestion({
     id: "c",
     title: "Seed Question stand in.",
-    day: 102,
   }),
   SeedQuestion({
     id: "d",
     title: "Seed Question stand in.",
-    day: 103,
   }),
 ]
 
@@ -79,8 +79,11 @@ module QuestionItem = {
   let make = (~question) => {
     let question = Fragment.use(question)
     <div className="flex flex-col justify-center items-center">
+      <div className="self-end py-2">
+        <ShortAddress address=Some(question.asker) />
+      </div>
       <div
-        className=" flex-1 whitespace-pre-wrap [text-wrap:pretty] lg:bg-secondary lg:shadow-lg p-2 rounded-lg self-start mr-auto">
+        className="flex flex-col gap-2 flex-1 whitespace-pre-wrap [text-wrap:pretty] lg:bg-secondary lg:shadow-lg p-2 rounded-lg self-start mr-auto">
         {question.title->React.string}
       </div>
     </div>
@@ -101,7 +104,7 @@ module SeedQuestionItem = {
 
 module PastQuestionItem = {
   @react.component
-  let make = (~question) => {
+  let make = (~question: pastQuestion) => {
     <div className="flex flex-col justify-center items-center">
       <div
         className=" flex-1 whitespace-pre-wrap [text-wrap:pretty]  lg:bg-secondary opacity-50 lg:shadow-lg p-2 rounded-lg self-start">
@@ -111,58 +114,60 @@ module PastQuestionItem = {
   }
 }
 
-type calendarType = Day | HalfCycle | Cycle
 module Item = {
   @react.component
   let make = (~question, ~index) => {
-    let windowWidth = Window.Width.Inner.use()
     let {setParams} = Routes.Main.Questions.Route.useQueryParams()
     let ref = React.useRef(Nullable.null)
     let today = Date.now()->Date.fromTime
-    let date =
-      Date.make()
-      ->Js.Date.setDate(float(today->Date.getDate + index))
-      ->Date.fromTime
 
-    let isToday = today->Date.getTime == date->Date.getTime
-    let day = date->Date.toLocaleStringWithLocaleAndOptions("en-us", {day: #"2-digit"})
-    let weekday = date->Date.toLocaleStringWithLocaleAndOptions("en-us", {weekday: #short})
+    let isToday = switch question {
+    | PastQuestion({day}) => day->Date.getTime == today->Date.getTime
+    | Question(_) | SeedQuestion(_) =>
+      (Date.now() +. Helpers.Date.dayInMilliseconds *. float(index - pastQuestions->Array.length))
+      ->Date.fromTime
+      ->Date.getTime == today->Date.getTime
+    }
+
+    let day = switch question {
+    | PastQuestion({day}) =>
+      day->Date.toLocaleStringWithLocaleAndOptions("en-us", {day: #"2-digit"})
+    | Question(_) | SeedQuestion(_) | _ =>
+      (Date.now() +. Helpers.Date.dayInMilliseconds *. float(index - pastQuestions->Array.length))
+      ->Date.fromTime
+      ->Date.toLocaleStringWithLocaleAndOptions("en-us", {day: #"2-digit"})
+    }
+
+    let weekday = switch question {
+    | PastQuestion({day}) =>
+      day->Date.toLocaleStringWithLocaleAndOptions("en-us", {weekday: #short})
+    | Question(_) | SeedQuestion(_) =>
+      (Date.now() +. Helpers.Date.dayInMilliseconds *. float(index - pastQuestions->Array.length))
+      ->Date.fromTime
+      ->Date.toLocaleStringWithLocaleAndOptions("en-us", {weekday: #short})
+    }
+
     let handleQuestionSelect = _ => {
       setParams(~removeNotControlledParams=false, ~navigationMode_=Replace, ~setter=c => {
         ...c,
         day: switch question {
-        | Question(_) => (pastQuestions->Array.length + index)->Some
-        | SeedQuestion({day}) | PastQuestion({day}) => Some(day)
+        | Question(_) | SeedQuestion(_) =>
+          (Date.now() +.
+          Helpers.Date.dayInMilliseconds *. float(index - pastQuestions->Array.length))
+          ->Date.fromTime
+          ->Some
+
+        | PastQuestion({day}) => day->Some
         },
       })
     }
 
-    let calendarType = HalfCycle
-    let className = switch (windowWidth, calendarType) {
-    | (
-        LG | XL | XXL,
-        _,
-      ) => "mx-1 p-2 min-w-0 w-full flex flex-col justify-center items-center snap-start"
-    | (
-        _,
-        Day,
-      ) => "w-[90vw] max-w-[90vw] min-w-[90vw] border-b-2 border-x-2 border-default rounded-b-2xl
-     lg:border-0 mx-1 p-2 lg:min-w-0 lg:w-full flex lg:flex-col lg:justify-center
-     lg:items-center snap-start"
-    | (_, HalfCycle) => "w-[18w] max-w-[20vw] min-w-[20vw] max-h-[10rem] overflow-hidden
-    border-b-2 border-x-2  border-default rounded-b-2xl lg:border-0 mx-1 p-2 lg:min-w-0 lg:w-full
-    flex lg:flex-col lg:justify-center lg:items-center snap-start"
-    | (
-        _,
-        Cycle,
-      ) => "w-[9vw] max-h-[15rem] min-w-[15vw] overflow-hidden border-b-2 border-x-2  border-default
-     rounded-b-2xl lg:border-0 mx-1 p-2 lg:min-w-0 lg:w-full flex lg:flex-col
-     lg:justify-center lg:items-center snap-start"
-    }
-
-    <button className onClick=handleQuestionSelect ref={ReactDOM.Ref.domRef(ref)}>
+    <button
+      className="w-[90vw] max-w-[90vw] min-w-[90vw] h-fit  mx-1 p-2 flex snap-start lg:mx-1 lg:p-2 lg:min-w-0 lg:w-full lg:flex lg:flex-col lg:justify-center lg:items-center"
+      onClick=handleQuestionSelect
+      ref={ReactDOM.Ref.domRef(ref)}>
       <div
-        className="flex lg:flex-1 flex-col-reverse lg:flex-row gap-2 justify-end lg:w-full items-stretch  lg:mr-auto font-semibold  ">
+        className="flex lg:flex-1 flex-row-reverse lg:flex-row gap-2 justify-end lg:w-full items-stretch  lg:mr-auto font-semibold  ">
         <FramerMotion.Div className="flex flex-col py-2">
           {switch question {
           | Question(question) => <QuestionItem question />
@@ -171,7 +176,7 @@ module Item = {
           }}
         </FramerMotion.Div>
         <div
-          className="flex flex-col items-start lg:items-center lg:min-w-[4rem]  min-w-[2rem] lg:min-h-0">
+          className="flex lg:flex-col items-start lg:items-center lg:min-w-[4rem]  min-w-[2rem] lg:min-h-0">
           <div>
             <div
               className="select-none text-xs font-fugaz text-center lg:self-center rounded-full  text-default-darker">
@@ -225,35 +230,23 @@ module List = {
     let (width, setWidth) = React.useState(_ => None)
 
     let windowWidth = Window.Width.Inner.use()
+
     let ref = React.useRef(Nullable.null)
-    let pastQuestionsRef = React.useRef(Nullable.null)
     let questionsRef = React.useRef(Nullable.null)
-    let seedQuestionsRef = React.useRef(Nullable.null)
     let currentQuestionRef = React.useRef(Nullable.null)
 
-    React.useEffect7(() => {
-      switch (
-        ref.current->Nullable.toOption,
-        pastQuestionsRef.current->Nullable.toOption,
-        questionsRef.current->Nullable.toOption,
-        seedQuestionsRef.current->Nullable.toOption,
-      ) {
-      | (Some(current), Some(pastQuestions), Some(questions), Some(seedQuestions)) =>
+    React.useEffect6(() => {
+      switch (ref.current->Nullable.toOption, questionsRef.current->Nullable.toOption) {
+      | (Some(current), Some(questions)) =>
         switch windowWidth {
-        | LG | XL | XXL =>
+        | LG(_) | XL(_) | XXL(_) =>
           open Element
-          let height =
-            pastQuestions->Offset.height +.
-            questions->Offset.height +.
-            seedQuestions->Offset.height +.
-            current->Offset.height *. 2.
+          let height = questions->Offset.height +. current->Offset.height *. 2.
           setHeight(_ => Some(Float.toString(height) ++ "px"))
           setWidth(_ => None)
-        | XS | SM | MD =>
+        | XS(_) | SM(_) | MD(_) =>
           open Element
-          let questionsWidth =
-            pastQuestions->Offset.width +. questions->Offset.width +. seedQuestions->Offset.width
-          let width = questionsWidth +. current->Offset.width *. 2.
+          let width = questions->Offset.width +. current->Offset.width *. 2.
 
           setWidth(_ => Some(width->Float.toString ++ "px"))
           setHeight(_ => None)
@@ -261,22 +254,29 @@ module List = {
       | _ => ()
       }
       None
-    }, (ref, pastQuestionsRef, questionsRef, seedQuestionsRef, setHeight, windowWidth, setWidth))
+    }, (
+      ref.current,
+      questionsRef.current,
+      currentQuestionRef.current,
+      windowWidth,
+      Window.innerWidth(window),
+      queryParams,
+    ))
 
     React.useEffect6(() => {
       open Element
       switch (ref.current->Nullable.toOption, questionsRef.current->Nullable.toOption) {
-      | (Some(current), Some(questions)) =>
+      | (Some(current), Some(_)) =>
         switch (height, width) {
         | (Some(_), _) =>
           switch currentQuestionRef.current->Nullable.toOption {
-          | None => current->Scroll.setTop(questions->Offset.top -. current->Offset.top)
+          | None => ()
           | Some(currentQuestion) =>
             current->Scroll.setTop(currentQuestion->Offset.top -. current->Offset.top)
           }
         | (_, Some(_)) =>
           switch currentQuestionRef.current->Nullable.toOption {
-          | None => current->Scroll.setLeft(questions->Offset.left -. current->Offset.left)
+          | None => ()
           | Some(currentQuestion) =>
             current->Scroll.setLeft(currentQuestion->Offset.left -. current->Offset.left)
           }
@@ -286,89 +286,124 @@ module List = {
       }
 
       None
-    }, (ref, questionsRef, currentQuestionRef, height, width, queryParams.day))
+    }, (ref.current, questionsRef.current, currentQuestionRef.current, height, width, queryParams))
+
+    let itemWrapperStyle = switch queryParams.calendar {
+    | Some(Day) | None => "h-full shadow "
+    | Some(HalfCycle) => "h-1/5 shadow overflow-hidden max-h-[20%] lg:h-auto lg:max-h-none border-b-2 border-x-2 border-default  lg:border-0 snap-start"
+    | Some(Cycle) => "h-[10%] shadow overflow-hidden max-h-[10%] lg:max-h-none lg:h-auto border-b-2 border-x-2 border-default lg:border-0 snap-start"
+    }
 
     let handlePageScroll = _ =>
       switch windowWidth {
-      | LG | XL | XXL =>
+      | LG(_) | XL(_) | XXL(_) =>
         %raw(`document.body.style.overflow = (document.body.style.overflow === "hidden") ? "auto":"hidden"`)
       | _ => ()
       }
 
-    let pastQuestions = pastQuestions->Array.mapWithIndex((question, index) => {
-      let index = index - Array.length(pastQuestions)
-      switch (question, queryParams.day) {
-      | (PastQuestion({id, day}), Some(currentQuestionDay)) if day == currentQuestionDay =>
-        <li ref={ReactDOM.Ref.domRef(currentQuestionRef)} key=id>
-          <Item question index />
-        </li>
-
-      | (PastQuestion({id}), _) =>
-        <li key=id>
-          <Item question index />
-        </li>
-      | _ => React.null
-      }
-    })
-
     let questions =
+      pastQuestions
+      ->Array.concat(
+        questions->Fragment.getConnectionNodes->Array.map(x => Question(x.fragmentRefs)),
+      )
+      ->Array.concat(seedQuestions)
+
+    let chunkQuestionsByCalendar = array => {
+      let chunkSize = switch queryParams.calendar {
+      | Some(Day) | None => 1
+      | Some(HalfCycle) => 5
+      | Some(Cycle) => 10
+      }
+      Array.make(
+        ~length=Math.ceil(array->Array.length->float /. float(chunkSize))->Float.toInt,
+        React.null,
+      )
+      ->Array.mapWithIndex((_, index) => index * chunkSize)
+      ->Array.map(start => array->Array.slice(~start, ~end=start + chunkSize))
+    }
+
+    let questionList =
       questions
-      ->Fragment.getConnectionNodes
       ->Array.mapWithIndex((question, index) => {
-        let day = pastQuestions->Array.length + index
-        switch queryParams.day {
-        | Some(currentQuestionDay) if day == currentQuestionDay =>
-          <li ref={ReactDOM.Ref.domRef(currentQuestionRef)} key=question.id>
-            <Item question=Question(question.fragmentRefs) index />
-          </li>
-        | _ =>
-          <li key=question.id>
-            <Item question=Question(question.fragmentRefs) index />
-          </li>
+        let today =
+          Date.make()->Date.toLocaleDateStringWithLocaleAndOptions("en-US", {dateStyle: #short})
+
+        let selectedDay =
+          queryParams.day->Option.map(day =>
+            Date.toLocaleDateStringWithLocaleAndOptions(day, "en-US", {dateStyle: #short})
+          )
+        switch question {
+        | Question(_) | SeedQuestion(_) =>
+          let day =
+            (Date.now() +.
+            Helpers.Date.dayInMilliseconds *. float(index - pastQuestions->Array.length))
+            ->Date.fromTime
+            ->Date.toLocaleDateStringWithLocaleAndOptions("en-US", {dateStyle: #short})
+            ->Some
+
+          if day == selectedDay || (queryParams.day == None && day == Some(today)) {
+            <li
+              className=itemWrapperStyle
+              ref={ReactDOM.Ref.domRef(currentQuestionRef)}
+              key={index->Int.toString}>
+              <Item question index />
+            </li>
+          } else {
+            <li className=itemWrapperStyle key={index->Int.toString}>
+              <Item question index />
+            </li>
+          }
+        | PastQuestion({day}) =>
+          let day =
+            day
+            ->Date.toLocaleDateStringWithLocaleAndOptions("en-US", {dateStyle: #short})
+            ->Some
+          if day == selectedDay {
+            <li
+              className=itemWrapperStyle
+              ref={ReactDOM.Ref.domRef(currentQuestionRef)}
+              key={index->Int.toString}>
+              <Item question index />
+            </li>
+          } else {
+            <li className=itemWrapperStyle key={index->Int.toString}>
+              <Item question index />
+            </li>
+          }
         }
       })
-
-    let seedQuestions = seedQuestions->Array.mapWithIndex((question, index) => {
-      switch (question, queryParams.day) {
-      | (SeedQuestion({id, day}), Some(currentQuestionDay)) if day == currentQuestionDay =>
-        <li ref={ReactDOM.Ref.domRef(currentQuestionRef)} key=id>
-          <Item index={questions->Array.length + index} question />
-        </li>
-      | (SeedQuestion({id}), _) =>
-        <li key=id>
-          <Item question index={questions->Array.length + index} />
-        </li>
-      | _ => React.null
-      }
-    })
+      ->chunkQuestionsByCalendar
 
     <div
-      className="h-fit overflow-scroll lg:overscroll-contain py-4 pl-4 lg:pl-0 hide-scrollbar lg:hover:border-2  border-primary-dark/50 lg:rounded-3xl m-2 snap-x lg:snap-none snap-mandatory first:scroll-pl-0 scroll-px-[2.5vw]"
+      className="h-full overflow-x-scroll overflow-y-hidden lg:max-h-none
+      lg:overflow-y-scroll lg:overflow-x-auto lg:overscroll-contain py-4 pl-4 lg:pl-0
+      hide-scrollbar lg:hover:border-2 border-primary-dark/50 lg:rounded-3xl lg:m-2
+      snap-x lg:snap-none snap-mandatory first:scroll-pl-0 scroll-px-[2.5vw]"
       onMouseEnter={handlePageScroll}
       onMouseLeave={handlePageScroll}
       ref={ReactDOM.Ref.domRef(ref)}>
       <FramerMotion.Div
         layout=Position
-        className="flex flex-row lg:flex-col lg:items-center justify-center px-2 pt-1 hover:lg:m-[-2px] h-full "
+        className="max-h-full h-full lg:max-h-none flex flex-row flex-wrap lg:flex-col
+        lg:items-center justify-center px-2 pt-1 hover:lg:m-[-2px]"
         style={{
-          height: `${height->Option.getWithDefault("auto")}`,
-          width: `${width->Option.getWithDefault("auto")}`,
+          height: `${height->Option.getWithDefault("")}`,
+          width: `${width->Option.getWithDefault("")}`,
         }}>
-        <ul
-          className="flex  justify-center flex-row lg:flex-col lg:w-full z-0 h-fit border-t-2 border-default lg:border-t-0  "
-          ref={ReactDOM.Ref.domRef(pastQuestionsRef)}>
-          {pastQuestions->React.array}
-        </ul>
-        <ul
-          ref={ReactDOM.Ref.domRef(questionsRef)}
-          className="flex  justify-center flex-row lg:flex-col lg:w-full z-0  h-fit border-t-2 border-default lg:border-t-0 ">
-          {questions->React.array}
-        </ul>
-        <ul
-          className="flex justify-center flex-row lg:flex-col lg:w-full z-0  h-fit border-t-2 border-default lg:border-t-0 "
-          ref={ReactDOM.Ref.domRef(seedQuestionsRef)}>
-          {seedQuestions->React.array}
-        </ul>
+        <div
+          className="flex max-h-full lg:max-h-none flex-wrap lg:flex-nowrap
+           lg:justify-center flex-col lg:w-full z-0 h-full lg:h-fit border-t-2 border-default lg:border-t-0 scroll-smooth "
+          ref={ReactDOM.Ref.domRef(questionsRef)}>
+          {questionList
+          ->Array.mapWithIndex((chunk, index) =>
+            <ul
+              key={index->Int.toString}
+              className="flex max-h-full lg:max-h-none lg:justify-center flex-col lg:w-full z-0  h-full lg:h-fit border-t-2 border-default lg:border-t-0 ">
+              {chunk->React.array}
+            </ul>
+          )
+          ->React.array}
+        </div>
       </FramerMotion.Div>
     </div>
   }
@@ -382,6 +417,7 @@ module Query = %relay(`
 
 @react.component
 let make = (~queryRef) => {
+  let {queryParams, setParams} = Routes.Main.Questions.Route.useQueryParams()
   let data = Query.usePreloaded(~queryRef)
   let {setHeroComponent} = React.useContext(HeroComponentContext.context)
 
@@ -404,18 +440,32 @@ let make = (~queryRef) => {
     None
   })
 
+  let handleCalendar = e => {
+    let value = (e->ReactEvent.Form.target)["value"]
+    let calendar = value->CalendarType.parse
+    if calendar == queryParams.calendar {
+      ()
+    } else {
+      setParams(
+        ~removeNotControlledParams=false,
+        ~navigationMode_=Replace,
+        ~setter=currentParameters => {...currentParameters, calendar},
+      )
+    }
+  }
+
   <FramerMotion.Div
-    transition={{duration: 2.}} className="relative flex flex-col lg:mt-0 max-h-[558px] ">
+    transition={{duration: 2.}} className="relative flex flex-col lg:mt-0 max-h-[558px] h-[558px] ">
     <div
       className=" w-full flex lg:flex-row-reverse lg:justify-between justify-start items-center pt-2 z-10 px-4 gap-4  ">
       <label>
         <select
-          value={""}
-          className="border-black/20 bg-default-light text-lg font-semibold rounded-xl"
-          onChange={_ => {
-            ()
+          value={queryParams.calendar->Option.mapWithDefault("", CalendarType.serialize)}
+          className="lg:hidden border-black/20 bg-transparent backdrop-blur-sm text-lg font-semibold rounded-xl"
+          onChange={e => {
+            e->handleCalendar
           }}>
-          <option className="hidden" value=""> {"Sort By"->React.string} </option>
+          <QuestionsCalendarOptions />
         </select>
       </label>
       <input
