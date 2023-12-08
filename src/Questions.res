@@ -415,6 +415,24 @@ module Query = %relay(`
   }
 `)
 
+module QuestionsListLoader = {
+  @react.component
+  let make = () => {
+    <div
+      className="h-full overflow-hidden lg:max-h-none
+      overscroll-contain py-4 pl-4 lg:pl-0
+      hide-scrollbar lg:rounded-3xl lg:m-2">
+      <ul
+        className="flex max-h-full lg:max-h-none lg:justify-center flex-col lg:w-full z-0  h-full lg:h-fit border-t-2 border-default lg:border-t-0 p-2 ">
+        {Array.make(
+          ~length=10,
+          <li className="animate-pulse bg-gray-500/20 w-full h-14 my-2 rounded-xl" />,
+        )->React.array}
+      </ul>
+    </div>
+  }
+}
+
 @react.component
 let make = (~queryRef) => {
   let {queryParams, setParams} = Routes.Main.Questions.Route.useQueryParams()
@@ -475,7 +493,7 @@ let make = (~queryRef) => {
         placeholder="Search"
       />
     </div>
-    <React.Suspense fallback={<> </>}>
+    <React.Suspense fallback={<QuestionsListLoader />}>
       <List questions=data.fragmentRefs />
     </React.Suspense>
   </FramerMotion.Div>
