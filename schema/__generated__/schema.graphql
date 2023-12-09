@@ -351,7 +351,7 @@ type Query {
   voteTransfer(id: String!): VoteTransfer
   raffles(votesContractAddress: String!, skip: Int, orderBy: OrderBy_Votes, orderDirection: OrderDirection, where: Where_Votes, first: Int, after: String, before: String, last: Int): VoteConnection!
   votes(skip: Int, orderBy: OrderBy_Votes, orderDirection: OrderDirection, where: Where_Votes, first: Int, after: String, before: String, last: Int): VoteConnection!
-  newestVote(voteContractAddress: String!): Vote
+  newestVote(votesContractAddress: String!): Vote
   vote(id: String!): Vote
   voteContract(id: String!): VoteContract
   verifications(context: String!): Verifications!

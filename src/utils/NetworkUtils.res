@@ -1,11 +1,3 @@
-@val @scope(("import", "meta", "env"))
-external publicUrl: option<string> = "VITE_VERCEL_URL"
-
-@val @scope(("import", "meta", "env"))
-external port: option<string> = "PORT"
-
-let localhost = `http://localhost:${port->Option.getWithDefault("3000")}`
-
 let preloadFromResponse = (part: Js.Json.t, ~preloadAsset: RelayRouter__Types.preloadAssetFn) => {
   switch part->Js.Json.decodeObject {
   | None => ()
@@ -37,9 +29,9 @@ let preloadFromResponse = (part: Js.Json.t, ~preloadAsset: RelayRouter__Types.pr
 let makeFetchQuery = (~preloadAsset) =>
   RelaySSRUtils.makeClientFetchFunction((sink, operation, variables, _cacheConfig, _uploads) => {
     open RelayRouter.NetworkUtils
-    let url = publicUrl->Option.mapWithDefault(localhost, url => "https://" ++ url)
+
     fetch(
-      `${url}/api/graphql`,
+      `${Environment.publicUrl}/api/graphql`,
       {
         "method": "POST",
         "headers": Js.Dict.fromArray([("content-type", "application/json")]),
@@ -79,9 +71,8 @@ let makeServerFetchQuery = (
     _uploads,
   ) => {
     open RelayRouter.NetworkUtils
-    let baseUrl = publicUrl->Option.getWithDefault(localhost)
     fetchServer(
-      `${baseUrl}/api/graphql`,
+      `${Environment.publicUrl}/api/graphql`,
       {
         "method": "POST",
         "headers": Js.Dict.fromArray([("content-type", "application/json")]),

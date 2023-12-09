@@ -100,6 +100,12 @@ module VoteListDisplay = {
           | _ => ()
           }
         },
+        onDisconnect: _ => {
+          switch queryParams.sortBy {
+          | Some(Owned(Some(_))) => setOwnedParam("0x0")
+          | _ => ()
+          }
+        },
       },
     )
 
@@ -126,7 +132,7 @@ module VoteListDisplay = {
       }
     }
 
-    <div className="lg:max-h-[420px]">
+    <div className="lg:max-h-[420px] relative">
       <nav className="px-4 w-full flex justify-between items-center pb-4">
         <div>
           {switch voteContract {
@@ -171,6 +177,8 @@ module VoteListDisplay = {
   }
 }
 
+@module external votesyConstruction: 'a = "/votesy_construction.svg"
+
 module Query = %relay(`
   query VotesQuery(
     $votesContractAddress: String!
@@ -193,14 +201,31 @@ let make = (~queryRef) => {
   let data = Query.usePreloaded(~queryRef)
   let {setHeroComponent} = React.useContext(HeroComponentContext.context)
   React.useEffect1(() => {
-    setHeroComponent(_ =>
+    setHeroComponent(_ => <>
       <div
-        className=" lg:w-[50%] w-[80%] md:w-[70%] mx-[10%] mt-8 md:mx-[15%] lg:mx-0 flex align-end lg:pr-20 ">
-        <div className="relative h-0 w-full pt-[100%]">
-          <EmptyVoteChart className="absolute left-0 top-0 w-full align-middle " />
-        </div>
+        className="relative  lg:w-[50%] w-[80%] md:w-[70%] mx-[10%] mt-8 md:mx-[15%] lg:mx-0 flex flex-col align-end lg:pr-20 ">
+        {switch Environment.featureFlags {
+        | {enableCharts: false} =>
+          <>
+            <div
+              className="absolute pointer-event-none flex flex-row items-center justify-center w-full h-full backdrop-blur-sm z-10 pointer-events-none">
+              <img src={votesyConstruction["default"]} className="h-24 w-24 " alt="Vite logo" />
+              <h2 className="text-2xl text-center font-semibold text-black[text-wrap:balance]">
+                {"The Votes Explorer is under construction"->React.string}
+              </h2>
+              <img src={votesyConstruction["default"]} className="h-24 w-24 " alt="Vite logo" />
+            </div>
+            <div className="relative h-0 w-full pt-[100%]">
+              <EmptyVoteChart className="absolute left-0 top-0 w-full align-middle " />
+            </div>
+          </>
+        | _ =>
+          <div className="relative h-0 w-full pt-[100%]">
+            <EmptyVoteChart className="absolute left-0 top-0 w-full align-middle " />
+          </div>
+        }}
       </div>
-    )
+    </>)
     None
   }, [setHeroComponent])
   <VoteListDisplay query={data.fragmentRefs} />

@@ -1,6 +1,3 @@
-@val @scope(("import", "meta", "env"))
-external auctionContractAddress: option<string> = "VITE_AUCTION_CONTRACT_ADDRESS"
-
 @module("/src/abis/Auction.json") external auctionContractAbi: JSON.t = "default"
 
 module AuctionBidItem = {
@@ -59,7 +56,7 @@ let make = (~bids) => {
   let environment = RescriptRelay.useEnvironmentFromContext()
 
   Wagmi.UseContractEvent.make({
-    address: auctionContractAddress->Belt.Option.getExn,
+    address: Environment.auctionContractAddress,
     abi: auctionContractAbi,
     eventName: "AuctionBid",
     listener: events => {

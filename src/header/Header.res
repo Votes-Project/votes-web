@@ -1,6 +1,6 @@
 @module external reactLogo: 'a = "/assets/react.svg"
 
-@module external viteLogo: 'a = "/votesy.svg"
+@module external votesyLogo: 'a = "/votesy.svg"
 
 type headerItem = {
   name: string,
@@ -59,7 +59,7 @@ let make = (~verifications) => {
           onClick={_ => votesy.setShow(_ => true)}>
           <div className="relative w-24 h-24">
             <div className="fixed z-50">
-              <img src={viteLogo["default"]} className="w-24 h-24  " alt="Vite logo" />
+              <img src={votesyLogo["default"]} className="w-24 h-24  " alt="Vite logo" />
               {switch votesy.show {
               | true => <VotesySpeak />
               | false => <> </>

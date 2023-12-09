@@ -13,11 +13,11 @@ let vote = async (_: Schema.query, ~id, ~ctx: ResGraphContext.context): option<v
 @gql.field
 let newestVote = async (
   _: Schema.query,
-  ~voteContractAddress,
+  ~votesContractAddress,
   ~ctx: ResGraphContext.context,
 ): option<vote> => {
   let {totalSupply} = switch await ctx.dataLoaders.voteContract.byId->DataLoader.load(
-    voteContractAddress,
+    votesContractAddress,
   ) {
   | None => panic("Did not find vote contract")
   | Some(voteContract) =>

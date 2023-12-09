@@ -1,7 +1,5 @@
 RescriptRelay.relayFeatureFlags.enableRelayResolvers = true
 
-@val @scope(("import", "meta", "env"))
-external auctionContractAddress: option<string> = "VITE_AUCTION_CONTRACT_ADDRESS"
 @module("/src/abis/Auction.json") external auctionContractAbi: JSON.t = "default"
 
 module SettleAuctionButton = {
@@ -10,7 +8,7 @@ module SettleAuctionButton = {
   let make = (~isSettled) => {
     let {config} = Wagmi.usePrepareContractWrite(
       ~config={
-        address: auctionContractAddress->Belt.Option.getExn,
+        address: Environment.auctionContractAddress,
         abi: auctionContractAbi,
         functionName: "settleCurrentAndCreateNewAuction",
         enabled: !isSettled,

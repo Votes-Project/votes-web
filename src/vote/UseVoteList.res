@@ -3,14 +3,14 @@ module Query = %relay(`
     $owner: String
     $orderBy: OrderBy_Votes
     $orderDirection: OrderDirection
-    $voteContractAddress: String!
+    $votesContractAddress: String!
   ) {
     ...UseVoteListFragment
       @arguments(
         owner: $owner
         orderBy: $orderBy
         orderDirection: $orderDirection
-        voteContractAddress: $voteContractAddress
+        votesContractAddress: $votesContractAddress
       )
   }
 `)
@@ -23,7 +23,7 @@ module UseVoteDisplay = {
     orderBy: { type: "OrderBy_Votes", defaultValue: id }
     orderDirection: { type: "OrderDirection", defaultValue: desc }
     owner: { type: "String" }
-    voteContractAddress: { type: "String!" }
+    votesContractAddress: { type: "String!" }
   )
   @refetchable(queryName: "UseVoteListVotesQuery") {
     votes(
@@ -41,7 +41,7 @@ module UseVoteDisplay = {
         }
       }
     }
-    newestVote(voteContractAddress: $voteContractAddress) {
+    newestVote(votesContractAddress: $votesContractAddress) {
       tokenId
     }
   }
@@ -148,18 +148,14 @@ module UseVoteDisplay = {
   }
 }
 
-@val @scope(("import", "meta", "env"))
-external voteContractAddress: option<string> = "VITE_VOTES_CONTRACT_ADDRESS"
-let voteContractAddress =
-  voteContractAddress
-  ->Option.map(address => address->String.toLowerCase)
-  ->Option.getExn
-
 @react.component @relay.deferredComponent
 let make = () => {
   let {address} = Wagmi.Account.use()
   let {fragmentRefs} = Query.use(
-    ~variables={owner: address->Nullable.toOption->Option.getWithDefault(""), voteContractAddress},
+    ~variables={
+      owner: address->Nullable.toOption->Option.getWithDefault(""),
+      votesContractAddress: Environment.votesContractAddress,
+    },
   )
 
   <UseVoteDisplay votes=fragmentRefs />

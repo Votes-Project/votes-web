@@ -1,6 +1,3 @@
-@val @scope(("import", "meta", "env"))
-external questionsContractAddress: option<string> = "VITE_QUESTIONS_CONTRACT_ADDRESS"
-
 @module("/src/abis/Questions.json") external questionContractAbi: JSON.t = "default"
 
 module Clipboard = {
@@ -64,7 +61,7 @@ let make = (~children) => {
 
   let {config} = Wagmi.usePrepareContractWrite(
     ~config={
-      address: questionsContractAddress->Belt.Option.getExn,
+      address: Environment.questionsContractAddress,
       abi: questionContractAbi,
       value: BigInt.fromInt(0),
       functionName: "submit",

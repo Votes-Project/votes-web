@@ -1,6 +1,3 @@
-@val @scope(("import", "meta", "env"))
-external voteContractAddress: option<string> = "VITE_VOTES_CONTRACT_ADDRESS"
-
 @module("/src/abis/Auction.json") external auctionContractAbi: JSON.t = "default"
 
 module Main = %relay.deferredComponent(Main.make)
@@ -48,9 +45,7 @@ let renderer = Routes.Main.Route.makeRenderer(
         ~environment,
         ~variables={
           contextId: contextId->Option.getExn,
-          voteContractAddress: voteContractAddress
-          ->Option.map(address => address->String.toLowerCase)
-          ->Option.getExn,
+          votesContractAddress: Environment.votesContractAddress,
         },
         ~fetchPolicy=StoreOrNetwork,
       ),
