@@ -1,7 +1,7 @@
 module Query = %relay(`
-  query MainQuery($voteContractAddress: String!, $contextId: String!) {
+  query MainQuery($votesContractAddress: String!, $contextId: String!) {
     ...MainFragment
-      @arguments(contextId: $contextId, voteContractAddress: $voteContractAddress)
+      @arguments(contextId: $contextId, votesContractAddress: $votesContractAddress)
     ...HeaderFragment
   }
 `)
@@ -11,7 +11,7 @@ module MainDisplay = {
   fragment MainFragment on Query
   @argumentDefinitions(
     contextId: { type: "String!" }
-    voteContractAddress: { type: "String!" }
+    votesContractAddress: { type: "String!" }
   ) {
     votes(orderBy: id, orderDirection: desc, first: 1000, after: "")
       @connection(key: "VotesConnection_votes") {
@@ -36,7 +36,7 @@ module MainDisplay = {
         error
       }
     }
-    newestVote(voteContractAddress: $voteContractAddress) {
+    newestVote(votesContractAddress: $votesContractAddress) {
       id
       auction {
         startTime

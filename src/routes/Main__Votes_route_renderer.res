@@ -1,10 +1,5 @@
 module Votes = %relay.deferredComponent(Votes.make)
 
-@val @scope(("import", "meta", "env"))
-external votesContractAddress: option<string> = "VITE_VOTES_CONTRACT_ADDRESS"
-
-let votesContractAddress = votesContractAddress->Option.map(address => address->String.toLowerCase)
-
 let renderer = Routes.Main.Votes.Route.makeRenderer(
   ~prepareCode=_ => [Votes.preload()],
   ~prepare=({environment, sortBy}) => {
@@ -14,7 +9,7 @@ let renderer = Routes.Main.Votes.Route.makeRenderer(
         ~environment,
         ~variables={
           orderDirection: Desc,
-          votesContractAddress: votesContractAddress->Option.getExn,
+          votesContractAddress: Environment.votesContractAddress,
         },
         ~fetchPolicy=StoreOrNetwork,
       )->Some
@@ -23,20 +18,20 @@ let renderer = Routes.Main.Votes.Route.makeRenderer(
         ~environment,
         ~variables={
           orderDirection: Asc,
-          votesContractAddress: votesContractAddress->Option.getExn,
+          votesContractAddress: Environment.votesContractAddress,
         },
         ~fetchPolicy=StoreOrNetwork,
       )->Some
     | Some(Used) =>
       VotesQuery_graphql.load(
         ~environment,
-        ~variables={votesContractAddress: votesContractAddress->Option.getExn},
+        ~variables={votesContractAddress: Environment.votesContractAddress},
         ~fetchPolicy=StoreOrNetwork,
       )->Some
     | Some(Unused) =>
       VotesQuery_graphql.load(
         ~environment,
-        ~variables={votesContractAddress: votesContractAddress->Option.getExn},
+        ~variables={votesContractAddress: Environment.votesContractAddress},
         ~fetchPolicy=StoreOrNetwork,
       )->Some
     | Some(Owned(Some(address))) =>
@@ -44,7 +39,7 @@ let renderer = Routes.Main.Votes.Route.makeRenderer(
         ~environment,
         ~variables={
           owner: address,
-          votesContractAddress: votesContractAddress->Option.getExn,
+          votesContractAddress: Environment.votesContractAddress,
         },
         ~fetchPolicy=StoreOrNetwork,
       )->Some
@@ -52,7 +47,7 @@ let renderer = Routes.Main.Votes.Route.makeRenderer(
       VotesQuery_graphql.load(
         ~environment,
         ~variables={
-          votesContractAddress: votesContractAddress->Option.getExn,
+          votesContractAddress: Environment.votesContractAddress,
         },
         ~fetchPolicy=StoreOnly,
       )->Some
@@ -61,7 +56,7 @@ let renderer = Routes.Main.Votes.Route.makeRenderer(
         ~environment,
         ~variables={
           orderDirection: Desc,
-          votesContractAddress: votesContractAddress->Option.getExn,
+          votesContractAddress: Environment.votesContractAddress,
         },
       )->Some
     }
@@ -71,6 +66,7 @@ let renderer = Routes.Main.Votes.Route.makeRenderer(
       <ErrorBoundary fallback={({error}) => JSON.stringifyAny(error)->Option.getExn->React.string}>
         {switch queryRef {
         | Some(queryRef) => <Votes queryRef />
+
         | None => React.null
         }}
       </ErrorBoundary>

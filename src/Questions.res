@@ -132,7 +132,7 @@ module Item = {
     let day = switch question {
     | PastQuestion({day}) =>
       day->Date.toLocaleStringWithLocaleAndOptions("en-us", {day: #"2-digit"})
-    | Question(_) | SeedQuestion(_) | _ =>
+    | Question(_) | SeedQuestion(_) =>
       (Date.now() +. Helpers.Date.dayInMilliseconds *. float(index - pastQuestions->Array.length))
       ->Date.fromTime
       ->Date.toLocaleStringWithLocaleAndOptions("en-us", {day: #"2-digit"})

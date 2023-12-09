@@ -1339,11 +1339,11 @@ t_Query.contents = GraphQLObjectType.make({
         description: ?None,
         deprecationReason: ?None,
         args: {
-          "voteContractAddress": {typ: Scalars.string->Scalars.toGraphQLType->nonNull},
+          "votesContractAddress": {typ: Scalars.string->Scalars.toGraphQLType->nonNull},
         }->makeArgs,
         resolve: makeResolveFn((src, args, ctx) => {
           let src = typeUnwrapper(src)
-          VoteResolvers.newestVote(src, ~ctx, ~voteContractAddress=args["voteContractAddress"])
+          VoteResolvers.newestVote(src, ~ctx, ~votesContractAddress=args["votesContractAddress"])
         }),
       },
       "node": {

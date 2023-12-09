@@ -13,38 +13,65 @@ module Davatar = {
   }
 }
 
-@react.component
-let make = (~address, ~avatar=?, ~size=24) => {
-  open Wagmi
+module ENS = {
+  @react.component
+  let make = (~address, ~avatar, ~size=24) => {
+    open Wagmi
 
-  let provider = PublicClient.use()
-  let {data: ensName} = ENS.Name.use({
-    address,
-    suspense: true,
-    chainId: 1,
-  })
+    let provider = PublicClient.use()
+    let {data: ensName} = ENS.Name.use({
+      address,
+      suspense: true,
+      chainId: 1,
+    })
 
-  let {data: ensAvatar} = ENS.Avatar.use({
-    name: ensName->Nullable.toOption,
-    suspense: true,
-    chainId: 1,
-  })
+    let {data: ensAvatar} = ENS.Avatar.use({
+      name: ensName->Nullable.toOption,
+      suspense: true,
+      chainId: 1,
+    })
 
-  let shortAddress =
-    AddressAndEnsDisplayUtils.useShortAddress(address)->Option.getWithDefault("0x0")
-
-  switch avatar {
-  | Some(true) =>
-    <div className="flex flex-row flex-nowrap gap-2 items-center">
-      {switch address {
-      | Some(address) =>
-        <div>
-          <Davatar.Image size address provider uri=ensAvatar generatedAvatarType=Jazzicon />
+    let ensAvatar = switch ensAvatar->Nullable.toOption {
+    | Some(ensAvatar) => Nullable.make(ensAvatar)
+    | None => Nullable.null
+    }
+    avatar
+      ? <div className="flex flex-row flex-nowrap gap-2 items-center">
+          <Davatar.Image
+            size
+            address={address->Option.getExn}
+            provider
+            uri={ensAvatar}
+            generatedAvatarType=Jazzicon
+          />
+          <span> {ensName->Nullable.getExn->React.string} </span>
         </div>
-      | _ => React.null
-      }}
-      <span> {ensName->Nullable.toOption->Option.getWithDefault(shortAddress)->React.string} </span>
-    </div>
-  | _ => ensName->Nullable.toOption->Option.getWithDefault(shortAddress)->React.string
+      : ensName->Nullable.getExn->React.string
   }
 }
+
+module Fallback = {
+  @react.component
+  let make = (~address, ~avatar, ~size=24) => {
+    let provider = Wagmi.PublicClient.use()
+    let shortAddress =
+      address->AddressAndEnsDisplayUtils.useShortAddress->Option.getWithDefault("???")
+
+    avatar
+      ? <div className="flex flex-row flex-nowrap gap-2 items-center">
+          <Davatar.Image
+            size address={address->Option.getExn} provider uri={null} generatedAvatarType=Jazzicon
+          />
+          <span> {shortAddress->React.string} </span>
+        </div>
+      : shortAddress->React.string
+  }
+}
+
+@react.component
+let make = (~address, ~avatar=false, ~size=24) =>
+  <ErrorBoundary fallback={_ => <Fallback address avatar size />}>
+    <React.Suspense fallback={<Fallback address avatar size />}>
+      <ENS address avatar size />
+    </React.Suspense>
+  </ErrorBoundary>

@@ -1,8 +1,4 @@
 type history
-type vercelEnv =
-  | @as("production") Production | @as("development") Development | @as("preview") Preview
-@val @scope(("import", "meta", "env"))
-external vercelEnv: option<vercelEnv> = "VITE_VERCEL_ENV"
 
 @val
 external history: history = "window.history"
@@ -13,6 +9,8 @@ external setScrollRestoration: (history, [#manual | #auto]) => unit = "scrollRes
 if !RelaySSRUtils.ssr {
   history->setScrollRestoration(#manual)
 }
+
+let _ = Environment.env
 
 %%raw(`
 import './polyfills';
@@ -25,8 +23,10 @@ import { mainnet, goerli } from "wagmi/chains";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
 
-// const voteChains = import.meta.env.VITE_VERCEL_ENV === "production" ? [mainnet] : [goerli, mainnet]
-const voteChains = [goerli, mainnet];
+
+const voteChains = Environment.env === "production" ?
+  [mainnet] :  Environment.env === "preview"? [mainnet, goerli] : [goerli];
+
 
 const { chains, publicClient, webSocketPublicClient } = configureChains(
   voteChains,
