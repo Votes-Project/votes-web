@@ -6,7 +6,7 @@ external vercelEnv: option<vercelEnv> = "VITE_VERCEL_ENV"
 @val @scope(("import", "meta", "env"))
 external vercelUrl: option<string> = "VITE_VERCEL_URL"
 @val @scope(("import", "meta", "env"))
-external port: option<string> = "PORT"
+external port: option<string> = "VITE_PORT"
 
 @val @scope(("import", "meta", "env"))
 external auctionContractAddress: option<string> = "VITE_AUCTION_CONTRACT_ADDRESS"
