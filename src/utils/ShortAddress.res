@@ -21,6 +21,11 @@ module ENS = {
     let provider = PublicClient.use()
     let {data: ensName} = ENS.Name.use({
       address,
+      chainId: 1,
+    })
+    let provider = PublicClient.use()
+    let {data: ensName} = ENS.Name.use({
+      address,
       suspense: true,
       chainId: 1,
     })

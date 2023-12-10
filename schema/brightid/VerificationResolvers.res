@@ -17,8 +17,8 @@ let verification = async (
       | Some(answerServiceId) if answerServiceId == contextId =>
         ctx.dataLoaders.verification.byId->DataLoader.prime(Some(verification))
         verification
-      | Some(_) =>
-        switch await ctx.dataLoaders.verification.byId->DataLoader.load(contextId) {
+      | Some(answerServiceId) =>
+        switch await ctx.dataLoaders.verification.byId->DataLoader.load(answerServiceId) {
         | None => panic("Something went wrong fetching from BrightID Node")
         | Some(verification) =>
           ctx.dataLoaders.verification.byId->DataLoader.prime(Some(verification))

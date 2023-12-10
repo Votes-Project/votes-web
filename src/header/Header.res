@@ -1,5 +1,3 @@
-@module external reactLogo: 'a = "/assets/react.svg"
-
 @module external votesyLogo: 'a = "/votesy.svg"
 
 type headerItem = {

@@ -1,4 +1,4 @@
-type verification = Verification({id: string, unique: bool}) | Error({error: bool})
+type verification = Verification({id: string, unique: bool}) | Error({error: bool, errorNum: int})
 type context = {
   verification: option<verification>,
   setVerification: (option<verification> => option<verification>) => unit,

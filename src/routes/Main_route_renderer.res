@@ -64,22 +64,15 @@ let renderer = Routes.Main.Route.makeRenderer(
         )->Some
       | _ => None
       },
-      switch stats {
-      | None => None
-      | Some(statsKey) => Some(statsKey)
-
-      // StatsQuery_graphql.load(
-      //   ~environment,
-      //   ~variables={contextId: contextId},
-      //   ~fetchPolicy=NetworkOnly,
-      //   ~fetchKey=statsKey->Int.toString,
-      // )->Some
+      switch (stats, contextId) {
+      | (Some(statsKey), Some(_)) =>
+        StatsQuery_graphql.load(~environment, ~variables=(), ~fetchKey=statsKey->Int.toString)->Some
       | _ => None
       },
     )
   },
   ~render=({childRoutes, linkBrightID, stats, prepared}) => {
-    let (queryRef, linkBrightIDQueryRef, _) = prepared
+    let (queryRef, linkBrightIDQueryRef, statsQueryRef) = prepared
 
     let {auction, isLoading} = React.useContext(AuctionContext.context)
     let {vote} = React.useContext(VoteContext.context)
@@ -125,15 +118,11 @@ let renderer = Routes.Main.Route.makeRenderer(
         }}
       </LinkBrightIDModal>
       <StatsModal isOpen={stats->Option.isSome}>
-        {switch stats {
-        | Some(_) =>
+        {switch (stats, statsQueryRef, contextId) {
+        | (Some(_), Some(queryRef), Some(_)) =>
           <ErrorBoundary fallback={_ => "Error"->React.string}>
-            <React.Suspense
-              fallback={<div
-                className="w-full h-full flex justify-center items-center text-lg text-white">
-                {"Loading"->React.string}
-              </div>}>
-              <Stats />
+            <React.Suspense fallback={<div />}>
+              <Stats queryRef />
             </React.Suspense>
           </ErrorBoundary>
         | _ => React.null

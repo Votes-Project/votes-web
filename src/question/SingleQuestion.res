@@ -385,10 +385,17 @@ module OptionsPage = {
     })
 
     <>
-      <h1
-        className="text-2xl px-4 pt-2 text-default-dark lg:text-primary-dark text-center animate-typewriter">
-        {(queryParams.answer->Option.isSome ? "Hold to Confirm" : "Pick an answer")->React.string}
-      </h1>
+      {switch queryParams.answer {
+      | Some(_) =>
+        <h1
+          className="text-2xl px-4 pt-2 text-default-darker lg:text-active text-center animate-pulse">
+          {"Hold to Confirm"->React.string}
+        </h1>
+      | None =>
+        <h1 className="text-2xl px-4 pt-2 text-default-dark lg:text-primary-dark text-center ">
+          {"Pick an answer"->React.string}
+        </h1>
+      }}
       <ul className="flex flex-col justify-between items-start lg:px-6 mb-4 lg:mr-4">
         <OptionsList options={question->Option.map(q => q.fragmentRefs)} />
       </ul>

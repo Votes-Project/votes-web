@@ -34,6 +34,7 @@ module MainDisplay = {
       }
       ... on Error {
         error
+        errorNum
       }
     }
     newestVote(votesContractAddress: $votesContractAddress) {
@@ -83,7 +84,7 @@ module MainDisplay = {
       setVerification(_ =>
         switch verification {
         | VerificationData({id, unique}) => VerificationContext.Verification({id, unique})->Some
-        | Error({error}) => VerificationContext.Error({error: error})->Some
+        | Error({error, errorNum}) => VerificationContext.Error({error, errorNum})->Some
         | _ => None
         }
       )
