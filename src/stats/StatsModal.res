@@ -42,32 +42,20 @@ let make = (~children, ~isOpen) => {
   })
 
   <ReactModal
-    style={
-      overlay: {
-        backgroundColor: "transparent",
-        backdropFilter: "blur(4px)",
-        outline: "none",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        zIndex: "0",
-        boxShadow: "var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)",
-      },
-      content: {
-        outline: "none",
-        pointerEvents: "none",
-      },
-    }
-    className="w-full h-screen max-w-3xl flex justify-center items-center"
+    className="flex flex-col pointer-events-auto  justify-center items-center outline-none"
+    overlayClassName="fixed backdrop-blur-sm bg-black/70 h-[100svh] outline-none inset-0 flex justify-center items-center"
     isOpen
     onRequestClose=onClose>
-    <FramerMotion.AnimatePresence initial=false>
-      <FramerMotion.Div
-        layout=True
-        layoutId="stats"
-        className="pointer-events-auto bg-white w-5/6 h-1/2 shadow-2xl rounded-2xl ">
-        {children}
-      </FramerMotion.Div>
-    </FramerMotion.AnimatePresence>
+    <div className="fixed flex items-center justify-center top-2 p-2 lg:pt-4 lg:pr-4 right-4">
+      <button
+        onClick=onClose
+        className="rounded-full w-full h-full lg:p-2 text-4xl text-center lg:bg-default text-white font-bold lg:text-default-darker">
+        <ReactIcons.LuX />
+      </button>
+    </div>
+    <div
+      className="flex p-2 lg:p-4 w-screen lg:w-[40rem] max-w-2xl flex-col inset-0 max-h-[80vh] lg:max-h-[50rem] lg:bg-default-light lg:shadow-xl rounded-xl justify-center lg:justify-start">
+      {children}
+    </div>
   </ReactModal>
 }

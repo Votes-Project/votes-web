@@ -8,6 +8,7 @@ type style = {
 @react.component @module("react-modal")
 external make: (
   ~className: string=?,
+  ~overlayClassName: string=?,
   ~style: style=?,
   ~children: React.element,
   ~isOpen: bool,

@@ -100,7 +100,7 @@ let make = () => {
       | _ =>
         (
           {
-            errorMessage: "Unknown Error",
+            errorMessage: "UnknownError",
             code: -1,
             errorNum: -1,
             error: true,
