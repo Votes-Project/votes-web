@@ -1,6 +1,6 @@
 module BidItem = {
   module Fragment = %relay(`
-  fragment AllBidsList_BidItem_auctionBid on AuctionBid {
+  fragment BidHistory_BidItem_auctionBid on AuctionBid {
     id
     bidder
     amount
@@ -19,7 +19,7 @@ module BidItem = {
       ->Option.mapWithDefault("", Date.toLocaleDateString)
     let provider = Wagmi.PublicClient.use()
 
-    <li className="border-b p-4 my-2 rounded-xl bg-default-light" key=id>
+    <li className="border-b p-3 my-2 rounded-xl bg-default-light" key=id>
       <div className="font-semibold flex items-center justify-between">
         <div className="flex items-center">
           <ShortAddress.Davatar.Image
@@ -49,7 +49,7 @@ module BidItem = {
 }
 
 module Fragment = %relay(`
-  fragment AllBidsList_auction on Auction
+  fragment BidHistory_auction on Auction
   @argumentDefinitions(
     first: { type: "Int", defaultValue: 1000 }
     orderBy: { type: "OrderBy_AuctionBids", defaultValue: blockTimestamp }
@@ -69,7 +69,7 @@ module Fragment = %relay(`
         __id
         node {
           id
-          ...AllBidsList_BidItem_auctionBid
+          ...BidHistory_BidItem_auctionBid
         }
       }
     }
@@ -80,19 +80,21 @@ module Fragment = %relay(`
 let make = (~bids) => {
   let {bids, tokenId, bidder} = Fragment.use(bids)
   <>
-    <header className=" flex flex-row ">
-      <div className="relative">
+    <header className=" flex flex-row gap-2">
+      <div className="relative bg-default-light rounded-xl">
         <EmptyVoteChart className="h-10" />
       </div>
       <div className="flex flex-col gap-2">
-        <h2 className="text-3xl font-bold text-primary-dark "> {"Bids For"->React.string} </h2>
-        <h1 className="text-5xl font-bold  text-default-darker">
+        <h2 className="text-3xl font-bold text-default lg:text-primary-dark ">
+          {"Bids For"->React.string}
+        </h2>
+        <h1 className="text-5xl font-bold text-active lg:text-default-darker">
           {`VOTE ${tokenId->BigInt.toString}`->React.string}
         </h1>
       </div>
     </header>
     <ul
-      className="h-[35vh] bg-primary rounded-xl self-center w-full m-4 p-4 gap-2 overflow-y-scroll hide-scrollbar">
+      className="h-[35vh] lg:bg-primary rounded-xl self-center w-full m-4 p-4 gap-2 overflow-y-scroll hide-scrollbar">
       {switch bids->Fragment.getConnectionNodes {
       | [] =>
         <div className="w-full h-full flex justify-center items-center">

@@ -85,7 +85,7 @@ module Fragment = %relay(`
     ...AuctionCountdown_auction
     ...AuctionCurrentBid_auction
     ...AuctionBidList_auction
-    ...AllBidsList_auction
+    ...BidHistory_auction
     ...AuctionDisplay_BlockExplorerButton_auction
   }
   `)
@@ -108,17 +108,17 @@ let make = (~auction, ~owner) => {
 
   let {
     setParams: setAuctionParams,
-    queryParams: {showAllBids},
+    queryParams: {bidHistory},
   } = Routes.Main.Vote.Auction.Route.useQueryParams()
 
-  let handleShowAllBids = _ => {
+  let handleBidHistory = _ => {
     setAuctionParams(
       ~removeNotControlledParams=false,
       ~navigationMode_=Push,
       ~shallow=true,
       ~setter=c => {
         ...c,
-        showAllBids: Some(0),
+        bidHistory: Some(0),
       },
     )
   }
@@ -159,15 +159,15 @@ let make = (~auction, ~owner) => {
           {auction.bidder->Option.mapWithDefault(React.null, _ =>
             <button
               type_="button"
-              onClick={handleShowAllBids}
+              onClick={handleBidHistory}
               className="font-semibold  hover:text-default-darker cursor-pointer">
               {"View All Bids"->React.string}
             </button>
           )}
         </div>
-        <AllBidsListModal isOpen={showAllBids->Option.isSome}>
-          <AllBidsList bids={auction.fragmentRefs} />
-        </AllBidsListModal>
+        <BidHistoryModal isOpen={bidHistory->Option.isSome}>
+          <BidHistory bids={auction.fragmentRefs} />
+        </BidHistoryModal>
       </>
 
     | (Some(After), {settled, amount, bidder}) =>
@@ -225,15 +225,15 @@ let make = (~auction, ~owner) => {
         </div>
         <div className="flex py-4 gap-4">
           <button
-            onClick={handleShowAllBids}
+            onClick={handleBidHistory}
             className=" lg:bg-primary font-semibold text-default-darker hover:bg-default-light p-2 bg-default rounded-md transition-colors">
             {"Bid History"->React.string}
           </button>
           <BlockExplorerButton auction={auction.fragmentRefs} />
         </div>
-        <AllBidsListModal isOpen={showAllBids->Option.isSome}>
-          <AllBidsList bids={auction.fragmentRefs} />
-        </AllBidsListModal>
+        <BidHistoryModal isOpen={bidHistory->Option.isSome}>
+          <BidHistory bids={auction.fragmentRefs} />
+        </BidHistoryModal>
       </>
 
     | _ => <> </>

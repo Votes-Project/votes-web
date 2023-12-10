@@ -28,7 +28,6 @@ let make = (~prepareDisposeTimeout=5 * 60 * 1000): array<RelayRouter.Types.route
       linkBrightID: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("linkBrightID")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
       voteDetails: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetails")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
       voteDetailsToken: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetailsToken")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
-      showAllBids: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("showAllBids")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
       stats: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("stats")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
     }
     prepareProps->unsafe_toPrepareProps
@@ -79,7 +78,6 @@ let make = (~prepareDisposeTimeout=5 * 60 * 1000): array<RelayRouter.Types.route
       ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("linkBrightID")->Belt.Option.getWithDefault("")
       ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetails")->Belt.Option.getWithDefault("")
       ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetailsToken")->Belt.Option.getWithDefault("")
-      ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("showAllBids")->Belt.Option.getWithDefault("")
       ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("stats")->Belt.Option.getWithDefault("")
   }
   
@@ -104,7 +102,6 @@ let make = (~prepareDisposeTimeout=5 * 60 * 1000): array<RelayRouter.Types.route
           linkBrightID: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("linkBrightID")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
           voteDetails: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetails")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
           voteDetailsToken: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetailsToken")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
-          showAllBids: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("showAllBids")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
           stats: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("stats")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
         }
         prepareProps->unsafe_toPrepareProps
@@ -155,7 +152,6 @@ let make = (~prepareDisposeTimeout=5 * 60 * 1000): array<RelayRouter.Types.route
           ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("linkBrightID")->Belt.Option.getWithDefault("")
           ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetails")->Belt.Option.getWithDefault("")
           ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetailsToken")->Belt.Option.getWithDefault("")
-          ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("showAllBids")->Belt.Option.getWithDefault("")
           ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("stats")->Belt.Option.getWithDefault("")
       }
       
@@ -180,8 +176,8 @@ let make = (~prepareDisposeTimeout=5 * 60 * 1000): array<RelayRouter.Types.route
                 linkBrightID: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("linkBrightID")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
                 voteDetails: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetails")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
                 voteDetailsToken: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetailsToken")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
-                showAllBids: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("showAllBids")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
                 stats: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("stats")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
+                bidHistory: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("bidHistory")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
               }
               prepareProps->unsafe_toPrepareProps
             }
@@ -230,8 +226,8 @@ let make = (~prepareDisposeTimeout=5 * 60 * 1000): array<RelayRouter.Types.route
                 ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("linkBrightID")->Belt.Option.getWithDefault("")
                 ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetails")->Belt.Option.getWithDefault("")
                 ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetailsToken")->Belt.Option.getWithDefault("")
-                ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("showAllBids")->Belt.Option.getWithDefault("")
                 ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("stats")->Belt.Option.getWithDefault("")
+                ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("bidHistory")->Belt.Option.getWithDefault("")
             }
             
             ,
@@ -260,7 +256,6 @@ let make = (~prepareDisposeTimeout=5 * 60 * 1000): array<RelayRouter.Types.route
           linkBrightID: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("linkBrightID")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
           voteDetails: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetails")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
           voteDetailsToken: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetailsToken")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
-          showAllBids: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("showAllBids")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
           stats: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("stats")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
           answer: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("answer")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
         }
@@ -312,7 +307,6 @@ let make = (~prepareDisposeTimeout=5 * 60 * 1000): array<RelayRouter.Types.route
           ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("linkBrightID")->Belt.Option.getWithDefault("")
           ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetails")->Belt.Option.getWithDefault("")
           ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetailsToken")->Belt.Option.getWithDefault("")
-          ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("showAllBids")->Belt.Option.getWithDefault("")
           ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("stats")->Belt.Option.getWithDefault("")
           ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("answer")->Belt.Option.getWithDefault("")
       }
@@ -338,7 +332,6 @@ let make = (~prepareDisposeTimeout=5 * 60 * 1000): array<RelayRouter.Types.route
                 linkBrightID: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("linkBrightID")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
                 voteDetails: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetails")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
                 voteDetailsToken: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetailsToken")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
-                showAllBids: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("showAllBids")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
                 stats: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("stats")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
                 answer: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("answer")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
                 useVote: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("useVote")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
@@ -392,7 +385,6 @@ let make = (~prepareDisposeTimeout=5 * 60 * 1000): array<RelayRouter.Types.route
                 ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("linkBrightID")->Belt.Option.getWithDefault("")
                 ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetails")->Belt.Option.getWithDefault("")
                 ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetailsToken")->Belt.Option.getWithDefault("")
-                ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("showAllBids")->Belt.Option.getWithDefault("")
                 ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("stats")->Belt.Option.getWithDefault("")
                 ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("answer")->Belt.Option.getWithDefault("")
                 ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("useVote")->Belt.Option.getWithDefault("")
@@ -420,7 +412,6 @@ let make = (~prepareDisposeTimeout=5 * 60 * 1000): array<RelayRouter.Types.route
                         linkBrightID: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("linkBrightID")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
                         voteDetails: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetails")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
                         voteDetailsToken: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetailsToken")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
-                        showAllBids: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("showAllBids")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
                         stats: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("stats")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
                         answer: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("answer")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
                         useVote: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("useVote")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
@@ -474,7 +465,6 @@ let make = (~prepareDisposeTimeout=5 * 60 * 1000): array<RelayRouter.Types.route
                         ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("linkBrightID")->Belt.Option.getWithDefault("")
                         ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetails")->Belt.Option.getWithDefault("")
                         ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetailsToken")->Belt.Option.getWithDefault("")
-                        ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("showAllBids")->Belt.Option.getWithDefault("")
                         ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("stats")->Belt.Option.getWithDefault("")
                         ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("answer")->Belt.Option.getWithDefault("")
                         ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("useVote")->Belt.Option.getWithDefault("")
@@ -507,7 +497,6 @@ let make = (~prepareDisposeTimeout=5 * 60 * 1000): array<RelayRouter.Types.route
                 linkBrightID: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("linkBrightID")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
                 voteDetails: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetails")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
                 voteDetailsToken: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetailsToken")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
-                showAllBids: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("showAllBids")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
                 stats: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("stats")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
                 answer: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("answer")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
                 id: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("id")->Belt.Option.flatMap(value => Some(value->Js.Global.decodeURIComponent)),
@@ -560,7 +549,6 @@ let make = (~prepareDisposeTimeout=5 * 60 * 1000): array<RelayRouter.Types.route
                 ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("linkBrightID")->Belt.Option.getWithDefault("")
                 ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetails")->Belt.Option.getWithDefault("")
                 ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetailsToken")->Belt.Option.getWithDefault("")
-                ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("showAllBids")->Belt.Option.getWithDefault("")
                 ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("stats")->Belt.Option.getWithDefault("")
                 ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("answer")->Belt.Option.getWithDefault("")
                 ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("id")->Belt.Option.getWithDefault("")
@@ -590,7 +578,6 @@ let make = (~prepareDisposeTimeout=5 * 60 * 1000): array<RelayRouter.Types.route
                 linkBrightID: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("linkBrightID")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
                 voteDetails: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetails")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
                 voteDetailsToken: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetailsToken")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
-                showAllBids: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("showAllBids")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
                 stats: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("stats")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
                 answer: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("answer")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
               }
@@ -641,7 +628,6 @@ let make = (~prepareDisposeTimeout=5 * 60 * 1000): array<RelayRouter.Types.route
                 ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("linkBrightID")->Belt.Option.getWithDefault("")
                 ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetails")->Belt.Option.getWithDefault("")
                 ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetailsToken")->Belt.Option.getWithDefault("")
-                ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("showAllBids")->Belt.Option.getWithDefault("")
                 ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("stats")->Belt.Option.getWithDefault("")
                 ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("answer")->Belt.Option.getWithDefault("")
             }
@@ -672,7 +658,6 @@ let make = (~prepareDisposeTimeout=5 * 60 * 1000): array<RelayRouter.Types.route
           linkBrightID: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("linkBrightID")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
           voteDetails: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetails")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
           voteDetailsToken: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetailsToken")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
-          showAllBids: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("showAllBids")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
           stats: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("stats")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
         }
         prepareProps->unsafe_toPrepareProps
@@ -723,7 +708,6 @@ let make = (~prepareDisposeTimeout=5 * 60 * 1000): array<RelayRouter.Types.route
           ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("linkBrightID")->Belt.Option.getWithDefault("")
           ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetails")->Belt.Option.getWithDefault("")
           ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetailsToken")->Belt.Option.getWithDefault("")
-          ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("showAllBids")->Belt.Option.getWithDefault("")
           ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("stats")->Belt.Option.getWithDefault("")
       }
       
@@ -751,7 +735,6 @@ let make = (~prepareDisposeTimeout=5 * 60 * 1000): array<RelayRouter.Types.route
           linkBrightID: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("linkBrightID")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
           voteDetails: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetails")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
           voteDetailsToken: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetailsToken")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
-          showAllBids: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("showAllBids")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
           stats: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("stats")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
         }
         prepareProps->unsafe_toPrepareProps
@@ -802,7 +785,6 @@ let make = (~prepareDisposeTimeout=5 * 60 * 1000): array<RelayRouter.Types.route
           ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("linkBrightID")->Belt.Option.getWithDefault("")
           ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetails")->Belt.Option.getWithDefault("")
           ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetailsToken")->Belt.Option.getWithDefault("")
-          ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("showAllBids")->Belt.Option.getWithDefault("")
           ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("stats")->Belt.Option.getWithDefault("")
       }
       
@@ -830,7 +812,6 @@ let make = (~prepareDisposeTimeout=5 * 60 * 1000): array<RelayRouter.Types.route
           linkBrightID: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("linkBrightID")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
           voteDetails: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetails")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
           voteDetailsToken: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetailsToken")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
-          showAllBids: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("showAllBids")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
           stats: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("stats")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
           sortBy: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("sortBy")->Belt.Option.flatMap(value => value->Js.Global.decodeURIComponent->VotesSortBy.parse),
         }
@@ -882,7 +863,6 @@ let make = (~prepareDisposeTimeout=5 * 60 * 1000): array<RelayRouter.Types.route
           ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("linkBrightID")->Belt.Option.getWithDefault("")
           ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetails")->Belt.Option.getWithDefault("")
           ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetailsToken")->Belt.Option.getWithDefault("")
-          ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("showAllBids")->Belt.Option.getWithDefault("")
           ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("stats")->Belt.Option.getWithDefault("")
           ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("sortBy")->Belt.Option.getWithDefault("")
       }
@@ -911,7 +891,6 @@ let make = (~prepareDisposeTimeout=5 * 60 * 1000): array<RelayRouter.Types.route
           linkBrightID: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("linkBrightID")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
           voteDetails: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetails")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
           voteDetailsToken: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetailsToken")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
-          showAllBids: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("showAllBids")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
           stats: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("stats")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
           day: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("day")->Belt.Option.flatMap(value => value->Js.Global.decodeURIComponent->QuestionDay.parse),
           calendar: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("calendar")->Belt.Option.flatMap(value => value->Js.Global.decodeURIComponent->CalendarType.parse),
@@ -964,7 +943,6 @@ let make = (~prepareDisposeTimeout=5 * 60 * 1000): array<RelayRouter.Types.route
           ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("linkBrightID")->Belt.Option.getWithDefault("")
           ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetails")->Belt.Option.getWithDefault("")
           ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetailsToken")->Belt.Option.getWithDefault("")
-          ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("showAllBids")->Belt.Option.getWithDefault("")
           ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("stats")->Belt.Option.getWithDefault("")
           ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("day")->Belt.Option.getWithDefault("")
           ++ queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("calendar")->Belt.Option.getWithDefault("")
