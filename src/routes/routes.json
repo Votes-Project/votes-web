@@ -1,6 +1,6 @@
 [
   {
-    "path": "?linkBrightID=int&voteDetails=int&voteDetailsToken=int&showAllBids=int&stats=int",
+    "path": "?linkBrightID=int&voteDetails=int&voteDetailsToken=int&stats=int",
     "name": "Main",
     "children": [
       {
@@ -8,7 +8,7 @@
         "name": "Vote",
         "children": [
           {
-            "path": ":tokenId?showAllBids=int",
+            "path": ":tokenId?bidHistory=int",
             "name": "Auction",
             "children": []
           }

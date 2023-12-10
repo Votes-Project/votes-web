@@ -19,7 +19,7 @@ let make = (~children, ~isOpen) => {
       ~shallow=false,
       ~setter=c => {
         ...c,
-        showAllBids: None,
+        bidHistory: None,
       },
     )
   }
@@ -42,19 +42,24 @@ let make = (~children, ~isOpen) => {
     className="flex pointer-events-auto"
     style={
       overlay: {
-        backgroundColor: "rgba(0,0,0,0.5)",
+        backgroundColor: "rgba(0,0,0,0.7)",
         outline: "none",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        backdropFilter: "blur(2px)",
+        backdropFilter: "blur(10px)",
       },
       content: {
         outline: "none",
       },
     }>
+    <div className="fixed top-0 p-4 right-0">
+      <button onClick=handleClose className="rounded-full p-2 w-12 h-12 bg-default">
+        {"❌"->React.string}
+      </button>
+    </div>
     <div
-      className="flex p-4 w-[40rem] flex-col inset-0 max-h-[50rem]  bg-secondary border-4 border-default-light shadow-xl rounded-xl ">
+      className="flex p-4 w-full lg:w-[40rem] flex-col inset-0 max-h-[50rem]  lg:bg-secondary lg:border-4 border-default-light lg:shadow-xl rounded-xl ">
       {children}
     </div>
   </ReactModal>
