@@ -47,18 +47,15 @@ let make = (~children, ~isOpen) => {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
+        backdropFilter: "blur(2px)",
       },
       content: {
         outline: "none",
       },
     }>
-    <div className="justify-center items-center flex inset-0 ">
-      <div className="relative w-auto mx-auto max-w-3xl">
-        <div
-          className="flex flex-col border-0 rounded-xl shadow-xl relative w-full bg-secondary justify-start items-center min-w-[740px] max-h-[890px] noise overflow-scroll hide-scrollbar">
-          <div className=" w-full px-4 h-full flex flex-col justify-around"> {children} </div>
-        </div>
-      </div>
+    <div
+      className="flex p-4 w-[40rem] flex-col inset-0 max-h-[50rem]  bg-secondary border-4 border-default-light shadow-xl rounded-xl ">
+      {children}
     </div>
   </ReactModal>
 }

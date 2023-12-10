@@ -372,9 +372,7 @@ module OptionsPage = {
           <div
             className=" flex justify-around w-full text-xl font-semibold text-default-darker pt-10 text-center">
             <div />
-            <React.Suspense fallback={<div />}>
-              <ShortAddress address=Some(asker) avatar=true />
-            </React.Suspense>
+            <ShortAddress address=Some(asker) avatar=true />
           </div>
         </div>
       )

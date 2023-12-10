@@ -8,7 +8,7 @@
         "name": "Vote",
         "children": [
           {
-            "path": ":tokenId",
+            "path": ":tokenId?showAllBids=int",
             "name": "Auction",
             "children": []
           }
