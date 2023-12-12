@@ -121,7 +121,7 @@ let renderer = Routes.Main.Route.makeRenderer(
         {switch (stats, statsQueryRef, contextId) {
         | (Some(_), Some(queryRef), Some(_)) =>
           <ErrorBoundary fallback={_ => "Error"->React.string}>
-            <React.Suspense fallback={<div />}>
+            <React.Suspense fallback={<div className="h-[50vh]" />}>
               <Stats queryRef />
             </React.Suspense>
           </ErrorBoundary>
