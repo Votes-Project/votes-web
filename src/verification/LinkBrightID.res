@@ -46,6 +46,8 @@ let make = (~queryRef, ~contextId) => {
 
   let {setParams, queryParams} = Routes.Main.Route.useQueryParams()
 
+  let {setAlerts} = React.useContext(StatsAlertContext.context)
+
   let setLinkBrightID = (linkBrightID, ~verification=?) => {
     setParams(
       ~removeNotControlledParams=false,
@@ -56,7 +58,10 @@ let make = (~queryRef, ~contextId) => {
         linkBrightID,
       },
       ~onAfterParamsSet=_ => {
-        startTransition(() => setVerification(_ => verification))
+        startTransition(() => {
+          setAlerts(alerts => alerts->Array.filter(a => a !== LinkBrightID))
+          setVerification(_ => verification)
+        })
       },
     )
   }

@@ -4,7 +4,7 @@ module Alert = {
   @react.component
   let make = () => {
     <div
-      className="absolute top-[-2px] right-[-2px] font-fugaz flex justify-center items-center w-4 h-4 rounded-full bg-active text-white text-xs animate-pulse">
+      className="absolute top-[-2px] right-[-2px] font-fugaz flex justify-center items-center w-5 h-5 rounded-full bg-active text-white text-sm \animate-pulse">
       {"!"->React.string}
     </div>
   }
@@ -14,76 +14,124 @@ module BrightIdBento = {
   @react.component
   let make = () => {
     let {verification} = React.useContext(VerificationContext.context)
+    let {alerts} = React.useContext(StatsAlertContext.context)
+    let {setParams} = Routes.Main.Route.useQueryParams()
+    let handleLinkBrightId = _ => {
+      setParams(
+        ~removeNotControlledParams=false,
+        ~navigationMode_=Push,
+        ~shallow=false,
+        ~setter=c => {
+          {
+            ...c,
+            linkBrightID: Some(0),
+            stats: None,
+          }
+        },
+      )
+    }
 
-    switch verification {
-    | Some(Verification({unique: true})) =>
-      <div className="mb-2 lg:mb-4 rounded-xl border-2 border-green-400 bg-green-100 p-1">
-        <div className="flex items-center gap-2">
-          <BrightIdWhiteSVG
-            className="self-end align-start lg:align-end w-8 h-8 p-1 lg:w-10 lg:h-10 fill-green-500"
-          />
-          <h1 className="text-lg lg:text-2xl font-fugaz align-bottom">
-            {"BrightID"->React.string}
-          </h1>
+    {
+      switch verification {
+      | Some(Verification({unique: true})) =>
+        <div className="mb-2 lg:mb-4 rounded-xl border-2 border-green-400 bg-green-100 p-1">
+          <div className="flex items-center gap-2">
+            <BrightIdWhiteSVG
+              className="self-end align-start lg:align-end w-8 h-8 p-1 lg:w-10 lg:h-10 fill-green-500"
+            />
+            <h1 className="text-lg lg:text-2xl font-fugaz align-bottom">
+              {"BrightID"->React.string}
+            </h1>
+          </div>
+          <p className="text-green-500 font-fugaz text-2xl lg:text-4xl p-1 text-center">
+            {"Verified"->React.string}
+          </p>
         </div>
-        <p className="text-green-500 font-fugaz text-2xl lg:text-4xl p-1 text-center">
-          {"Verified"->React.string}
-        </p>
-      </div>
-    | Some(Verification({unique: false})) =>
-      <div className="mb-2 lg:mb-4 rounded-xl border-2 border-yellow-400 bg-red-100 p-1">
-        <div className="flex items-center gap-2">
-          <BrightIdWhiteSVG
-            className="self-end align-start lg:align-end w-8 h-8 p-1 lg:w-10 lg:h-10 fill-red-500"
-          />
-          <h1 className="text-lg lg:text-2xl font-fugaz align-bottom">
-            {"BrightID"->React.string}
-          </h1>
+      | Some(Verification({unique: false})) =>
+        <div className="mb-2 lg:mb-4 rounded-xl border-2 border-yellow-400 bg-red-100 p-1">
+          <div className="flex items-center gap-2">
+            <BrightIdWhiteSVG
+              className="self-end align-start lg:align-end w-8 h-8 p-1 lg:w-10 lg:h-10 fill-red-500"
+            />
+            <h1 className="text-lg lg:text-2xl font-fugaz align-bottom">
+              {"BrightID"->React.string}
+            </h1>
+          </div>
+          <p className="text-red-500 font-fugaz text-2xl lg:text-4xl p-1 text-center">
+            {"Not Unique"->React.string}
+          </p>
         </div>
-        <p className="text-red-500 font-fugaz text-2xl lg:text-4xl p-1 text-center">
-          {"Not Unique"->React.string}
-        </p>
-      </div>
-    | Some(Error({errorNum: -1})) =>
-      <div className="mb-2 lg:mb-4 rounded-xl border-2 border-red-400 bg-yellow-100 p-1">
-        <div className="flex items-center gap-2">
-          <BrightIdWhiteSVG
-            className="self-end align-start lg:align-end w-8 h-8 p-1 lg:w-10 lg:h-10 fill-yellow-500"
-          />
-          <h1 className="text-lg lg:text-2xl font-fugaz align-bottom">
-            {"BrightID"->React.string}
-          </h1>
+      | Some(Error({errorNum: 4})) =>
+        <div
+          className="flex flex-col mb-2 lg:mb-4 rounded-xl border-2 border-red-400 bg-yellow-100 p-1">
+          <div className="flex items-center gap-2">
+            <BrightIdWhiteSVG
+              className="self-end align-start lg:align-end w-8 h-8 p-1 lg:w-10 lg:h-10 fill-yellow-500"
+            />
+            <h1 className="text-lg lg:text-2xl font-fugaz align-bottom">
+              {"BrightID"->React.string}
+            </h1>
+          </div>
+          <button
+            onClick={handleLinkBrightId}
+            className="bg-active relative self-center hover:scale-105 transition-all text-white font-black p-2 rounded-xl m-auto ">
+            {switch alerts {
+            | alerts if alerts->Array.includes(LinkBrightID) => <Alert />
+            | _ => React.null
+            }}
+            {"Link BrightID"->React.string}
+          </button>
         </div>
-        <p className=" text-yellow-500 font-fugaz text-2xl lg:text-4xl p-1 text-center">
-          {"Rate Limited"->React.string}
-        </p>
-      </div>
-    | None =>
-      <div className="mb-2 lg:mb-4 rounded-xl border-2 border-gray-400 bg-gray-100 p-1 ">
-        <div className="flex items-center gap-2">
-          <BrightIdWhiteSVG
-            className="self-end align-start lg:align-end w-8 h-8 p-1 lg:w-10 lg:h-10 fill-gray-500 animate-spin"
-          />
-          <h1 className="text-lg lg:text-2xl font-fugaz align-bottom">
-            {"BrightID"->React.string}
-          </h1>
+
+      | Some(Error({errorNum: -1})) =>
+        <div className="mb-2 lg:mb-4 rounded-xl border-2 border-red-400 bg-yellow-100 p-1">
+          <div className="flex items-center gap-2">
+            <BrightIdWhiteSVG
+              className="self-end align-start lg:align-end w-8 h-8 p-1 lg:w-10 lg:h-10 fill-yellow-500"
+            />
+            <h1 className="text-lg lg:text-2xl font-fugaz align-bottom">
+              {"BrightID"->React.string}
+            </h1>
+          </div>
+          <div className="relative text-yellow-500 font-fugaz text-2xl p-1 text-center">
+            {switch alerts {
+            | alerts if alerts->Array.includes(LinkBrightID) => <Alert />
+            | _ => React.null
+            }}
+            {"Rate Limited"->React.string}
+          </div>
         </div>
-        <div className=" animate-pulse bg-gray-500  h-8 rounded-lg lg:text-4xl m-1 text-center" />
-      </div>
-    | _ =>
-      <div className="mb-2 lg:mb-4 rounded-xl border-2 border-red-400 bg-yellow-100 p-1">
-        <div className="flex items-center gap-2">
-          <BrightIdWhiteSVG
-            className="self-end align-start lg:align-end w-12 h-12 fill-yellow-500"
-          />
-          <h1 className="text-lg lg:text-2xl font-fugaz align-bottom">
-            {"BrightID"->React.string}
-          </h1>
+      | None =>
+        <div className="mb-2 lg:mb-4 rounded-xl border-2 border-gray-400 bg-gray-100 p-1 ">
+          <div className="flex items-center gap-2">
+            <BrightIdWhiteSVG
+              className="self-end align-start lg:align-end w-8 h-8 p-1 lg:w-10 lg:h-10 fill-gray-500 animate-spin"
+            />
+            <h1 className="text-lg lg:text-2xl font-fugaz align-bottom">
+              {"BrightID"->React.string}
+            </h1>
+          </div>
+          <div className=" animate-pulse bg-gray-500  h-8 rounded-lg lg:text-4xl m-1 text-center" />
         </div>
-        <p className="text-yellow-500 font-fugaz text-2xl lg:text-4xl p-1 text-center">
-          {"Action Required"->React.string}
-        </p>
-      </div>
+      | _ =>
+        <div className="mb-2 lg:mb-4 rounded-xl border-2 border-yellow-400 bg-yellow-100 p-1">
+          <div className="flex items-center gap-2">
+            <BrightIdWhiteSVG
+              className="self-end align-start lg:align-end w-12 h-12 fill-yellow-500"
+            />
+            <h1 className="text-lg lg:text-2xl font-fugaz align-bottom">
+              {"BrightID"->React.string}
+            </h1>
+          </div>
+          <div className="relative text-yellow-500 font-fugaz text-2xl p-1 text-center">
+            {switch alerts {
+            | alerts if alerts->Array.includes(LinkBrightID) => <Alert />
+            | _ => React.null
+            }}
+            {"Action Required"->React.string}
+          </div>
+        </div>
+      }
     }
   }
 }

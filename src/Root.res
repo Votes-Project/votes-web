@@ -142,6 +142,17 @@ module QuestionProvider = {
     <Provider value={{question, setQuestion}}> {children} </Provider>
   }
 }
+module StatsAlertProvider = {
+  open StatsAlertContext
+  @react.component
+  let make = (~children) => {
+    let (alerts, setAlerts) = React.useState(() => [])
+
+    <StatsAlertContext.Provider value={{alerts, setAlerts}}>
+      {children}
+    </StatsAlertContext.Provider>
+  }
+}
 
 let localPrivateKey = Dom.Storage2.localStorage->Dom.Storage2.getItem("votes_privateKey")
 let localPublicKey = Dom.Storage2.localStorage->Dom.Storage2.getItem("votes_publicKey")
@@ -222,10 +233,12 @@ ReactDOMExperimental.renderConcurrentRootAtElementWithId(
                     <QuestionProvider>
                       <HeroComponentProvider>
                         <VotesySpeakProvider>
-                          <RelayRouter.RouteRenderer
-                            // This renders all the time, and when there"s a pending navigation (pending via React concurrent mode), pending will be `true`
-                            renderPending={pending => <PendingIndicatorBar pending />}
-                          />
+                          <StatsAlertProvider>
+                            <RelayRouter.RouteRenderer
+                              // This renders all the time, and when there"s a pending navigation (pending via React concurrent mode), pending will be `true`
+                              renderPending={pending => <PendingIndicatorBar pending />}
+                            />
+                          </StatsAlertProvider>
                         </VotesySpeakProvider>
                       </HeroComponentProvider>
                     </QuestionProvider>

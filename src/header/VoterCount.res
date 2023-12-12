@@ -1,6 +1,6 @@
 exception NoVoterCount
 module Fragment = %relay(`
- fragment VoterCount on Verifications {
+ fragment VoterCount_verifications on Verifications {
    ... on VerificationsData {
      count
    }

@@ -10,7 +10,7 @@ module Fragment = %relay(`
   fragment HeaderFragment on Query
   @argumentDefinitions(context: { type: "String!", defaultValue: "Votes" }) {
     verifications(context: $context) {
-      ...VoterCount
+      ...HeaderStats_verifications
     }
     randomQuestion {
       id
@@ -38,19 +38,8 @@ let make = (~verifications) => {
   let isClickOutsideHamburger = OutsideClickHook.use(hamburgerRef)
   let votesy = React.useContext(VotesySpeakContext.context)
 
-  let {setParams} = Routes.Main.Route.useQueryParams()
-
   let handleMenu = _ => {
     setIsOpen(isOpen => !isOpen)
-  }
-
-  let handleStats = _ => {
-    setParams(
-      ~navigationMode_=Push,
-      ~removeNotControlledParams=false,
-      ~shallow=false,
-      ~setter=c => {...c, stats: Some(0)},
-    )
   }
 
   React.useEffect2(() => {
@@ -75,22 +64,7 @@ let make = (~verifications) => {
             </div>
           </div>
         </div>
-        <FramerMotion.Button
-          onClick=handleStats
-          layoutId="stats"
-          layout=True
-          className="relative bg-secondary hover:bg-secondary  hover:cursor-pointer rounded-xl flex items-center font-semibold mr-4 px-2 h-10 justify-center transition-all">
-          <Stats.Alert />
-          <p className="text-lg text-active  ml-1 mr-3"> {"Voters"->React.string} </p>
-          <div className="flex items-center justify-around text-default-darker">
-            <ReactIcons.LuVote size="1.5rem" />
-            <ErrorBoundary fallback={_ => "N/A"->React.string}>
-              <React.Suspense fallback={<> </>}>
-                <VoterCount verifications={verifications.fragmentRefs} />
-              </React.Suspense>
-            </ErrorBoundary>
-          </div>
-        </FramerMotion.Button>
+        <HeaderStats verifications=verifications.fragmentRefs />
       </div>
       <div className="hidden lg:flex lg:visible gap-4 justify-center items-center">
         {links
