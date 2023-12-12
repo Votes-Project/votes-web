@@ -97,7 +97,8 @@ let make = () => {
         )
         ->JSON.stringifyAny
         ->Option.map(JSON.parseExn)
-      | _ =>
+      | Exn.Error(e)
+        if e->Exn.message->Option.map(m => m->String.includes("Unavailable"))->Option.isSome =>
         (
           {
             errorMessage: "UnknownError",
@@ -108,6 +109,8 @@ let make = () => {
         )
         ->JSON.stringifyAny
         ->Option.map(JSON.parseExn)
+      | Exn.Error(e) => e->JSON.stringifyAny->Option.map(JSON.parseExn)
+      | _ => None
       }
 
       json->Option.flatMap(json =>

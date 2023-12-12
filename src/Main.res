@@ -67,6 +67,7 @@ module MainDisplay = {
 
     let {randomQuestion, verification, newestVote} = Fragment.use(fragmentRefs)
 
+    let {setAlerts: setStatsAlert} = React.useContext(StatsAlertContext.context)
     let {heroComponent} = React.useContext(HeroComponentContext.context)
     let {setAuction, setIsLoading: setIsAuctionLoading} = React.useContext(AuctionContext.context)
     let {setVote} = React.useContext(VoteContext.context)
@@ -87,7 +88,9 @@ module MainDisplay = {
       setVerification(_ =>
         switch verification {
         | VerificationData({id, unique}) => VerificationContext.Verification({id, unique})->Some
-        | Error({error, errorNum}) => VerificationContext.Error({error, errorNum})->Some
+        | Error({error, errorNum}) =>
+          setStatsAlert(alerts => alerts->Array.concat([StatsAlertContext.LinkBrightID]))
+          VerificationContext.Error({error, errorNum})->Some
         | _ => None
         }
       )
@@ -169,34 +172,32 @@ module MainDisplay = {
 let make = (~children, ~queryRef) => {
   let {fragmentRefs} = Query.usePreloaded(~queryRef)
 
-  <>
-    <div className="relative w-full h-full flex flex-col z-0">
-      <FramerMotion.Div
-        layoutId="background-noise"
-        className="fixed bg-primary noise animate-[grain_10s_steps(10)_infinite] flex flex-col z-[-1] w-[300%] h-[300%] left-[-50%] top-[-100%] overflow-hidden"
-      />
-      <main>
-        <React.Suspense
-          fallback={
-            let title = "This is a placeholder for the daily question which will be rendered server side"
+  <div className="relative w-full h-full flex flex-col z-0">
+    <FramerMotion.Div
+      layoutId="background-noise"
+      className="fixed bg-primary noise animate-[grain_10s_steps(10)_infinite] flex flex-col z-[-1] w-[300%] h-[300%] left-[-50%] top-[-100%] overflow-hidden"
+    />
+    <main>
+      <React.Suspense
+        fallback={
+          let title = "This is a placeholder for the daily question which will be rendered server side"
 
-            <div
-              className=" lg:max-w-6xl m-auto flex flex-col lg:flex-row  flex-shrink-0 max-w-full min-h-[558px] h-[558px] items-center justify-center ">
-              <FramerMotion.Div
-                layout=True
-                layoutId="daily-question-title"
-                className={`font-bold [text-wrap:balance] text-center text-default-darker px-4 text-2xl`}>
-                {("\"" ++ title ++ "\"")->React.string}
-              </FramerMotion.Div>
-            </div>
-          }>
-          <MainDisplay fragmentRefs> {children} </MainDisplay>
-        </React.Suspense>
-      </main>
-      <div className="bg-default w-full relative">
-        <VotesInfo />
-      </div>
-      <footer className="flex h-10  p-10 w-full bg-default" />
+          <div
+            className=" lg:max-w-6xl m-auto flex flex-col lg:flex-row  flex-shrink-0 max-w-full min-h-[558px] h-[558px] items-center justify-center ">
+            <FramerMotion.Div
+              layout=True
+              layoutId="daily-question-title"
+              className={`font-bold [text-wrap:balance] text-center text-default-darker px-4 text-2xl`}>
+              {("\"" ++ title ++ "\"")->React.string}
+            </FramerMotion.Div>
+          </div>
+        }>
+        <MainDisplay fragmentRefs> {children} </MainDisplay>
+      </React.Suspense>
+    </main>
+    <div className="bg-default w-full relative">
+      <VotesInfo />
     </div>
-  </>
+    <footer className="flex h-10  p-10 w-full bg-default" />
+  </div>
 }
