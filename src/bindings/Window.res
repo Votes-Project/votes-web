@@ -81,4 +81,13 @@ module Height = {
   }
 }
 
+module Location = {
+  type t
+  external make: Dom.window => t = "location"
+  @get external href: t => string = "href"
+  @set external setHref: (t, string) => unit = "href"
+  @send external reload: t => unit = "reload"
+}
+let location = Location.make
+
 let innerHeight = Height.Inner.make

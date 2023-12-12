@@ -135,3 +135,23 @@ module LuMinus = {
   @react.component @module("react-icons/lu")
   external make: (~size: string=?, ~color: string=?, ~className: string=?) => t = "LuMinus"
 }
+
+module LuCopy = {
+  @react.component @module("react-icons/lu")
+  external make: (~size: string=?, ~color: string=?, ~className: string=?) => t = "LuCopy"
+}
+
+module LuCopyCheck = {
+  @react.component @module("react-icons/lu")
+  external make: (~size: string=?, ~color: string=?, ~className: string=?) => t = "LuCopyCheck"
+}
+
+module LuBadgeCheck = {
+  @react.component @module("react-icons/lu")
+  external make: (~size: string=?, ~color: string=?, ~className: string=?) => t = "LuBadgeCheck"
+}
+
+module LuX = {
+  @react.component @module("react-icons/lu")
+  external make: (~size: string=?, ~color: string=?, ~className: string=?) => t = "LuX"
+}

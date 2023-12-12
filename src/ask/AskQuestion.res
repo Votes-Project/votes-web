@@ -1,10 +1,5 @@
 @module("/src/abis/Questions.json") external questionContractAbi: JSON.t = "default"
 
-module Clipboard = {
-  @scope(("navigator", "clipboard"))
-  external writeText: string => unit = "writeText"
-}
-
 let makeDiscordCommand = (title, options: array<Question.questionOption>) => {
   let command = "/poll"
 

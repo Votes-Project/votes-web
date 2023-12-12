@@ -1,7 +1,10 @@
 module Query = %relay(`
   query MainQuery($votesContractAddress: String!, $contextId: String!) {
     ...MainFragment
-      @arguments(contextId: $contextId, votesContractAddress: $votesContractAddress)
+      @arguments(
+        contextId: $contextId
+        votesContractAddress: $votesContractAddress
+      )
     ...HeaderFragment
   }
 `)
