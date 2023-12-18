@@ -1,9 +1,0 @@
-query GetAuctionBids($first:Int, $orderBy:AuctionBid_orderBy, $orderDirection:OrderDirection, $where: AuctionBid_filter) {
-  auctionBids(first: $first, orderBy:$orderBy, orderDirection:$orderDirection, where: $where) {
-    id
-    tokenId
-    amount
-    bidder
-    blockTimestamp
-  }
-}

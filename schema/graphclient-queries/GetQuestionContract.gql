@@ -1,7 +1,0 @@
-query GetQuestionContract($id: ID!) {
-  questionsContract(id: $id) {
-    id
-    votesAddress
-    reviewerRole
-  }
-}

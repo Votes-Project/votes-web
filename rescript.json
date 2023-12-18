@@ -13,10 +13,6 @@
     {
       "dir": "api",
       "subdirs": true
-    },
-    {
-      "dir": "schema",
-      "subdirs": true
     }
   ],
   "package-specs": [
