@@ -1,8 +1,0 @@
-query GetAuctionCreated($id: ID!) {
-  auctionCreated(id: $id) {
-    id
-    tokenId
-    startTime
-    endTime
-  }
-}
