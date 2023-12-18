@@ -1,11 +1,10 @@
 open GraphQLYoga
 
+@module("../src/schema/gateway.mjs")
+external makeGatewaySchema: unit => ResGraph.schema<unit> = "makeGatewaySchema"
+
 let default = createYoga({
   graphqlEndpoint: "/api/graphql",
-  schema: ResGraphSchema.schema,
-  context: async _ => {
-    {
-      ResGraphContext.dataLoaders: DataLoaders.make(),
-    }
-  },
+  schema: makeGatewaySchema(),
+  context: async _ => (),
 })

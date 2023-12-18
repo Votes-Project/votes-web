@@ -41,6 +41,7 @@ src/__generated__/**
 
 
 *.mjs
+!src/schema/*.mjs
 !/api/graphql.mjs
 !polyfills.mjs
 ```

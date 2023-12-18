@@ -1,8 +1,8 @@
 module.exports = {
   src: "./src",
-  schema: "./schema/__generated__/schema.graphql",
+  schema: "./src/schema/schema.graphql",
   artifactDirectory: "./src/__generated__",
-  exclude: ["**/node_modules/**", "./schema/graphclient-queries/**", "./.graphclient/**"],
+  exclude: ["**/node_modules/**"],
   language: "rescript",
   featureFlags: {
     enable_relay_resolver_transform: true,
