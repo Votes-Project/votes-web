@@ -1,10 +1,11 @@
 import { buildHTTPExecutor } from '@graphql-tools/executor-http';
-import { stitchSchemas } from '@graphql-tools/stitch';
-import { schemaFromExecutor } from '@graphql-tools/wrap';
+import { createMergedTypeResolver, stitchSchemas } from '@graphql-tools/stitch';
+import { RenameInputObjectFields, RenameObjectFieldArguments, RenameRootTypes, TransformEnumValues, TransformInputObjectFields, TransformObjectFields, schemaFromExecutor } from '@graphql-tools/wrap';
 import { delegateToSchema } from '@graphql-tools/delegate';
-import { connectionFromArray } from 'graphql-relay';
+import { connectionFromArray, toGlobalId, fromGlobalId } from 'graphql-relay';
+import { GraphQLNonNull, GraphQLScalarType } from 'graphql';
 
-const connectionSchema =
+const relayCompatibleSchema =
 /* GraphQL */ `
     extend type Query {
         questionConnection(
@@ -15,6 +16,7 @@ const connectionSchema =
           orderDirection: OrderDirection
           orderBy: Question_orderBy
           block: Block_height
+          where:Question_filter
           subgraphError: _SubgraphErrorPolicy_! = deny
         ): QuestionConnection!
 
@@ -26,6 +28,7 @@ const connectionSchema =
           orderDirection: OrderDirection
           orderBy: Vote_orderBy
           block: Block_height
+          where:Vote_filter
           subgraphError: _SubgraphErrorPolicy_! = deny
         ): VoteConnection!
 
@@ -37,6 +40,7 @@ const connectionSchema =
           orderDirection: OrderDirection
           orderBy: Auction_orderBy
           block: Block_height
+          where:Auction_filter
           subgraphError: _SubgraphErrorPolicy_! = deny
         ): AuctionConnection!
 
@@ -48,6 +52,7 @@ const connectionSchema =
           orderDirection: OrderDirection
           orderBy: AuctionBid_orderBy
           block: Block_height
+          where:AuctionBid_filter
           subgraphError: _SubgraphErrorPolicy_! = deny
         ): AuctionBidConnection!
 
@@ -97,7 +102,40 @@ const connectionSchema =
       pageInfo: PageInfo!
     }
 
+    type Vote implements Node {
+      id: ID! @canonical
+      subgraphId: Bytes!
+    }
 
+    type Question implements Node {
+      id: ID! @canonical
+      subgraphId: Bytes!
+    }
+
+    type Auction implements Node {
+      id: ID! @canonical
+      subgraphId: Bytes!
+    }
+
+    type AuctionBid implements Node {
+      id: ID! @canonical
+      subgraphId: Bytes!
+    }
+
+    type VoteContract implements Node {
+      id: ID! @canonical
+      address: Bytes!
+    }
+
+    type QuestionsContract implements Node {
+      id: ID! @canonical
+      address: Bytes!
+    }
+
+    type AuctionContract implements Node {
+      id: ID! @canonical
+      address: Bytes!
+    }
   `
 
 let resolveArrayToConnection = async (parent, args, context, info, fieldName, delegateFieldName, delegateSchema) => {
@@ -138,8 +176,14 @@ export async function makeGatewaySchema() {
     schema: await schemaFromExecutor(subgraphExec),
     executor: subgraphExec,
     batch: true,
+    transforms: [new TransformEnumValues((_, externalValue, enumValueConfig) =>
+      (externalValue.charAt(0) === "_") ?
+        [
+          "U" + externalValue, enumValueConfig
+        ]
+        : enumValueConfig
+    )]
   }
-
 
   const connectionResolvers = {
     Query: {
@@ -155,16 +199,173 @@ export async function makeGatewaySchema() {
       auctionBidConnection: {
         resolve: (parent, args, context, info) => resolveArrayToConnection(parent, args, context, info, "auctionBidConnection", "auctionBids", subgraphSchema)
       }
-    }
+    },
   }
 
+  const nodeResolvers = {
+    Query: {
+      node: {
+        resolve: (_, args, context, info) => {
+          const { type, id } = fromGlobalId(args.id);
+          if (subgraphSchema.schema.getTypeMap()[type]) {
+
+            return delegateToSchema({
+              schema: subgraphSchema,
+              operation: "query",
+              fieldName: type[0].toLowerCase() + type.slice(1), // Since single queries in subgraph are camelcase typenames, use type name to make query. Hacky but it works for now.
+              args: { id },
+              context,
+              info,
+            })
+          } else {
+            return delegateToSchema({
+              schema: answersSchema,
+              operation: "query",
+              fieldName: "node",
+              args,
+              context,
+              info,
+            })
+          }
+        },
+      },
+
+      vote: {
+        resolve: (_, args, context, info) => delegateToSchema({
+          schema: subgraphSchema,
+          operation: "query",
+          fieldName: "vote",
+          args: { id: fromGlobalId(args.id).id },
+          context,
+          info,
+        })
+      },
+      question: {
+        resolve: (_, args, context, info) => delegateToSchema({
+          schema: subgraphSchema,
+          operation: "query",
+          fieldName: "question",
+          args: { id: fromGlobalId(args.id).id },
+          context,
+          info,
+        })
+      },
+      auction: {
+        resolve: (_, args, context, info) => delegateToSchema({
+          schema: subgraphSchema,
+          operation: "query",
+          fieldName: "auction",
+          args: { id: fromGlobalId(args.id).id },
+          context,
+          info,
+        })
+      },
+      auctionBid: {
+        resolve: (_, args, context, info) => delegateToSchema({
+          schema: subgraphSchema,
+          operation: "query",
+          fieldName: "auctionBid",
+          args: { id: fromGlobalId(args.id).id },
+          context,
+          info,
+        })
+      },
+      voteContract: {
+        resolve: (_, args, context, info) => delegateToSchema({
+          schema: subgraphSchema,
+          operation: "query",
+          fieldName: "voteContract",
+          args: { id: fromGlobalId(args.id).id },
+          context,
+          info,
+        })
+      },
+      questionsContract: {
+        resolve: (_, args, context, info) => delegateToSchema({
+          schema: subgraphSchema,
+          operation: "query",
+          fieldName: "questionsContract",
+          args: { id: fromGlobalId(args.id).id },
+          context,
+          info,
+        })
+      },
+      auctionContract: {
+        resolve: (_, args, context, info) => delegateToSchema({
+          schema: subgraphSchema,
+          operation: "query",
+          fieldName: "auctionContract",
+          args: { id: fromGlobalId(args.id).id },
+          context,
+          info,
+        })
+      },
+    },
+    Vote: {
+      id: {
+        resolve: (node) => toGlobalId(node.__typename, node.id)
+      },
+      subgraphId: {
+        resolve: (node) => node.id
+      }
+    },
+    Question: {
+      id: {
+        resolve: (node) => toGlobalId(node.__typename, node.id)
+
+      },
+      subgraphId: {
+        resolve: (node,) => node.id
+      }
+    },
+    Auction: {
+      id: {
+        resolve: (node) => toGlobalId(node.__typename, node.id)
+      },
+      subgraphId: {
+        resolve: (node) => node.id
+      }
+    },
+    AuctionBid: {
+      id: {
+        resolve: (node) => toGlobalId(node.__typename, node.id)
+      },
+      subgraphId: {
+        resolve: (node) => node.id
+      }
+    },
+    VoteContract: {
+      id: {
+        resolve: (node) => toGlobalId(node.__typename, node.id)
+      },
+      address: {
+        resolve: (node) => node.id
+      }
+    },
+    QuestionsContract: {
+      id: {
+        resolve: (node) => toGlobalId(node.__typename, node.id)
+      },
+      address: {
+        resolve: (node) => node.id
+      }
+    },
+    AuctionContract: {
+      id: {
+        resolve: (node) => toGlobalId(node.__typename, node.id)
+      },
+      address: {
+        resolve: (node) => node.id
+      }
+    },
+  }
 
 
   return stitchSchemas({
     subschemas: [answersSchema, subgraphSchema],
-    typeDefs: connectionSchema,
+    typeDefs: relayCompatibleSchema,
     mergeTypes: true,
-    resolvers: connectionResolvers
+    resolvers: [nodeResolvers, connectionResolvers],
   });
 
 }
