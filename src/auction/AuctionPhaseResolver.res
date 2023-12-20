@@ -9,10 +9,10 @@
  */
 type t = Before | Active | After
 
-let auctionPhase = (startTime, endTime: Date.t) => {
+let auctionPhase = (startTime, endTime) => {
   open BigInt
-  let startTimeMs = startTime->Date.getTime->BigInt.fromFloat
-  let endTimeMs = endTime->Date.getTime->BigInt.fromFloat
+  let startTimeMs = startTime->mul(fromInt(1000))
+  let endTimeMs = endTime->mul(fromInt(1000))
   let now = Date.now()->fromFloat
 
   if startTimeMs > now {

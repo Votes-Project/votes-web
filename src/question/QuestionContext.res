@@ -1,4 +1,4 @@
-type question = RescriptRelay.fragmentRefs<[#BottomNav_question | #SingleQuestion_node]>
+type question = Main_QuestionConnectionFragment_graphql.Types.fragment_questionConnection_edges_node
 
 type context = {
   question: option<question>,

@@ -1,3 +1,6 @@
+// Cursor is left opaque since we don't really need to mess with it
+type cursor
+
 module Timestamp = {
   type t = Date.t
   let parse: JSON.t => option<t> = v => {

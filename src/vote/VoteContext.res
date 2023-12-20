@@ -1,4 +1,4 @@
-type vote = MainFragment_graphql.Types.fragment_newestVote
+type vote = Main_VoteConnectionFragment_graphql.Types.fragment_voteConnection_edges_node
 
 type context = {
   vote: option<vote>,

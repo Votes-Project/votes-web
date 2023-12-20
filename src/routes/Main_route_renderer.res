@@ -16,8 +16,6 @@ let handleInitialRender = (auction: option<AuctionContext.auction>, isLoading, i
 
     auction
     ->Option.map(auction => auction.startTime)
-    ->Option.map(Date.getTime)
-    ->Option.map(BigInt.fromFloat)
     ->(Option.equal(_, timestamp, (startTime, lastVoteTimestamp) => startTime < lastVoteTimestamp))
   }
 
@@ -50,7 +48,6 @@ let renderer = Routes.Main.Route.makeRenderer(
         ~environment,
         ~variables={
           contextId: contextId->Option.getExn,
-          votesContractAddress: Environment.votesContractAddress,
         },
         ~fetchPolicy=StoreOrNetwork,
       ),
@@ -66,7 +63,11 @@ let renderer = Routes.Main.Route.makeRenderer(
       },
       switch (stats, contextId) {
       | (Some(statsKey), Some(_)) =>
-        StatsQuery_graphql.load(~environment, ~variables=(), ~fetchKey=statsKey->Int.toString)->Some
+        StatsQuery_graphql.load(
+          ~environment,
+          ~variables={id: contextId->Option.getExn},
+          ~fetchKey=statsKey->Int.toString,
+        )->Some
       | _ => None
       },
     )
@@ -96,7 +97,8 @@ let renderer = Routes.Main.Route.makeRenderer(
                 vote={vote->Option.map(v => v.fragmentRefs)}
                 tokenId={auction->Option.map(auction => auction.tokenId)}
               />
-            | CurrentQuestion => <SingleQuestion question={question->Option.getExn} />
+            | CurrentQuestion =>
+              <SingleQuestion.NewestQuestion question={question->Option.map(q => q.fragmentRefs)} />
             | ChildRoutes => childRoutes
             }}
           </React.Suspense>

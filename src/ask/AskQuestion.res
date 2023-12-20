@@ -1,6 +1,6 @@
 @module("/src/abis/Questions.json") external questionContractAbi: JSON.t = "default"
 
-let makeDiscordCommand = (title, options: array<Question.questionOption>) => {
+let makeDiscordCommand = (title, options: array<QuestionUtils.questionOption>) => {
   let command = "/poll"
 
   let question = `question:${title}`

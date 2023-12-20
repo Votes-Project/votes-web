@@ -1,5 +1,5 @@
 module QuestionFragment = %relay(`
-  fragment BottomNav_question on TriviaQuestion {
+  fragment BottomNav_question on Question {
     id
   }
 `)
@@ -38,8 +38,6 @@ let make = (~question, ~auction) => {
 
     auction
     ->Option.map(auction => auction.startTime)
-    ->Option.map(Date.getTime)
-    ->Option.map(BigInt.fromFloat)
     ->Option.equal(timestamp, (startTime, lastVoteTimestamp) => startTime < lastVoteTimestamp)
   }
 

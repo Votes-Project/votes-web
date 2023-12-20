@@ -1,11 +1,13 @@
+RescriptRelay.relayFeatureFlags.enableRelayResolvers = true
+
 ReactModal.setAppElement("#root")
 
 let asker = "0xf4bb53eFcFd49Fe036FdCc8F46D981203ae3BAB8"
 
 module QuestionTitle = {
   module Fragment = %relay(`
-    fragment SingleQuestion_QuestionTitle on TriviaQuestion {
-      question
+    fragment SingleQuestion_QuestionTitle on Question {
+      title
     }
   `)
 
@@ -22,7 +24,7 @@ module QuestionTitle = {
   @react.component
   let make = (~question, ~className="") => {
     let question = Fragment.useOpt(question)
-    let title = question->Option.map(q => q.question)->Option.getWithDefault("")
+    let title = question->Option.flatMap(q => q.title)->Option.getWithDefault("")
 
     <FramerMotion.Div layout=True layoutId="daily-question-title" className>
       {title->React.string}
@@ -33,28 +35,27 @@ module QuestionTitle = {
 module LinkStatusTooltip = {
   @react.component
   let make = (~verificationData) => {
-    open Verification
-
-    switch verificationData {
-    | BrightIdError(_) =>
-      <ReactTooltip anchorSelect="#brightid-link-status">
-        <div className="flex flex-col justify-center items-center">
-          <p className="text-white text-sm font-semibold">
-            {"Link Votes to Bright ID"->React.string}
-          </p>
-        </div>
-      </ReactTooltip>
-    | Verification({unique: true}) => <> </>
-    | Verification({unique: false}) =>
-      <ReactTooltip
-        anchorSelect="#brightid-link-status" openOnClick=true closeOnEsc=true variant={Warning}>
-        <div className="flex flex-col justify-center items-center">
-          <p className="text-white text-sm font-semibold">
-            {"This Bright ID does not meet the requirements for a unique human"->React.string}
-          </p>
-        </div>
-      </ReactTooltip>
-    }
+    <> </>
+    // switch verificationData {
+    // | BrightIdError(_) =>
+    //   <ReactTooltip anchorSelect="#brightid-link-status">
+    //     <div className="flex flex-col justify-center items-center">
+    //       <p className="text-white text-sm font-semibold">
+    //         {"Link Votes to Bright ID"->React.string}
+    //       </p>
+    //     </div>
+    //   </ReactTooltip>
+    // | Verification({unique: true}) => <> </>
+    // | Verification({unique: false}) =>
+    //   <ReactTooltip
+    //     anchorSelect="#brightid-link-status" openOnClick=true closeOnEsc=true variant={Warning}>
+    //     <div className="flex flex-col justify-center items-center">
+    //       <p className="text-white text-sm font-semibold">
+    //         {"This Bright ID does not meet the requirements for a unique human"->React.string}
+    //       </p>
+    //     </div>
+    //   </ReactTooltip>
+    // }
   }
 }
 
@@ -310,19 +311,23 @@ module AnswerItem = {
 
 module OptionsList = {
   module Fragment = %relay(`
-    fragment SingleQuestion_OptionsList on TriviaQuestion {
+    fragment SingleQuestion_OptionsList on Question {
       options
     }
   `)
   @react.component
   let make = (~options, ~answer=?) => {
-    let {options} = Fragment.useOpt(options)->Option.getWithDefault({options: []})
+    let options =
+      Fragment.useOpt(options)
+      ->Option.flatMap(q => q.options)
+      ->Option.getWithDefault([])
 
     options
-    ->Array.mapWithIndex((option, index) =>
+    ->Array.mapWithIndex(({?option}, index) =>
       switch answer {
-      | Some(answer) => <AnswerItem key={index->Int.toString} option answer index />
-      | _ => <OptionItem key={index->Int.toString} option index />
+      | Some(answer) =>
+        <AnswerItem key={index->Int.toString} option={Option.getExn(option)} answer index />
+      | _ => <OptionItem key={index->Int.toString} option={Option.getExn(option)} index />
       }
     )
     ->React.array
@@ -331,7 +336,7 @@ module OptionsList = {
 
 module OptionsPage = {
   module Fragment = %relay(`
-    fragment SingleQuestion_OptionsPage on TriviaQuestion {
+    fragment SingleQuestion_OptionsPage on Question {
       ...SingleQuestion_OptionsList
       ...SingleQuestion_QuestionTitle
       question
@@ -408,7 +413,7 @@ module OptionsPage = {
 
 module AnswerPage = {
   module Fragment = %relay(`
-  fragment SingleQuestion_AnswerPage on TriviaQuestion {
+  fragment SingleQuestion_AnswerPage on Question {
     ...SingleQuestion_OptionsList
     ...SingleQuestion_QuestionTitle
   }`)
@@ -527,44 +532,19 @@ module AnswerPage = {
 module Query = %relay(`
   query SingleQuestionQuery($id: ID!) {
     node(id: $id) {
-      ...SingleQuestion_node
+      ...SingleQuestion_OptionsPage
+      ...SingleQuestion_QuestionTitle
+      ...SingleQuestion_AnswerPage
     }
-    randomQuestion {
-      ...SingleQuestion_node
-    }
-  }
-`)
-
-module Fragment = %relay(`
-  fragment SingleQuestion_node on TriviaQuestion {
-    id
-    ...SingleQuestion_OptionsPage
-    ...SingleQuestion_QuestionTitle
-    ...SingleQuestion_AnswerPage
   }
 `)
 
 @react.component @relay.deferredComponent
-let make = (
-  ~queryRef=?,
-  ~question: option<RescriptRelay.fragmentRefs<[#BottomNav_question | #SingleQuestion_node]>>=?,
-) => {
+let make = (~queryRef) => {
   let {queryParams} = Routes.Main.Question.Route.useQueryParams()
   let (hasAnswered, setHasAnswered) = React.useState(_ => false)
 
-  let data = queryRef->Option.map(queryRef => Query.usePreloaded(~queryRef))
-
-  let question = Fragment.useOpt(question)
-
-  let node = switch data {
-  | Some({node: Some({fragmentRefs})}) => Some(fragmentRefs)
-  | Some({randomQuestion: Some({fragmentRefs})}) => Some(fragmentRefs)
-  | _ => None
-  }
-
-  let node = node->Fragment.useOpt
-
-  let question = node->Option.orElse(question)
+  let {node: question} = Query.usePreloaded(~queryRef)
 
   React.useEffect1(() => {
     setHasAnswered(_ => {
@@ -581,4 +561,39 @@ let make = (
   hasAnswered
     ? <AnswerPage question={question->Option.map(q => q.fragmentRefs)} />
     : <OptionsPage question={question->Option.map(q => q.fragmentRefs)} />
+}
+
+module NewestQuestion = {
+  module Fragment = %relay(`
+  fragment SingleQuestion_node on Question {
+    id
+    ...SingleQuestion_OptionsPage
+    ...SingleQuestion_QuestionTitle
+    ...SingleQuestion_AnswerPage
+  }
+`)
+
+  @react.component
+  let make = (~question) => {
+    let {queryParams} = Routes.Main.Question.Route.useQueryParams()
+    let (hasAnswered, setHasAnswered) = React.useState(_ => false)
+
+    let question = question->Fragment.useOpt
+
+    React.useEffect1(() => {
+      setHasAnswered(_ => {
+        open Dom.Storage2
+        switch localStorage->getItem("votesdev_answer_jwt") {
+        | Some("") => false
+        | Some(_) => true
+        | None => false
+        }
+      })
+      None
+    }, [queryParams.answer])
+
+    hasAnswered
+      ? <AnswerPage question={question->Option.map(q => q.fragmentRefs)} />
+      : <OptionsPage question={question->Option.map(q => q.fragmentRefs)} />
+  }
 }

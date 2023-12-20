@@ -1,6 +1,6 @@
 module AskOptionInput = {
   @react.component
-  let make = (~index, ~option: Question.questionOption, ~isOpen) => {
+  let make = (~index, ~option: QuestionUtils.questionOption, ~isOpen) => {
     let {state: {question: {options}}, dispatch} = React.useContext(AskContext.context)
     let (toggleDetails, setToggleDetails) = React.useState(() => false)
 

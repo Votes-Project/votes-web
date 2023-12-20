@@ -91,25 +91,43 @@ let make = (
     {switch (voteType, vote) {
     | (Some(Raffle), Some({fragmentRefs, contract: {totalSupply}})) =>
       <ErrorBoundary fallback={_ => "Auction Failed to load"->React.string}>
-        <VoteHeader tokenId={tokenId} totalSupply startTime={Date.now()->Date.fromTime} />
+        <VoteHeader tokenId={tokenId} totalSupply startTime={Date.now()->BigInt.fromFloat} />
         <Raffle vote=fragmentRefs />
       </ErrorBoundary>
     | (
         Some(Normal),
-        Some({auction: Some({fragmentRefs, startTime}), contract: {totalSupply}, owner, tokenId}),
+        Some({
+          auction: Some({fragmentRefs, startTime}),
+          contract: {totalSupply},
+          owner: Some(owner),
+          tokenId,
+        }),
       ) =>
       <ErrorBoundary fallback={_ => "Auction Failed to load"->React.string}>
-        <VoteHeader tokenId={Some(tokenId)} totalSupply startTime />
+        <VoteHeader
+          tokenId={Some(tokenId)}
+          totalSupply
+          startTime={startTime->BigInt.mul(1000->BigInt.fromInt)}
+        />
         <React.Suspense fallback={<div />}>
           <AuctionDisplay owner auction=fragmentRefs />
         </React.Suspense>
       </ErrorBoundary>
     | (
         Some(FlashVote),
-        Some({auction: Some({fragmentRefs, startTime}), contract: {totalSupply}, owner, tokenId}),
+        Some({
+          auction: Some({fragmentRefs, startTime}),
+          contract: {totalSupply},
+          owner: Some(owner),
+          tokenId,
+        }),
       ) =>
       <ErrorBoundary fallback={_ => "Auction Failed to load"->React.string}>
-        <VoteHeader tokenId={Some(tokenId)} totalSupply startTime />
+        <VoteHeader
+          tokenId={Some(tokenId)}
+          totalSupply
+          startTime={startTime->BigInt.mul(1000->BigInt.fromInt)}
+        />
         <React.Suspense fallback={<div />}>
           <AuctionDisplay owner auction=fragmentRefs />
         </React.Suspense>

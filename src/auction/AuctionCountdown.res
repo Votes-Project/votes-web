@@ -30,8 +30,6 @@ let make = (~auction) => {
 
   let (secondsRemaining, setSecondsRemaining) = React.useState(_ => {
     endTime
-    ->Date.getTime
-    ->BigInt.fromFloat
     ->sub(BigInt.fromFloat(Date.now()))
     ->div(BigInt.fromInt(1000))
   })

@@ -30,25 +30,19 @@ module Fragment = %relay(`
   fragment AuctionBidList_auction on Auction
   @argumentDefinitions(
     first: { type: "Int", defaultValue: 1000 }
-    orderBy: { type: "OrderBy_AuctionBids", defaultValue: blockTimestamp }
+    orderBy: { type: "AuctionBid_orderBy", defaultValue: blockTimestamp }
     orderDirection: { type: "OrderDirection", defaultValue: desc }
   ) {
     __id
-    bids(orderBy: $orderBy, orderDirection: $orderDirection, first: $first)
-      @connection(key: "AuctionBidList_bids") {
-      __id
-      edges {
-        __id
-        node {
-          id
-          ...AuctionBidList_AuctionBidItem_auctionBid
-        }
-      }
+    bids(orderBy: $orderBy, orderDirection: $orderDirection, first: $first) {
+      id
+      ...AuctionBidList_AuctionBidItem_auctionBid
     }
   }
   `)
 
 exception NoAuctionId
+exception NoBidsRecord
 @react.component
 let make = (~bids) => {
   let {bids, __id: auctionId} = Fragment.use(bids)
@@ -67,16 +61,10 @@ let make = (~bids) => {
           let {args, transactionHash, logIndex} = event
 
           open RescriptRelay
-          let connectionId = bids.__id
           commitLocalUpdate(~environment, ~updater=store => {
             open AuctionBidList_AuctionBidItem_auctionBid_graphql.Types
             open RecordSourceSelectorProxy
             open RecordProxy
-            let connectionRecord = switch store->get(~dataId=connectionId) {
-            | Some(connectionRecord) => connectionRecord
-            | None => store->create(~dataId=connectionId, ~typeName="AuctionBidConnection")
-            }
-
             let newAuctionBidRecord =
               store
               ->create(
@@ -87,24 +75,25 @@ let make = (~bids) => {
               ->setValueString(~name="tokenId", ~value=args.tokenId->BigInt.toString)
               ->setValueString(~name="bidder", ~value=args.bidder)
               ->setValueString(~name="amount", ~value=args.amount->BigInt.toString)
+              ->Some
 
-            let newEdge = ConnectionHandler.createEdge(
-              ~store,
-              ~connection=connectionRecord,
-              ~edgeType="AuctionBid",
-              ~node=newAuctionBidRecord,
-            )
             let auctionRecord = switch store->get(~dataId=auctionId) {
             | Some(auctionRecord) => auctionRecord
             | None => raise(NoAuctionId)
             }
 
+            let auctionBidsRecord = switch auctionRecord->getLinkedRecords(~name="bids") {
+            | Some(bids) => bids
+            | None => raise(NoBidsRecord)
+            }
+
+            let newBids = [newAuctionBidRecord]->Array.concat(auctionBidsRecord)
+
             let _ =
               auctionRecord
               ->setValueString(~name="amount", ~value=args.amount->BigInt.toString)
               ->setValueString(~name="bidder", ~value=args.bidder)
-
-            ConnectionHandler.insertEdgeBefore(~connection=connectionRecord, ~newEdge)
+              ->setLinkedRecords(~name="bids", ~records=newBids)
           })
         }
       }
@@ -112,7 +101,6 @@ let make = (~bids) => {
   })
 
   bids
-  ->Fragment.getConnectionNodes
   ->Array.map(({id, fragmentRefs}) => {
     <AuctionBidItem bid=fragmentRefs key=id />
   })

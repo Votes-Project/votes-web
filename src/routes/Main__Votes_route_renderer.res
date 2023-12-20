@@ -9,7 +9,6 @@ let renderer = Routes.Main.Votes.Route.makeRenderer(
         ~environment,
         ~variables={
           orderDirection: Desc,
-          votesContractAddress: Environment.votesContractAddress,
         },
         ~fetchPolicy=StoreOrNetwork,
       )->Some
@@ -18,45 +17,28 @@ let renderer = Routes.Main.Votes.Route.makeRenderer(
         ~environment,
         ~variables={
           orderDirection: Asc,
-          votesContractAddress: Environment.votesContractAddress,
         },
         ~fetchPolicy=StoreOrNetwork,
       )->Some
     | Some(Used) =>
-      VotesQuery_graphql.load(
-        ~environment,
-        ~variables={votesContractAddress: Environment.votesContractAddress},
-        ~fetchPolicy=StoreOrNetwork,
-      )->Some
+      VotesQuery_graphql.load(~environment, ~variables={}, ~fetchPolicy=StoreOrNetwork)->Some
     | Some(Unused) =>
-      VotesQuery_graphql.load(
-        ~environment,
-        ~variables={votesContractAddress: Environment.votesContractAddress},
-        ~fetchPolicy=StoreOrNetwork,
-      )->Some
+      VotesQuery_graphql.load(~environment, ~variables={}, ~fetchPolicy=StoreOrNetwork)->Some
     | Some(Owned(Some(address))) =>
       VotesQuery_graphql.load(
         ~environment,
         ~variables={
           owner: address,
-          votesContractAddress: Environment.votesContractAddress,
         },
         ~fetchPolicy=StoreOrNetwork,
       )->Some
     | Some(Owned(None)) =>
-      VotesQuery_graphql.load(
-        ~environment,
-        ~variables={
-          votesContractAddress: Environment.votesContractAddress,
-        },
-        ~fetchPolicy=StoreOnly,
-      )->Some
+      VotesQuery_graphql.load(~environment, ~variables={}, ~fetchPolicy=StoreOnly)->Some
     | None =>
       VotesQuery_graphql.load(
         ~environment,
         ~variables={
           orderDirection: Desc,
-          votesContractAddress: Environment.votesContractAddress,
         },
       )->Some
     }

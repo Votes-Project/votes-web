@@ -44,19 +44,19 @@ module VoteListDisplay = {
   fragment Votes_VoteListDisplay_votes on Query
   @argumentDefinitions(
     first: { type: "Int", defaultValue: 1000 }
-    after: { type: "String", defaultValue: "" }
-    orderBy: { type: "OrderBy_Votes", defaultValue: id }
+    after: { type: "Cursor" }
+    orderBy: { type: "Vote_orderBy", defaultValue: id }
     orderDirection: { type: "OrderDirection", defaultValue: desc }
-    owner: { type: "String" }
+    owner: { type: "Bytes" }
   )
   @refetchable(queryName: "VotesListQuery") {
-    votes(
+    voteConnection(
       first: $first
       after: $after
       orderBy: $orderBy
       orderDirection: $orderDirection
       where: { owner: $owner }
-    ) @connection(key: "VotesConnection_votes") {
+    ) @connection(key: "VotesConnection_voteConnection") {
       __id
       edges {
         node {
@@ -68,19 +68,10 @@ module VoteListDisplay = {
   }
   `)
 
-  module VoteContractFragment = %relay(`
-  fragment Votes_VoteListDisplay_voteContract on Query
-  @argumentDefinitions(id: { type: "String!" }) {
-    voteContract(id: $id) {
-      totalSupply
-    }
-  }
-  `)
-
   @react.component
   let make = (~query) => {
     let (data, refetch) = VotesFragment.useRefetchable(query)
-    let {voteContract} = VoteContractFragment.use(query)
+
     let {queryParams, setParams} = Routes.Main.Votes.Route.useQueryParams()
     let setOwnedParam = address =>
       setParams(
@@ -135,13 +126,12 @@ module VoteListDisplay = {
     <div className="lg:max-h-[420px] relative">
       <nav className="px-4 w-full flex justify-between items-center pb-4">
         <div>
-          {switch voteContract {
-          | Some({totalSupply}) =>
-            <h1 className="font-semibold ">
-              {`Explore ${totalSupply->BigInt.toString} Votes`->React.string}
-            </h1>
-          | None => <> </>
-          }}
+          <h1 className="font-semibold ">
+            {`Explore ${data.voteConnection
+              ->VotesFragment.getConnectionNodes
+              ->Array.length
+              ->Int.toString} Votes`->React.string}
+          </h1>
         </div>
         <div>
           <label>
@@ -165,7 +155,7 @@ module VoteListDisplay = {
       | _ =>
         <ul
           className="px-4 flex flex-col lg:flex-row flex-wrap max-h-[576px] overflow-auto gap-y-4 gap-x-4 hide-scrollbar justify-center items-center pb-6">
-          {data.votes
+          {data.voteConnection
           ->VotesFragment.getConnectionNodes
           ->Array.map(vote => {
             <VoteItem vote={vote.fragmentRefs} key=vote.id />
@@ -181,9 +171,8 @@ module VoteListDisplay = {
 
 module Query = %relay(`
   query VotesQuery(
-    $votesContractAddress: String!
-    $owner: String
-    $orderBy: OrderBy_Votes
+    $owner: Bytes
+    $orderBy: Vote_orderBy
     $orderDirection: OrderDirection
   ) {
     ...Votes_VoteListDisplay_votes
@@ -192,7 +181,6 @@ module Query = %relay(`
         orderBy: $orderBy
         orderDirection: $orderDirection
       )
-    ...Votes_VoteListDisplay_voteContract @arguments(id: $votesContractAddress)
   }
 `)
 
