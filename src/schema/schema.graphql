@@ -1275,7 +1275,10 @@ type Query implements Node {
 
   """Access to subgraph metadata"""
   _meta(block: Block_height): _Meta_
-  questionConnection(first: Int, skip: Int, last: Int, offset: Int, before: Cursor, after: Cursor, orderDirection: OrderDirection, orderBy: Question_orderBy, block: Block_height, subgraphError: _SubgraphErrorPolicy_! = deny): QuestionConnection!
+  questionConnection(first: Int, offset: Int, before: Cursor, after: Cursor, orderDirection: OrderDirection, orderBy: Question_orderBy, block: Block_height, where: Question_filter, subgraphError: _SubgraphErrorPolicy_! = deny): QuestionConnection!
+  voteConnection(first: Int, offset: Int, before: Cursor, after: Cursor, orderDirection: OrderDirection, orderBy: Vote_orderBy, block: Block_height, where: Vote_filter, subgraphError: _SubgraphErrorPolicy_! = deny): VoteConnection!
+  auctionConnection(first: Int, offset: Int, before: Cursor, after: Cursor, orderDirection: OrderDirection, orderBy: Auction_orderBy, block: Block_height, where: Auction_filter, subgraphError: _SubgraphErrorPolicy_! = deny): AuctionConnection!
+  auctionBidConnection(first: Int, offset: Int, before: Cursor, after: Cursor, orderDirection: OrderDirection, orderBy: AuctionBid_orderBy, block: Block_height, where: AuctionBid_filter, subgraphError: _SubgraphErrorPolicy_! = deny): AuctionBidConnection!
 }
 
 """An object with a globally unique `ID`."""
@@ -3041,8 +3044,8 @@ enum Approval_orderBy {
   transactionHash
 }
 
-type Auction {
-  id: Bytes!
+type Auction implements Node {
+  id: ID!
   vote: Vote!
   tokenId: BigInt!
   startTime: BigInt!
@@ -3051,12 +3054,13 @@ type Auction {
   extended: Boolean!
   bidder: Bytes
   settled: Boolean!
-  contract: AuctionContract
+  contract: AuctionContract!
   bids(skip: Int = 0, first: Int = 100, orderBy: AuctionBid_orderBy, orderDirection: OrderDirection, where: AuctionBid_filter): [AuctionBid!]!
+  subgraphId: Bytes!
 }
 
-type AuctionBid {
-  id: Bytes!
+type AuctionBid implements Node {
+  id: ID!
   tokenId: BigInt!
   bidder: Bytes!
   amount: BigInt!
@@ -3066,6 +3070,7 @@ type AuctionBid {
   blockNumber: BigInt!
   blockTimestamp: BigInt!
   transactionHash: Bytes!
+  subgraphId: Bytes!
 }
 
 input AuctionBid_filter {
@@ -3192,8 +3197,8 @@ enum AuctionBid_orderBy {
   transactionHash
 }
 
-type AuctionContract {
-  id: Bytes!
+type AuctionContract implements Node {
+  id: ID!
   treasury: Bytes!
   duration: BigInt!
   timeBuffer: BigInt!
@@ -3207,6 +3212,7 @@ type AuctionContract {
   votesToken: Bytes!
   paused: Boolean!
   auctions(skip: Int = 0, first: Int = 100, orderBy: Auction_orderBy, orderDirection: OrderDirection, where: Auction_filter): [Auction!]!
+  address: Bytes!
 }
 
 input AuctionContract_filter {
@@ -3756,8 +3762,8 @@ input BatchMetadataUpdate_filter {
 
 enum BatchMetadataUpdate_orderBy {
   id
-  _fromTokenId
-  _toTokenId
+  U_fromTokenId
+  U_toTokenId
   blockNumber
   blockTimestamp
   transactionHash
@@ -3912,7 +3918,7 @@ input MetadataUpdate_filter {
 
 enum MetadataUpdate_orderBy {
   id
-  _tokenId
+  U_tokenId
   blockNumber
   blockTimestamp
   transactionHash
@@ -4062,8 +4068,8 @@ enum Paused_orderBy {
   transactionHash
 }
 
-type Question {
-  id: Bytes!
+type Question implements Node {
+  id: ID!
   vote: Vote!
   asker: Bytes!
   question: Bytes!
@@ -4071,6 +4077,7 @@ type Question {
   modifiedTimestamp: BigInt!
   day: BigInt
   contract: QuestionsContract!
+  subgraphId: Bytes!
 }
 
 type QuestionApproved {
@@ -5405,21 +5412,23 @@ enum Unpaused_orderBy {
   transactionHash
 }
 
-type Vote {
-  id: Bytes!
+type Vote implements Node {
+  id: ID!
   tokenId: BigInt!
   auction: Auction
   owner: Bytes
   uri: String
-  contract: VoteContract
+  contract: VoteContract!
+  subgraphId: Bytes!
 }
 
-type VoteContract {
-  id: Bytes!
+type VoteContract implements Node {
+  id: ID!
   name: String
   symbol: String
   totalSupply: BigInt!
   votes(skip: Int = 0, first: Int = 100, orderBy: Vote_orderBy, orderDirection: OrderDirection, where: Vote_filter): [Vote!]!
+  address: Bytes!
 }
 
 input VoteContract_filter {
@@ -5940,5 +5949,42 @@ type QuestionConnection {
   nodes: [Question]!
   edges: [QuestionEdge]!
   pageInfo: PageInfo!
-  totalCount: Int!
+}
+
+type VoteEdge {
+  cursor: Cursor
+  node: Vote
+}
+
+type VoteConnection {
+  nodes: [Vote]!
+  edges: [VoteEdge]!
+  pageInfo: PageInfo!
+}
+
+type AuctionEdge {
+  cursor: Cursor
+  node: Auction
+}
+
+type AuctionConnection {
+  nodes: [Auction]!
+  edges: [AuctionEdge]!
+  pageInfo: PageInfo!
+}
+
+type AuctionBidEdge {
+  cursor: Cursor
+  node: AuctionBid
+}
+
+type AuctionBidConnection {
+  nodes: [AuctionBid]!
+  edges: [AuctionBidEdge]!
+  pageInfo: PageInfo!
+}
+
+type QuestionContract implements Node {
+  id: ID!
+  address: Bytes!
 }
