@@ -27,20 +27,16 @@ module List = {
   module Fragment = %relay(`
     fragment Raffles_List on Query
     @argumentDefinitions(
-      votesContractAddress: { type: "String!" }
       first: { type: "Int", defaultValue: 1000 }
-      after: { type: "String" }
+      after: { type: "Cursor" }
       orderDirection: { type: "OrderDirection", defaultValue: desc }
     ) {
-      raffles(
-        votesContractAddress: $votesContractAddress
-        first: $first
-        after: $after
-        orderDirection: $orderDirection
-      ) @connection(key: "Raffles_raffles") {
+      voteConnection(first: $first, after: $after, orderDirection: $orderDirection)
+        @connection(key: "Raffles_voteConnection") {
         edges {
           node {
             id
+            tokenId
             ...Raffles_Item
           }
         }
@@ -49,22 +45,27 @@ module List = {
 
 `)
   @react.component
-  let make = (~raffles) => {
-    let {raffles} = Fragment.use(raffles)
+  let make = (~voteConnection) => {
+    let {voteConnection} = Fragment.use(voteConnection)
 
     <div
       className="pb-9 px-4 flex flex-col max-h-[576px] overflow-auto gap-y-4 hide-scrollbar justify-center items-center">
-      {raffles
+      {voteConnection
       ->Fragment.getConnectionNodes
-      ->Array.map(raffle => <Item raffle={raffle.fragmentRefs} key=raffle.id />)
+      ->Array.filterMap(vote =>
+        switch vote.tokenId->BigInt.toInt {
+        | tokenId if tokenId->mod(10) === 9 => Some(<Item raffle={vote.fragmentRefs} key=vote.id />)
+        | _ => None
+        }
+      )
       ->React.array}
     </div>
   }
 }
 
 module Query = %relay(`
-query RafflesQuery($votesContractAddress: String!) {
-  ...Raffles_List @arguments(votesContractAddress: $votesContractAddress)
+query RafflesQuery {
+  ...Raffles_List
 }
 `)
 
@@ -190,6 +191,6 @@ let make = (~queryRef) => {
   }, [setHeroComponent])
 
   <React.Suspense fallback={<div />}>
-    <List raffles={fragmentRefs} />
+    <List voteConnection={fragmentRefs} />
   </React.Suspense>
 }

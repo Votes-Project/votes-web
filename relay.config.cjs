@@ -10,5 +10,7 @@ module.exports = {
   customScalars: {
     Timestamp: "Scalars.Timestamp",
     BigInt: "Scalars.BigInt",
+    Bytes: "string",
+    Cursor: "Scalars.cursor"
   },
 };

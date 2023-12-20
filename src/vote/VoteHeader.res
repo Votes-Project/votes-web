@@ -27,8 +27,10 @@ let make = (~tokenId, ~totalSupply, ~startTime) => {
     }
   }
 
+  let startDate = startTime->BigInt.toFloat->Date.fromTime
+
   let auctionDateLocale = Date.toLocaleDateStringWithLocaleAndOptions(
-    startTime,
+    startDate,
     "en-US",
     {dateStyle: #long},
   )

@@ -7,13 +7,9 @@ type headerItem = {
 }
 
 module Fragment = %relay(`
-  fragment HeaderFragment on Query
-  @argumentDefinitions(context: { type: "String!", defaultValue: "Votes" }) {
-    verifications(context: $context) {
-      ...HeaderStats_verifications
-    }
-    randomQuestion {
-      id
+  fragment HeaderFragment on Query {
+    users {
+      ...HeaderStats_users
     }
   }
 `)
@@ -29,8 +25,8 @@ let links = {
 }
 
 @react.component
-let make = (~verifications) => {
-  let {verifications} = Fragment.use(verifications)
+let make = (~users) => {
+  let {users} = Fragment.use(users)
   let (isOpen, setIsOpen) = React.useState(_ => false)
   let accordionRef = React.useRef(Nullable.null)
   let hamburgerRef = React.useRef(Nullable.null)
@@ -61,7 +57,7 @@ let make = (~verifications) => {
     <header className=" flex flex-col justify-center items-center  z-50 h-24 ">
       <nav className="max-w-7xl flex w-full justify-between px-4 pt-2 flex-1">
         <div className="flex gap-3 justify-center items-center ">
-          <HeaderStats verifications=verifications.fragmentRefs />
+          <HeaderStats users={users->Option.map(users => users.fragmentRefs)} />
         </div>
         <div className="hidden lg:flex lg:visible gap-4 justify-center items-center">
           {links

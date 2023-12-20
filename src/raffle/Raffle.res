@@ -3,7 +3,6 @@ module Fragment = %relay(`
    id
    tokenId
    owner
-
    ...BlockExplorerButton_vote
  }
 `)
@@ -21,7 +20,7 @@ let make = (~vote) => {
           {"Raffle Winner"->React.string}
         </p>
         <p className="font-bold text-xl lg:text-3xl text-default-darker">
-          <ShortAddress address={Some(owner)} />
+          <ShortAddress address={owner} />
         </p>
       </div>
       <div className="w-0 rounded-lg lg:border-primary border hidden lg:flex" />
@@ -30,7 +29,7 @@ let make = (~vote) => {
           {"Held By"->React.string}
         </p>
         <p className="font-bold text-xl lg:text-3xl text-default-darker">
-          <ShortAddress address={Some(owner)} />
+          <ShortAddress address={owner} />
         </p>
       </div>
     </div>

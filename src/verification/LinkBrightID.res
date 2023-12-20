@@ -20,23 +20,18 @@ module DeviceDetect = {
 }
 
 module Query = %relay(`
-  query LinkBrightIDQuery($contextId: String!) {
-    verification(contextId: $contextId) {
-      ... on VerificationData {
-        id
-        unique
-        contextIds
-      }
-      ... on Error {
-        error
-      }
+  query LinkBrightIDQuery($contextId: ID!) {
+    userById(id: $contextId) {
+      id
+      linked
+      verified
     }
   }
 `)
 
 @react.component @relay.deferredComponent
 let make = (~queryRef, ~contextId) => {
-  let {verification} = Query.usePreloaded(~queryRef)
+  let {userById} = Query.usePreloaded(~queryRef)
 
   let {setVerification} = React.useContext(VerificationContext.context)
 
@@ -68,13 +63,13 @@ let make = (~queryRef, ~contextId) => {
 
   React.useEffect1(() => {
     open VerificationContext
-    switch verification {
-    | VerificationData({id, unique}) =>
-      setLinkBrightID(None, ~verification=Verification({id, unique}))
+    switch userById {
+    | Some({id, verified}) =>
+      setLinkBrightID(None, ~verification=Verification({id, unique: verified}))
     | _ => ()
     }
     None
-  }, [verification])
+  }, [userById])
 
   let linkText = linkBrightID =>
     switch (linkBrightID, isRefetching) {

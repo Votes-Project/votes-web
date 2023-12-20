@@ -1,11 +1,11 @@
 module Fragment = %relay(`
-  fragment HeaderStats_verifications on Verifications {
-    ...VoterCount_verifications
+  fragment HeaderStats_users on UserConnection {
+    ...VoterCount_users
   }
 `)
 @react.component
-let make = (~verifications) => {
-  let verifications = Fragment.use(verifications)
+let make = (~users) => {
+  let users = Fragment.useOpt(users)
   let {alerts} = React.useContext(StatsAlertContext.context)
   let {setParams} = Routes.Main.Route.useQueryParams()
   let handleStats = _ => {
@@ -31,7 +31,7 @@ let make = (~verifications) => {
       <ReactIcons.LuVote size="1.5rem" />
       <ErrorBoundary fallback={_ => "N/A"->React.string}>
         <React.Suspense fallback={<> </>}>
-          <VoterCount verifications={verifications.fragmentRefs} />
+          <VoterCount users={Option.getExn(users).fragmentRefs} />
         </React.Suspense>
       </ErrorBoundary>
     </div>

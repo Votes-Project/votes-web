@@ -13,10 +13,12 @@ module BidItem = {
     let amount = amount->Viem.formatUnits(18)
 
     let bidTime =
-      (blockTimestamp ++ "000")
-      ->Float.fromString
-      ->Option.map(Date.fromTime)
-      ->Option.mapWithDefault("", Date.toLocaleDateString)
+      blockTimestamp
+      ->BigInt.mul(BigInt.fromInt(1000))
+      ->BigInt.toFloat
+      ->Date.fromTime
+      ->Date.toLocaleDateString
+
     let provider = Wagmi.PublicClient.use()
 
     <li className="border-b p-3 my-2 rounded-xl bg-default-light" key=id>
@@ -52,9 +54,9 @@ module Fragment = %relay(`
   fragment BidHistory_auction on Auction
   @argumentDefinitions(
     first: { type: "Int", defaultValue: 1000 }
-    orderBy: { type: "OrderBy_AuctionBids", defaultValue: blockTimestamp }
+    orderBy: { type: "AuctionBid_orderBy", defaultValue: blockTimestamp }
     orderDirection: { type: "OrderDirection", defaultValue: desc }
-    where: { type: "Where_AuctionBids" }
+    where: { type: "AuctionBid_filter" }
   ) {
     tokenId
     bidder
@@ -63,15 +65,9 @@ module Fragment = %relay(`
       orderDirection: $orderDirection
       first: $first
       where: $where
-    ) @connection(key: "AuctionBidsList_bids") {
-      __id
-      edges {
-        __id
-        node {
-          id
-          ...BidHistory_BidItem_auctionBid
-        }
-      }
+    ) {
+      id
+      ...BidHistory_BidItem_auctionBid
     }
   }
   `)
@@ -95,7 +91,7 @@ let make = (~bids) => {
     </header>
     <ul
       className="h-[35vh] lg:bg-primary rounded-xl self-center w-full m-4 p-4 gap-2 overflow-y-scroll hide-scrollbar">
-      {switch bids->Fragment.getConnectionNodes {
+      {switch bids {
       | [] =>
         <div className="w-full h-full flex justify-center items-center">
           <p className="text-3xl font-semibold"> {"Bids will appear here"->React.string} </p>

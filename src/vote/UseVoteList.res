@@ -7,17 +7,15 @@ let voteContractAddress =
 
 module Query = %relay(`
   query UseVoteListQuery(
-    $owner: String
-    $orderBy: OrderBy_Votes
+    $owner: Bytes
+    $orderBy: Vote_orderBy
     $orderDirection: OrderDirection
-    $votesContractAddress: String!
   ) {
     ...UseVoteListFragment
       @arguments(
         owner: $owner
         orderBy: $orderBy
         orderDirection: $orderDirection
-        votesContractAddress: $votesContractAddress
       )
   }
 `)
@@ -26,20 +24,19 @@ module UseVoteDisplay = {
   fragment UseVoteListFragment on Query
   @argumentDefinitions(
     first: { type: "Int", defaultValue: 1000 }
-    after: { type: "String", defaultValue: "" }
-    orderBy: { type: "OrderBy_Votes", defaultValue: id }
+    after: { type: "Cursor", defaultValue: "" }
+    orderBy: { type: "Vote_orderBy", defaultValue: id }
     orderDirection: { type: "OrderDirection", defaultValue: desc }
-    owner: { type: "String" }
-    votesContractAddress: { type: "String!" }
+    owner: { type: "Bytes" }
   )
   @refetchable(queryName: "UseVoteListVotesQuery") {
-    votes(
+    voteConnection(
       first: $first
       after: $after
       orderBy: $orderBy
       orderDirection: $orderDirection
       where: { owner: $owner }
-    ) @connection(key: "UseVotesConnection_votes") {
+    ) @connection(key: "UseVotesConnection_voteConnection") {
       __id
       edges {
         node {
@@ -48,15 +45,13 @@ module UseVoteDisplay = {
         }
       }
     }
-    newestVote(votesContractAddress: $votesContractAddress) {
-      tokenId
-    }
   }
 `)
   @react.component
   let make = (~votes) => {
     let (data, refetch) = Fragment.useRefetchable(votes)
-    let {votes, newestVote} = data
+    let {voteConnection} = data
+    let {vote: newestVote} = React.useContext(VoteContext.context)
     let {queryParams, setParams} = Routes.Main.Question.Ask.Route.useQueryParams()
 
     let handleVoteClick = (_, tokenId) => {
@@ -108,7 +103,7 @@ module UseVoteDisplay = {
         <RainbowKit.ConnectButton />
       </div>
     } else {
-      switch votes->Fragment.getConnectionNodes {
+      switch voteConnection->Fragment.getConnectionNodes {
       | [] =>
         <div
           className="flex lg:flex-col lg:gap-2 gap-4  h-full w-full items-center justify-center font-semibold">
@@ -165,7 +160,6 @@ let make = () => {
   let {fragmentRefs} = Query.use(
     ~variables={
       owner: address->Nullable.toOption->Option.getWithDefault(""),
-      votesContractAddress: Environment.votesContractAddress,
     },
   )
 

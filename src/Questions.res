@@ -1,3 +1,5 @@
+RescriptRelay.relayFeatureFlags.enableRelayResolvers = true
+
 type pastQuestion = {
   id: string,
   title: string,
@@ -70,7 +72,6 @@ module QuestionItem = {
   fragment Questions_item on Question {
     id
     title
-    tokenId
     asker
   }
 `)
@@ -84,7 +85,7 @@ module QuestionItem = {
       </div>
       <div
         className="flex flex-col gap-2 flex-1 whitespace-pre-wrap [text-wrap:pretty] lg:bg-secondary lg:shadow-lg p-2 rounded-lg self-start mr-auto">
-        {question.title->React.string}
+        {question.title->Option.getExn->React.string}
       </div>
     </div>
   }
@@ -169,11 +170,13 @@ module Item = {
       <div
         className="flex lg:flex-1 flex-row-reverse lg:flex-row gap-2 justify-end lg:w-full items-stretch  lg:mr-auto font-semibold  ">
         <FramerMotion.Div className="flex flex-col py-2">
-          {switch question {
-          | Question(question) => <QuestionItem question />
-          | SeedQuestion(question) => <SeedQuestionItem question />
-          | PastQuestion(question) => <PastQuestionItem question />
-          }}
+          <ErrorBoundary fallback={_ => "Question Hex data could not be parsed"->React.string}>
+            {switch question {
+            | Question(question) => <QuestionItem question />
+            | SeedQuestion(question) => <SeedQuestionItem question />
+            | PastQuestion(question) => <PastQuestionItem question />
+            }}
+          </ErrorBoundary>
         </FramerMotion.Div>
         <div
           className="flex lg:flex-col items-start lg:items-center lg:min-w-[4rem]  min-w-[2rem] lg:min-h-0">
@@ -202,16 +205,14 @@ module List = {
   fragment Questions_list on Query
   @argumentDefinitions(
     first: { type: "Int", defaultValue: 100 }
-    after: { type: "String" }
-    last: { type: "Int" }
+    after: { type: "Cursor" }
     orderDirection: { type: "OrderDirection", defaultValue: desc }
   ) {
-    questions(
+    questionConnection(
       first: $first
       after: $after
-      last: $last
       orderDirection: $orderDirection
-    ) @connection(key: "Questions_questions") {
+    ) @connection(key: "Questions_questionConnection") {
       edges {
         node {
           id
@@ -225,7 +226,7 @@ module List = {
   @react.component
   let make = (~questions) => {
     let {queryParams} = Routes.Main.Questions.Route.useQueryParams()
-    let {questions} = Fragment.use(questions)
+    let {questionConnection} = Fragment.use(questions)
     let (height, setHeight) = React.useState(_ => None)
     let (width, setWidth) = React.useState(_ => None)
 
@@ -304,7 +305,7 @@ module List = {
     let questions =
       pastQuestions
       ->Array.concat(
-        questions->Fragment.getConnectionNodes->Array.map(x => Question(x.fragmentRefs)),
+        questionConnection->Fragment.getConnectionNodes->Array.map(x => Question(x.fragmentRefs)),
       )
       ->Array.concat(seedQuestions)
 

@@ -4569,11 +4569,12 @@ enum Question_orderBy {
   contract__reviewerRole
 }
 
-type QuestionsContract {
-  id: Bytes!
+type QuestionsContract implements Node {
+  id: ID!
   votesAddress: Bytes!
   reviewerRole: Bytes!
   questions(skip: Int = 0, first: Int = 100, orderBy: Question_orderBy, orderDirection: OrderDirection, where: Question_filter): [Question!]!
+  address: Bytes!
 }
 
 input QuestionsContract_filter {
@@ -5982,9 +5983,4 @@ type AuctionBidConnection {
   nodes: [AuctionBid]!
   edges: [AuctionBidEdge]!
   pageInfo: PageInfo!
-}
-
-type QuestionContract implements Node {
-  id: ID!
-  address: Bytes!
 }
