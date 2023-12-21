@@ -366,6 +366,11 @@ export async function makeGatewaySchema() {
     typeDefs: relayCompatibleSchema,
     mergeTypes: true,
     resolvers: [nodeResolvers, connectionResolvers],
+    typeMergingOptions: {
+      validationSettings: {
+        validationLevel: "off",
+      },
+    }
   });
 
 }

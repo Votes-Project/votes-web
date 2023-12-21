@@ -45,16 +45,16 @@ let make = (~users) => {
     None
   }, (isClickOutside, isClickOutsideHamburger))
   <>
-    <div
-      className="z-50 sticky top-0 z-2 px-2 pb-0 transition-all z-2 float-left inline pt-2 mb-[-8px]"
-      onClick={_ => votesy.setShow(_ => true)}>
-      <div className=" w-24 h-24">
-        <div className="">
-          <img src={votesyLogo["default"]} className="w-24 h-24  " alt="Votesy The Owl" />
+    <header className=" flex flex-row justify-center items-center z-50 h-24 px-2 pt-2 mb-[-8px]">
+      <div className="w-24 h-24 pb-0 ">
+        <div
+          className="z-50 fixed top-2 left-2 z-2 transition-all  inline"
+          onClick={_ => votesy.setShow(_ => true)}>
+          <div className=" w-24 h-24">
+            <img src={votesyLogo["default"]} className="w-24 h-24  " alt="Votesy The Owl" />
+          </div>
         </div>
       </div>
-    </div>
-    <header className=" flex flex-col justify-center items-center  z-50 h-24 ">
       <nav className="max-w-7xl flex w-full justify-between px-4 pt-2 flex-1">
         <div className="flex gap-3 justify-center items-center ">
           <HeaderStats users={users->Option.map(users => users.fragmentRefs)} />
@@ -83,7 +83,6 @@ let make = (~users) => {
         </button>
       </nav>
     </header>
-    <VotesySpeak />
     <div
       ref={ReactDOM.Ref.domRef(accordionRef)}
       className={`${isOpen
@@ -108,5 +107,6 @@ let make = (~users) => {
         <RainbowKit.ConnectButton showBalance=false />
       </div>
     </div>
+    <VotesySpeak />
   </>
 }
