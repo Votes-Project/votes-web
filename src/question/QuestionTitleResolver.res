@@ -15,7 +15,4 @@ module Fragment = %relay(`
   }
 `)
 
-let default = Fragment.makeRelayResolver(({question}) => {
-  Js.log2("title: ", question->QuestionUtils.parseHexTitle)
-  question->QuestionUtils.parseHexTitle
-})
+let default = Fragment.makeRelayResolver(({question}) => question->QuestionUtils.parseHexTitle)

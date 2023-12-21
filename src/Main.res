@@ -3,13 +3,24 @@ module Query = %relay(`
     ...Main_VoteConnectionFragment
     ...Main_QuestionConnectionFragment
     ...HeaderFragment
-    userById(id: $contextId) {
-      __typename
-    }
+    ...Main_user @arguments(id: $contextId)
   }
 `)
 
 module MainDisplay = {
+  module UserFragment = %relay(`
+  fragment Main_user on Query @argumentDefinitions(id: { type: "ID!" }) {
+    userById(id: $id) {
+      id
+      answers(last: 1) {
+        nodes {
+          day
+        }
+      }
+    }
+  }
+`)
+
   module VoteConnectionFragment = %relay(`
   fragment Main_VoteConnectionFragment on Query {
     voteConnection(orderBy: id, orderDirection: desc, first: 1000, after: "")
@@ -30,27 +41,33 @@ module MainDisplay = {
   }`)
 
   module QuestionConnectionFragment = %relay(`
-  fragment Main_QuestionConnectionFragment on Query {
-    questionConnection(
-      first: 1000
-      orderBy: vote__tokenId
-      orderDirection: asc
-      where: { state_in: [Submitted, Approved] }
-    ) @connection(key: "QuestionsConnection_questionConnection") {
-      edges {
-        node {
-          ...SingleQuestion_node
-          ...BottomNav_question
-        }
+fragment Main_QuestionConnectionFragment on Query {
+  questionConnection(
+    first: 1
+    orderBy: day
+    orderDirection: desc
+    where: { state: Used }
+  ) @connection(key: "QuestionsConnection_questionConnection") {
+    edges {
+      node {
+        day
+        ...SingleQuestion_node
+        ...BottomNav_question
       }
     }
-  }`)
+  }
+}`)
   @react.component
   let make = (~query as fragmentRefs, ~children) => {
+    let {userById: user} = UserFragment.use(fragmentRefs)
+    let newestAnswer =
+      user->Option.flatMap(({answers}) => answers.nodes->Array.get(0))->Option.flatMap(a => a)
+
     let {voteConnection} = VoteConnectionFragment.use(fragmentRefs)
     let newestVote = voteConnection->VoteConnectionFragment.getConnectionNodes->Array.get(0)
 
     let {questionConnection} = QuestionConnectionFragment.use(fragmentRefs)
+
     let newestQuestion =
       questionConnection->QuestionConnectionFragment.getConnectionNodes->Array.get(0)
 
@@ -67,23 +84,8 @@ module MainDisplay = {
     })
 
     let {heroComponent} = React.useContext(HeroComponentContext.context)
-    let {setAuction, setIsLoading: setIsAuctionLoading} = React.useContext(AuctionContext.context)
-    let {setVote} = React.useContext(VoteContext.context)
-    let {setQuestion} = React.useContext(QuestionContext.context)
-
-    React.useEffect0(() => {
-      switch newestVote {
-      | Some(vote) => {
-          setAuction(_ => vote.auction)
-          setIsAuctionLoading(_ => false)
-          setVote(_ => Some(vote))
-          setQuestion(_ => newestQuestion)
-        }
-      | _ => ()
-      }
-
-      None
-    })
+    let location = RelayRouter.Utils.useLocation()
+    let isSubroute = location.pathname !== "/"
 
     React.useEffect0(() => {
       let localAnswerTime =
@@ -114,12 +116,27 @@ module MainDisplay = {
           {heroComponent}
           <div
             className="pt-[5%] lg:pl-0 lg:pt-0 min-h-[558px] lg:flex-[0_0_auto] w-full bg-white pb-0 lg:bg-transparent lg:w-[50%]">
-            <ErrorBoundary
-              fallback={({error}) => {
-                error->JSON.stringifyAny->Option.getWithDefault("")->React.string
-              }}>
-              <React.Suspense fallback={<div />}> {children} </React.Suspense>
-            </ErrorBoundary>
+            {switch (newestAnswer, newestQuestion) {
+            | _ if isSubroute =>
+              <ErrorBoundary
+                fallback={({error}) => {
+                  error->JSON.stringifyAny->Option.getWithDefault("")->React.string
+                }}>
+                <React.Suspense fallback={<div />}> {children} </React.Suspense>
+              </ErrorBoundary>
+            | (None, _) =>
+              <SingleQuestion.NewestQuestion
+                question={newestQuestion->Option.map(q => q.fragmentRefs)}
+              />
+
+            | (Some({day}), Some({day: Some(questionDay)}))
+              if BigInt.fromInt(day) === questionDay =>
+              <SingleVote.NewestVote vote={newestVote->Option.map(v => v.fragmentRefs)} />
+            | _ =>
+              <SingleQuestion.NewestQuestion
+                question={newestQuestion->Option.map(q => q.fragmentRefs)}
+              />
+            }}
           </div>
         </div>
       </div>

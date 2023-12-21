@@ -32,33 +32,6 @@ module QuestionTitle = {
   }
 }
 
-module LinkStatusTooltip = {
-  @react.component
-  let make = (~verificationData) => {
-    <> </>
-    // switch verificationData {
-    // | BrightIdError(_) =>
-    //   <ReactTooltip anchorSelect="#brightid-link-status">
-    //     <div className="flex flex-col justify-center items-center">
-    //       <p className="text-white text-sm font-semibold">
-    //         {"Link Votes to Bright ID"->React.string}
-    //       </p>
-    //     </div>
-    //   </ReactTooltip>
-    // | Verification({unique: true}) => <> </>
-    // | Verification({unique: false}) =>
-    //   <ReactTooltip
-    //     anchorSelect="#brightid-link-status" openOnClick=true closeOnEsc=true variant={Warning}>
-    //     <div className="flex flex-col justify-center items-center">
-    //       <p className="text-white text-sm font-semibold">
-    //         {"This Bright ID does not meet the requirements for a unique human"->React.string}
-    //       </p>
-    //     </div>
-    //   </ReactTooltip>
-    // }
-  }
-}
-
 module LongPress = {
   type t = {
     holdTime: float,
@@ -268,15 +241,15 @@ module AnswerItem = {
           {(index + 65)->String.fromCharCode->React.string}
         </div>
         <div
-          className={`focus:outline-none focus:ring-0 w-full  flex flex-row items-center lg:my-2 first:mb-2 py-2   px-2 min-h-[80px] overflow-hidden  transition-all`}
+          className={`focus:outline-none z-10 focus:ring-0 w-full  flex flex-row items-center lg:my-2 first:mb-2 py-2   px-2 min-h-[80px] overflow-hidden  transition-all`}
           key={index->Int.toString}>
-          <p className="z-10 font-bold pointer-events-none"> {option->React.string} </p>
+          <p className=" font-bold pointer-events-none"> {option->React.string} </p>
         </div>
         <p className="z-10 pointer-events-none px-4 text-xl font-bold">
           {(numAnswerPercentage->Float.toString ++ "%")->React.string}
         </p>
         <FramerMotion.Div
-          className="z-10 absolute h-full bg-default lg:bg-secondary lg:rounded-xl"
+          className="absolute h-full bg-default lg:bg-secondary lg:rounded-xl"
           initial=Initial({width: "0"})
           animate={Animate({width: numAnswerPercentage->Float.toString ++ "%"})}
         />
@@ -290,9 +263,9 @@ module AnswerItem = {
           {(index + 65)->String.fromCharCode->React.string}
         </div>
         <div
-          className={`focus:outline-none focus:ring-0 w-full  flex flex-row items-center lg:my-2 first:mb-2 py-2   px-2 min-h-[80px] overflow-hidden  transition-all`}
+          className={` z-10 focus:outline-none focus:ring-0 w-full  flex flex-row items-center lg:my-2 first:mb-2 py-2   px-2 min-h-[80px] overflow-hidden  transition-all`}
           key={index->Int.toString}>
-          <p className="z-10 pointer-events-none"> {option->React.string} </p>
+          <p className=" pointer-events-none"> {option->React.string} </p>
         </div>
         <div className="px-4 text-xl font-bold">
           <p className="z-10 pointer-events-none">
@@ -300,7 +273,7 @@ module AnswerItem = {
           </p>
         </div>
         <FramerMotion.Div
-          className=" z-10 absolute h-full bg-default lg:bg-secondary lg:rounded-xl"
+          className=" absolute h-full bg-default lg:bg-secondary lg:rounded-xl"
           initial=Initial({width: "0"})
           animate={Animate({width: numAnswerPercentage->Float.toString ++ "%"})}
         />
