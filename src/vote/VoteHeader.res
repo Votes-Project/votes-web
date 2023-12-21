@@ -8,11 +8,6 @@ let make = (~tokenId, ~totalSupply, ~startTime) => {
     totalSupply->sub(1->fromInt)
   }
 
-  let tokenId = switch (tokenId, newestTokenId) {
-  | (Some(tokenId), _) => tokenId
-  | _ => newestTokenId
-  }
-
   let {push} = RelayRouter.Utils.useRouter()
 
   let handleArrowPress = (direction, tokenId) => {

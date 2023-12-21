@@ -1,32 +1,8 @@
-@module("/src/abis/Auction.json") external auctionContractAbi: JSON.t = "default"
-
 module Main = %relay.deferredComponent(Main.make)
 module LinkBrightID = %relay.deferredComponent(LinkBrightID.make)
 module Stats = %relay.deferredComponent(Stats.make)
-// module QuestionQueue = %relay.deferredComponent(QuestionQueue.make)
 
 let contextId = Dom.Storage2.localStorage->Dom.Storage2.getItem("votes_contextId")
-
-type initialRender = Loading | CurrentVote | CurrentQuestion | ChildRoutes
-let handleInitialRender = (auction: option<AuctionContext.auction>, isLoading, isSubroute) => {
-  let hasAnsweredQuestion = {
-    open Dom.Storage2
-    let timestamp =
-      localStorage->getItem("votesdev_answer_timestamp")->Option.map(BigInt.fromString)
-
-    auction
-    ->Option.map(auction => auction.startTime)
-    ->(Option.equal(_, timestamp, (startTime, lastVoteTimestamp) => startTime < lastVoteTimestamp))
-  }
-
-  switch (auction, hasAnsweredQuestion, isSubroute, isLoading) {
-  | (_, _, true, _) => ChildRoutes
-  | (_, _, _, true) => Loading
-  | (Some(_), true, _, _) => CurrentVote
-  | (Some(_), false, _, _) => CurrentQuestion
-  | _ => ChildRoutes
-  }
-}
 
 let renderer = Routes.Main.Route.makeRenderer(
   ~prepareCode=({linkBrightID, stats}) => {
@@ -75,33 +51,10 @@ let renderer = Routes.Main.Route.makeRenderer(
   ~render=({childRoutes, linkBrightID, stats, prepared}) => {
     let (queryRef, linkBrightIDQueryRef, statsQueryRef) = prepared
 
-    let {auction, isLoading} = React.useContext(AuctionContext.context)
-    let {vote} = React.useContext(VoteContext.context)
-    let {question} = React.useContext(QuestionContext.context)
-
-    let mainSubroute = Routes.Main.Route.useActiveSubRoute()
-    let voteSubroute = Routes.Main.Vote.Route.useActiveSubRoute()
-    let questionSubroute = Routes.Main.Question.Route.useActiveSubRoute()
-
-    let isSubroute =
-      mainSubroute->Option.isSome || voteSubroute->Option.isSome || questionSubroute->Option.isSome
-
     <>
       <ErrorBoundary fallback={({error}) => error->React.string}>
         <Main queryRef>
-          <React.Suspense fallback={<div />}>
-            {switch handleInitialRender(auction, isLoading, isSubroute) {
-            | Loading => "Loading"->React.string
-            | CurrentVote =>
-              <SingleVote
-                vote={vote->Option.map(v => v.fragmentRefs)}
-                tokenId={auction->Option.map(auction => auction.tokenId)}
-              />
-            | CurrentQuestion =>
-              <SingleQuestion.NewestQuestion question={question->Option.map(q => q.fragmentRefs)} />
-            | ChildRoutes => childRoutes
-            }}
-          </React.Suspense>
+          <React.Suspense fallback={<div />}> childRoutes </React.Suspense>
         </Main>
       </ErrorBoundary>
       <LinkBrightIDModal isOpen={linkBrightID->Option.isSome}>
