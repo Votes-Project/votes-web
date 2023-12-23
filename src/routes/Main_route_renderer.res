@@ -78,12 +78,8 @@ let renderer = Routes.Main.Route.makeRenderer(
     let {vote} = React.useContext(VoteContext.context)
     let {question} = React.useContext(QuestionContext.context)
 
-    let mainSubroute = Routes.Main.Route.useActiveSubRoute()
-    let voteSubroute = Routes.Main.Vote.Route.useActiveSubRoute()
-    let questionSubroute = Routes.Main.Question.Route.useActiveSubRoute()
-
-    let isSubroute =
-      mainSubroute->Option.isSome || voteSubroute->Option.isSome || questionSubroute->Option.isSome
+    let location = RelayRouter.Utils.useLocation()
+    let isSubroute = location.pathname !== "/"
 
     <>
       <ErrorBoundary fallback={({error}) => error->React.string}>
