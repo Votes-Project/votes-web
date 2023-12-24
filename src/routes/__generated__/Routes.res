@@ -23,12 +23,8 @@ module Main = {
 
       }
     }
-    module Current = {
-      module Route = Route__Main__Question__Current_route
-
-    }
-    module Past = {
-      module Route = Route__Main__Question__Past_route
+    module Details = {
+      module Route = Route__Main__Question__Details_route
 
     }
   }

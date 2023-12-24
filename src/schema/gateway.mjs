@@ -368,7 +368,7 @@ export async function makeGatewaySchema() {
     resolvers: [nodeResolvers, connectionResolvers],
     typeMergingOptions: {
       validationSettings: {
-        validationLevel: "off",
+        validationLevel: "off", //Todo: fix problems with Node Type
       },
     }
   });

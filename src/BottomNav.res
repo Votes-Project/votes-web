@@ -1,6 +1,7 @@
 module QuestionFragment = %relay(`
   fragment BottomNav_question on Question {
     id
+    day
   }
 `)
 
@@ -11,43 +12,36 @@ module AuctionFragment = %relay(`
   }
 `)
 
+module AnswerFragment = %relay(`
+  fragment BottomNav_answer on Answer {
+    __typename
+  }
+`)
+
 @react.component
-let make = (~question, ~auction) => {
+let make = (~question, ~auction, ~answer) => {
   let (disabled, setDisabled) = React.useState(_ => false)
   let (width, setWidth) = React.useState(_ => window->Window.innerWidth)
   let isNarrow = width < 1024
 
   let question = question->QuestionFragment.useOpt
   let auction = auction->AuctionFragment.useOpt
+  let answer = answer->AnswerFragment.useOpt
 
   let newestTokenId = auction->Option.mapWithDefault("", a => a.tokenId->BigInt.toString)
 
   let location = RelayRouter.Utils.useLocation()
-  let {
-    queryParams: currentQuestionQueryParams,
-  } = Routes.Main.Question.Current.Route.useQueryParams()
 
-  let voteActiveSubroutes = Routes.Main.Vote.Route.getActiveSubRoute(location)
-  let questionActiveSubroutes = Routes.Main.Question.Route.getActiveSubRoute(location)
-  let mainActiveSubroutes = Routes.Main.Route.getActiveSubRoute(location)
-
-  let hasAnsweredQuestion = {
-    open Dom.Storage2
-    let timestamp =
-      localStorage->getItem("votesdev_answer_timestamp")->Option.map(BigInt.fromString)
-
-    auction
-    ->Option.map(auction => auction.startTime)
-    ->Option.equal(timestamp, (startTime, lastVoteTimestamp) => startTime < lastVoteTimestamp)
-  }
-
-  let activeRoute = switch (mainActiveSubroutes, voteActiveSubroutes, questionActiveSubroutes) {
-  | (Some(#Question), _, _) => Some(#Question)
-  | (_, Some(#Auction), _) => Some(#Auction)
-  | (_, _, Some(#Ask)) => Some(#Ask)
-  | (None, None, None) if hasAnsweredQuestion == true => Some(#Auction)
-  | (None, None, None) if hasAnsweredQuestion == false => Some(#Question)
-  | _ => None
+  let activeRoute = switch location.pathname {
+  | pathname if pathname === "/" =>
+    switch answer {
+    | Some(_) => #Auction
+    | None => #Question
+    }
+  | pathname if pathname->String.includes("/ask") => #Ask
+  | pathname if pathname->String.includes("/question") => #Question
+  | pathname if pathname->String.includes("/vote") => #Auction
+  | _ => #Question
   }
 
   let handleScroll = React.useCallback0(_ => {
@@ -97,7 +91,7 @@ let make = (~question, ~auction) => {
           className="relative flex flex-1 items-center justify-center">
           <li className=" flex flex-1 items-center justify-center text-center">
             <button className="z-10" type_="button"> {"Ask"->React.string} </button>
-            {activeRoute == Some(#Ask)
+            {activeRoute == #Ask
               ? <div className="absolute w-full">
                   <FramerMotion.Div
                     className="w-1/2 md:w-1/4 absolute top-[-32px] left-0 right-0 mx-auto h-4 bg-default-darker lg:bg-primary-dark  rounded-t-full flex items-end justify-center pt-5"
@@ -109,14 +103,13 @@ let make = (~question, ~auction) => {
           </li>
         </RelayRouter.Link>
         <RelayRouter.Link
-          to_={Routes.Main.Question.Current.Route.makeLinkFromQueryParams({
-            ...currentQuestionQueryParams,
-            id: question->Option.map(({id}) => id),
-          })}
+          to_={Routes.Main.Question.Details.Route.makeLink(
+            ~question=question->Option.map(({id}) => id)->Option.getWithDefault(""),
+          )}
           className="relative flex flex-1 items-center justify-center">
           <li className=" flex-1 items-center flex justify-center text-center">
             <button className="z-10" type_="button"> {"Answer"->React.string} </button>
-            {activeRoute == Some(#Question)
+            {activeRoute == #Question
               ? <div className="absolute w-full">
                   <FramerMotion.Div
                     className="w-1/2 md:w-1/4 absolute top-[-32px] left-0 right-0 mx-auto h-4 bg-default-darker lg:bg-primary-dark rounded-t-full flex items-end justify-center pt-5"
@@ -133,7 +126,7 @@ let make = (~question, ~auction) => {
           className="relative flex flex-1 items-center justify-center">
           <li className=" flex-1 items-center flex justify-center text-center">
             <button className="z-10" type_="button"> {"Auction"->React.string} </button>
-            {activeRoute == Some(#Auction)
+            {activeRoute == #Auction
               ? <div className="absolute w-full">
                   <FramerMotion.Div
                     className="w-1/2 md:w-1/4 absolute top-[-32px] left-0 right-0 mx-auto h-4 bg-default-darker lg:bg-primary-dark  rounded-t-full flex items-end justify-center pt-5"

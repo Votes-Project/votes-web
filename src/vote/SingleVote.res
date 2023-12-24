@@ -110,7 +110,6 @@ let make = (~queryRef) => {
         </React.Suspense>
       </ErrorBoundary>
     | Some(Vote({auction: None})) => raise(NoAuction)
-    | Some(Vote({auction: None})) => raise(NoAuction)
     | _ => raise(NoVote)
     }}
   </div>
