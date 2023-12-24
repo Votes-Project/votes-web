@@ -5,12 +5,13 @@ module Internal = {
   type prepareProps = {
     environment: RescriptRelay.Environment.t,
     location: RelayRouter.History.location,
-    questionId: string,
+    question: string,
     linkBrightID: option<int>,
     voteDetails: option<int>,
     voteDetailsToken: option<int>,
     stats: option<int>,
     answer: option<int>,
+    day: option<int>,
   }
 
   @live
@@ -19,12 +20,13 @@ module Internal = {
     prepared: 'prepared,
     environment: RescriptRelay.Environment.t,
     location: RelayRouter.History.location,
-    questionId: string,
+    question: string,
     linkBrightID: option<int>,
     voteDetails: option<int>,
     voteDetailsToken: option<int>,
     stats: option<int>,
     answer: option<int>,
+    day: option<int>,
   }
 
   @live
@@ -44,12 +46,13 @@ module Internal = {
       environment: environment,
   
       location: location,
-      questionId: pathParams->Js.Dict.unsafeGet("questionId"),
+      question: pathParams->Js.Dict.unsafeGet("question"),
       linkBrightID: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("linkBrightID")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
       voteDetails: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetails")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
       voteDetailsToken: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("voteDetailsToken")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
       stats: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("stats")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
       answer: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("answer")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
+      day: queryParams->RelayRouter.Bindings.QueryParams.getParamByKey("day")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
     }
   }
 
@@ -61,6 +64,7 @@ type queryParams = {
   voteDetailsToken: option<int>,
   stats: option<int>,
   answer: option<int>,
+  day: option<int>,
 }
 
 @live
@@ -78,6 +82,8 @@ let parseQueryParams = (search: string): queryParams => {
 
     answer: queryParams->QueryParams.getParamByKey("answer")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
 
+    day: queryParams->QueryParams.getParamByKey("day")->Belt.Option.flatMap(value => Belt.Int.fromString(value)),
+
   }
 }
 
@@ -88,6 +94,7 @@ let makeQueryParams = (
   ~voteDetailsToken: option<int>=?, 
   ~stats: option<int>=?, 
   ~answer: option<int>=?, 
+  ~day: option<int>=?, 
   ()
 ) => {
   linkBrightID: linkBrightID,
@@ -95,6 +102,7 @@ let makeQueryParams = (
   voteDetailsToken: voteDetailsToken,
   stats: stats,
   answer: answer,
+  day: day,
 }
 
 @live
@@ -110,6 +118,7 @@ let applyQueryParams = (
   queryParams->QueryParams.setParamOpt(~key="voteDetailsToken", ~value=newParams.voteDetailsToken->Belt.Option.map(voteDetailsToken => Belt.Int.toString(voteDetailsToken)))
   queryParams->QueryParams.setParamOpt(~key="stats", ~value=newParams.stats->Belt.Option.map(stats => Belt.Int.toString(stats)))
   queryParams->QueryParams.setParamOpt(~key="answer", ~value=newParams.answer->Belt.Option.map(answer => Belt.Int.toString(answer)))
+  queryParams->QueryParams.setParamOpt(~key="day", ~value=newParams.day->Belt.Option.map(day => Belt.Int.toString(day)))
 }
 
 @live
@@ -165,10 +174,10 @@ let useQueryParams = (): useQueryParamsReturn => {
 }
 
 @inline
-let routePattern = "/question/:questionId"
+let routePattern = "/question/:question"
 
 @live
-let makeLink = (~questionId: string, ~linkBrightID: option<int>=?, ~voteDetails: option<int>=?, ~voteDetailsToken: option<int>=?, ~stats: option<int>=?, ~answer: option<int>=?) => {
+let makeLink = (~question: string, ~linkBrightID: option<int>=?, ~voteDetails: option<int>=?, ~voteDetailsToken: option<int>=?, ~stats: option<int>=?, ~answer: option<int>=?, ~day: option<int>=?) => {
   open RelayRouter.Bindings
   let queryParams = QueryParams.make()
   switch linkBrightID {
@@ -195,11 +204,16 @@ let makeLink = (~questionId: string, ~linkBrightID: option<int>=?, ~voteDetails:
     | None => ()
     | Some(answer) => queryParams->QueryParams.setParam(~key="answer", ~value=Belt.Int.toString(answer))
   }
-  RelayRouter.Bindings.generatePath(routePattern, Js.Dict.fromArray([("questionId", (questionId :> string)->Js.Global.encodeURIComponent)])) ++ queryParams->QueryParams.toString
+
+  switch day {
+    | None => ()
+    | Some(day) => queryParams->QueryParams.setParam(~key="day", ~value=Belt.Int.toString(day))
+  }
+  RelayRouter.Bindings.generatePath(routePattern, Js.Dict.fromArray([("question", (question :> string)->Js.Global.encodeURIComponent)])) ++ queryParams->QueryParams.toString
 }
 @live
-let makeLinkFromQueryParams = (~questionId: string, queryParams: queryParams) => {
-  makeLink(~questionId, ~linkBrightID=?queryParams.linkBrightID, ~voteDetails=?queryParams.voteDetails, ~voteDetailsToken=?queryParams.voteDetailsToken, ~stats=?queryParams.stats, ~answer=?queryParams.answer, )
+let makeLinkFromQueryParams = (~question: string, queryParams: queryParams) => {
+  makeLink(~question, ~linkBrightID=?queryParams.linkBrightID, ~voteDetails=?queryParams.voteDetails, ~voteDetailsToken=?queryParams.voteDetailsToken, ~stats=?queryParams.stats, ~answer=?queryParams.answer, ~day=?queryParams.day, )
 }
 
 @live

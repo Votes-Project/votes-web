@@ -15,6 +15,8 @@ module MainDisplay = {
       answers(last: 1) {
         nodes {
           day
+          ...NewestQuestion_answer
+          ...BottomNav_answer
         }
       }
     }
@@ -51,7 +53,7 @@ fragment Main_QuestionConnectionFragment on Query {
     edges {
       node {
         day
-        ...SingleQuestion_node
+        ...NewestQuestion_node
         ...BottomNav_question
       }
     }
@@ -124,18 +126,13 @@ fragment Main_QuestionConnectionFragment on Query {
                 }}>
                 <React.Suspense fallback={<div />}> {children} </React.Suspense>
               </ErrorBoundary>
-            | (None, _) =>
-              <SingleQuestion.NewestQuestion
-                question={newestQuestion->Option.map(q => q.fragmentRefs)}
-              />
-
-            | (Some({day}), Some({day: Some(questionDay)}))
-              if BigInt.fromInt(day) === questionDay =>
+            | (Some({day}), Some({day: Some(questionDay)})) if day == BigInt.toInt(questionDay) =>
               <SingleVote.NewestVote vote={newestVote->Option.map(v => v.fragmentRefs)} />
-            | _ =>
-              <SingleQuestion.NewestQuestion
-                question={newestQuestion->Option.map(q => q.fragmentRefs)}
+            | (newestAnswer, Some({fragmentRefs})) =>
+              <NewestQuestion
+                question={fragmentRefs} answer={newestAnswer->Option.map(a => a.fragmentRefs)}
               />
+            | _ => React.null
             }}
           </div>
         </div>
@@ -152,6 +149,7 @@ fragment Main_QuestionConnectionFragment on Query {
                   auction={newestVote
                   ->Option.flatMap(v => v.auction)
                   ->Option.map(a => a.fragmentRefs)}
+                  answer={newestAnswer->Option.map(a => a.fragmentRefs)}
                 />
               </FramerMotion.Div>
             : <FramerMotion.Div
@@ -163,6 +161,7 @@ fragment Main_QuestionConnectionFragment on Query {
                   auction={newestVote
                   ->Option.flatMap(v => v.auction)
                   ->Option.map(a => a.fragmentRefs)}
+                  answer={newestAnswer->Option.map(a => a.fragmentRefs)}
                 />
               </FramerMotion.Div>}
         </React.Suspense>

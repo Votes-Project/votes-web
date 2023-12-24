@@ -18,27 +18,22 @@
         "path": "question?answer=int",
         "name": "Question",
         "children": [
-        {
-            "path": "ask?useVote=int&question=string",
-            "name": "Ask",
-            "children": [{
-              "path": "",
-              "name": "UseVote",
-              "children": []
-            }]
-          },
           {
-            "path": "?id=string",
-            "name": "Current",
+              "path": "ask?useVote=int&question=string",
+              "name": "Ask",
+              "children": [{
+                "path": "",
+                "name": "UseVote",
+                "children": []
+              }]
+            },
+            {
+            "path": ":question?day=int",
+            "name": "Details",
             "children": []
-          },
 
-          {
-          "path": ":questionId",
-          "name": "Past",
-          "children": []
-        }
-      ]
+          }
+        ]
       },
       {
         "path": "queue",
