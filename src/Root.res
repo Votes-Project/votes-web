@@ -195,63 +195,64 @@ initializeKeyPair()->ignore
 ReactDOMExperimental.renderConcurrentRootAtElementWithId(
   <RescriptRelay.Context.Provider environment={RelayEnv.environment}>
     <RelayRouter.Provider value={Router.routerContext}>
-      <React.Suspense
-        fallback={
-          open FramerMotion
+      <Wagmi.WagmiConfig config={%raw("wagmiConfig")}>
+        <RainbowKit.Provider chains={%raw("chains")} initialChain={%raw("goerli")}>
+          <VerificationProvider>
+            <VoteProvider>
+              <AuctionProvider>
+                <QuestionProvider>
+                  <HeroComponentProvider>
+                    <VotesySpeakProvider>
+                      <StatsAlertProvider>
+                        <React.Suspense
+                          fallback={
+                            open FramerMotion
 
-          let title = "This is a placeholder for the daily question which will be rendered server side"
-          <>
-            <div className="text-center w-screen h-screen flex items-center justify-center">
-              <div className="">
-                <FramerMotion.Div
-                  layout=True
-                  layoutId="daily-question-title"
-                  className={`font-bold [text-wrap:balance] text-center text-default-darker px-4 text-2xl`}>
-                  {("\"" ++ title ++ "\"")->React.string}
-                </FramerMotion.Div>
-              </div>
-            </div>
-            <FramerMotion.Div
-              layoutId="background-noise"
-              layout=String("opacity")
-              initial={Initial({opacity: 0.})}
-              animate={Animate({opacity: 1.})}
-              className="bg-primary noise fixed animate-[grain_12s_steps(10)_infinite] w-[300%] h-[300%] left-[-50%] top-[-100%] -z-10"
-            />
-          </>
-        }>
-        <ErrorBoundary
-          fallback={({error}) => <>
-            {`Error! \n ${error->Exn.name->Option.getWithDefault("")}: ${error
-              ->Exn.message
-              ->Option.getWithDefault(
-                "Something went wrong connecting to the votes API",
-              )}`->React.string}
-          </>}>
-          <Wagmi.WagmiConfig config={%raw("wagmiConfig")}>
-            <RainbowKit.Provider chains={%raw("chains")} initialChain={%raw("goerli")}>
-              <VerificationProvider>
-                <VoteProvider>
-                  <AuctionProvider>
-                    <QuestionProvider>
-                      <HeroComponentProvider>
-                        <VotesySpeakProvider>
-                          <StatsAlertProvider>
+                            let title = "This is a placeholder for the daily question which will be rendered server side"
+                            <>
+                              <div
+                                className="text-center w-screen h-screen flex items-center justify-center">
+                                <div className="">
+                                  <FramerMotion.Div
+                                    layout=Position
+                                    layoutId="daily-question-title"
+                                    className={`font-bold [text-wrap:balance] text-center text-default-darker px-4 text-2xl`}>
+                                    {("\"" ++ title ++ "\"")->React.string}
+                                  </FramerMotion.Div>
+                                </div>
+                              </div>
+                              <FramerMotion.Div
+                                layoutId="background-noise"
+                                layout=String("opacity")
+                                initial={Initial({opacity: 0.})}
+                                animate={Animate({opacity: 1.})}
+                                className="bg-primary noise fixed animate-[grain_12s_steps(10)_infinite] w-[300%] h-[300%] left-[-50%] top-[-100%] -z-10"
+                              />
+                            </>
+                          }>
+                          <ErrorBoundary
+                            fallback={({error}) => <>
+                              {`Error! \n ${error->Exn.name->Option.getWithDefault("")}: ${error
+                                ->Exn.message
+                                ->Option.getWithDefault(
+                                  "Something went wrong connecting to the votes API",
+                                )}`->React.string}
+                            </>}>
                             <RelayRouter.RouteRenderer
                               // This renders all the time, and when there"s a pending navigation (pending via React concurrent mode), pending will be `true`
                               renderPending={pending => <PendingIndicatorBar pending />}
                             />
-                          </StatsAlertProvider>
-                        </VotesySpeakProvider>
-                      </HeroComponentProvider>
-                    </QuestionProvider>
-                  </AuctionProvider>
-                </VoteProvider>
-              </VerificationProvider>
-            </RainbowKit.Provider>
-          </Wagmi.WagmiConfig>
-        </ErrorBoundary>
-      </React.Suspense>
+                          </ErrorBoundary>
+                        </React.Suspense>
+                      </StatsAlertProvider>
+                    </VotesySpeakProvider>
+                  </HeroComponentProvider>
+                </QuestionProvider>
+              </AuctionProvider>
+            </VoteProvider>
+          </VerificationProvider>
+        </RainbowKit.Provider>
+      </Wagmi.WagmiConfig>
     </RelayRouter.Provider>
   </RescriptRelay.Context.Provider>,
   "root",

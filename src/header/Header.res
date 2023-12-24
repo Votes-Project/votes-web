@@ -46,9 +46,9 @@ let make = (~users) => {
   }, (isClickOutside, isClickOutsideHamburger))
   <>
     <header className=" flex flex-row justify-center items-center z-50 h-24 px-2 pt-2 mb-[-8px]">
-      <div className="w-24 h-24 pb-0 ">
+      <div className="w-24 h-24 pb-0 relative ">
         <div
-          className="z-50 fixed top-2 left-2 z-2 transition-all  inline"
+          className="z-50 absolute top-2 left-2 z-2 transition-all  inline"
           onClick={_ => votesy.setShow(_ => true)}>
           <div className=" w-24 h-24">
             <img src={votesyLogo["default"]} className="w-24 h-24  " alt="Votesy The Owl" />
@@ -87,7 +87,7 @@ let make = (~users) => {
       ref={ReactDOM.Ref.domRef(accordionRef)}
       className={`${isOpen
           ? "py-10 bg-active w-full flex flex-col h-96 "
-          : "max-h-0"} sticky top-24 color-active transition-all justify-around items-center flex lg:max-h-0 lg:p-0 `}>
+          : "max-h-0"} top-24 color-active transition-all justify-around items-center flex lg:max-h-0 lg:p-0 `}>
       {links
       ->Array.map(((name, link, icon)) => {
         <RelayRouter.Link
