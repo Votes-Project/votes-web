@@ -48,7 +48,7 @@ let make = (~users) => {
     <header className=" flex flex-row justify-center items-center z-50 h-24 px-2 pt-2 mb-[-8px]">
       <div className="w-24 h-24 pb-0 relative ">
         <div
-          className="z-50 absolute top-2 left-2 z-2 transition-all  inline"
+          className="z-50 fixed top-2 left-2 z-2 transition-all"
           onClick={_ => votesy.setShow(_ => true)}>
           <div className=" w-24 h-24">
             <img src={votesyLogo["default"]} className="w-24 h-24  " alt="Votesy The Owl" />
