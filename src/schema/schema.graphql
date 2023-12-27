@@ -5417,6 +5417,7 @@ type Vote implements Node {
   id: ID!
   tokenId: BigInt!
   auction: Auction
+  question: Question
   owner: Bytes
   uri: String
   contract: VoteContract!
@@ -5547,6 +5548,27 @@ input Vote_filter {
   auction_not_ends_with: String
   auction_not_ends_with_nocase: String
   auction_: Auction_filter
+  question: String
+  question_not: String
+  question_gt: String
+  question_lt: String
+  question_gte: String
+  question_lte: String
+  question_in: [String!]
+  question_not_in: [String!]
+  question_contains: String
+  question_contains_nocase: String
+  question_not_contains: String
+  question_not_contains_nocase: String
+  question_starts_with: String
+  question_starts_with_nocase: String
+  question_not_starts_with: String
+  question_not_starts_with_nocase: String
+  question_ends_with: String
+  question_ends_with_nocase: String
+  question_not_ends_with: String
+  question_not_ends_with_nocase: String
+  question_: Question_filter
   owner: Bytes
   owner_not: Bytes
   owner_gt: Bytes
@@ -5617,6 +5639,13 @@ enum Vote_orderBy {
   auction__extended
   auction__bidder
   auction__settled
+  question
+  question__id
+  question__asker
+  question__question
+  question__state
+  question__modifiedTimestamp
+  question__day
   owner
   uri
   contract

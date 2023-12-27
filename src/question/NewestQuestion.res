@@ -1,5 +1,5 @@
 module QuestionFragment = %relay(`
-  fragment NewestQuestion_node on Question {
+  fragment NewestQuestion_question on Question {
     id
     day
     ...SingleQuestion_OptionsPage
@@ -17,9 +17,18 @@ let make = (~question, ~answer) => {
   let question = QuestionFragment.use(question)
   let answer = AnswerFragment.useOpt(answer)
 
-  switch (answer, question) {
-  | (Some({fragmentRefs}), {fragmentRefs: questionFragmentRefs}) =>
-    <QuestionAnswer question={questionFragmentRefs} answer={fragmentRefs} />
-  | (None, {fragmentRefs}) => <SingleQuestion.OptionsPage question={fragmentRefs} />
+  let isWithinDay = switch question.day {
+  | Some(day) =>
+    Date.now() <
+    Helpers.Date.secondsToMilliseconds(day->BigInt.toFloat) +. Helpers.Date.dayInMilliseconds
+  | _ => false
+  }
+
+  switch question {
+  | question if isWithinDay => <SingleQuestion.OptionsPage question={question.fragmentRefs} />
+  | question =>
+    <QuestionAnswer
+      question={question.fragmentRefs} answer={answer->Option.map(a => a.fragmentRefs)}
+    />
   }
 }

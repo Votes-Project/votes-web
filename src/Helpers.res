@@ -26,4 +26,6 @@ module Date = {
   let hourInMilliseconds = 1000. *. 60. *. 60.
   let dayInMilliseconds = hourInMilliseconds *. 24.
   let weekInMilliseconds = dayInMilliseconds *. 7.
+
+  let secondsToMilliseconds = seconds => seconds *. 1000.
 }
