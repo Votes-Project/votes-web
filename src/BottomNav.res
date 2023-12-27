@@ -35,13 +35,13 @@ let make = (~question, ~auction, ~answer) => {
   let activeRoute = switch location.pathname {
   | pathname if pathname === "/" =>
     switch answer {
-    | Some(_) => #Auction
-    | None => #Question
+    | Some(_) => Some(#Auction)
+    | None => Some(#Question)
     }
-  | pathname if pathname->String.includes("/ask") => #Ask
-  | pathname if pathname->String.includes("/question") => #Question
-  | pathname if pathname->String.includes("/vote") => #Auction
-  | _ => #Question
+  | pathname if pathname->String.includes("/ask") => Some(#Ask)
+  | pathname if pathname->String.includes("/question/") => Some(#Question)
+  | pathname if pathname->String.includes("/vote/") => Some(#Auction)
+  | _ => None
   }
 
   let handleScroll = React.useCallback0(_ => {
@@ -91,7 +91,7 @@ let make = (~question, ~auction, ~answer) => {
           className="relative flex flex-1 items-center justify-center">
           <li className=" flex flex-1 items-center justify-center text-center">
             <button className="z-10" type_="button"> {"Ask"->React.string} </button>
-            {activeRoute == #Ask
+            {activeRoute == Some(#Ask)
               ? <div className="absolute w-full">
                   <FramerMotion.Div
                     className="w-1/2 md:w-1/4 absolute top-[-32px] left-0 right-0 mx-auto h-4 bg-default-darker lg:bg-primary-dark  rounded-t-full flex items-end justify-center pt-5"
@@ -109,7 +109,7 @@ let make = (~question, ~auction, ~answer) => {
           className="relative flex flex-1 items-center justify-center">
           <li className=" flex-1 items-center flex justify-center text-center">
             <button className="z-10" type_="button"> {"Answer"->React.string} </button>
-            {activeRoute == #Question
+            {activeRoute == Some(#Question)
               ? <div className="absolute w-full">
                   <FramerMotion.Div
                     className="w-1/2 md:w-1/4 absolute top-[-32px] left-0 right-0 mx-auto h-4 bg-default-darker lg:bg-primary-dark rounded-t-full flex items-end justify-center pt-5"
@@ -126,7 +126,7 @@ let make = (~question, ~auction, ~answer) => {
           className="relative flex flex-1 items-center justify-center">
           <li className=" flex-1 items-center flex justify-center text-center">
             <button className="z-10" type_="button"> {"Auction"->React.string} </button>
-            {activeRoute == #Auction
+            {activeRoute == Some(#Auction)
               ? <div className="absolute w-full">
                   <FramerMotion.Div
                     className="w-1/2 md:w-1/4 absolute top-[-32px] left-0 right-0 mx-auto h-4 bg-default-darker lg:bg-primary-dark  rounded-t-full flex items-end justify-center pt-5"
