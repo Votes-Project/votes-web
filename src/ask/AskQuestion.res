@@ -118,8 +118,8 @@ module Header = {
                 value={queryParams.useVote->Option.mapWithDefault("", Int.toString)}
                 className="border-black/20 bg-transparent backdrop-blur-sm p-1 text-sm border font-semibold rounded-xl">
                 <option className="hidden" value=""> {"Link Vote"->React.string} </option>
-                <LinkVoteList voteConnection={voteConnection.fragmentRefs} />
                 <option value=""> {"Seed"->React.string} </option>
+                <LinkVoteList voteConnection={voteConnection.fragmentRefs} />
               </select>
             </label>
           </React.Suspense>
