@@ -119,7 +119,7 @@ module VotesySpeakProvider = {
   @react.component
   let make = (~children) => {
     let (content, setContent) = React.useState(_ => None)
-    let (position, setPosition) = React.useState(_ => Sticky)
+    let (position, setPosition) = React.useState(_ => Fixed)
     let (show, setShow) = React.useState(_ => false)
 
     React.useEffect1(() => {
