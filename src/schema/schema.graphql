@@ -4567,12 +4567,15 @@ enum Question_orderBy {
   contract__id
   contract__votesAddress
   contract__reviewerRole
+  contract__editFee
 }
 
 type QuestionsContract implements Node {
   id: ID!
   votesAddress: Bytes!
   reviewerRole: Bytes!
+  lastUsedQuestion: Question
+  editFee: BigInt!
   questions(skip: Int = 0, first: Int = 100, orderBy: Question_orderBy, orderDirection: OrderDirection, where: Question_filter): [Question!]!
   address: Bytes!
 }
@@ -4608,6 +4611,35 @@ input QuestionsContract_filter {
   reviewerRole_not_in: [Bytes!]
   reviewerRole_contains: Bytes
   reviewerRole_not_contains: Bytes
+  lastUsedQuestion: String
+  lastUsedQuestion_not: String
+  lastUsedQuestion_gt: String
+  lastUsedQuestion_lt: String
+  lastUsedQuestion_gte: String
+  lastUsedQuestion_lte: String
+  lastUsedQuestion_in: [String!]
+  lastUsedQuestion_not_in: [String!]
+  lastUsedQuestion_contains: String
+  lastUsedQuestion_contains_nocase: String
+  lastUsedQuestion_not_contains: String
+  lastUsedQuestion_not_contains_nocase: String
+  lastUsedQuestion_starts_with: String
+  lastUsedQuestion_starts_with_nocase: String
+  lastUsedQuestion_not_starts_with: String
+  lastUsedQuestion_not_starts_with_nocase: String
+  lastUsedQuestion_ends_with: String
+  lastUsedQuestion_ends_with_nocase: String
+  lastUsedQuestion_not_ends_with: String
+  lastUsedQuestion_not_ends_with_nocase: String
+  lastUsedQuestion_: Question_filter
+  editFee: BigInt
+  editFee_not: BigInt
+  editFee_gt: BigInt
+  editFee_lt: BigInt
+  editFee_gte: BigInt
+  editFee_lte: BigInt
+  editFee_in: [BigInt!]
+  editFee_not_in: [BigInt!]
   questions_: Question_filter
 
   """Filter for the block changed event."""
@@ -4620,6 +4652,14 @@ enum QuestionsContract_orderBy {
   id
   votesAddress
   reviewerRole
+  lastUsedQuestion
+  lastUsedQuestion__id
+  lastUsedQuestion__asker
+  lastUsedQuestion__question
+  lastUsedQuestion__state
+  lastUsedQuestion__modifiedTimestamp
+  lastUsedQuestion__day
+  editFee
   questions
 }
 
@@ -5429,6 +5469,7 @@ type VoteContract implements Node {
   name: String
   symbol: String
   totalSupply: BigInt!
+  lastMintedVote: Vote
   votes(skip: Int = 0, first: Int = 100, orderBy: Vote_orderBy, orderDirection: OrderDirection, where: Vote_filter): [Vote!]!
   address: Bytes!
 }
@@ -5492,6 +5533,27 @@ input VoteContract_filter {
   totalSupply_lte: BigInt
   totalSupply_in: [BigInt!]
   totalSupply_not_in: [BigInt!]
+  lastMintedVote: String
+  lastMintedVote_not: String
+  lastMintedVote_gt: String
+  lastMintedVote_lt: String
+  lastMintedVote_gte: String
+  lastMintedVote_lte: String
+  lastMintedVote_in: [String!]
+  lastMintedVote_not_in: [String!]
+  lastMintedVote_contains: String
+  lastMintedVote_contains_nocase: String
+  lastMintedVote_not_contains: String
+  lastMintedVote_not_contains_nocase: String
+  lastMintedVote_starts_with: String
+  lastMintedVote_starts_with_nocase: String
+  lastMintedVote_not_starts_with: String
+  lastMintedVote_not_starts_with_nocase: String
+  lastMintedVote_ends_with: String
+  lastMintedVote_ends_with_nocase: String
+  lastMintedVote_not_ends_with: String
+  lastMintedVote_not_ends_with_nocase: String
+  lastMintedVote_: Vote_filter
   votes_: Vote_filter
 
   """Filter for the block changed event."""
@@ -5505,6 +5567,11 @@ enum VoteContract_orderBy {
   name
   symbol
   totalSupply
+  lastMintedVote
+  lastMintedVote__id
+  lastMintedVote__tokenId
+  lastMintedVote__owner
+  lastMintedVote__uri
   votes
 }
 

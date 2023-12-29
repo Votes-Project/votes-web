@@ -18,10 +18,6 @@ module Main = {
     module Ask = {
       module Route = Route__Main__Question__Ask_route
 
-      module UseVote = {
-        module Route = Route__Main__Question__Ask__UseVote_route
-
-      }
     }
     module Details = {
       module Route = Route__Main__Question__Details_route

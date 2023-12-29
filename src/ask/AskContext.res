@@ -8,11 +8,17 @@ type action =
   | AddOption
   | RemoveOption(int)
   | MaxOptionsReached
+  | SetQuestionByHex(option<string>)
 
 type state = {question: QuestionUtils.question}
 
 let reducer = (state, action) => {
   switch action {
+  | SetQuestionByHex(question) => {
+      question: question
+      ->QuestionUtils.parseHexQuestion
+      ->Option.getWithDefault(QuestionUtils.emptyQuestion),
+    }
   | AddOption => {
       question: {
         ...state.question,
@@ -54,7 +60,6 @@ let reducer = (state, action) => {
   | ChangeTitle(value) =>
     switch value {
     | "" => {question: {...state.question, title: None}}
-
     | _ => {question: {...state.question, title: Some(value)}}
     }
   }
