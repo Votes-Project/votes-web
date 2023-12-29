@@ -253,26 +253,6 @@ let useIsRouteActive = (~exact=false) => {
   let location = RelayRouter.Utils.useLocation()
   React.useMemo2(() => location->isRouteActive(~exact), (location, exact))
 }
-@live
-type subRoute = [#UseVote]
-
-@live
-let getActiveSubRoute = (location: RelayRouter.History.location): option<[#UseVote]> => {
-  let {pathname} = location
-  if RelayRouter.Internal.matchPath("/question/ask", pathname)->Belt.Option.isSome {
-      Some(#UseVote)
-    } else {
-    None
-  }
-}
-
-@live
-let useActiveSubRoute = (): option<[#UseVote]> => {
-  let location = RelayRouter.Utils.useLocation()
-  React.useMemo1(() => {
-    getActiveSubRoute(location)
-  }, [location])
-}
 
 @obj
 external makeRenderer: (

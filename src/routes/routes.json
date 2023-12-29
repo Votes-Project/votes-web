@@ -21,11 +21,7 @@
           {
               "path": "ask?useVote=int&question=string",
               "name": "Ask",
-              "children": [{
-                "path": "",
-                "name": "UseVote",
-                "children": []
-              }]
+              "children": []
             },
             {
             "path": ":question?day=int",
