@@ -53,7 +53,7 @@ fragment Main_QuestionConnectionFragment on Query {
     edges {
       node {
         day
-        ...NewestQuestion_node
+        ...NewestQuestion_question
         ...BottomNav_question
       }
     }

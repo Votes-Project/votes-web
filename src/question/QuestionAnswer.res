@@ -2,19 +2,36 @@ module QuestionFragment = %relay(`
   fragment QuestionAnswer_question on Question {
     title
     asker
+    day
     ...OptionsList_question
     ...QuestionTitle_question
+    ...AnswersList_question
   }`)
 
 module AnswerFragment = %relay(`
   fragment QuestionAnswer_answer on Answer {
     option
+    ...AnswersList_answer
   }`)
+
+module Query = %relay(`
+  query QuestionAnswerQuery($condition: AnswerCondition) {
+    ...AnswersList_query @arguments(condition: $condition)
+  }
+`)
 
 @react.component
 let make = (~question, ~answer) => {
   let question = QuestionFragment.use(question)
-  let answer = AnswerFragment.use(answer)
+  let answer = AnswerFragment.useOpt(answer)
+  let query = Query.use(
+    ~variables={
+      condition: switch question.day {
+      | Some(day) => {day: day->BigInt.toInt}
+      | None => {day: -1}
+      },
+    },
+  )
 
   let {setHeroComponent} = React.useContext(HeroComponentContext.context)
   let votesy = React.useContext(VotesySpeakContext.context)
@@ -73,21 +90,28 @@ let make = (~question, ~answer) => {
         </div>
       </div>
     )
-    votesy.setPosition(_ => Fixed)
-    votesy.setContent(_ =>
-      <div
-        className="h-full  p-2 rounded-lg flex flex-col items-center font-semibold overflow-hidden transition-all">
-        {"Good Answer! Link a BrightID to collect your reward!"->React.string}
-        <button
-          onClick={handleLinkBrightId}
-          className="bg-active hover:scale-105 transition-all text-white font-bold py-2 px-4 rounded mt-4">
-          {"Link BrightID"->React.string}
-        </button>
-      </div>->Some
-    )
+    if answer->Option.isSome {
+      votesy.setPosition(_ => Fixed)
+      votesy.setContent(_ =>
+        <div
+          className="h-full  p-2 rounded-lg flex flex-col items-center font-semibold overflow-hidden transition-all">
+          {"Good Answer! Link a BrightID to collect your reward!"->React.string}
+          <button
+            onClick={handleLinkBrightId}
+            className="bg-active hover:scale-105 transition-all text-white font-bold py-2 px-4 rounded mt-4">
+            {"Link BrightID"->React.string}
+          </button>
+        </div>->Some
+      )
+    }
 
     None
   })
-
-  <OptionsList question={question.fragmentRefs} answer={answer.option} />
+  switch answer {
+  | Some(answer) =>
+    <AnswersList
+      query={query.fragmentRefs} question={question.fragmentRefs} answer={answer.fragmentRefs}
+    />
+  | None => <OptionsList question={question.fragmentRefs} />
+  }
 }

@@ -98,6 +98,7 @@ module CircleProgress = {
 
 @react.component
 let make = (~option, ~index) => {
+  let option = option->Option.getExn
   let {queryParams, setParams} = Routes.Main.Question.Route.useQueryParams()
   let keys = UseKeyPairHook.useKeyPair()
 

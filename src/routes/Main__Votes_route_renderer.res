@@ -28,7 +28,7 @@ let renderer = Routes.Main.Votes.Route.makeRenderer(
       VotesQuery_graphql.load(
         ~environment,
         ~variables={
-          owner: address,
+          where: {owner: address},
         },
         ~fetchPolicy=StoreOrNetwork,
       )->Some
@@ -38,6 +38,7 @@ let renderer = Routes.Main.Votes.Route.makeRenderer(
       VotesQuery_graphql.load(
         ~environment,
         ~variables={
+          orderBy: TokenId,
           orderDirection: Desc,
         },
       )->Some
