@@ -271,34 +271,45 @@ export async function makeGatewaySchema() {
         })
       },
       voteContract: {
-        resolve: (_, args, context, info) => delegateToSchema({
-          schema: subgraphSchema,
-          operation: "query",
-          fieldName: "voteContract",
-          args: { id: fromGlobalId(args.id).id },
-          context,
-          info,
-        })
+        resolve: (_, args, context, info) => {
+          const id = fromGlobalId(args.id).id ? fromGlobalId(args.id).id : args.id
+
+          return delegateToSchema({
+            schema: subgraphSchema,
+            operation: "query",
+            fieldName: "voteContract",
+            args: { id },
+            context,
+            info,
+          })
+        }
       },
       questionsContract: {
-        resolve: (_, args, context, info) => delegateToSchema({
-          schema: subgraphSchema,
-          operation: "query",
-          fieldName: "questionsContract",
-          args: { id: fromGlobalId(args.id).id },
-          context,
-          info,
-        })
+        resolve: (_, args, context, info) => {
+          const id = fromGlobalId(args.id).id ? fromGlobalId(args.id).id : args.id
+          return delegateToSchema({
+            schema: subgraphSchema,
+            operation: "query",
+            fieldName: "questionsContract",
+            args: { id },
+            context,
+            info,
+          })
+        }
       },
       auctionContract: {
-        resolve: (_, args, context, info) => delegateToSchema({
-          schema: subgraphSchema,
-          operation: "query",
-          fieldName: "auctionContract",
-          args: { id: fromGlobalId(args.id).id },
-          context,
-          info,
-        })
+        resolve: (_, args, context, info) => {
+          const id = fromGlobalId(args.id).id ? fromGlobalId(args.id).id : args.id
+
+          return delegateToSchema({
+            schema: subgraphSchema,
+            operation: "query",
+            fieldName: "auctionContract",
+            args: { id },
+            context,
+            info,
+          })
+        }
       },
     },
     Vote: {

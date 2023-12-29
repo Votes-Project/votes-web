@@ -1,4 +1,4 @@
-@module("/src/abis/Questions.json") external questionContractAbi: JSON.t = "default"
+@module("/src/abis/Questions.json") external questionsContractAbi: JSON.t = "default"
 
 let makeDiscordCommand = (title, options: array<QuestionUtils.questionOption>) => {
   let command = "/poll"
@@ -14,12 +14,246 @@ let makeDiscordCommand = (title, options: array<QuestionUtils.questionOption>) =
 
 let maxOptions = 5
 
-exception ContractWriteDoesNotExist
-@react.component @relay.deferredComponent
-let make = (~children) => {
-  let {setParams, queryParams} = Routes.Main.Question.Ask.Route.useQueryParams()
-  let votesy = React.useContext(VotesySpeakContext.context)
+module LinkVoteList = {
+  module VoteConnectionFragment = %relay(`
+  fragment AskQuestion_LinkVoteList_connection on VoteConnection {
+    nodes {
+      id
+      tokenId
+      question {
+        state
+      }
+    }
+  }
 
+`)
+
+  @react.component
+  let make = (~voteConnection) => {
+    let {nodes: votes} = VoteConnectionFragment.use(voteConnection)
+    votes
+    ->Array.filterMap(vote =>
+      switch vote {
+      | Some({question: Some({state: Used})}) => None
+      | Some({tokenId, id}) =>
+        Some(
+          <option key={id} value={tokenId->BigInt.toString}>
+            {tokenId->BigInt.toString->React.string}
+          </option>,
+        )
+      | None => None
+      }
+    )
+    ->React.array
+  }
+}
+
+module Header = {
+  module Fragment = %relay(`
+  fragment AskQuestion_Header_connection on VoteConnection {
+    ...AskQuestion_LinkVoteList_connection
+    nodes {
+      tokenId
+      question {
+        question
+      }
+    }
+  }
+`)
+
+  @react.component
+  let make = (~voteConnection, ~dispatch) => {
+    let voteConnection = Fragment.useOpt(voteConnection)
+    let {setParams, queryParams} = Routes.Main.Question.Ask.Route.useQueryParams()
+
+    let {openConnectModal} = RainbowKit.useConnectModal()
+    let {address} = Wagmi.Account.use()
+
+    let handleSelectVote = e => {
+      let value = ReactEvent.Form.currentTarget(e)["value"]
+      let linkedVote = switch (voteConnection, value) {
+      | (Some({nodes}), Some(useVote)) =>
+        nodes
+        ->Array.find(vote =>
+          vote
+          ->Option.map(v => v.tokenId->BigInt.toString === useVote)
+          ->Option.getWithDefault(false)
+        )
+        ->Option.flatMap(vote => vote)
+      | _ => None
+      }
+
+      let question =
+        linkedVote
+        ->Option.flatMap(({question}) => question)
+        ->Option.map(({question}) => question)
+
+      setParams(
+        ~navigationMode_=Replace,
+        ~removeNotControlledParams=false,
+        ~setter=c => {
+          ...c,
+          question,
+          useVote: Int.fromString(value),
+        },
+        ~onAfterParamsSet=({question}) => {
+          question->AskContext.SetQuestionByHex->dispatch
+        },
+      )
+    }
+
+    <header className="w-full flex justify-between items-center  hide-scrollbar">
+      {switch (address->Nullable.toOption, voteConnection) {
+      | (Some(address), Some(voteConnection)) =>
+        <div className="flex flex-row items-center gap-4 text-sm font-semibold">
+          <ShortAddress address=Some(address) avatar=true />
+          <React.Suspense
+            fallback={<select
+              className="border-black/20 bg-transparent backdrop-blur-sm p-1 text-sm border font-semibold rounded-xl">
+              <option className="hidden" value=""> {"Loading..."->React.string} </option>
+            </select>}>
+            <label>
+              <select
+                onChange={handleSelectVote}
+                value={queryParams.useVote->Option.mapWithDefault("", Int.toString)}
+                className="border-black/20 bg-transparent backdrop-blur-sm p-1 text-sm border font-semibold rounded-xl">
+                <option className="hidden" value=""> {"Link Vote"->React.string} </option>
+                <LinkVoteList voteConnection={voteConnection.fragmentRefs} />
+                <option value=""> {"Seed"->React.string} </option>
+              </select>
+            </label>
+          </React.Suspense>
+        </div>
+      | _ =>
+        <div className="flex flex-row items-center gap-2">
+          <ReactIcons.LuHeart />
+          <label>
+            <select
+              onClick={_ => openConnectModal()}
+              className="border-black/20 bg-transparent backdrop-blur-sm text-sm p-1 border font-semibold rounded-xl">
+              <option className="hidden" value=""> {"Link Vote"->React.string} </option>
+            </select>
+          </label>
+        </div>
+      }}
+      <div className="flex flex-row items-center gap-2 " />
+    </header>
+  }
+}
+
+exception ContractWriteDoesNotExist
+module EditButton = {
+  module Query = %relay(`
+  query AskQuestion_AskButton_Query($questionsContractAddress: ID!) {
+    questionsContract(id: $questionsContractAddress) {
+      editFee
+    }
+  }
+`)
+
+  @react.component
+  let make = (~canSubmit) => {
+    let {queryParams} = Routes.Main.Question.Ask.Route.useQueryParams()
+    let {questionsContract} = Query.use(
+      ~fetchPolicy=StoreOrNetwork,
+      ~variables={
+        questionsContractAddress: Environment.questionsContractAddress,
+      },
+    )
+
+    let {config} = Wagmi.usePrepareContractWrite(
+      ~config={
+        address: Environment.questionsContractAddress,
+        abi: questionsContractAbi,
+        value: questionsContract->Option.mapWithDefault(BigInt.fromInt(0), q => q.editFee),
+        functionName: "edit",
+        args: (queryParams.useVote, queryParams.question),
+        enabled: canSubmit && queryParams.useVote->Option.isSome,
+      },
+    )
+
+    let edit = Wagmi.useContractWrite({
+      ...config,
+      onSuccess: _ => {
+        ()
+      },
+    })
+
+    let handleEdit = _ =>
+      switch edit.write {
+      | Some(edit) => edit()
+      | None => raise(ContractWriteDoesNotExist)
+      }
+
+    <button
+      onClick=handleEdit
+      disabled={!canSubmit}
+      className="mb-auto min-w-[8rem] min-h-[3rem] font-bold disabled:bg-default-disabled disabled:text-default-darker disabled:opacity-50 disabled:scale-100 rounded-2xl max-w-xs self-center bg-default-darker lg:bg-active text-white transition-all ease-linear hover:scale-105  ">
+      {"Edit"->React.string}
+    </button>
+  }
+}
+
+module SubmitButton = {
+  @react.component
+  let make = (~canSubmit) => {
+    let {queryParams} = Routes.Main.Question.Ask.Route.useQueryParams()
+
+    let {config} = Wagmi.usePrepareContractWrite(
+      ~config={
+        address: Environment.questionsContractAddress,
+        abi: questionsContractAbi,
+        value: BigInt.fromInt(0),
+        functionName: "submit",
+        args: (queryParams.useVote, queryParams.question),
+        enabled: canSubmit && queryParams.useVote->Option.isSome,
+      },
+    )
+
+    let submit = Wagmi.useContractWrite({
+      ...config,
+      onSuccess: _ => {
+        ()
+      },
+    })
+
+    let handleSubmit = _ =>
+      switch submit.write {
+      | Some(submit) => submit()
+      | None => raise(ContractWriteDoesNotExist)
+      }
+
+    <button
+      onClick=handleSubmit
+      disabled={!canSubmit}
+      className="mb-auto min-w-[8rem] min-h-[3rem] font-bold disabled:bg-default-disabled disabled:text-default-darker disabled:opacity-50 disabled:scale-100 rounded-2xl max-w-xs self-center bg-default-darker lg:bg-active text-white transition-all ease-linear hover:scale-105  ">
+      {"Ask"->React.string}
+    </button>
+  }
+}
+
+module Query = %relay(`
+  query AskQuestion_Query($owner: Bytes!, $skipVoteConnection: Boolean!) {
+    voteConnection(
+      where: { owner: $owner }
+      orderBy: tokenId
+      orderDirection: asc
+    ) @skip(if: $skipVoteConnection) {
+      nodes {
+        tokenId
+        question {
+          state
+          question # Need question field here for some reason
+        }
+      }
+      ...AskQuestion_Header_connection
+    }
+  }
+`)
+
+@react.component @relay.deferredComponent
+let make = () => {
+  let {setParams, queryParams} = Routes.Main.Question.Ask.Route.useQueryParams()
   let (state, dispatch) = React.useReducer(
     AskContext.reducer,
     {
@@ -28,7 +262,36 @@ let make = (~children) => {
       ),
     },
   )
+
+  let {address} = Wagmi.Account.use()
+
+  let {voteConnection} = Query.use(
+    ~fetchPolicy=StoreOrNetwork,
+    ~variables={
+      owner: address->Nullable.getWithDefault(""),
+      skipVoteConnection: address->Nullable.toOption->Option.isNone,
+    },
+  )
+
+  let linkedVote = voteConnection->Option.flatMap(({nodes}) =>
+    nodes
+    ->Array.find(vote =>
+      vote
+      ->Option.map(v => v.tokenId->BigInt.toInt->Some === queryParams.useVote)
+      ->Option.getWithDefault(false)
+    )
+    ->Option.flatMap(vote => vote)
+  )
+
+  let votesy = React.useContext(VotesySpeakContext.context)
+
   let {options, title} = state.question
+  let canSubmit = switch (options, title) {
+  | (options, Some(_))
+    if Array.length(options) >= 2 &&
+      options->Array.every(({?option}) => option->Option.isSome) => true
+  | _ => false
+  }
 
   let askRef = React.useCallback0(element => {
     switch element->Nullable.toOption {
@@ -46,30 +309,6 @@ let make = (~children) => {
     })
     None
   }, [state])
-
-  let canSubmit = switch (options, title) {
-  | (options, Some(_))
-    if Array.length(options) >= 2 &&
-      options->Array.every(({?option}) => option->Option.isSome) => true
-  | _ => false
-  }
-
-  let {config} = Wagmi.usePrepareContractWrite(
-    ~config={
-      address: Environment.questionsContractAddress,
-      abi: questionContractAbi,
-      value: BigInt.fromInt(0),
-      functionName: "submit",
-      args: (queryParams.useVote, queryParams.question),
-      enabled: canSubmit && queryParams.useVote->Option.isSome,
-    },
-  )
-  let submit = Wagmi.useContractWrite({
-    ...config,
-    onSuccess: _ => {
-      ()
-    },
-  })
 
   let titleRef = React.useRef("")
 
@@ -118,43 +357,33 @@ let make = (~children) => {
     ->Element.Scroll.intoViewWithOptions(~options={behavior: Smooth, block: End})
   }
 
-  React.useEffect1(() => {
+  React.useEffect4(() => {
     setHeroComponent(_ =>
       <div
-        className="flex flex-col items-start w-full p-4 lg:min-h-[420px] "
+        className="p-4 w-full flex-1 flex justify-center items-center backdrop-blur-[2px] "
         ref={ReactDOM.Ref.callbackDomRef(askRef)}>
         <div
-          className="w-full lg:p-4 p-2 flex flex-col items-center max-h-[50%] lg:min-h-[279px] hide-scrollbar">
-          <h2 className="text-xl lg:text-2xl text-black opacity-60 self-start ">
-            {"1. Link Token (Optional)"->React.string}
-          </h2>
-          {children}
-        </div>
-        <div
-          className="border-2  pb-2 border-primary w-full flex-1 relative flex bg-transparent focus-within:border-2 focus-within:ring-0 focus-within:border-primary backdrop-blur-[2px] rounded-lg transition-all duration-200 ease-linear">
+          className="flex flex-col items-start w-full p-4 border-2  pb-2 border-primary shadow-lg bg-default-light flex-1 relative focus-within:border-2 focus-within:ring-0 rounded-xl transition-all duration-200 ease-linear">
+          <Header voteConnection={voteConnection->Option.map(vc => vc.fragmentRefs)} dispatch />
           <ContentEditable
             id="create-vote-title"
             editablehasplaceholder="true"
-            placeholder="2. Ask question..."
+            placeholder="Ask question..."
             html={state.question.title->Option.getWithDefault("")}
             onChange={onTitleChange}
             onFocus={handleTitleFocus}
-            className="w-[90vw] lg:w-auto max-w-md lg:p-4 p-2 border-none focus:ring-0 break-words bg-transparent cursor-pointer text-wrap focus:cursor-text focus:text-left text-xl lg:text-2xl transition-all duration-300 ease-linear "
+            className="w-[90vw] lg:w-auto min-h-[300px] max-w-md lg:p-4 p-2 border-none focus:ring-0 break-words bg-transparent cursor-pointer text-wrap focus:cursor-text focus:text-left text-xl lg:text-2xl transition-all duration-300 ease-linear "
           />
         </div>
       </div>
     )
     None
-  }, [setHeroComponent])
+  }, (setHeroComponent, dispatch, state, address))
 
-  let handleAsk = _ => {
-    switch (queryParams.useVote, queryParams.question, submit.write) {
-    | (Some(_), Some(_), Some(submit)) if canSubmit => submit()
-    | _ =>
-      switch state.question.title {
-      | Some(title) if canSubmit => saveCommandToClipboard(title, options)
-      | _ => ()
-      }
+  let handleAskSeedQuestion = _ => {
+    switch state.question.title {
+    | Some(title) if canSubmit => saveCommandToClipboard(title, options)
+    | _ => ()
     }
   }
 
@@ -172,7 +401,7 @@ let make = (~children) => {
               content="This will provide greater detail toward the process of asking a question. We will have to explain 3 main things. \n 1. The components of a question (Title, Answers, correct answer, further details). \n 2. Asking a question requires an unused VOTE token.  \n 3. If a vote token is not owned, your question will be turned into a Discord command that you can paste into the questions channel on Discord. "
             />
             <h2 className="text-xl lg:text-2xl text-black opacity-60 ">
-              {"3. Add Options"->React.string}
+              {"Add Options"->React.string}
             </h2>
             <div
               id="create-vote-question"
@@ -201,12 +430,26 @@ let make = (~children) => {
                 backgroundColor: "transparent",
               }}
             />
-            <button
-              onClick=handleAsk
-              disabled={!canSubmit}
-              className="mb-auto min-w-[8rem] min-h-[3rem] font-bold disabled:bg-default-disabled disabled:text-default-darker disabled:opacity-50 disabled:scale-100 rounded-2xl max-w-xs self-center bg-default-darker lg:bg-active text-white transition-all ease-linear hover:scale-105  ">
-              {"Ask"->React.string}
-            </button>
+            {switch (linkedVote, address->Nullable.toOption) {
+            | (Some({question: Some({state: Submitted | Flagged | Approved})}), Some(_)) =>
+              <React.Suspense
+                fallback={<button
+                  disabled={true}
+                  className="mb-auto min-w-[8rem] min-h-[3rem] font-bold disabled:bg-default-disabled disabled:text-default-darker disabled:opacity-50 disabled:scale-100 rounded-2xl max-w-xs self-center bg-default-darker lg:bg-active text-white transition-all ease-linear hover:scale-105  ">
+                  {"Edit"->React.string}
+                </button>}>
+                <EditButton canSubmit={canSubmit} />
+              </React.Suspense>
+
+            | (Some({question: None}), Some(_)) => <SubmitButton canSubmit={canSubmit} />
+            | _ =>
+              <button
+                onClick=handleAskSeedQuestion
+                disabled={!canSubmit}
+                className="mb-auto min-w-[8rem] min-h-[3rem] font-bold disabled:bg-default-disabled disabled:text-default-darker disabled:opacity-50 disabled:scale-100 rounded-2xl max-w-xs self-center bg-default-darker lg:bg-active text-white transition-all ease-linear hover:scale-105  ">
+                {"Ask"->React.string}
+              </button>
+            }}
           </div>
         </div>
       </div>

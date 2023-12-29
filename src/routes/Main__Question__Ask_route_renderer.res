@@ -3,9 +3,7 @@ module AskQuestion = %relay.deferredComponent(AskQuestion.make)
 let renderer = Routes.Main.Question.Ask.Route.makeRenderer(
   ~prepareCode=_ => [AskQuestion.preload()],
   ~prepare=_ => (),
-  ~render=({childRoutes}) => {
-    <>
-      <AskQuestion> {childRoutes} </AskQuestion>
-    </>
+  ~render=_ => {
+    <AskQuestion />
   },
 )
