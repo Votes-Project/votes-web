@@ -3,14 +3,19 @@
 @tailwind utilities;
 
 
-@font-face {
+/* @font-face {
   font-family: "Quicksand";
   src: url("/assets/fonts/Quicksand-VariableFont_wght.ttf");
-}
+} */
 
 @font-face {
   font-family: "FugazOne";
   src: url("/assets/fonts/FugazOne-Regular.ttf");
+}
+
+@font-face {
+  font-family: "Inter";
+  src: url("/assets/fonts/Inter-VariableFont_slnt,wght.ttf");
 }
 
 body,

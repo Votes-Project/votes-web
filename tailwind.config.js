@@ -25,9 +25,9 @@ export default {
 
       },
       fontFamily: {
-        sans: ["Quicksand", 'sans-serif'],
-        serif: ['Quicksand', 'sans-serif'],
-        mono: ['Quicksand', 'sans-serif'],
+        sans: ["Inter", 'sans'],
+        serif: ['Inter', 'sans-serif'],
+        mono: ['Inter', 'mono'],
         fugaz: ["FugazOne", "sans-serif"],
       },
       animation: {
