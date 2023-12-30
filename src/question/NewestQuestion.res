@@ -25,8 +25,12 @@ let make = (~question, ~answer) => {
   }
 
   switch question {
+  | question if Option.isSome(answer) =>
+    <QuestionAnswer
+      question={question.fragmentRefs} answer={answer->Option.map(a => a.fragmentRefs)}
+    />
   | question if isWithinDay => <SingleQuestion.OptionsPage question={question.fragmentRefs} />
-  | question =>
+  | _ =>
     <QuestionAnswer
       question={question.fragmentRefs} answer={answer->Option.map(a => a.fragmentRefs)}
     />

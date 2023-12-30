@@ -1,3 +1,30 @@
+module AnsweredHero = {
+  module Fragment = %relay(`
+  fragment QuestionAnswer_Answered_user on User
+  @argumentDefinitions(
+    orderBy: { type: "[AnswerOrderBy!]", defaultValue: [DAY_DESC] }
+  ) {
+    id
+    answers(orderBy: $orderBy) {
+      nodes {
+        day
+      }
+    }
+    pointsThisPeriod {
+      points
+    }
+  }
+
+`)
+
+  @react.component
+  let make = (~user) => {
+    let {answers} = Fragment.use(user)
+    let answerStreak = answers.nodes->Array.length
+    React.null
+  }
+}
+
 module QuestionFragment = %relay(`
   fragment QuestionAnswer_question on Question {
     title
@@ -12,6 +39,9 @@ module AnswerFragment = %relay(`
   fragment QuestionAnswer_answer on Answer {
     option
     ...AnswersList_answer
+    user {
+      ...QuestionAnswer_Answered_user
+    }
   }`)
 
 module Query = %relay(`
@@ -78,20 +108,14 @@ let make = (~question, ~answer) => {
           question={question.fragmentRefs}
           className={`align-stretch font-bold flex-2 flex justify-center items-center [text-wrap:balance] text-center text-default-darker px-4  ${questionTextSize}`}
         />
-        <div className="w-full flex-col flex-1 px-4">
-          <div className="w-full flex flex-row justify-between items-center">
-            <p className="text-xl font-semibold text-default-darker text-center">
-              {"🔥 Answer Streak"->React.string}
-            </p>
-            <p className="text-xl font-semibold text-default-darker text-center">
-              {"1"->React.string}
-            </p>
-          </div>
-        </div>
+        {switch answer {
+        | Some(answer) => <AnsweredHero user={Option.getExn(answer.user).fragmentRefs} />
+        | None => React.null
+        }}
       </div>
     )
-    if answer->Option.isSome {
-      votesy.setPosition(_ => Fixed)
+    switch answer {
+    | Some(_) =>
       votesy.setContent(_ =>
         <div
           className="h-full  p-2 rounded-lg flex flex-col items-center font-semibold overflow-hidden transition-all">
@@ -103,6 +127,13 @@ let make = (~question, ~answer) => {
           </button>
         </div>->Some
       )
+    | None =>
+      votesy.setContent(_ =>
+        <div
+          className="h-full  p-2 rounded-lg flex flex-col items-center font-semibold overflow-hidden transition-all">
+          {"Oh no! You missed this question.\nQuick, answer to earn your late answer points!"->React.string}
+        </div>->Some
+      )
     }
 
     None
@@ -112,6 +143,10 @@ let make = (~question, ~answer) => {
     <AnswersList
       query={query.fragmentRefs} question={question.fragmentRefs} answer={answer.fragmentRefs}
     />
-  | None => <OptionsList question={question.fragmentRefs} />
+  | None =>
+    <div className="flex-1 flex flex-col justify-center items-stretch h-full">
+      <OptionsListHeader />
+      <OptionsList question={question.fragmentRefs} />
+    </div>
   }
 }
