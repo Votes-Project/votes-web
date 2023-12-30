@@ -8,18 +8,16 @@ module OptionsPage = {
       ...OptionsList_question
       ...QuestionTitle_question
       title
-      options
       asker
     }
   `)
   @react.component
   let make = (~question) => {
-    let {title, options, asker, fragmentRefs} = Fragment.use(question)
+    let {title, asker, fragmentRefs} = Fragment.use(question)
 
     let {setHeroComponent} = React.useContext(HeroComponentContext.context)
     let votesy = React.useContext(VotesySpeakContext.context)
 
-    let {queryParams} = Routes.Main.Question.Route.useQueryParams()
     let answerRef = React.useCallback0(element => {
       switch element->Nullable.toOption {
       | Some(element) =>
@@ -59,7 +57,7 @@ module OptionsPage = {
           }}
         </div>
       )
-      votesy.setPosition(_ => Fixed)
+      votesy.setPosition(_ => Absolute)
       votesy.setContent(_ =>
         <div className="text-md [text-wrap:pretty] py-2">
           {"Hi,\nI'm Votesy the Owl, and I like to vote!"->React.string}
@@ -70,25 +68,8 @@ module OptionsPage = {
     })
 
     <div className="flex-1 flex flex-col justify-center items-stretch h-full">
-      {switch (queryParams.answer, options) {
-      | (_, None) | (_, Some([])) =>
-        <h1 className="text-2xl px-4 pt-2 text-default-dark lg:text-active text-center ">
-          {"!Error!"->React.string}
-        </h1>
-      | (Some(_), _) =>
-        <h1
-          className="text-2xl px-4 pt-2 text-default-darker lg:text-active text-center animate-pulse">
-          {"Hold to Confirm"->React.string}
-        </h1>
-      | (None, _) =>
-        <h1 className="text-2xl px-4 pt-2 text-default-dark lg:text-primary-dark text-center ">
-          {"Pick an answer"->React.string}
-        </h1>
-      }}
-      <ul className="flex flex-col justify-between items-start lg:px-6 mb-4 lg:mr-4">
-        <OptionsList question={fragmentRefs} />
-      </ul>
-      <div className="flex flex-col justify-center items-center mb-6 gap-3" />
+      <OptionsListHeader />
+      <OptionsList question={fragmentRefs} />
     </div>
   }
 }
@@ -106,8 +87,8 @@ module QuestionQuery = %relay(`
   }
 `)
 
-module AnswerQuery = %relay(`
-  query SingleQuestion_AnswerQuery($day: Int!, $contextId: ID!) {
+module UserQuery = %relay(`
+  query SingleQuestion_UserQuery($day: Int!, $contextId: ID!) {
     userById(id: $contextId) {
       answers(condition: { day: $day }) {
         nodes {
@@ -126,7 +107,7 @@ let make = (~queryRef) => {
   | Some(Question({day})) => day->Option.map(BigInt.toInt)->Option.getWithDefault(-1)
   | _ => -1
   }
-  let {userById: user} = AnswerQuery.use(
+  let {userById: user} = UserQuery.use(
     ~variables={
       day,
       contextId: contextId->Option.getWithDefault(""),

@@ -11,7 +11,7 @@ external port: option<string> = "VITE_PORT"
 @val @scope(("import", "meta", "env"))
 external auctionContractAddress: option<string> = "VITE_AUCTION_CONTRACT_ADDRESS"
 @val @scope(("import", "meta", "env"))
-external votesContractAddress: option<string> = "VITE_VOTES_CONTRACT_ADDRESS"
+external voteContractAddress: option<string> = "VITE_VOTE_CONTRACT_ADDRESS"
 @val @scope(("import", "meta", "env"))
 external questionsContractAddress: option<string> = "VITE_QUESTIONS_CONTRACT_ADDRESS"
 
@@ -46,7 +46,7 @@ let auctionContractAddress = switch (env, auctionContractAddress) {
 | (Development | Preview, None) => "0x27C4ae0477011F993a411032ae3bE38A64ebb113"->String.toLowerCase
 | (Production, None) => ""
 }
-let votesContractAddress = switch (env, votesContractAddress) {
+let voteContractAddress = switch (env, voteContractAddress) {
 | (_, Some(address)) => address->String.toLowerCase
 | (Development | Preview, None) => "0xA237b3cC022F70B45AFdbe62EdF9C12ac36932F8"->String.toLowerCase
 | (Production, None) => ""
