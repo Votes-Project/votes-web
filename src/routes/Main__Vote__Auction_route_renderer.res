@@ -9,18 +9,14 @@ let renderer = Routes.Main.Vote.Auction.Route.makeRenderer(
     switch id {
     | None => None
     | Some(id) =>
-      SingleVoteQuery_graphql.load(
-        ~environment,
-        ~variables={id: id},
-        ~fetchPolicy=StoreOrNetwork, //@TODO: This should change to fetch from network on first time loading then store after the rest have loaded in
-      )->Some
+      SingleVoteQuery_graphql.load(~environment, ~variables=(), ~fetchPolicy=StoreOrNetwork)->Some //@TODO: This should change to fetch from network on first time loading then store after the rest have loaded in
     }
   },
-  ~render=({prepared}) => {
+  ~render=({prepared, tokenId}) => {
     <ErrorBoundary fallback={({error}) => JSON.stringifyAny(error)->Option.getExn->React.string}>
       <React.Suspense fallback={<div> {"Loading..."->React.string} </div>}>
         {switch prepared {
-        | Some(queryRef) => <SingleVote queryRef />
+        | Some(queryRef) => <SingleVote queryRef tokenId />
 
         | None => <div> {"Failed to fetch vote..."->React.string} </div>
         }}
