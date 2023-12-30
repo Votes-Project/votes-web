@@ -1,21 +1,30 @@
 RescriptRelay.relayFeatureFlags.enableRelayResolvers = true
 @module external votesyConstruction: 'a = "/votesy_construction.svg"
 module Query = %relay(`
-  query SingleVoteQuery($id: ID!) {
-    node(id: $id) {
-      ... on Vote {
-        voteType
-        owner
-        tokenId
-        contract {
-          totalSupply
+  query SingleVoteQuery {
+    ...SingleVote_query
+  }
+`)
+
+module Fragment = %relay(`
+  fragment SingleVote_query on Query {
+    voteConnection(first: 100) @connection(key: "SingleVote_voteConnection") {
+      edges {
+        node {
+          id
+          voteType
+          owner
+          tokenId
+          contract {
+            totalSupply
+          }
+          auction {
+            ...AuctionDisplay_auction
+            startTime
+          }
+          ...SingleVote_node
+          ...Raffle_vote
         }
-        auction {
-          ...AuctionDisplay_auction
-          startTime
-        }
-        ...SingleVote_node
-        ...Raffle_vote
       }
     }
   }
@@ -24,8 +33,13 @@ module Query = %relay(`
 exception NoVote
 exception NoAuction
 @react.component @relay.deferredComponent
-let make = (~queryRef) => {
-  let {node: vote} = Query.usePreloaded(~queryRef)
+let make = (~queryRef, ~tokenId) => {
+  let {fragmentRefs} = Query.usePreloaded(~queryRef)
+  let {voteConnection} = Fragment.use(fragmentRefs)
+  let vote =
+    voteConnection
+    ->Fragment.getConnectionNodes
+    ->Array.find(v => v.tokenId->BigInt.toString == tokenId)
 
   let {setHeroComponent} = React.useContext(HeroComponentContext.context)
 
@@ -74,19 +88,19 @@ let make = (~queryRef) => {
 
   <div className="px-[5%] ">
     {switch vote {
-    | Some(Vote({fragmentRefs, voteType: Some(Raffle), tokenId, contract: {totalSupply}})) =>
+    | Some({fragmentRefs, voteType: Some(Raffle), tokenId, contract: {totalSupply}}) =>
       <ErrorBoundary fallback={_ => "Auction Failed to load"->React.string}>
         <VoteHeader tokenId totalSupply startTime={Date.now()->BigInt.fromFloat} />
         <Raffle vote=fragmentRefs />
       </ErrorBoundary>
 
-    | Some(Vote({
+    | Some({
         voteType: Some(Normal),
         auction: Some({fragmentRefs, startTime}),
         contract: {totalSupply},
         owner: Some(owner),
         tokenId,
-      })) =>
+      }) =>
       <ErrorBoundary fallback={_ => "Auction Failed to load"->React.string}>
         <VoteHeader
           tokenId={tokenId} totalSupply startTime={startTime->BigInt.mul(1000->BigInt.fromInt)}
@@ -96,20 +110,20 @@ let make = (~queryRef) => {
         </React.Suspense>
       </ErrorBoundary>
 
-    | Some(Vote({
+    | Some({
         voteType: Some(FlashVote),
         auction: Some({fragmentRefs, startTime}),
         contract: {totalSupply},
         owner: Some(owner),
         tokenId,
-      })) =>
+      }) =>
       <ErrorBoundary fallback={_ => "Auction Failed to load"->React.string}>
         <VoteHeader tokenId totalSupply startTime={startTime->BigInt.mul(1000->BigInt.fromInt)} />
         <React.Suspense fallback={<div />}>
           <AuctionDisplay owner auction=fragmentRefs />
         </React.Suspense>
       </ErrorBoundary>
-    | Some(Vote({auction: None})) => raise(NoAuction)
+    | Some({auction: None}) => raise(NoAuction)
     | _ => raise(NoVote)
     }}
   </div>
@@ -148,7 +162,7 @@ module NewestVote = {
     React.useEffect1(() => {
       setHeroComponent(_ =>
         <div
-          className=" lg:w-[50%] w-[80%] md:w-[70%] mx-[10%] mt-8 md:mx-[15%] lg:mx-0 flex align-end lg:pr-20 relative "
+          className=" lg:w-[50%] w-[80%] md:w-[70%] mx-[10%] mt-8 md:mx-[15%] lg:mx-0 flex align-end lg:pr-20 relative transition-all duration-200 ease-linear"
           ref={ReactDOM.Ref.callbackDomRef(auctionRef)}>
           {switch Environment.featureFlags {
           | {enableCharts: true} =>
