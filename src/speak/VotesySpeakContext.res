@@ -13,7 +13,7 @@ let context = React.createContext({
   setContent: _ => (),
   show: false,
   setShow: _ => (),
-  position: Fixed,
+  position: Static,
   setPosition: _ => (),
 })
 
