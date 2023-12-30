@@ -136,7 +136,19 @@ module Header = {
           </label>
         </div>
       }}
-      <div className="flex flex-row items-center gap-2 " />
+      <div
+        id="create-vote-question"
+        type_="button"
+        className="flex self-end items-center justify-center text-default-dark lg:text-primary-dark font-bold text-3xl h-10 w-10 hover:scale-125 hover:default transition-all duration-200 ease-linear rounded-full">
+        <ReactIcons.LuInfo className="z-20 lg:text-default-darker text-default-dark" />
+      </div>
+      <ReactTooltip
+        className=" h-fit-content max-w-xs"
+        anchorSelect="#create-vote-question"
+        closeOnEsc=true
+        clickable=true
+        content="This will provide greater detail toward the process of asking a question. We will have to explain 3 main things. \n 1. The components of a question (Title, Answers, correct answer, further details). \n 2. Asking a question requires an unused VOTE token.  \n 3. If a vote token is not owned, your question will be turned into a Discord command that you can paste into the questions channel on Discord. "
+      />
     </header>
   }
 }
@@ -393,22 +405,9 @@ let make = () => {
         <div
           className="relative lg:p-4 w-full h-full  flex flex-col justify-around items-center lg:border-2 lg:border-primary rounded-xl ">
           <div className="p-2 lg:p-4 flex flex-row justify-between items-center w-full">
-            <ReactTooltip
-              className="z-50 h-fit-content max-w-xs"
-              anchorSelect="#create-vote-question"
-              closeOnEsc=true
-              clickable=true
-              content="This will provide greater detail toward the process of asking a question. We will have to explain 3 main things. \n 1. The components of a question (Title, Answers, correct answer, further details). \n 2. Asking a question requires an unused VOTE token.  \n 3. If a vote token is not owned, your question will be turned into a Discord command that you can paste into the questions channel on Discord. "
-            />
             <h2 className="text-xl lg:text-2xl text-black opacity-60 ">
               {"Add Options"->React.string}
             </h2>
-            <div
-              id="create-vote-question"
-              type_="button"
-              className="flex self-end items-center justify-center text-default-dark lg:text-primary-dark font-bold text-3xl h-10 w-10 hover:scale-125 hover:default transition-all duration-200 ease-linear rounded-full">
-              <ReactIcons.LuInfo className="lg:text-default-darker text-default-dark" />
-            </div>
           </div>
           <div className="h-full w-full rounded-xl flex justify-start flex-col z-10 pb-4 gap-4">
             <div className="flex flex-row ">
