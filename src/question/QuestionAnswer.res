@@ -131,7 +131,7 @@ let make = (~question, ~answer) => {
       votesy.setContent(_ =>
         <div
           className="h-full  p-2 rounded-lg flex flex-col items-center font-semibold overflow-hidden transition-all">
-          {"Oh no! You missed this question.\nQuick, answer to earn your late answer points!"->React.string}
+          {"Oh no! You missed this question.\nQuick,you can still earn points for answering!"->React.string}
         </div>->Some
       )
     }
