@@ -5,10 +5,16 @@ module VoteItem = {
     tokenId
   }
   `)
+  module QuestionFragment = %relay(`
+  fragment Votes_question on Question {
+    state
+  }
+`)
 
   @react.component
-  let make = (~vote) => {
+  let make = (~vote, ~question) => {
     let vote = VoteFragment.use(vote)
+    let question = QuestionFragment.useOpt(question)
     let {setParams} = Routes.Main.Votes.Route.useQueryParams()
     let handleVoteClick = _ => {
       setParams(
@@ -20,21 +26,33 @@ module VoteItem = {
     }
 
     <li
-      className="rounded-xl flex flex-col items-start justify-center relative transition-all shadow-xl w-[25vw] h-1/3 lg:h-auto md:w-[20vw] lg:w-1/5 backdrop-blur-sm hover:bg-default-light lg:hover:bg-secondary"
+      className="rounded-xl flex flex-col items-start justify-center relative transition-all hover:shadow-xl w-[25vw] h-1/3 lg:h-auto md:w-[20vw] lg:w-1/5 backdrop-blur-sm hover:bg-default-light lg:hover:bg-secondary"
       key=vote.id>
-      <button
-        className=" h-full m-0 border border-default-dark lg:border-active relative w-full cursor-pointer bg-transparent rounded-xl"
-        onClick=handleVoteClick>
-        <div className="w-full relative ">
-          <EmptyVoteChart
-            className="rounded-none my-0 mx-auto w-full h-full align-middle min-w-[100px] min-h-[100px]"
-          />
-        </div>
-        <p
-          className="bg-default-dark lg:bg-active w-full self-end rounded-b-lg font-bold text-lg text-default-light">
-          {vote.tokenId->BigInt.toString->React.string}
-        </p>
-      </button>
+      {switch question {
+      | Some({state: Used}) =>
+        <button
+          className=" h-full m-0 hover:border hover:border-default-dark lg:hover:border-active relative w-full cursor-pointer bg-transparent rounded-xl"
+          onClick=handleVoteClick>
+          <div className="w-full relative ">
+            <EmptyVoteChart
+              className="rounded-none my-0 mx-auto w-full h-full align-middle min-w-[100px] min-h-[100px]"
+            />
+          </div>
+          <p
+            className="hover:bg-default-dark lg:hover:bg-active w-full self-end rounded-b-lg font-bold text-lg text-default-darker hover:text-default-light">
+            {vote.tokenId->BigInt.toString->React.string}
+          </p>
+        </button>
+      | _ =>
+        <button
+          className=" lg:h-32 m-0 bg-default-disabled border border-black/40 relative w-full cursor-pointer bg-transparent rounded-xl"
+          onClick=handleVoteClick>
+          <div
+            className="flex justify-center items-center text-5xl h-28 w-full self-end rounded-b-lg font-bold text-default-darker">
+            {vote.tokenId->BigInt.toString->React.string}
+          </div>
+        </button>
+      }}
     </li>
   }
 }
@@ -43,11 +61,11 @@ module VoteListDisplay = {
   module VotesFragment = %relay(`
   fragment Votes_VoteListDisplay_votes on Query
   @argumentDefinitions(
-    first: { type: "Int", defaultValue: 1000 }
+    first: { type: "Int", defaultValue: 100 }
     after: { type: "Cursor" }
-    orderBy: { type: "Vote_orderBy", defaultValue: id }
+    orderBy: { type: "Vote_orderBy", defaultValue: tokenId }
     orderDirection: { type: "OrderDirection", defaultValue: desc }
-    owner: { type: "Bytes" }
+    where: { type: "Vote_filter" }
   )
   @refetchable(queryName: "VotesListQuery") {
     voteConnection(
@@ -55,13 +73,16 @@ module VoteListDisplay = {
       after: $after
       orderBy: $orderBy
       orderDirection: $orderDirection
-      where: { owner: $owner }
+      where: $where
     ) @connection(key: "VotesConnection_voteConnection") {
       __id
       edges {
         node {
           id
           ...Votes_VoteItem_vote
+          question {
+            ...Votes_question
+          }
         }
       }
     }
@@ -81,7 +102,9 @@ module VoteListDisplay = {
           {...currentParameters, sortBy: Owned(address->Some)->Some}
         },
         ~onAfterParamsSet=_ =>
-          refetch(~variables=VotesFragment.makeRefetchVariables(~owner=Some(address)))->ignore,
+          refetch(
+            ~variables=VotesFragment.makeRefetchVariables(~where=Some({owner: address})),
+          )->ignore,
       )
     let _ = Wagmi.Account.use(
       ~config={
@@ -112,9 +135,12 @@ module VoteListDisplay = {
           ~setter=currentParameters => {...currentParameters, sortBy},
           ~onAfterParamsSet=_ => {
             let variables = switch sortBy {
-            | Some(New) => VotesFragment.makeRefetchVariables(~orderDirection=Some(Desc))
-            | Some(Old) => VotesFragment.makeRefetchVariables(~orderDirection=Some(Asc))
-            | Some(Owned(Some(address))) => VotesFragment.makeRefetchVariables(~owner=Some(address))
+            | Some(New) =>
+              VotesFragment.makeRefetchVariables(~orderDirection=Some(Desc), ~where=None)
+            | Some(Old) =>
+              VotesFragment.makeRefetchVariables(~orderDirection=Some(Asc), ~where=None)
+            | Some(Owned(Some(address))) =>
+              VotesFragment.makeRefetchVariables(~where=Some({owner: address}))
             | _ => VotesFragment.makeRefetchVariables()
             }
             refetch(~variables)->ignore
@@ -158,7 +184,11 @@ module VoteListDisplay = {
           {data.voteConnection
           ->VotesFragment.getConnectionNodes
           ->Array.map(vote => {
-            <VoteItem vote={vote.fragmentRefs} key=vote.id />
+            <VoteItem
+              vote={vote.fragmentRefs}
+              question={vote.question->Option.map(q => q.fragmentRefs)}
+              key=vote.id
+            />
           })
           ->React.array}
         </ul>
@@ -171,13 +201,13 @@ module VoteListDisplay = {
 
 module Query = %relay(`
   query VotesQuery(
-    $owner: Bytes
+    $where: Vote_filter
     $orderBy: Vote_orderBy
     $orderDirection: OrderDirection
   ) {
     ...Votes_VoteListDisplay_votes
       @arguments(
-        owner: $owner
+        where: $where
         orderBy: $orderBy
         orderDirection: $orderDirection
       )

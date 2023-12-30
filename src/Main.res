@@ -1,17 +1,7 @@
-module Query = %relay(`
-  query MainQuery($contextId: ID!) {
-    ...Main_VoteConnectionFragment
-    ...Main_QuestionConnectionFragment
-    ...HeaderFragment
-    ...Main_user @arguments(id: $contextId)
-  }
-`)
-
 module MainDisplay = {
   module UserFragment = %relay(`
   fragment Main_user on Query @argumentDefinitions(id: { type: "ID!" }) {
     userById(id: $id) {
-      id
       answers(last: 1) {
         nodes {
           day
@@ -23,55 +13,45 @@ module MainDisplay = {
   }
 `)
 
-  module VoteConnectionFragment = %relay(`
-  fragment Main_VoteConnectionFragment on Query {
-    voteConnection(orderBy: id, orderDirection: desc, first: 1000, after: "")
-      @connection(key: "VotesConnection_voteConnection") {
-      __id
-      edges {
-        node {
+  module VoteContractFragment = %relay(`
+  fragment Main_voteContract on Query @argumentDefinitions(id: { type: "ID!" }) {
+    voteContract(id: $id) {
+      lastMintedVote {
+        tokenId
+        auction {
+          startTime
           tokenId
-          auction {
-            startTime
-            tokenId
-            ...BottomNav_auction
-          }
-          ...SingleVote_node
+          ...BottomNav_auction
         }
+        ...SingleVote_node
       }
     }
   }`)
 
-  module QuestionConnectionFragment = %relay(`
-fragment Main_QuestionConnectionFragment on Query {
-  questionConnection(
-    first: 1
-    orderBy: day
-    orderDirection: desc
-    where: { state: Used }
-  ) @connection(key: "QuestionsConnection_questionConnection") {
-    edges {
-      node {
-        day
-        ...NewestQuestion_question
-        ...BottomNav_question
-      }
+  module QuestionsContractFragment = %relay(`
+fragment Main_questionsContract on Query
+@argumentDefinitions(id: { type: "ID!" }) {
+  questionsContract(id: $id) {
+    lastUsedQuestion {
+      day
+      ...NewestQuestion_question
+      ...BottomNav_question
     }
   }
-}`)
+}
+`)
+
   @react.component
   let make = (~query as fragmentRefs, ~children) => {
     let {userById: user} = UserFragment.use(fragmentRefs)
     let newestAnswer =
       user->Option.flatMap(({answers}) => answers.nodes->Array.get(0))->Option.flatMap(a => a)
 
-    let {voteConnection} = VoteConnectionFragment.use(fragmentRefs)
-    let newestVote = voteConnection->VoteConnectionFragment.getConnectionNodes->Array.get(0)
+    let {voteContract} = VoteContractFragment.use(fragmentRefs)
+    let newestVote = voteContract->Option.flatMap(({lastMintedVote}) => lastMintedVote)
 
-    let {questionConnection} = QuestionConnectionFragment.use(fragmentRefs)
-
-    let newestQuestion =
-      questionConnection->QuestionConnectionFragment.getConnectionNodes->Array.get(0)
+    let {questionsContract} = QuestionsContractFragment.use(fragmentRefs)
+    let newestQuestion = questionsContract->Option.flatMap(({lastUsedQuestion}) => lastUsedQuestion)
 
     let (width, setWidth) = React.useState(_ => window->Window.innerWidth)
     let isNarrow = width < 1024
@@ -88,23 +68,6 @@ fragment Main_QuestionConnectionFragment on Query {
     let {heroComponent} = React.useContext(HeroComponentContext.context)
     let location = RelayRouter.Utils.useLocation()
     let isSubroute = location.pathname !== "/"
-
-    React.useEffect0(() => {
-      let localAnswerTime =
-        Dom.Storage2.localStorage
-        ->Dom.Storage2.getItem("votesdev_answer_timestamp")
-        ->Option.map(BigInt.fromString)
-
-      switch (newestVote, localAnswerTime) {
-      | (Some({auction: Some({startTime})}), Some(localAnswerTime))
-        if localAnswerTime < startTime =>
-        Dom.Storage2.localStorage->Dom.Storage2.removeItem("votesdev_answer_jwt")
-      | (_, None) => Dom.Storage2.localStorage->Dom.Storage2.removeItem("votesdev_answer_jwt")
-      | _ => ()
-      }
-
-      None
-    })
 
     <>
       <ErrorBoundary fallback={_ => <div />}>
@@ -169,6 +132,19 @@ fragment Main_QuestionConnectionFragment on Query {
     </>
   }
 }
+
+module Query = %relay(`
+  query MainQuery(
+    $contextId: ID!
+    $voteContractAddress: ID!
+    $questionsContractAddress: ID!
+  ) {
+    ...Main_voteContract @arguments(id: $voteContractAddress)
+    ...Main_questionsContract @arguments(id: $questionsContractAddress)
+    ...HeaderFragment
+    ...Main_user @arguments(id: $contextId)
+  }
+`)
 
 @react.component @relay.deferredComponent
 let make = (~children, ~queryRef) => {
