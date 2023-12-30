@@ -60,7 +60,7 @@ module CircleProgress = {
   open FramerMotion
   @react.component
   let make = (~progress, ~size=100) => {
-    let radius = 45
+    let radius = 40
     let circumference = Math.ceil(2. *. Math.Constants.pi *. radius->Int.toFloat)->Float.toInt
     let fillPercents = Math.abs(Math.ceil(progress *. float(circumference) /. 100.))->Float.toInt
 
@@ -82,7 +82,7 @@ module CircleProgress = {
         viewBox="0 0 100 100"
         width={size->Int.toString}
         height={size->Int.toString}
-        className="absolute rotate-90 overflow-visible">
+        className="absolute rotate-[-90deg] overflow-auto">
         <FramerMotion.Circle
           cx="50"
           cy="50"

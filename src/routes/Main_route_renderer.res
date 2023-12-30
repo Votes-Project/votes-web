@@ -24,6 +24,8 @@ let renderer = Routes.Main.Route.makeRenderer(
         ~environment,
         ~variables={
           contextId: contextId->Option.getExn,
+          voteContractAddress: Environment.voteContractAddress,
+          questionsContractAddress: Environment.questionsContractAddress,
         },
         ~fetchPolicy=StoreOrNetwork,
       ),
