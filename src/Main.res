@@ -100,7 +100,11 @@ fragment Main_questionsContract on Query
           </div>
         </div>
       </div>
-      <ErrorBoundary fallback={({error}) => error->JSON.stringifyAny->Option.getExn->React.string}>
+      <ErrorBoundary
+        fallback={({error}) => {
+          Console.log(error)
+          React.null
+        }}>
         <React.Suspense fallback={<div />}>
           {isNarrow
             ? <FramerMotion.Div
