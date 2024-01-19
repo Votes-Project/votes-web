@@ -6,7 +6,7 @@ module Fragment = %relay(`
 
 @react.component
 let make = (~users) => {
-  let {totalCount} = Fragment.use(users)
+  let {totalCount} = Fragment.use(users->Option.getExn)
 
   <p className="text-lg ml-1 mr-2"> {totalCount->Int.toLocaleString->React.string} </p>
 }

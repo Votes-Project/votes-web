@@ -1,9 +1,11 @@
 import { buildHTTPExecutor } from '@graphql-tools/executor-http';
-import { createMergedTypeResolver, stitchSchemas } from '@graphql-tools/stitch';
-import { RenameInputObjectFields, RenameObjectFieldArguments, RenameRootTypes, TransformEnumValues, TransformInputObjectFields, TransformObjectFields, schemaFromExecutor } from '@graphql-tools/wrap';
+import { stitchSchemas } from '@graphql-tools/stitch';
+import { TransformEnumValues, schemaFromExecutor } from '@graphql-tools/wrap';
 import { delegateToSchema } from '@graphql-tools/delegate';
 import { connectionFromArray, toGlobalId, fromGlobalId } from 'graphql-relay';
-import { GraphQLNonNull, GraphQLScalarType } from 'graphql';
+import { GraphQLError } from 'graphql';
+
+// Need to extend the votes subgraph go match the answers service schema then mergh the schemas, that way they do not have a dependency on each other
 
 const relayCompatibleSchema =
 /* GraphQL */ `
@@ -55,6 +57,7 @@ const relayCompatibleSchema =
           where:AuctionBid_filter
           subgraphError: _SubgraphErrorPolicy_! = deny
         ): AuctionBidConnection!
+
 
     }
 
@@ -165,15 +168,30 @@ let resolveArrayToConnection = async (parent, args, context, info, fieldName, de
 export async function makeGatewaySchema() {
   const answersExec = buildHTTPExecutor({ endpoint: "https://answers.votes.today/graphql" })
   const subgraphExec = buildHTTPExecutor({ endpoint: "https://api.studio.thegraph.com/query/9032/votes-goerli/version/latest" })
+  let answersSchemaFromExecutor
+  let subgraphSchemaFromExecutor
 
-  const answersSchema = {
-    schema: await schemaFromExecutor(answersExec),
-    executor: answersExec,
-    batch: true,
+  try {
+    answersSchemaFromExecutor = await schemaFromExecutor(answersExec)
+  } catch (e) {
+    console.log("Failed to get schema from answers service")
+  }
+  try {
+    subgraphSchemaFromExecutor = await schemaFromExecutor(subgraphExec)
+  } catch (e) {
+    console.log("Failed to get schema from subgraph")
   }
 
-  const subgraphSchema = {
-    schema: await schemaFromExecutor(subgraphExec),
+  // @TODO handle error if answers service goes down
+  const answersSchema = answersSchemaFromExecutor ? {
+    schema: answersSchemaFromExecutor,
+    executor: answersExec,
+    batch: true,
+  } : undefined
+
+
+  const subgraphSchema = subgraphSchemaFromExecutor ? {
+    schema: subgraphSchemaFromExecutor,
     executor: subgraphExec,
     batch: true,
     transforms: [new TransformEnumValues((_, externalValue, enumValueConfig) =>
@@ -183,7 +201,7 @@ export async function makeGatewaySchema() {
         ]
         : enumValueConfig
     )]
-  }
+  } : undefined
 
   const connectionResolvers = {
     Query: {
@@ -208,7 +226,6 @@ export async function makeGatewaySchema() {
         resolve: (_, args, context, info) => {
           const { type, id } = fromGlobalId(args.id);
           if (subgraphSchema.schema.getTypeMap()[type]) {
-
             return delegateToSchema({
               schema: subgraphSchema,
               operation: "query",
@@ -217,7 +234,7 @@ export async function makeGatewaySchema() {
               context,
               info,
             })
-          } else {
+          } else if (answersSchema.schema.getTypeMap()[type]) {
             return delegateToSchema({
               schema: answersSchema,
               operation: "query",
@@ -226,6 +243,9 @@ export async function makeGatewaySchema() {
               context,
               info,
             })
+          }
+          else {
+            return GraphQLError("Failed to find node with id: " + args.id + " in subgraph or answers service")
           }
         },
       },
@@ -373,7 +393,7 @@ export async function makeGatewaySchema() {
 
 
   return stitchSchemas({
-    subschemas: [answersSchema, subgraphSchema],
+    subschemas: [answersSchema, subgraphSchema].filter(Boolean),
     typeDefs: relayCompatibleSchema,
     mergeTypes: true,
     resolvers: [nodeResolvers, connectionResolvers],

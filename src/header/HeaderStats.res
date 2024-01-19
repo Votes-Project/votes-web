@@ -6,6 +6,7 @@ module Fragment = %relay(`
 @react.component
 let make = (~users) => {
   let users = Fragment.useOpt(users)
+  Js.log2("users: ", users)
   let {alerts} = React.useContext(StatsAlertContext.context)
   let {setParams} = Routes.Main.Route.useQueryParams()
   let handleStats = _ => {
@@ -31,7 +32,7 @@ let make = (~users) => {
       <ReactIcons.LuVote size="1.5rem" />
       <ErrorBoundary fallback={_ => "N/A"->React.string}>
         <React.Suspense fallback={<> </>}>
-          <VoterCount users={Option.getExn(users).fragmentRefs} />
+          <VoterCount users={users->Option.map(({fragmentRefs}) => fragmentRefs)} />
         </React.Suspense>
       </ErrorBoundary>
     </div>

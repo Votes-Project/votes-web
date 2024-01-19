@@ -52,11 +52,12 @@ let renderer = Routes.Main.Route.makeRenderer(
   },
   ~render=({childRoutes, linkBrightID, stats, prepared}) => {
     let (queryRef, linkBrightIDQueryRef, statsQueryRef) = prepared
-
     <>
-      <ErrorBoundary fallback={({error}) => error->React.string}>
+      <ErrorBoundary
+        fallback={({error}) =>
+          "Something went wrong connecting to Votes. Most likely this is a server issue"->React.string}>
         <Main queryRef>
-          <React.Suspense fallback={<div />}> childRoutes </React.Suspense>
+          <React.Suspense fallback={<div />}> {childRoutes} </React.Suspense>
         </Main>
       </ErrorBoundary>
       <LinkBrightIDModal isOpen={linkBrightID->Option.isSome}>
